@@ -13,12 +13,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const appraisalSchema = z.object({
-  // Part A: Reference Information
-  crewName: z.string().min(1, "Crew name is required"),
-  rank: z.string().min(1, "Rank is required"),
+  // Part A: Seafarer's Information
+  seafarersName: z.string().min(1, "Seafarer's name is required"),
+  seafarersRank: z.string().min(1, "Seafarer's rank is required"),
+  nationality: z.string().min(1, "Nationality is required"),
   vessel: z.string().min(1, "Vessel is required"),
-  appraisalPeriod: z.string().min(1, "Appraisal period is required"),
+  signOn: z.string().min(1, "Sign On date is required"),
   appraisalType: z.string().min(1, "Appraisal type is required"),
+  appraisalPeriodFrom: z.string().min(1, "Appraisal period from is required"),
+  appraisalPeriodTo: z.string().min(1, "Appraisal period to is required"),
+  personalityIndexCategory: z.string().min(1, "Personality Index category is required"),
+  primaryAppraiser: z.string().min(1, "Primary appraiser is required"),
   
   // Part B: Evaluation sections
   shipManagement: z.object({
@@ -77,11 +82,16 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
     defaultValues: {
-      crewName: crewMember ? `${crewMember.name.first} ${crewMember.name.middle} ${crewMember.name.last}`.trim() : "",
-      rank: crewMember?.rank || "",
+      seafarersName: crewMember ? `${crewMember.name.first} ${crewMember.name.middle} ${crewMember.name.last}`.trim() : "",
+      seafarersRank: crewMember?.rank || "",
+      nationality: crewMember?.nationality || "",
       vessel: crewMember?.vessel || "",
-      appraisalPeriod: "",
-      appraisalType: "",
+      signOn: crewMember?.signOn || "",
+      appraisalType: crewMember?.appraisalType || "",
+      appraisalPeriodFrom: "",
+      appraisalPeriodTo: "",
+      personalityIndexCategory: "",
+      primaryAppraiser: "",
       shipManagement: {
         navigation: "",
         cargoOperations: "",
@@ -150,7 +160,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   );
 
   const sections = [
-    { id: "reference", title: "Part A: Reference Information" },
+    { id: "reference", title: "Part A: Seafarer's Information" },
     { id: "shipManagement", title: "Part B: Ship Management & Operations" },
     { id: "technicalSkills", title: "Part C: Technical Skills & Knowledge" },
     { id: "leadership", title: "Part D: Leadership & Management" },
@@ -205,22 +215,22 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 
-                {/* Part A: Reference Information */}
+                {/* Part A: Seafarer's Information */}
                 {activeSection === "reference" && (
                   <Card>
                     <CardHeader>
-                      <CardTitle>Part A: Reference Information</CardTitle>
+                      <CardTitle className="text-[#3B82F6]">Part A Seafarer's Information</CardTitle>
+                      <p className="text-sm text-[#60A5FA]">Enter details as applicable</p>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
-                          name="crewName"
+                          name="seafarersName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Crew Member Name</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input {...field} placeholder="Seafarer's Name" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -228,68 +238,191 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         />
                         <FormField
                           control={form.control}
-                          name="rank"
+                          name="seafarersRank"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Rank/Position</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Seafarer's Rank" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="master">Master</SelectItem>
+                                  <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
+                                  <SelectItem value="chief-mate">Chief Mate</SelectItem>
+                                  <SelectItem value="second-officer">Second Officer</SelectItem>
+                                  <SelectItem value="third-engineer">Third Engineer</SelectItem>
+                                  <SelectItem value="able-seaman">Able Seaman</SelectItem>
+                                  <SelectItem value="electrician">Electrician</SelectItem>
+                                  <SelectItem value="bosun">Bosun</SelectItem>
+                                  <SelectItem value="cook">Cook</SelectItem>
+                                  <SelectItem value="steward">Steward</SelectItem>
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                         <FormField
                           control={form.control}
-                          name="vessel"
+                          name="nationality"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Vessel</FormLabel>
                               <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="appraisalPeriod"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Appraisal Period</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="e.g., Jan 2025 - Jun 2025" />
+                                <Input {...field} placeholder="Nationality" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-                      <FormField
-                        control={form.control}
-                        name="appraisalType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Appraisal Type</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                      
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="vessel"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Vessel" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="mt-sail-one">MT Sail One</SelectItem>
+                                  <SelectItem value="mt-sail-two">MT Sail Two</SelectItem>
+                                  <SelectItem value="mt-sail-three">MT Sail Three</SelectItem>
+                                  <SelectItem value="mt-sail-four">MT Sail Four</SelectItem>
+                                  <SelectItem value="mt-sail-five">MT Sail Five</SelectItem>
+                                  <SelectItem value="mt-sail-ten">MT Sail Ten</SelectItem>
+                                  <SelectItem value="mt-sail-eight">MT Sail Eight</SelectItem>
+                                  <SelectItem value="mt-sail-eleven">MT Sail Eleven</SelectItem>
+                                  <SelectItem value="mt-sail-thirteen">MT Sail Thirteen</SelectItem>
+                                  <SelectItem value="mv-sail-seven">MV Sail Seven</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="signOn"
+                          render={({ field }) => (
+                            <FormItem>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select appraisal type" />
-                                </SelectTrigger>
+                                <Input {...field} placeholder="Sign On - dd.mm.yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="end-of-contract">End of Contract</SelectItem>
-                                <SelectItem value="mid-term">Mid Term</SelectItem>
-                                <SelectItem value="special">Special</SelectItem>
-                                <SelectItem value="probation">Probation</SelectItem>
-                                <SelectItem value="appraiser-s-off">Appraiser S/Off</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="appraisalType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Appraisal Type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="end-of-contract">End of Contract</SelectItem>
+                                  <SelectItem value="mid-term">Mid Term</SelectItem>
+                                  <SelectItem value="special">Special</SelectItem>
+                                  <SelectItem value="probation">Probation</SelectItem>
+                                  <SelectItem value="appraiser-s-off">Appraiser S/Off</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="appraisalPeriodFrom"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input {...field} placeholder="Appraisal Period From - dd.mm.yyyy" type="date" className="bg-gray-50" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="appraisalPeriodTo"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input {...field} placeholder="Appraisal Period To - dd.mm.yyyy" type="date" className="bg-gray-50" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="personalityIndexCategory"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Personality Index (PI) Category" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="dominance">Dominance</SelectItem>
+                                  <SelectItem value="influence">Influence</SelectItem>
+                                  <SelectItem value="steadiness">Steadiness</SelectItem>
+                                  <SelectItem value="compliance">Compliance</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="primaryAppraiser"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Primary Appraiser" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="captain">Captain</SelectItem>
+                                  <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
+                                  <SelectItem value="chief-mate">Chief Mate</SelectItem>
+                                  <SelectItem value="shore-management">Shore Management</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-end mt-6">
+                        <Button className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white px-8">
+                          Save
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
