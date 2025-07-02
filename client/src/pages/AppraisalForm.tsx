@@ -313,7 +313,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input {...field} placeholder="Sign On - dd.mm.yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="Sign on Date dd/mm/yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
