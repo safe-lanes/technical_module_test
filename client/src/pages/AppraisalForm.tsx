@@ -27,6 +27,15 @@ const targetSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Competence Assessment schema
+const competenceAssessmentSchema = z.object({
+  id: z.string(),
+  assessmentCriteria: z.string(),
+  weight: z.number(),
+  effectiveness: z.string().min(1, "Effectiveness rating is required"),
+  comment: z.string().optional(),
+});
+
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
   seafarersName: z.string().min(1, "Seafarer's name is required"),
@@ -44,20 +53,15 @@ const appraisalSchema = z.object({
   trainings: z.array(trainingSchema).default([]),
   targets: z.array(targetSchema).default([]),
   
+  // Part C: Competence Assessment
+  competenceAssessments: z.array(competenceAssessmentSchema).default([]),
+  
   // Part B: Evaluation sections
   shipManagement: z.object({
     navigation: z.string().min(1, "Rating required"),
     cargoOperations: z.string().min(1, "Rating required"),
     maintenanceRepair: z.string().min(1, "Rating required"),
     safetyCompliance: z.string().min(1, "Rating required"),
-    comments: z.string().optional(),
-  }),
-  
-  technicalSkills: z.object({
-    equipmentOperation: z.string().min(1, "Rating required"),
-    troubleshooting: z.string().min(1, "Rating required"),
-    preventiveMaintenance: z.string().min(1, "Rating required"),
-    emergencyResponse: z.string().min(1, "Rating required"),
     comments: z.string().optional(),
   }),
   
@@ -101,6 +105,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [editingTarget, setEditingTarget] = useState<string | null>(null);
   const [trainingComments, setTrainingComments] = useState<{[key: string]: string}>({});
   const [targetComments, setTargetComments] = useState<{[key: string]: string}>({});
+  const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -117,6 +122,18 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       primaryAppraiser: "",
       trainings: [],
       targets: [],
+      competenceAssessments: [
+        { id: "1", assessmentCriteria: "Safety Performance and Open Reporting", weight: 10, effectiveness: "", comment: "" },
+        { id: "2", assessmentCriteria: "Shipboard operational performance & technical skills - Navigation", weight: 10, effectiveness: "", comment: "" },
+        { id: "3", assessmentCriteria: "Assessment Criteria 3", weight: 10, effectiveness: "", comment: "" },
+        { id: "4", assessmentCriteria: "Assessment Criteria 4", weight: 10, effectiveness: "", comment: "" },
+        { id: "5", assessmentCriteria: "Assessment Criteria 5", weight: 10, effectiveness: "", comment: "" },
+        { id: "6", assessmentCriteria: "Assessment Criteria 6", weight: 10, effectiveness: "", comment: "" },
+        { id: "7", assessmentCriteria: "Assessment Criteria 7", weight: 10, effectiveness: "", comment: "" },
+        { id: "8", assessmentCriteria: "Assessment Criteria 8", weight: 10, effectiveness: "", comment: "" },
+        { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
+        { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
+      ],
       shipManagement: {
         navigation: "",
         cargoOperations: "",
@@ -124,13 +141,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
         safetyCompliance: "",
         comments: "",
       },
-      technicalSkills: {
-        equipmentOperation: "",
-        troubleshooting: "",
-        preventiveMaintenance: "",
-        emergencyResponse: "",
-        comments: "",
-      },
+
       leadership: {
         teamManagement: "",
         communication: "",
@@ -217,6 +228,39 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     form.setValue("targets", updatedTargets);
   };
 
+  // Competence Assessment management functions
+  const updateCompetenceAssessment = (id: string, field: string, value: string | number) => {
+    const currentAssessments = form.getValues("competenceAssessments");
+    const updatedAssessments = currentAssessments.map(a => 
+      a.id === id ? { ...a, [field]: value } : a
+    );
+    form.setValue("competenceAssessments", updatedAssessments);
+  };
+
+  // Calculate section score based on weight and effectiveness
+  const calculateSectionScore = () => {
+    const assessments = form.watch("competenceAssessments");
+    let totalScore = 0;
+    let totalWeight = 0;
+    
+    assessments.forEach(assessment => {
+      if (assessment.effectiveness && assessment.weight) {
+        let rating = 0;
+        switch (assessment.effectiveness) {
+          case "5-exceeds-expectations": rating = 5; break;
+          case "4-meets-expectations": rating = 4; break;
+          case "3-somewhat-meets-expectations": rating = 3; break;
+          case "2-below-expectations": rating = 2; break;
+          case "1-significantly-below-expectations": rating = 1; break;
+        }
+        totalScore += (rating * assessment.weight) / 100;
+        totalWeight += assessment.weight;
+      }
+    });
+    
+    return totalWeight > 0 ? (totalScore * 100 / totalWeight).toFixed(1) : "0.0";
+  };
+
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
     <FormField
       control={form.control}
@@ -248,7 +292,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     { id: "reference", title: "Part A: Seafarer's Information" },
     { id: "information", title: "Part B: Information at Start of Appraisal Period" },
     { id: "shipManagement", title: "Part B: Ship Management & Operations" },
-    { id: "technicalSkills", title: "Part C: Technical Skills & Knowledge" },
+    { id: "competenceAssessment", title: "Part C: Competence Assessment (Professional Knowledge & Skills)" },
     { id: "leadership", title: "Part D: Leadership & Management" },
     { id: "professionalConduct", title: "Part E: Professional Conduct" },
     { id: "summary", title: "Part F: Summary & Recommendations" },
@@ -807,32 +851,118 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                   </Card>
                 )}
 
-                {/* Part C: Technical Skills */}
-                {activeSection === "technicalSkills" && (
+                {/* Part C: Competence Assessment */}
+                {activeSection === "competenceAssessment" && (
                   <Card>
                     <CardHeader>
-                      <CardTitle>Part C: Technical Skills & Knowledge</CardTitle>
-                      <p className="text-sm text-gray-600">Rate from 1 (Poor) to 5 (Excellent)</p>
+                      <CardTitle className="text-blue-700">Part C Competence Assessment (Professional Knowledge & Skills)</CardTitle>
+                      <p className="text-sm text-blue-500">Description</p>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <RatingRadioGroup name="technicalSkills.equipmentOperation" label="Equipment Operation" />
-                      <RatingRadioGroup name="technicalSkills.troubleshooting" label="Troubleshooting & Problem Solving" />
-                      <RatingRadioGroup name="technicalSkills.preventiveMaintenance" label="Preventive Maintenance" />
-                      <RatingRadioGroup name="technicalSkills.emergencyResponse" label="Emergency Response" />
-                      
-                      <FormField
-                        control={form.control}
-                        name="technicalSkills.comments"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Comments & Observations</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <CardContent>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {form.watch("competenceAssessments").map((assessment, index) => (
+                              <React.Fragment key={assessment.id}>
+                                <tr className="border-t">
+                                  <td className="p-3 text-sm">{index + 1}.</td>
+                                  <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
+                                  <td className="p-3 text-sm">{assessment.weight}%</td>
+                                  <td className="p-3">
+                                    <Select
+                                      value={assessment.effectiveness}
+                                      onValueChange={(value) => updateCompetenceAssessment(assessment.id, "effectiveness", value)}
+                                    >
+                                      <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                        <SelectValue placeholder="Select Rating" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
+                                        <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
+                                        <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
+                                        <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
+                                        <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </td>
+                                  <td className="p-3">
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setCompetenceComments(prev => ({
+                                          ...prev,
+                                          [assessment.id]: prev[assessment.id] || ""
+                                        }))}
+                                      >
+                                        <MessageSquare className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                      >
+                                        <Edit2 className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {competenceComments[assessment.id] !== undefined && (
+                                  <tr>
+                                    <td></td>
+                                    <td colSpan={4} className="p-3">
+                                      <Textarea
+                                        value={competenceComments[assessment.id]}
+                                        onChange={(e) => {
+                                          setCompetenceComments(prev => ({
+                                            ...prev,
+                                            [assessment.id]: e.target.value
+                                          }));
+                                          updateCompetenceAssessment(assessment.id, "comment", e.target.value);
+                                        }}
+                                        placeholder="Comment: Add your observations here..."
+                                        className="text-blue-600 italic border-blue-200"
+                                        rows={2}
+                                      />
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Section Score */}
+                      <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
+                        <div className="text-sm font-medium text-gray-700">Section Score:</div>
+                        <div className="bg-yellow-200 px-4 py-2 rounded text-lg font-semibold">
+                          {calculateSectionScore()}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end mt-6">
+                        <Button className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white px-8">
+                          Save
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
