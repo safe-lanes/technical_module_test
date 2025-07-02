@@ -285,51 +285,93 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg w-full max-w-7xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b p-3 sm:p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="icon" onClick={onClose}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-xl font-bold">Crew Appraisal Form</h1>
+            <h1 className="text-lg sm:text-xl font-bold">Crew Appraisal Form</h1>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => form.handleSubmit(onSubmit)()}>
+          <div className="flex gap-1 sm:gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="hidden sm:flex"
+            >
               <Save className="h-4 w-4 mr-2" />
               Save Draft
             </Button>
-            <Button onClick={() => form.handleSubmit(onSubmit)()}>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="sm:hidden"
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+            <Button 
+              size="sm"
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="hidden sm:flex"
+            >
               <Send className="h-4 w-4 mr-2" />
               Submit
+            </Button>
+            <Button 
+              size="sm"
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="sm:hidden"
+            >
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        <div className="flex">
-          {/* Sidebar Navigation */}
-          <div className="w-64 bg-gray-50 p-4 border-r">
-            <nav className="space-y-2">
+        <div className="flex flex-col lg:flex-row">
+          {/* Mobile Navigation Dropdown */}
+          <div className="lg:hidden bg-gray-50 border-b p-3">
+            <select
+              value={activeSection}
+              onChange={(e) => setActiveSection(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md text-sm bg-white"
+            >
               {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full text-left p-3 rounded text-sm ${
-                    activeSection === section.id
-                      ? "bg-blue-100 text-blue-700 font-medium"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
+                <option key={section.id} value={section.id}>
                   {section.title}
-                </button>
+                </option>
               ))}
-            </nav>
+            </select>
+          </div>
+
+          {/* Desktop Sidebar Navigation */}
+          <div className="hidden lg:block w-64 xl:w-72 bg-gray-50 border-r">
+            <div className="p-4">
+              <nav className="space-y-2">
+                {sections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full text-left p-3 rounded text-sm transition-colors ${
+                      activeSection === section.id
+                        ? "bg-blue-100 text-blue-700 font-medium"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {section.title}
+                  </button>
+                ))}
+              </nav>
+            </div>
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-3 sm:p-4 lg:p-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
                 
                 {/* Part A: Seafarer's Information */}
                 {activeSection === "reference" && (
@@ -339,7 +381,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       <p className="text-sm text-[#60A5FA]">Enter details as applicable</p>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name="seafarersName"
@@ -394,7 +436,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         />
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name="vessel"
@@ -460,7 +502,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         />
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name="appraisalPeriodFrom"
@@ -509,7 +551,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         />
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name="primaryAppraiser"
@@ -568,16 +610,17 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         </div>
                         
                         <div className="border rounded-lg overflow-hidden">
-                          <table className="w-full">
-                            <thead className="bg-gray-100">
-                              <tr>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Evaluation</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
+                          <div className="overflow-x-auto">
+                            <table className="w-full min-w-[600px]">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">S.No</th>
+                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Training</th>
+                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Evaluation</th>
+                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
                               {form.watch("trainings").map((training, index) => (
                                 <React.Fragment key={training.id}>
                                   <tr className="border-t">
@@ -668,8 +711,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                   </td>
                                 </tr>
                               )}
-                            </tbody>
-                          </table>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
 
@@ -793,6 +837,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             </tbody>
                           </table>
                         </div>
+                      </div>
                       </div>
 
                       <div className="flex justify-between mt-6">
