@@ -85,7 +85,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       seafarersName: crewMember ? `${crewMember.name.first} ${crewMember.name.middle} ${crewMember.name.last}`.trim() : "",
       seafarersRank: "",
       nationality: crewMember?.nationality || "",
-      vessel: crewMember?.vessel || "",
+      vessel: "",
       signOn: crewMember?.signOn || "",
       appraisalType: crewMember?.appraisalType || "",
       appraisalPeriodFrom: "",
