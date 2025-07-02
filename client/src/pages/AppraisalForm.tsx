@@ -56,14 +56,7 @@ const appraisalSchema = z.object({
   // Part C: Competence Assessment
   competenceAssessments: z.array(competenceAssessmentSchema).default([]),
   
-  // Part B: Evaluation sections
-  shipManagement: z.object({
-    navigation: z.string().min(1, "Rating required"),
-    cargoOperations: z.string().min(1, "Rating required"),
-    maintenanceRepair: z.string().min(1, "Rating required"),
-    safetyCompliance: z.string().min(1, "Rating required"),
-    comments: z.string().optional(),
-  }),
+  // Part D: Evaluation sections
   
   leadership: z.object({
     teamManagement: z.string().min(1, "Rating required"),
@@ -134,13 +127,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
         { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
         { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
       ],
-      shipManagement: {
-        navigation: "",
-        cargoOperations: "",
-        maintenanceRepair: "",
-        safetyCompliance: "",
-        comments: "",
-      },
+
 
       leadership: {
         teamManagement: "",
@@ -291,7 +278,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const sections = [
     { id: "reference", title: "Part A: Seafarer's Information" },
     { id: "information", title: "Part B: Information at Start of Appraisal Period" },
-    { id: "shipManagement", title: "Part B: Ship Management & Operations" },
     { id: "competenceAssessment", title: "Part C: Competence Assessment (Professional Knowledge & Skills)" },
     { id: "leadership", title: "Part D: Leadership & Management" },
     { id: "professionalConduct", title: "Part E: Professional Conduct" },
@@ -817,36 +803,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           Submit
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Part B: Ship Management & Operations */}
-                {activeSection === "shipManagement" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Part B: Ship Management & Operations</CardTitle>
-                      <p className="text-sm text-gray-600">Rate from 1 (Poor) to 5 (Excellent)</p>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <RatingRadioGroup name="shipManagement.navigation" label="Navigation & Watch Keeping" />
-                      <RatingRadioGroup name="shipManagement.cargoOperations" label="Cargo Operations" />
-                      <RatingRadioGroup name="shipManagement.maintenanceRepair" label="Maintenance & Repair" />
-                      <RatingRadioGroup name="shipManagement.safetyCompliance" label="Safety & Compliance" />
-                      
-                      <FormField
-                        control={form.control}
-                        name="shipManagement.comments"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Comments & Observations</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </CardContent>
                   </Card>
                 )}
