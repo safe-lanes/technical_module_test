@@ -1,0 +1,41 @@
+Essential files to copy to your new Replit project:
+
+CONFIGURATION FILES:
+- package.json
+- tsconfig.json
+- vite.config.ts
+- tailwind.config.ts
+- postcss.config.js
+- drizzle.config.ts
+- components.json
+
+FRONTEND FILES:
+- client/index.html
+- client/src/main.tsx
+- client/src/App.tsx
+- client/src/index.css
+- client/src/lib/utils.ts
+- client/src/lib/queryClient.ts
+- client/src/hooks/use-toast.ts
+- client/src/hooks/use-mobile.tsx
+- client/src/pages/ElementCrewAppraisals.tsx
+- client/src/pages/not-found.tsx
+
+UI COMPONENTS (all files in):
+- client/src/components/ui/ (all .tsx files)
+
+BACKEND FILES:
+- server/index.ts
+- server/routes.ts
+- server/storage.ts
+- server/vite.ts
+
+SHARED FILES:
+- shared/schema.ts
+
+DOCUMENTATION:
+- replit.md
+- EXPORT_PACKAGE.md
+
+ASSETS (if you have figma assets):
+- client/public/figmaAssets/ (if present)
