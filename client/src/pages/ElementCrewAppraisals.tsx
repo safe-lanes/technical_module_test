@@ -5,7 +5,8 @@ import {
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { AppraisalForm } from "./AppraisalForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +28,19 @@ import {
 } from "@/components/ui/table";
 
 export const ElementCrewAppraisals = (): JSX.Element => {
+  const [selectedCrewMember, setSelectedCrewMember] = useState<any>(null);
+  const [showAppraisalForm, setShowAppraisalForm] = useState(false);
+
+  const handleEditClick = (crewMember: any) => {
+    setSelectedCrewMember(crewMember);
+    setShowAppraisalForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAppraisalForm(false);
+    setSelectedCrewMember(null);
+  };
+
   // Crew data for the table
   const crewData = [
     {
@@ -440,6 +454,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6"
+                              onClick={() => handleEditClick(crew)}
                             >
                               <EditIcon className="h-[18px] w-[18px] text-gray-500" />
                             </Button>
@@ -466,6 +481,14 @@ export const ElementCrewAppraisals = (): JSX.Element => {
           </div>
         </main>
       </div>
+
+      {/* Appraisal Form Modal */}
+      {showAppraisalForm && (
+        <AppraisalForm
+          crewMember={selectedCrewMember}
+          onClose={handleCloseForm}
+        />
+      )}
     </div>
   );
 };
