@@ -83,7 +83,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     resolver: zodResolver(appraisalSchema),
     defaultValues: {
       seafarersName: crewMember ? `${crewMember.name.first} ${crewMember.name.middle} ${crewMember.name.last}`.trim() : "",
-      seafarersRank: crewMember?.rank || "",
+      seafarersRank: "",
       nationality: crewMember?.nationality || "",
       vessel: crewMember?.vessel || "",
       signOn: crewMember?.signOn || "",
