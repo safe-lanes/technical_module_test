@@ -838,7 +838,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           </table>
                         </div>
                       </div>
-                      </div>
 
                       <div className="flex justify-between mt-6">
                         <Button className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white px-8">
