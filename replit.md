@@ -44,6 +44,27 @@ The application uses a simple user-based schema with:
 4. **Response Handling**: TanStack Query manages response caching and error states
 5. **UI Updates**: React components re-render based on query state changes
 
+## Crew Appraisals Data Population
+
+### Table Data Source
+- **Primary Source**: Data populated from submitted appraisal forms
+- **One-to-One Relationship**: Each table row corresponds to one completed appraisal form
+- **Auto-populated Fields**:
+  - **Crew ID**: Auto-populated from database based on selected crew member name
+  - **Vessel Type**: Auto-populated from database based on selected vessel
+- **Form-derived Fields**: All other fields populated from form submission data
+
+### Filter Functionality
+- **Toggle Behavior**: Filters button shows/hides the filter row
+- **Filter Types Available**:
+  - Name search (text input)
+  - Rank selection
+  - Vessel type selection
+  - Nationality selection
+  - Appraisal type selection
+  - Rating range selection
+- **Filter Actions**: Apply and Clear buttons to manage filter state
+
 ## External Dependencies
 
 ### Frontend Dependencies

@@ -30,6 +30,7 @@ import {
 export const ElementCrewAppraisals = (): JSX.Element => {
   const [selectedCrewMember, setSelectedCrewMember] = useState<any>(null);
   const [showAppraisalForm, setShowAppraisalForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const handleEditClick = (crewMember: any) => {
     setSelectedCrewMember(crewMember);
@@ -246,6 +247,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               <Button
                 variant="outline"
                 className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
+                onClick={() => setShowFilters(!showFilters)}
               >
                 <FilterIcon className="w-4 h-4" />
                 <span className="text-sm">Filters</span>
@@ -253,7 +255,8 @@ export const ElementCrewAppraisals = (): JSX.Element => {
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2 mb-6">
+            {showFilters && (
+              <div className="flex gap-2 mb-6">
               <div className="relative w-[298px]">
                 <Input
                   className="h-8 pl-10 text-[#8798ad] text-xs"
@@ -334,7 +337,8 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               >
                 Clear
               </Button>
-            </div>
+              </div>
+            )}
 
 
 
