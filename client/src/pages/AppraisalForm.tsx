@@ -36,6 +36,15 @@ const competenceAssessmentSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Behavioural Assessment schema
+const behaviouralAssessmentSchema = z.object({
+  id: z.string(),
+  assessmentCriteria: z.string(),
+  weight: z.number(),
+  effectiveness: z.string().min(1, "Effectiveness rating is required"),
+  comment: z.string().optional(),
+});
+
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
   seafarersName: z.string().min(1, "Seafarer's name is required"),
@@ -56,15 +65,8 @@ const appraisalSchema = z.object({
   // Part C: Competence Assessment
   competenceAssessments: z.array(competenceAssessmentSchema).default([]),
   
-  // Part D: Evaluation sections
-  
-  leadership: z.object({
-    teamManagement: z.string().min(1, "Rating required"),
-    communication: z.string().min(1, "Rating required"),
-    decisionMaking: z.string().min(1, "Rating required"),
-    problemSolving: z.string().min(1, "Rating required"),
-    comments: z.string().optional(),
-  }),
+  // Part D: Behavioural Assessment
+  behaviouralAssessments: z.array(behaviouralAssessmentSchema).default([]),
   
   professionalConduct: z.object({
     reliability: z.string().min(1, "Rating required"),
@@ -99,6 +101,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [trainingComments, setTrainingComments] = useState<{[key: string]: string}>({});
   const [targetComments, setTargetComments] = useState<{[key: string]: string}>({});
   const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
+  const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -128,14 +131,18 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
         { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
       ],
 
-
-      leadership: {
-        teamManagement: "",
-        communication: "",
-        decisionMaking: "",
-        problemSolving: "",
-        comments: "",
-      },
+      behaviouralAssessments: [
+        { id: "1", assessmentCriteria: "Leadership", weight: 10, effectiveness: "", comment: "" },
+        { id: "2", assessmentCriteria: "Attitude", weight: 10, effectiveness: "", comment: "" },
+        { id: "3", assessmentCriteria: "Emotional Intelligence", weight: 10, effectiveness: "", comment: "" },
+        { id: "4", assessmentCriteria: "Work Ethics", weight: 10, effectiveness: "", comment: "" },
+        { id: "5", assessmentCriteria: "Situational Awareness", weight: 10, effectiveness: "", comment: "" },
+        { id: "6", assessmentCriteria: "Decision Making", weight: 10, effectiveness: "", comment: "" },
+        { id: "7", assessmentCriteria: "Teamwork", weight: 10, effectiveness: "", comment: "" },
+        { id: "8", assessmentCriteria: "Assessment Criteria 8", weight: 10, effectiveness: "", comment: "" },
+        { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
+        { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
+      ],
       professionalConduct: {
         reliability: "",
         initiative: "",
@@ -224,9 +231,42 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     form.setValue("competenceAssessments", updatedAssessments);
   };
 
+  // Behavioural Assessment management functions
+  const updateBehaviouralAssessment = (id: string, field: string, value: string | number) => {
+    const currentAssessments = form.getValues("behaviouralAssessments");
+    const updatedAssessments = currentAssessments.map(a => 
+      a.id === id ? { ...a, [field]: value } : a
+    );
+    form.setValue("behaviouralAssessments", updatedAssessments);
+  };
+
   // Calculate section score based on weight and effectiveness
   const calculateSectionScore = () => {
     const assessments = form.watch("competenceAssessments");
+    let totalScore = 0;
+    let totalWeight = 0;
+    
+    assessments.forEach(assessment => {
+      if (assessment.effectiveness && assessment.weight) {
+        let rating = 0;
+        switch (assessment.effectiveness) {
+          case "5-exceeds-expectations": rating = 5; break;
+          case "4-meets-expectations": rating = 4; break;
+          case "3-somewhat-meets-expectations": rating = 3; break;
+          case "2-below-expectations": rating = 2; break;
+          case "1-significantly-below-expectations": rating = 1; break;
+        }
+        totalScore += (rating * assessment.weight) / 100;
+        totalWeight += assessment.weight;
+      }
+    });
+    
+    return totalWeight > 0 ? (totalScore * 100 / totalWeight).toFixed(1) : "0.0";
+  };
+
+  // Calculate behavioural section score
+  const calculateBehaviouralSectionScore = () => {
+    const assessments = form.watch("behaviouralAssessments");
     let totalScore = 0;
     let totalWeight = 0;
     
@@ -279,7 +319,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     { id: "reference", title: "Part A: Seafarer's Information" },
     { id: "information", title: "Part B: Information at Start of Appraisal Period" },
     { id: "competenceAssessment", title: "Part C: Competence Assessment (Professional Knowledge & Skills)" },
-    { id: "leadership", title: "Part D: Leadership & Management" },
+    { id: "behaviouralAssessment", title: "Part D: Behavioural Assessment (Soft Skills)" },
     { id: "professionalConduct", title: "Part E: Professional Conduct" },
     { id: "summary", title: "Part F: Summary & Recommendations" },
   ];
@@ -967,32 +1007,127 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                   </Card>
                 )}
 
-                {/* Part D: Leadership */}
-                {activeSection === "leadership" && (
+                {/* Part D: Behavioural Assessment */}
+                {activeSection === "behaviouralAssessment" && (
                   <Card>
                     <CardHeader>
-                      <CardTitle>Part D: Leadership & Management</CardTitle>
-                      <p className="text-sm text-gray-600">Rate from 1 (Poor) to 5 (Excellent)</p>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle className="text-blue-700">Part D Behavioural Assessment (Soft Skills)</CardTitle>
+                          <p className="text-sm text-blue-500">Description</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                        >
+                          + Add Criterion
+                        </Button>
+                      </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <RatingRadioGroup name="leadership.teamManagement" label="Team Management" />
-                      <RatingRadioGroup name="leadership.communication" label="Communication Skills" />
-                      <RatingRadioGroup name="leadership.decisionMaking" label="Decision Making" />
-                      <RatingRadioGroup name="leadership.problemSolving" label="Problem Solving" />
-                      
-                      <FormField
-                        control={form.control}
-                        name="leadership.comments"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Comments & Observations</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <CardContent>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {form.watch("behaviouralAssessments").map((assessment, index) => (
+                            <React.Fragment key={assessment.id}>
+                              <tr className="border-t">
+                                <td className="p-3 text-sm">{index + 1}.</td>
+                                <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
+                                <td className="p-3 text-sm text-center">{assessment.weight}%</td>
+                                <td className="p-3">
+                                  <Select
+                                    value={assessment.effectiveness}
+                                    onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
+                                  >
+                                    <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                      <SelectValue placeholder="Select Rating" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
+                                      <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
+                                      <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
+                                      <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
+                                      <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+                                <td className="p-3">
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setBehaviouralComments(prev => ({
+                                        ...prev,
+                                        [assessment.id]: prev[assessment.id] || ""
+                                      }))}
+                                    >
+                                      <MessageSquare className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                    >
+                                      <Edit2 className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                              {behaviouralComments[assessment.id] !== undefined && (
+                                <tr>
+                                  <td></td>
+                                  <td colSpan={4} className="p-3">
+                                    <Textarea
+                                      value={behaviouralComments[assessment.id]}
+                                      onChange={(e) => {
+                                        setBehaviouralComments(prev => ({
+                                          ...prev,
+                                          [assessment.id]: e.target.value
+                                        }));
+                                        updateBehaviouralAssessment(assessment.id, "comment", e.target.value);
+                                      }}
+                                      placeholder="Comment: Add your observations here..."
+                                      className="text-blue-600 italic border-blue-200"
+                                      rows={2}
+                                    />
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm font-medium text-gray-600">Section Score:</span>
+                        <span className="text-lg font-bold text-red-600">{calculateBehaviouralSectionScore()}</span>
+                      </div>
+
+                      <div className="flex justify-end mt-6">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                          Save
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
