@@ -52,6 +52,28 @@ const trainingNeedsSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Part F schemas
+const recommendationSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  answer: z.enum(["Yes", "No", "NA"]),
+  comment: z.string().optional(),
+});
+
+const appraiserCommentSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  rank: z.string(),
+  comment: z.string(),
+});
+
+const seafarerCommentSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  rank: z.string(),
+  comment: z.string(),
+});
+
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
   seafarersName: z.string().min(1, "Seafarer's name is required"),
@@ -78,10 +100,10 @@ const appraisalSchema = z.object({
   // Part E: Training Needs & Development
   trainingNeeds: z.array(trainingNeedsSchema).default([]),
   
-  // Additional sections
-  overallComments: z.string().optional(),
-  recommendations: z.string().optional(),
-  developmentAreas: z.string().optional(),
+  // Part F: Comments & Recommendations
+  recommendations: z.array(recommendationSchema).default([]),
+  appraiserComments: z.array(appraiserCommentSchema).default([]),
+  seafarerComments: z.array(seafarerCommentSchema).default([]),
 });
 
 type AppraisalFormData = z.infer<typeof appraisalSchema>;
@@ -105,6 +127,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
   const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
+  const [recommendationComments, setRecommendationComments] = useState<{[key: string]: string}>({});
+  const [editingAppraiserComment, setEditingAppraiserComment] = useState<string | null>(null);
+  const [editingSeafarerComment, setEditingSeafarerComment] = useState<string | null>(null);
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -148,9 +173,20 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       ],
 
       trainingNeeds: [],
-      overallComments: "",
-      recommendations: "",
-      developmentAreas: "",
+      
+      // Part F: Comments & Recommendations
+      recommendations: [
+        { id: "1", question: "Recommended for continued service on board?", answer: "Yes", comment: "" },
+        { id: "2", question: "Recommended for re-employment?", answer: "Yes", comment: "" },
+        { id: "3", question: "Recommended for promotion?", answer: "Yes", comment: "" },
+        { id: "4", question: "Career Development recommendations (If Any)?", answer: "Yes", comment: "" },
+      ],
+      appraiserComments: [
+        { id: "primary", name: "", rank: "", comment: "" }
+      ],
+      seafarerComments: [
+        { id: "seafarer", name: "", rank: "", comment: "" }
+      ],
     },
   });
 
@@ -313,6 +349,57 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       t.id === id ? { ...t, [field]: value } : t
     );
     form.setValue("trainingNeeds", updatedTrainingNeeds);
+  };
+
+  // Calculate overall score (F1)
+  const calculateOverallScore = () => {
+    const competenceScore = parseFloat(calculateSectionScore());
+    const behaviouralScore = parseFloat(calculateBehaviouralSectionScore());
+    return ((competenceScore + behaviouralScore) / 2).toFixed(1);
+  };
+
+  // Recommendation management functions
+  const updateRecommendation = (id: string, field: string, value: string) => {
+    const currentRecommendations = form.getValues("recommendations");
+    const updatedRecommendations = currentRecommendations.map(r => 
+      r.id === id ? { ...r, [field]: value } : r
+    );
+    form.setValue("recommendations", updatedRecommendations);
+  };
+
+  // Appraiser Comments management
+  const addAppraiserComment = (name: string, rank: string) => {
+    const newComment = {
+      id: Date.now().toString(),
+      name,
+      rank,
+      comment: "",
+    };
+    const currentComments = form.getValues("appraiserComments");
+    form.setValue("appraiserComments", [...currentComments, newComment]);
+    setEditingAppraiserComment(newComment.id);
+  };
+
+  const updateAppraiserComment = (id: string, field: string, value: string) => {
+    const currentComments = form.getValues("appraiserComments");
+    const updatedComments = currentComments.map(c => 
+      c.id === id ? { ...c, [field]: value } : c
+    );
+    form.setValue("appraiserComments", updatedComments);
+  };
+
+  const deleteAppraiserComment = (id: string) => {
+    const currentComments = form.getValues("appraiserComments");
+    form.setValue("appraiserComments", currentComments.filter(c => c.id !== id));
+  };
+
+  // Seafarer Comments management
+  const updateSeafarerComment = (id: string, field: string, value: string) => {
+    const currentComments = form.getValues("seafarerComments");
+    const updatedComments = currentComments.map(c => 
+      c.id === id ? { ...c, [field]: value } : c
+    );
+    form.setValue("seafarerComments", updatedComments);
   };
 
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
@@ -1289,56 +1376,307 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                   </Card>
                 )}
 
-                {/* Part F: Summary */}
+                {/* Part F: Comments & Recommendations */}
                 {activeSection === "summary" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Part F: Summary & Recommendations</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="overallComments"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Overall Performance Comments</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="recommendations"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Recommendations for Future Employment</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="developmentAreas"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Areas for Development</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
+                  <div className="space-y-6">
+                    {/* F1: Overall Score */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-blue-700">Part F Comments & Recommendations</CardTitle>
+                          <p className="text-sm text-blue-500">Add any recommendations related to following</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between items-center mb-6">
+                          <h3 className="text-lg font-semibold text-blue-700">F1. Overall Score</h3>
+                          <div className="bg-yellow-200 px-4 py-2 rounded text-lg font-bold">
+                            {calculateOverallScore()}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* F2: Appraiser's Recommendations */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold text-blue-700">F2. Appraiser's Recommendations</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600 border-blue-300"
+                          >
+                            + Add Recommendation
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="border rounded-lg overflow-hidden">
+                          <table className="w-full">
+                            <thead className="bg-gray-100">
+                              <tr>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Recommendations</th>
+                                <th className="text-center p-3 text-sm font-medium text-gray-600">Yes</th>
+                                <th className="text-center p-3 text-sm font-medium text-gray-600">No</th>
+                                <th className="text-center p-3 text-sm font-medium text-gray-600">NA</th>
+                                <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {form.watch("recommendations").map((recommendation, index) => (
+                                <React.Fragment key={recommendation.id}>
+                                  <tr className="border-t">
+                                    <td className="p-3 text-sm">{index + 1}.</td>
+                                    <td className="p-3 text-sm">{recommendation.question}</td>
+                                    <td className="text-center p-3">
+                                      <input
+                                        type="radio"
+                                        name={`recommendation-${recommendation.id}`}
+                                        checked={recommendation.answer === "Yes"}
+                                        onChange={() => updateRecommendation(recommendation.id, "answer", "Yes")}
+                                        className="w-4 h-4"
+                                      />
+                                    </td>
+                                    <td className="text-center p-3">
+                                      <input
+                                        type="radio"
+                                        name={`recommendation-${recommendation.id}`}
+                                        checked={recommendation.answer === "No"}
+                                        onChange={() => updateRecommendation(recommendation.id, "answer", "No")}
+                                        className="w-4 h-4"
+                                      />
+                                    </td>
+                                    <td className="text-center p-3">
+                                      <input
+                                        type="radio"
+                                        name={`recommendation-${recommendation.id}`}
+                                        checked={recommendation.answer === "NA"}
+                                        onChange={() => updateRecommendation(recommendation.id, "answer", "NA")}
+                                        className="w-4 h-4"
+                                      />
+                                    </td>
+                                    <td className="p-3">
+                                      <div className="flex justify-center space-x-2">
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => setRecommendationComments(prev => ({
+                                            ...prev,
+                                            [recommendation.id]: prev[recommendation.id] || ""
+                                          }))}
+                                        >
+                                          <MessageSquare className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                        >
+                                          <Edit2 className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {recommendationComments[recommendation.id] !== undefined && (
+                                    <tr>
+                                      <td></td>
+                                      <td colSpan={5} className="p-3">
+                                        <Textarea
+                                          value={recommendationComments[recommendation.id]}
+                                          onChange={(e) => {
+                                            setRecommendationComments(prev => ({
+                                              ...prev,
+                                              [recommendation.id]: e.target.value
+                                            }));
+                                            updateRecommendation(recommendation.id, "comment", e.target.value);
+                                          }}
+                                          placeholder="Comment: Add your observations here..."
+                                          className="text-blue-600 italic border-blue-200"
+                                          rows={2}
+                                        />
+                                      </td>
+                                    </tr>
+                                  )}
+                                  {recommendation.id === "4" && recommendation.comment && (
+                                    <tr>
+                                      <td></td>
+                                      <td colSpan={5} className="p-3">
+                                        <p className="text-blue-600 italic text-sm">
+                                          Comment: Recommended as there seemed to be a large gap in officer's understanding.
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* F3: Appraiser's Comments */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold text-blue-700">F3. Appraiser's Comments</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-300"
+                            onClick={() => {
+                              // This would show a dropdown to select from ship's officers
+                              addAppraiserComment("Ashok Kumar", "Chief Officer");
+                            }}
+                          >
+                            + Add Appraiser
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {form.watch("appraiserComments").map((appraiser, index) => (
+                          <div key={appraiser.id} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-blue-600">
+                                  {index === 0 ? form.watch("primaryAppraiser") || "Capt. John Leki, Master (Primary Appraiser)" : `${appraiser.name}, ${appraiser.rank}`}
+                                </p>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingAppraiserComment(appraiser.id)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                {index > 0 && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => deleteAppraiserComment(appraiser.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                            {editingAppraiserComment === appraiser.id ? (
+                              <Textarea
+                                value={appraiser.comment}
+                                onChange={(e) => updateAppraiserComment(appraiser.id, "comment", e.target.value)}
+                                onBlur={() => setEditingAppraiserComment(null)}
+                                placeholder="Add your comment here..."
+                                className="text-blue-600 italic"
+                                rows={3}
+                                autoFocus
+                              />
+                            ) : (
+                              appraiser.comment && (
+                                <p className="text-blue-600 italic text-sm pl-4">
+                                  {appraiser.comment || (index === 0 ? "Officer X has performed consistently throughout the contract and participated in upgradation of the XXX. The inspection performance has been satisfactory, no major findings received in 2 SIRE and 1 PSC inspections." : "Officer X has performed consistently throughout the contract and participated in upgradation of the XXX. The inspection performance has been satisfactory, no major findings received in 2 SIRE and 1 PSC inspections.")}
+                                </p>
+                              )
+                            )}
+                            {editingAppraiserComment !== appraiser.id && !appraiser.comment && index === 0 && (
+                              <div 
+                                className="border-2 border-dashed border-blue-200 p-3 rounded cursor-pointer hover:bg-blue-50"
+                                onClick={() => setEditingAppraiserComment(appraiser.id)}
+                              >
+                                <p className="text-gray-500 text-sm">Click to add comment...</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* F4: Seafarer's Comments */}
+                    <Card>
+                      <CardHeader>
+                        <h3 className="text-lg font-semibold text-blue-700">F4. Seafarer's Comments</h3>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {form.watch("seafarerComments").map((seafarer, index) => (
+                          <div key={seafarer.id} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-blue-600">
+                                  {`${form.watch("seafarersName") || "Derek Cole"}, ${form.watch("seafarersRank") || "3rd Officer"}`}
+                                </p>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingSeafarerComment(seafarer.id)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                            {editingSeafarerComment === seafarer.id ? (
+                              <Textarea
+                                value={seafarer.comment}
+                                onChange={(e) => updateSeafarerComment(seafarer.id, "comment", e.target.value)}
+                                onBlur={() => setEditingSeafarerComment(null)}
+                                placeholder="Add your comment here..."
+                                className="text-blue-600 italic"
+                                rows={3}
+                                autoFocus
+                              />
+                            ) : (
+                              seafarer.comment && (
+                                <p className="text-blue-600 italic text-sm pl-4">
+                                  {seafarer.comment || "I have received a very good opportunity to learn effectively during my tenure on board. I was able to practically apply the skills I had gained to enhance the operational performance. I would like to return on this vessel."}
+                                </p>
+                              )
+                            )}
+                            {editingSeafarerComment !== seafarer.id && !seafarer.comment && (
+                              <div 
+                                className="border-2 border-dashed border-blue-200 p-3 rounded cursor-pointer hover:bg-blue-50"
+                                onClick={() => setEditingSeafarerComment(seafarer.id)}
+                              >
+                                <p className="text-gray-500 text-sm">Click to add comment...</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* Action buttons */}
+                    <div className="flex justify-between mt-6">
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                        Save
+                      </Button>
+                      <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                        Submit
+                      </Button>
+                    </div>
+                  </div>
                 )}
 
               </form>
