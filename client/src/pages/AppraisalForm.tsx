@@ -74,6 +74,24 @@ const seafarerCommentSchema = z.object({
   comment: z.string(),
 });
 
+// Part G schemas
+const officeReviewSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  position: z.string(),
+  feedback: z.string(),
+});
+
+const trainingFollowupSchema = z.object({
+  id: z.string(),
+  training: z.string(),
+  correspondingInDB: z.string(),
+  category: z.string(),
+  status: z.enum(["Proposed", "Approved", "Planned", "Declined", "Completed"]),
+  targetDate: z.string().optional(),
+  comment: z.string().optional(),
+});
+
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
   seafarersName: z.string().min(1, "Seafarer's name is required"),
@@ -104,6 +122,10 @@ const appraisalSchema = z.object({
   recommendations: z.array(recommendationSchema).default([]),
   appraiserComments: z.array(appraiserCommentSchema).default([]),
   seafarerComments: z.array(seafarerCommentSchema).default([]),
+  
+  // Part G: Office Review & Followup
+  officeReviews: z.array(officeReviewSchema).default([]),
+  trainingFollowups: z.array(trainingFollowupSchema).default([]),
 });
 
 type AppraisalFormData = z.infer<typeof appraisalSchema>;
@@ -130,6 +152,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [recommendationComments, setRecommendationComments] = useState<{[key: string]: string}>({});
   const [editingAppraiserComment, setEditingAppraiserComment] = useState<string | null>(null);
   const [editingSeafarerComment, setEditingSeafarerComment] = useState<string | null>(null);
+  const [editingOfficeReview, setEditingOfficeReview] = useState<string | null>(null);
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -186,6 +209,19 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       ],
       seafarerComments: [
         { id: "seafarer", name: "", rank: "", comment: "" }
+      ],
+      
+      // Part G: Office Review & Followup
+      officeReviews: [
+        { id: "1", name: "Roxanne", position: "Crewing Executive", feedback: "Candidate's feedback over conduct was positive. No issues reported" },
+        { id: "2", name: "Joseph Hall", position: "Crew Manager", feedback: "Exception granted to this candidate as per discussion with Department Manager" }
+      ],
+      trainingFollowups: [
+        { id: "1", training: "Training 1", correspondingInDB: "Select Training from DB", category: "Select Rating", status: "Proposed", targetDate: "", comment: "" },
+        { id: "2", training: "Training 2", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Approved", targetDate: "", comment: "" },
+        { id: "3", training: "Training 3", correspondingInDB: "Select Training from DB", category: "2- Soft Skills", status: "Planned", targetDate: "", comment: "" },
+        { id: "4", training: "Training 4", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Declined", targetDate: "", comment: "The officer will no longer be sent on this type of vessel, so this training is not required." },
+        { id: "5", training: "Training 5", correspondingInDB: "Select Training from DB", category: "2- Soft Skills", status: "Completed", targetDate: "", comment: "" }
       ],
     },
   });
@@ -402,6 +438,60 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     form.setValue("seafarerComments", updatedComments);
   };
 
+  // Office Review management
+  const addOfficeReview = () => {
+    const newReview = {
+      id: Date.now().toString(),
+      name: "",
+      position: "",
+      feedback: "",
+    };
+    const currentReviews = form.getValues("officeReviews");
+    form.setValue("officeReviews", [...currentReviews, newReview]);
+    setEditingOfficeReview(newReview.id);
+  };
+
+  const updateOfficeReview = (id: string, field: string, value: string) => {
+    const currentReviews = form.getValues("officeReviews");
+    const updatedReviews = currentReviews.map(r => 
+      r.id === id ? { ...r, [field]: value } : r
+    );
+    form.setValue("officeReviews", updatedReviews);
+  };
+
+  const deleteOfficeReview = (id: string) => {
+    const currentReviews = form.getValues("officeReviews");
+    form.setValue("officeReviews", currentReviews.filter(r => r.id !== id));
+  };
+
+  // Training Followup management
+  const addTrainingFollowup = (type: 'database' | 'new') => {
+    const newFollowup = {
+      id: Date.now().toString(),
+      training: "",
+      correspondingInDB: "Select Training from DB",
+      category: "Select Rating",
+      status: "Proposed" as const,
+      targetDate: "",
+      comment: "",
+    };
+    const currentFollowups = form.getValues("trainingFollowups");
+    form.setValue("trainingFollowups", [...currentFollowups, newFollowup]);
+  };
+
+  const updateTrainingFollowup = (id: string, field: string, value: string) => {
+    const currentFollowups = form.getValues("trainingFollowups");
+    const updatedFollowups = currentFollowups.map(f => 
+      f.id === id ? { ...f, [field]: value } : f
+    );
+    form.setValue("trainingFollowups", updatedFollowups);
+  };
+
+  const deleteTrainingFollowup = (id: string) => {
+    const currentFollowups = form.getValues("trainingFollowups");
+    form.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+  };
+
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
     <FormField
       control={form.control}
@@ -436,6 +526,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     { id: "behaviouralAssessment", title: "Part D: Behavioural Assessment (Soft Skills)" },
     { id: "trainingNeeds", title: "Part E: Training Needs & Development" },
     { id: "summary", title: "Part F: Summary & Recommendations" },
+    { id: "officeReview", title: "Part G: Office Review & Followup" },
   ];
 
   return (
@@ -1676,6 +1767,230 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         Submit
                       </Button>
                     </div>
+                  </div>
+                )}
+
+                {/* Part G: Office Review & Followup */}
+                {activeSection === "officeReview" && (
+                  <div className="space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-blue-700">Part G Office Review & Followup</CardTitle>
+                            <p className="text-sm text-blue-500">This section is visible to office users only</p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+
+                    {/* G1: Office Review */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold text-blue-700">G1. Office Review</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-300"
+                            onClick={addOfficeReview}
+                          >
+                            + Add Reviewer
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {form.watch("officeReviews").map((review, index) => (
+                          <div key={review.id} className="space-y-2">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <p className="font-medium text-blue-600">
+                                  {review.name}, <span className="font-normal italic">{review.position}:</span>
+                                </p>
+                                <p className="text-blue-600 italic text-sm mt-1">
+                                  {review.feedback}
+                                </p>
+                              </div>
+                              <div className="flex space-x-2 ml-4">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingOfficeReview(review.id)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteOfficeReview(review.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* G1: Training Followup */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold text-blue-700">G1. Training Followup</h3>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 border-gray-300"
+                              onClick={() => addTrainingFollowup('database')}
+                            >
+                              + Add Training from Database
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 border-gray-300"
+                              onClick={() => addTrainingFollowup('new')}
+                            >
+                              + Add New Training
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="border rounded-lg overflow-hidden">
+                          <table className="w-full">
+                            <thead className="bg-gray-100">
+                              <tr>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Corresponding in DB</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Category</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Status</th>
+                                <th className="text-left p-3 text-sm font-medium text-gray-600">Target or Compl. Date</th>
+                                <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {form.watch("trainingFollowups").map((followup, index) => (
+                                <React.Fragment key={followup.id}>
+                                  <tr className="border-t">
+                                    <td className="p-3 text-sm">{index + 1}.</td>
+                                    <td className="p-3">
+                                      <Input
+                                        value={followup.training}
+                                        onChange={(e) => updateTrainingFollowup(followup.id, "training", e.target.value)}
+                                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                      />
+                                    </td>
+                                    <td className="p-3">
+                                      <select
+                                        value={followup.correspondingInDB}
+                                        onChange={(e) => updateTrainingFollowup(followup.id, "correspondingInDB", e.target.value)}
+                                        className="w-full p-1 border rounded"
+                                      >
+                                        <option>Select Training from DB</option>
+                                        <option>Training Option 1</option>
+                                        <option>Training Option 2</option>
+                                      </select>
+                                    </td>
+                                    <td className="p-3">
+                                      <select
+                                        value={followup.category}
+                                        onChange={(e) => updateTrainingFollowup(followup.id, "category", e.target.value)}
+                                        className="w-full p-1 border rounded"
+                                      >
+                                        <option>Select Rating</option>
+                                        <option>1. Competence</option>
+                                        <option>2- Soft Skills</option>
+                                      </select>
+                                    </td>
+                                    <td className="p-3">
+                                      <select
+                                        value={followup.status}
+                                        onChange={(e) => updateTrainingFollowup(followup.id, "status", e.target.value)}
+                                        className={`w-full p-1 border rounded ${
+                                          followup.status === "Proposed" ? "bg-gray-200" :
+                                          followup.status === "Approved" ? "bg-blue-200" :
+                                          followup.status === "Planned" ? "bg-yellow-200" :
+                                          followup.status === "Declined" ? "bg-red-200" :
+                                          followup.status === "Completed" ? "bg-green-200" : ""
+                                        }`}
+                                      >
+                                        <option value="Proposed">Proposed</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Planned">Planned</option>
+                                        <option value="Declined">Declined</option>
+                                        <option value="Completed">Completed</option>
+                                      </select>
+                                    </td>
+                                    <td className="p-3">
+                                      <Input
+                                        type="date"
+                                        value={followup.targetDate}
+                                        onChange={(e) => updateTrainingFollowup(followup.id, "targetDate", e.target.value)}
+                                        className="w-full"
+                                      />
+                                    </td>
+                                    <td className="p-3">
+                                      <div className="flex justify-center space-x-2">
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                        >
+                                          <MessageSquare className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                        >
+                                          <Edit2 className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => deleteTrainingFollowup(followup.id)}
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {followup.comment && (
+                                    <tr>
+                                      <td></td>
+                                      <td colSpan={6} className="p-3">
+                                        <p className="text-blue-600 italic text-sm">
+                                          Comment: {followup.comment}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="flex justify-between mt-6">
+                          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                            Save
+                          </Button>
+                          <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                            Submit
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
 
