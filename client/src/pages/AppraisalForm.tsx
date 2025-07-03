@@ -45,6 +45,13 @@ const behaviouralAssessmentSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Training Needs schema
+const trainingNeedsSchema = z.object({
+  id: z.string(),
+  training: z.string().min(1, "Training name is required"),
+  comment: z.string().optional(),
+});
+
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
   seafarersName: z.string().min(1, "Seafarer's name is required"),
@@ -68,13 +75,8 @@ const appraisalSchema = z.object({
   // Part D: Behavioural Assessment
   behaviouralAssessments: z.array(behaviouralAssessmentSchema).default([]),
   
-  professionalConduct: z.object({
-    reliability: z.string().min(1, "Rating required"),
-    initiative: z.string().min(1, "Rating required"),
-    adaptability: z.string().min(1, "Rating required"),
-    workEthic: z.string().min(1, "Rating required"),
-    comments: z.string().optional(),
-  }),
+  // Part E: Training Needs & Development
+  trainingNeeds: z.array(trainingNeedsSchema).default([]),
   
   // Additional sections
   overallComments: z.string().optional(),
@@ -102,6 +104,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [targetComments, setTargetComments] = useState<{[key: string]: string}>({});
   const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
+  const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -143,13 +146,8 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
         { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
         { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
       ],
-      professionalConduct: {
-        reliability: "",
-        initiative: "",
-        adaptability: "",
-        workEthic: "",
-        comments: "",
-      },
+
+      trainingNeeds: [],
       overallComments: "",
       recommendations: "",
       developmentAreas: "",
@@ -288,6 +286,35 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     return totalWeight > 0 ? (totalScore * 100 / totalWeight).toFixed(1) : "0.0";
   };
 
+  // Training Needs management functions
+  const addTrainingNeed = (type: 'database' | 'new') => {
+    const newTrainingNeed = {
+      id: Date.now().toString(),
+      training: "",
+      comment: "",
+    };
+    const currentTrainingNeeds = form.getValues("trainingNeeds");
+    form.setValue("trainingNeeds", [...currentTrainingNeeds, newTrainingNeed]);
+  };
+
+  const deleteTrainingNeed = (id: string) => {
+    const currentTrainingNeeds = form.getValues("trainingNeeds");
+    form.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
+    setTrainingNeedsComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+  };
+
+  const updateTrainingNeed = (id: string, field: string, value: string) => {
+    const currentTrainingNeeds = form.getValues("trainingNeeds");
+    const updatedTrainingNeeds = currentTrainingNeeds.map(t => 
+      t.id === id ? { ...t, [field]: value } : t
+    );
+    form.setValue("trainingNeeds", updatedTrainingNeeds);
+  };
+
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
     <FormField
       control={form.control}
@@ -320,7 +347,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     { id: "information", title: "Part B: Information at Start of Appraisal Period" },
     { id: "competenceAssessment", title: "Part C: Competence Assessment (Professional Knowledge & Skills)" },
     { id: "behaviouralAssessment", title: "Part D: Behavioural Assessment (Soft Skills)" },
-    { id: "professionalConduct", title: "Part E: Professional Conduct" },
+    { id: "trainingNeeds", title: "Part E: Training Needs & Development" },
     { id: "summary", title: "Part F: Summary & Recommendations" },
   ];
 
@@ -1132,32 +1159,132 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                   </Card>
                 )}
 
-                {/* Part E: Professional Conduct */}
-                {activeSection === "professionalConduct" && (
+                {/* Part E: Training Needs & Development */}
+                {activeSection === "trainingNeeds" && (
                   <Card>
                     <CardHeader>
-                      <CardTitle>Part E: Professional Conduct</CardTitle>
-                      <p className="text-sm text-gray-600">Rate from 1 (Poor) to 5 (Excellent)</p>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle className="text-blue-700">Part E Training Needs & Development</CardTitle>
+                          <p className="text-sm text-blue-500">Specify any training needs identified during the appraisals period</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-300"
+                            onClick={() => addTrainingNeed('database')}
+                          >
+                            + Add Training from Database
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-300"
+                            onClick={() => addTrainingNeed('new')}
+                          >
+                            + Add New Training
+                          </Button>
+                        </div>
+                      </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <RatingRadioGroup name="professionalConduct.reliability" label="Reliability & Punctuality" />
-                      <RatingRadioGroup name="professionalConduct.initiative" label="Initiative & Self-motivation" />
-                      <RatingRadioGroup name="professionalConduct.adaptability" label="Adaptability" />
-                      <RatingRadioGroup name="professionalConduct.workEthic" label="Work Ethic" />
-                      
-                      <FormField
-                        control={form.control}
-                        name="professionalConduct.comments"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Comments & Observations</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={4} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <CardContent>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
+                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {form.watch("trainingNeeds").map((trainingNeed, index) => (
+                            <React.Fragment key={trainingNeed.id}>
+                              <tr className="border-t">
+                                <td className="p-3 text-sm">{index + 1}.</td>
+                                <td className="p-3">
+                                  <Input
+                                    value={trainingNeed.training}
+                                    onChange={(e) => updateTrainingNeed(trainingNeed.id, "training", e.target.value)}
+                                    placeholder={`Training ${index + 1}`}
+                                    className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                  />
+                                </td>
+                                <td className="p-3">
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setTrainingNeedsComments(prev => ({
+                                        ...prev,
+                                        [trainingNeed.id]: prev[trainingNeed.id] || ""
+                                      }))}
+                                    >
+                                      <MessageSquare className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                    >
+                                      <Edit2 className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => deleteTrainingNeed(trainingNeed.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                              {trainingNeedsComments[trainingNeed.id] !== undefined && (
+                                <tr>
+                                  <td></td>
+                                  <td colSpan={2} className="p-3">
+                                    <Textarea
+                                      value={trainingNeedsComments[trainingNeed.id]}
+                                      onChange={(e) => {
+                                        setTrainingNeedsComments(prev => ({
+                                          ...prev,
+                                          [trainingNeed.id]: e.target.value
+                                        }));
+                                        updateTrainingNeed(trainingNeed.id, "comment", e.target.value);
+                                      }}
+                                      placeholder="Comment: Add your observations here..."
+                                      className="text-blue-600 italic border-blue-200"
+                                      rows={2}
+                                    />
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          ))}
+                          {form.watch("trainingNeeds").length === 0 && (
+                            <tr>
+                              <td colSpan={3} className="p-8 text-center text-gray-500">
+                                No training needs added yet. Click "Add Training from Database" or "Add New Training" to get started.
+                              </td>
+                            </tr>
+                          )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="flex justify-between mt-6">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                          Save
+                        </Button>
+                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                          Submit
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
