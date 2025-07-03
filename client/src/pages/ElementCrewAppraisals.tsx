@@ -239,9 +239,18 @@ export const ElementCrewAppraisals = (): JSX.Element => {
         {/* Main content */}
         <main className="absolute top-[67px] left-[67px] w-[calc(100%-67px)] h-[calc(100%-67px)]">
           <div className="p-6">
-            <h1 className="font-['Mulish',Helvetica] font-bold text-black text-[22px] mb-6">
-              Crew Appraisals
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="font-['Mulish',Helvetica] font-bold text-black text-[22px]">
+                Crew Appraisals
+              </h1>
+              <Button
+                variant="outline"
+                className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
+              >
+                <FilterIcon className="w-4 h-4" />
+                <span className="text-sm">Filters</span>
+              </Button>
+            </div>
 
             {/* Filters */}
             <div className="flex gap-2 mb-6">
@@ -327,15 +336,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </Button>
             </div>
 
-            <div className="absolute right-6 top-[85px] flex items-center">
-              <Button
-                variant="outline"
-                className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
-              >
-                <FilterIcon className="w-4 h-4" />
-                <span className="text-sm">Filters</span>
-              </Button>
-            </div>
+
 
             {/* Table */}
             <Card className="border-0 shadow-none">
