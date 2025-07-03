@@ -231,7 +231,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
         </header>
 
         {/* Left sidebar */}
-        <aside className="w-[67px] h-[834px] bg-[url(/figmaAssets/group-1.png),_url(/figmaAssets/group-6.png)] bg-no-repeat bg-[position:0_66px,_0_145px] absolute left-0 top-[66px]">
+        <aside className="w-[67px] h-[834px] bg-[url(/figmaAssets/group-1.png),_url(/figmaAssets/group-6.png)] bg-no-repeat bg-[position:0_66px,_0_145px] absolute left-0 top-[67px]">
           <div className="w-3.5 h-3 absolute top-[116px] left-7 text-[#eff9fe] text-[10px] font-normal font-['Roboto',Helvetica]">
             All
           </div>
