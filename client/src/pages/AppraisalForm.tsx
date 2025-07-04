@@ -871,32 +871,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         />
                         <FormField
                           control={form.control}
-                          name="personalityIndexCategory"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs text-gray-500 tracking-wide">Personality Index (PI) Category</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="dominance">Dominance</SelectItem>
-                                  <SelectItem value="influence">Influence</SelectItem>
-                                  <SelectItem value="steadiness">Steadiness</SelectItem>
-                                  <SelectItem value="compliance">Compliance</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <FormField
-                          control={form.control}
                           name="primaryAppraiser"
                           render={({ field }) => (
                             <FormItem>
@@ -912,6 +886,32 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                   <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
                                   <SelectItem value="chief-mate">Chief Mate</SelectItem>
                                   <SelectItem value="shore-management">Shore Management</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="personalityIndexCategory"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs text-gray-500 tracking-wide">Personality Index (PI) Category</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-gray-50">
+                                    <SelectValue placeholder="Select category" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="dominance">Dominance</SelectItem>
+                                  <SelectItem value="influence">Influence</SelectItem>
+                                  <SelectItem value="steadiness">Steadiness</SelectItem>
+                                  <SelectItem value="compliance">Compliance</SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
