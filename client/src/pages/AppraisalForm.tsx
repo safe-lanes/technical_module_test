@@ -842,7 +842,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="appraisalPeriodFrom"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Appraisal Period From</FormLabel>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Appraisal Period From</FormLabel>
                               <FormControl>
                                 <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
