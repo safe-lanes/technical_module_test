@@ -1919,7 +1919,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       <select
                                         value={followup.category}
                                         onChange={(e) => updateTrainingFollowup(followup.id, "category", e.target.value)}
-                                        className="w-full p-1 border rounded"
+                                        className="w-full p-1 border rounded text-sm"
                                       >
                                         <option>Select Rating</option>
                                         <option>1. Competence</option>
@@ -1930,7 +1930,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       <select
                                         value={followup.status}
                                         onChange={(e) => updateTrainingFollowup(followup.id, "status", e.target.value)}
-                                        className={`w-full p-1 border rounded ${
+                                        className={`w-full p-1 border rounded text-sm ${
                                           followup.status === "Proposed" ? "bg-gray-200" :
                                           followup.status === "Approved" ? "bg-blue-200" :
                                           followup.status === "Planned" ? "bg-yellow-200" :
