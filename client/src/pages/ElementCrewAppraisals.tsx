@@ -226,7 +226,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </div>
 
               {/* Appraisals Section (Active) */}
-              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#5DADE2] border-r border-gray-200">
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] border-r border-gray-200 bg-[#52baf3]">
                 <div className="w-6 h-6 mb-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
