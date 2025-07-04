@@ -329,7 +329,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               <div className="relative w-[180px]">
                 <Input
                   className="h-8 pl-10 text-[#8798ad] text-xs"
-                  placeholder="SearchIcon Name"
+                  placeholder="Search Name"
                 />
                 <SearchIcon className="w-4 h-4 absolute left-3 top-2 text-[#8798ad]" />
               </div>
