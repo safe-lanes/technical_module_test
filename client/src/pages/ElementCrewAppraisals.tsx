@@ -187,11 +187,32 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   ];
 
   // Rating badge component
-  const RatingBadge = ({ value, color }: { value: string; color: string }) => (
-    <Badge className={`rounded-md px-2.5 py-1 font-bold ${color}`}>
-      {value}
-    </Badge>
-  );
+  const RatingBadge = ({ value, color }: { value: string; color: string }) => {
+    const numValue = parseFloat(value);
+    const formattedValue = numValue.toFixed(1);
+    let bgColor = '';
+    let textColor = '';
+    
+    if (numValue >= 4.0) {
+      bgColor = 'bg-green-500';
+      textColor = 'text-white';
+    } else if (numValue >= 3.0) {
+      bgColor = 'bg-yellow-400';
+      textColor = 'text-black';
+    } else if (numValue >= 2.0) {
+      bgColor = 'bg-red-200';
+      textColor = 'text-red-800';
+    } else {
+      bgColor = 'bg-red-600';
+      textColor = 'text-white';
+    }
+    
+    return (
+      <Badge className={`rounded-md px-2.5 py-1 font-bold ${bgColor} ${textColor} min-w-[48px] text-center`}>
+        {formattedValue}
+      </Badge>
+    );
+  };
 
   return (
     <div className="bg-transparent flex flex-row justify-center w-full">
