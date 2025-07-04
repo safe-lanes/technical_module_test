@@ -672,8 +672,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="seafarersName"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Seafarer's name</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="Seafarer's Name" className="bg-gray-50" />
+                                <Input {...field} placeholder="Enter seafarer's name" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -684,10 +685,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="seafarersRank"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Seafarer's rank</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Seafarer's Rank" />
+                                    <SelectValue placeholder="Select rank" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -712,6 +714,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="nationality"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Nationality</FormLabel>
                               <Popover open={nationalityOpen} onOpenChange={setNationalityOpen}>
                                 <PopoverTrigger asChild>
                                   <FormControl>
@@ -776,10 +779,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="vessel"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Vessel</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Vessel" />
+                                    <SelectValue placeholder="Select vessel" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -804,8 +808,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="signOn"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Sign on date</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="Sign on Date dd/mm/yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="dd/mm/yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -816,10 +821,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="appraisalType"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Appraisal type</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Appraisal Type" />
+                                    <SelectValue placeholder="Select type" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -842,7 +848,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="appraisalPeriodFrom"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Appraisal Period From</FormLabel>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Appraisal period from</FormLabel>
                               <FormControl>
                                 <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
@@ -855,8 +861,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="appraisalPeriodTo"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Appraisal period to</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="Appraisal Period To - dd.mm.yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-gray-50" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -867,10 +874,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="personalityIndexCategory"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Personality index (PI) category</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Personality Index (PI) Category" />
+                                    <SelectValue placeholder="Select category" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -892,10 +900,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           name="primaryAppraiser"
                           render={({ field }) => (
                             <FormItem>
+                              <FormLabel className="text-xs text-gray-500 uppercase tracking-wide">Primary appraiser</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                   <SelectTrigger className="bg-gray-50">
-                                    <SelectValue placeholder="Primary Appraiser" />
+                                    <SelectValue placeholder="Select appraiser" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
