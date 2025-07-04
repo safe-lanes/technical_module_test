@@ -325,87 +325,91 @@ export const ElementCrewAppraisals = (): JSX.Element => {
 
             {/* Filters */}
             {showFilters && (
-              <div className="flex gap-2 mb-6 ml-4">
-              <div className="relative w-[180px]">
-                <Input
-                  className="h-8 pl-10 text-[#8798ad] text-xs"
-                  placeholder="Search Name"
-                />
-                <SearchIcon className="w-4 h-4 absolute left-3 top-2 text-[#8798ad]" />
-              </div>
+              <div className="flex justify-between items-center gap-2 mb-6 ml-4 mr-4">
+                <div className="flex gap-2">
+                  <div className="relative w-[180px]">
+                    <Input
+                      className="h-8 pl-10 text-[#8798ad] text-xs"
+                      placeholder="Search Name"
+                    />
+                    <SearchIcon className="w-4 h-4 absolute left-3 top-2 text-[#8798ad]" />
+                  </div>
 
-              <Select>
-                <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="master">Master</SelectItem>
-                  <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
-                  <SelectItem value="able-seaman">Able Seaman</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Rank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="master">Master</SelectItem>
+                      <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
+                      <SelectItem value="able-seaman">Able Seaman</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <Select>
-                <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
-                  <SelectValue placeholder="Vessel type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="oil-tanker">Oil Tanker</SelectItem>
-                  <SelectItem value="lpg-tanker">LPG Tanker</SelectItem>
-                  <SelectItem value="container">Container</SelectItem>
-                  <SelectItem value="bulk">Bulk</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Vessel type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oil-tanker">Oil Tanker</SelectItem>
+                      <SelectItem value="lpg-tanker">LPG Tanker</SelectItem>
+                      <SelectItem value="container">Container</SelectItem>
+                      <SelectItem value="bulk">Bulk</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <Select>
-                <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
-                  <SelectValue placeholder="Nationality" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="british">British</SelectItem>
-                  <SelectItem value="indian">Indian</SelectItem>
-                  <SelectItem value="philippines">Philippines</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Nationality" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="british">British</SelectItem>
+                      <SelectItem value="indian">Indian</SelectItem>
+                      <SelectItem value="philippines">Philippines</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <Select>
-                <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
-                  <SelectValue placeholder="Appraisal Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="end-of-contract">
-                    End of Contract
-                  </SelectItem>
-                  <SelectItem value="mid-term">Mid Term</SelectItem>
-                  <SelectItem value="special">Special</SelectItem>
-                  <SelectItem value="probation">Probation</SelectItem>
-                  <SelectItem value="appraiser-s-off">
-                    Appraiser S/Off
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Appraisal Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="end-of-contract">
+                        End of Contract
+                      </SelectItem>
+                      <SelectItem value="mid-term">Mid Term</SelectItem>
+                      <SelectItem value="special">Special</SelectItem>
+                      <SelectItem value="probation">Probation</SelectItem>
+                      <SelectItem value="appraiser-s-off">
+                        Appraiser S/Off
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <Select>
-                <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
-                  <SelectValue placeholder="Rating" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">High (4-5)</SelectItem>
-                  <SelectItem value="medium">Medium (3-4)</SelectItem>
-                  <SelectItem value="low">Low (1-3)</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Rating" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High (4-5)</SelectItem>
+                      <SelectItem value="medium">Medium (3-4)</SelectItem>
+                      <SelectItem value="low">Low (1-3)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <Button className="h-8 w-20 bg-[#16569e] hover:bg-[#0d4a8f] text-[11px]">
-                Apply
-              </Button>
+                <div className="flex gap-2">
+                  <Button className="h-8 w-20 bg-[#16569e] hover:bg-[#0d4a8f] text-[11px]">
+                    Apply
+                  </Button>
 
-              <Button
-                variant="outline"
-                className="h-8 w-20 text-[#8798ad] text-xs border-[#e1e8ed]"
-              >
-                Clear
-              </Button>
+                  <Button
+                    variant="outline"
+                    className="h-8 w-20 text-[#8798ad] text-xs border-[#e1e8ed]"
+                  >
+                    Clear
+                  </Button>
+                </div>
               </div>
             )}
 
