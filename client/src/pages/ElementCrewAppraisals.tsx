@@ -391,7 +391,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
 
 
             {/* Table */}
-            <Card className="border-0 shadow-lg bg-[#f7fafc] rounded-lg">
+            <Card className="border-0 shadow-none bg-[#f7fafc] rounded-lg">
               <CardContent className="p-4 bg-[#f7fafc]">
                 <Table className="bg-white rounded-lg shadow-md overflow-hidden">
                   <TableHeader className="bg-[#52baf3]">
