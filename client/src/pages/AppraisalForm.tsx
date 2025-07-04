@@ -1908,7 +1908,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       <select
                                         value={followup.correspondingInDB}
                                         onChange={(e) => updateTrainingFollowup(followup.id, "correspondingInDB", e.target.value)}
-                                        className="w-full p-1 border rounded"
+                                        className="w-full p-1 border rounded text-sm"
                                       >
                                         <option>Select Training from DB</option>
                                         <option>Training Option 1</option>
