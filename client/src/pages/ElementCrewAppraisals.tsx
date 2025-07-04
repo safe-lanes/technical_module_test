@@ -315,7 +315,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </h1>
               <Button
                 variant="outline"
-                className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
+                className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2 ml-[19px] mr-[19px]"
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <FilterIcon className="w-4 h-4" />
