@@ -197,36 +197,70 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     <div className="bg-transparent flex flex-row justify-center w-full">
       <div className="overflow-hidden bg-[url(/figmaAssets/vector.svg)] bg-[100%_100%] w-[1440px] h-[900px] relative">
         {/* Header */}
-        <header className="w-full h-[67px] bg-[url(/figmaAssets/group.png)] bg-cover">
+        <header className="w-full h-[67px] bg-white border-b border-gray-200">
           <div className="flex items-center h-full">
-            <img
-              className="w-14 h-10 ml-2.5 mt-2.5"
-              alt="Logo"
-              src="/figmaAssets/group-2.png"
-            />
-            <img
-              className="w-[87px] h-[65px] ml-[133px]"
-              alt="Group"
-              src="/figmaAssets/group-4.png"
-            />
+            {/* Logo */}
+            <div className="flex items-center ml-4">
+              <img
+                className="w-14 h-10"
+                alt="Logo"
+                src="/figmaAssets/group-2.png"
+              />
+            </div>
 
-            <nav className="flex ml-[40px] mt-[38px]">
-              <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
-                Crewing
+            {/* Navigation Menu */}
+            <nav className="flex ml-8">
+              {/* Crewing Section */}
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-gray-100 border-r border-gray-200">
+                <div className="w-6 h-6 mb-1">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1" fill="#6B7280"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1" fill="#6B7280"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" fill="#6B7280"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1" fill="#6B7280"/>
+                  </svg>
+                </div>
+                <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
+                  Crewing
+                </div>
               </div>
-              <div className="text-slate-50 text-[10px] font-normal font-['Roboto',Helvetica] ml-[80px]">
-                Appraisals
+
+              {/* Appraisals Section (Active) */}
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#5DADE2] border-r border-gray-200">
+                <div className="w-6 h-6 mb-1">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
+                    <path d="M14 2V8H20" fill="white"/>
+                    <path d="M16 11H8V13H16V11Z" fill="#5DADE2"/>
+                    <path d="M16 15H8V17H16V15Z" fill="#5DADE2"/>
+                  </svg>
+                </div>
+                <div className="text-white text-[10px] font-normal font-['Roboto',Helvetica]">
+                  Appraisals
+                </div>
               </div>
-              <div className="text-[#4f5863] text-[11px] font-normal font-['Mulish',Helvetica] ml-[89px]">
-                Admin
+
+              {/* Admin Section */}
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-gray-100">
+                <div className="w-6 h-6 mb-1">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1L15.09 8.26L23 9L17 14.74L18.18 22.02L12 19L5.82 22.02L7 14.74L1 9L8.91 8.26L12 1Z" fill="#6B7280"/>
+                  </svg>
+                </div>
+                <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
+                  Admin
+                </div>
               </div>
             </nav>
 
-            <img
-              className="w-[38px] h-[37px] absolute top-2.5 right-[38px]"
-              alt="User"
-              src="/figmaAssets/group-3.png"
-            />
+            {/* User Profile */}
+            <div className="absolute top-2.5 right-[38px]">
+              <img
+                className="w-[38px] h-[37px]"
+                alt="User"
+                src="/figmaAssets/group-3.png"
+              />
+            </div>
           </div>
         </header>
 
