@@ -289,7 +289,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
         <main className="absolute top-[67px] left-[67px] w-[calc(100%-67px)] h-[calc(100%-67px)]">
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="font-['Mulish',Helvetica] font-bold text-black text-[22px]">
+              <h1 className="font-['Mulish',Helvetica] font-bold text-black text-[22px] ml-[19px] mr-[19px]">
                 Crew Appraisals
               </h1>
               <Button
