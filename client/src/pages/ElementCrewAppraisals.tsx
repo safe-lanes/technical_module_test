@@ -529,7 +529,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
 
             {/* Pagination */}
             <div className="mt-4 text-xs font-normal font-['Mulish',Helvetica] text-black">
-              0 to 0 of 0
+              {crewData.length > 0 ? `1 to ${crewData.length} of ${crewData.length}` : "0 to 0 of 0"}
             </div>
           </div>
         </main>
