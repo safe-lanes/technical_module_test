@@ -391,10 +391,10 @@ export const ElementCrewAppraisals = (): JSX.Element => {
 
 
             {/* Table */}
-            <Card className="border-0 shadow-none">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-[#16569e]">
+            <Card className="border-0 shadow-lg bg-[#f7fafc] rounded-lg">
+              <CardContent className="p-4 bg-[#f7fafc]">
+                <Table className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <TableHeader className="bg-[#52baf3]">
                     <TableRow>
                       <TableHead className="text-white text-xs font-normal">
                         Crew ID
@@ -443,11 +443,11 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody className="bg-white">
                     {crewData.map((crew, index) => (
                       <TableRow
                         key={index}
-                        className="border-b border-gray-200"
+                        className="border-b border-gray-200 bg-white hover:bg-gray-50"
                       >
                         <TableCell className="text-[#4f5863] text-[13px] font-normal py-3">
                           {crew.id}
