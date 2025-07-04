@@ -231,9 +231,23 @@ export const ElementCrewAppraisals = (): JSX.Element => {
         </header>
 
         {/* Left sidebar */}
-        <aside className="w-[67px] h-[834px] bg-[url(/figmaAssets/group-1.png),_url(/figmaAssets/group-6.png)] bg-no-repeat bg-[position:0_66px,_0_145px] absolute left-0 top-[66px]">
-          <div className="w-3.5 h-3 absolute top-[116px] left-7 text-[#eff9fe] text-[10px] font-normal font-['Roboto',Helvetica]">
-            All
+        <aside className="w-[67px] absolute left-0 top-[66px] h-[calc(100vh-66px)]">
+          {/* Light blue section with icon and "All" text */}
+          <div className="w-full h-[79px] bg-[#5DADE2] flex flex-col items-center justify-center">
+            <div className="w-6 h-6 mb-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="white"/>
+                <path d="M19 15L19.74 17.74L22 18L19.74 18.26L19 21L18.26 18.26L16 18L18.26 17.74L19 15Z" fill="white"/>
+                <path d="M5 6L5.5 7.5L7 8L5.5 8.5L5 10L4.5 8.5L3 8L4.5 7.5L5 6Z" fill="white"/>
+              </svg>
+            </div>
+            <div className="text-white text-[10px] font-normal font-['Roboto',Helvetica]">
+              All
+            </div>
+          </div>
+          
+          {/* Dark blue section */}
+          <div className="w-full bg-[#1B4F72] h-[calc(100%-79px)]">
           </div>
         </aside>
 
