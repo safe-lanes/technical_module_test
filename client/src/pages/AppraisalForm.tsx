@@ -720,7 +720,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       role="combobox"
                                       aria-expanded={nationalityOpen}
                                       className={cn(
-                                        "justify-between bg-gray-50 border-gray-200 hover:bg-gray-100",
+                                        "w-full justify-between bg-gray-50 border-gray-200 hover:bg-gray-100",
                                         !field.value && "text-muted-foreground"
                                       )}
                                     >
