@@ -197,7 +197,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     <div className="bg-transparent flex flex-row justify-center w-full">
       <div className="overflow-hidden bg-[url(/figmaAssets/vector.svg)] bg-[100%_100%] w-[1440px] h-[900px] relative">
         {/* Header */}
-        <header className="w-full h-[67px] bg-white border-b border-gray-200">
+        <header className="w-full h-[67px] bg-[#E8E8E8] border-b-2 border-[#5DADE2]">
           <div className="flex items-center h-full">
             {/* Logo */}
             <div className="flex items-center ml-4">
@@ -211,7 +211,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
             {/* Navigation Menu */}
             <nav className="flex ml-8">
               {/* Crewing Section */}
-              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-gray-100 border-r border-gray-200">
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8] border-r border-gray-300">
                 <div className="w-6 h-6 mb-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="3" y="3" width="7" height="7" rx="1" fill="#6B7280"/>
@@ -226,7 +226,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </div>
 
               {/* Appraisals Section (Active) */}
-              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] border-r border-gray-200 bg-[#52baf3]">
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#5DADE2] border-r border-gray-300">
                 <div className="w-6 h-6 mb-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
@@ -241,7 +241,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </div>
 
               {/* Admin Section */}
-              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-gray-100">
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8]">
                 <div className="w-6 h-6 mb-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 1L15.09 8.26L23 9L17 14.74L18.18 22.02L12 19L5.82 22.02L7 14.74L1 9L8.91 8.26L12 1Z" fill="#6B7280"/>
