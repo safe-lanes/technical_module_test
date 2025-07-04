@@ -233,7 +233,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
         {/* Left sidebar */}
         <aside className="w-[67px] absolute left-0 top-[66px] h-[calc(100vh-66px)]">
           {/* Light blue section with icon and "All" text */}
-          <div className="w-full h-[79px] bg-[#5DADE2] flex flex-col items-center justify-center">
+          <div className="w-full h-[79px] flex flex-col items-center justify-center bg-[#52baf3]">
             <div className="w-6 h-6 mb-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="white"/>
