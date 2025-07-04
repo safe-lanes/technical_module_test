@@ -310,6 +310,19 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     form.setValue("behaviouralAssessments", updatedAssessments);
   };
 
+  // Helper function to get score colors based on rating value
+  const getScoreColors = (score: number) => {
+    if (score >= 4.0) {
+      return { bgColor: 'bg-green-500', textColor: 'text-white' };
+    } else if (score >= 3.0) {
+      return { bgColor: 'bg-yellow-400', textColor: 'text-black' };
+    } else if (score >= 2.0) {
+      return { bgColor: 'bg-red-200', textColor: 'text-red-800' };
+    } else {
+      return { bgColor: 'bg-red-600', textColor: 'text-white' };
+    }
+  };
+
   // Calculate section score based on weight and effectiveness
   const calculateSectionScore = () => {
     const assessments = form.watch("competenceAssessments");
@@ -1198,7 +1211,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       {/* Section Score */}
                       <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
                         <div className="text-sm font-medium text-gray-700">Section Score:</div>
-                        <div className="bg-yellow-200 px-4 py-2 rounded text-lg font-semibold">
+                        <div className={`px-4 py-2 rounded text-lg font-semibold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateSectionScore())).textColor}`}>
                           {calculateSectionScore()}
                         </div>
                       </div>
@@ -1325,7 +1338,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
                       <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
                         <span className="text-sm font-medium text-gray-600">Section Score:</span>
-                        <span className="text-lg font-bold text-red-600">{calculateBehaviouralSectionScore()}</span>
+                        <div className={`px-4 py-2 rounded text-lg font-semibold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).textColor}`}>
+                          {calculateBehaviouralSectionScore()}
+                        </div>
                       </div>
 
                       <div className="flex justify-end mt-6">
@@ -1481,7 +1496,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       <CardContent>
                         <div className="flex justify-between items-center mb-6">
                           <h3 className="text-lg font-semibold text-blue-700">F1. Overall Score</h3>
-                          <div className="bg-yellow-200 px-4 py-2 rounded text-lg font-bold">
+                          <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
                             {calculateOverallScore()}
                           </div>
                         </div>
