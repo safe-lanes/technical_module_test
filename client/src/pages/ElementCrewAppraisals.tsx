@@ -305,7 +305,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
             {/* Filters */}
             {showFilters && (
               <div className="flex gap-2 mb-6">
-              <div className="relative w-[298px]">
+              <div className="relative w-[180px]">
                 <Input
                   className="h-8 pl-10 text-[#8798ad] text-xs"
                   placeholder="SearchIcon Name"
