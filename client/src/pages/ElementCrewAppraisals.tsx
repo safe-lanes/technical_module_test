@@ -247,7 +247,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
           </div>
           
           {/* Dark blue section */}
-          <div className="w-full bg-[#1B4F72] h-[calc(100%-79px)]">
+          <div className="w-full h-[calc(100%-79px)] bg-[#16569e]">
           </div>
         </aside>
 
@@ -500,7 +500,6 @@ export const ElementCrewAppraisals = (): JSX.Element => {
           </div>
         </main>
       </div>
-
       {/* Appraisal Form Modal */}
       {showAppraisalForm && (
         <AppraisalForm
