@@ -1178,7 +1178,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar - Sections */}
-          <div className="w-64 border-r overflow-y-auto bg-[#f8fafc]">
+          <div className="w-64 overflow-y-auto bg-[#f8fafc]">
             <div className="p-4 space-y-2">
               {sections.map((section) => (
                 <button
@@ -1200,9 +1200,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto bg-[#f8fafc]">
             <div className="p-6">
-              <Card>
+              <Card className="bg-white">
                 <CardContent className="p-6">
                   {renderSectionContent()}
                 </CardContent>
