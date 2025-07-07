@@ -151,6 +151,7 @@ Changelog:
 - July 02, 2025. Initial setup
 - July 07, 2025. Added Admin submodule with Forms configuration table
 - July 07, 2025. Added Form Editor modal with exact copy of crew appraisal form (Parts A-G), version control starting at v0
+- July 07, 2025. Fixed Part G table alignment issue - G2 Training Followup table now appears correctly below heading, resolved JSX syntax errors, maintained consolidated G1/G2 structure with blue #16569e headings
 ```
 
 ## User Preferences
