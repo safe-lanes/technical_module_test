@@ -654,7 +654,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         </div>
                       </button>
                       {index < sections.length - 1 && (
-                        <div className="absolute left-[1.25rem] top-16 w-0.5 h-4 bg-gray-300"></div>
+                        <div className="absolute left-[2rem] top-16 w-0.5 h-4 bg-gray-300"></div>
                       )}
                     </div>
                   );
