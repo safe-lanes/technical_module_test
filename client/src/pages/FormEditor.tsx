@@ -353,7 +353,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartA = () => (
     <div className="space-y-6">
-      <div className="border-b pb-4 mb-6">
+      <div className="pb-4 mb-6">
         <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
