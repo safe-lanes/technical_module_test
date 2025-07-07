@@ -1436,36 +1436,37 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
                 {/* Part E: Training Needs & Development */}
                 {activeSection === "trainingNeeds" && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex justify-between items-center">
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="pb-4 mb-6">
+                        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part E Training Needs & Development</h3>
+                        <div style={{ color: '#16569e' }} className="text-sm">Specify any training needs identified during the appraisals period</div>
+                        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+                      </div>
+                      <div className="flex justify-between items-center mb-4">
                         <div>
-                          <CardTitle className="text-blue-700">Part E Training Needs & Development</CardTitle>
-                          <p className="text-sm text-blue-500">Specify any training needs identified during the appraisals period</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-gray-600 border-gray-300"
-                            onClick={() => addTrainingNeed('database')}
-                          >
-                            + Add Training from Database
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-gray-600 border-gray-300"
-                            onClick={() => addTrainingNeed('new')}
-                          >
-                            + Add New Training
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 border-gray-300"
+                              onClick={() => addTrainingNeed('database')}
+                            >
+                              + Add Training from Database
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 border-gray-300"
+                              onClick={() => addTrainingNeed('new')}
+                            >
+                              + Add New Training
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </CardHeader>
-                    <CardContent>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full">
                           <thead className="bg-gray-100">
@@ -1565,14 +1566,13 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                 {activeSection === "summary" && (
                   <div className="space-y-6">
                     {/* F1: Overall Score */}
-                    <Card>
-                      <CardHeader>
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-blue-700">Part F Comments & Recommendations</CardTitle>
-                          <p className="text-sm text-blue-500">Add any recommendations related to following</p>
+                    <Card className="bg-white">
+                      <CardContent className="p-6">
+                        <div className="pb-4 mb-6">
+                          <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part F Comments & Recommendations</h3>
+                          <div style={{ color: '#16569e' }} className="text-sm">Add any recommendations related to following</div>
+                          <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
                         </div>
-                      </CardHeader>
-                      <CardContent>
                         <div className="flex justify-between items-center mb-6">
                           <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
                           <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
@@ -1583,7 +1583,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     </Card>
 
                     {/* F2: Appraiser's Recommendations */}
-                    <Card>
+                    <Card className="bg-white">
                       <CardHeader>
                         <div className="flex justify-between items-center">
                           <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
@@ -1712,10 +1712,10 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     </Card>
 
                     {/* F3: Appraiser's Comments */}
-                    <Card>
+                    <Card className="bg-white">
                       <CardHeader>
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-semibold text-blue-700">F3. Appraiser's Comments</h3>
+                          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F3. Appraiser's Comments</h3>
                           <Button
                             type="button"
                             variant="outline"
@@ -1791,9 +1791,9 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     </Card>
 
                     {/* F4: Seafarer's Comments */}
-                    <Card>
+                    <Card className="bg-white">
                       <CardHeader>
-                        <h3 className="text-lg font-semibold text-blue-700">F4. Seafarer's Comments</h3>
+                        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F4. Seafarer's Comments</h3>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         {form.watch("seafarerComments").map((seafarer, index) => (
@@ -1867,19 +1867,18 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                 {/* Part G: Office Review & Followup */}
                 {activeSection === "officeReview" && (
                   <div className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <CardTitle className="text-blue-700">Part G Office Review & Followup</CardTitle>
-                            <p className="text-sm text-blue-500">This section is visible to office users only</p>
-                          </div>
+                    <Card className="bg-white">
+                      <CardContent className="p-6">
+                        <div className="pb-4 mb-6">
+                          <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part G Office Review & Followup</h3>
+                          <div style={{ color: '#16569e' }} className="text-sm">This section is visible to office users only</div>
+                          <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
                         </div>
-                      </CardHeader>
+                      </CardContent>
                     </Card>
 
                     {/* G1: Office Review */}
-                    <Card>
+                    <Card className="bg-white">
                       <CardHeader>
                         <div className="flex justify-between items-center">
                           <h3 className="text-lg font-semibold text-blue-700">G1. Office Review</h3>
