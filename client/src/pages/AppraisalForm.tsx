@@ -1317,14 +1317,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       </div>
                       <div className="flex justify-between items-center mb-4">
                         <div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="text-gray-600 border-gray-300"
-                        >
-                          + Add Criterion
-                        </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-300"
+                          >
+                            + Add Criterion
+                          </Button>
+                        </div>
                       </div>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full">
