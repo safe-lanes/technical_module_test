@@ -16,6 +16,19 @@ export const forms = pgTable("forms", {
   versionDate: text("version_date").notNull(),
 });
 
+export const rankGroups = pgTable("rank_groups", {
+  id: serial("id").primaryKey(),
+  formId: integer("form_id").references(() => forms.id).notNull(),
+  name: text("name").notNull(),
+  ranks: text("ranks").array().notNull(), // Array of rank names
+});
+
+export const availableRanks = pgTable("available_ranks", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // Senior Officers, Junior Officers, Ratings, etc.
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -28,7 +41,22 @@ export const insertFormSchema = createInsertSchema(forms).pick({
   versionDate: true,
 });
 
+export const insertRankGroupSchema = createInsertSchema(rankGroups).pick({
+  formId: true,
+  name: true,
+  ranks: true,
+});
+
+export const insertAvailableRankSchema = createInsertSchema(availableRanks).pick({
+  name: true,
+  category: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertForm = z.infer<typeof insertFormSchema>;
 export type Form = typeof forms.$inferSelect;
+export type InsertRankGroup = z.infer<typeof insertRankGroupSchema>;
+export type RankGroup = typeof rankGroups.$inferSelect;
+export type InsertAvailableRank = z.infer<typeof insertAvailableRankSchema>;
+export type AvailableRank = typeof availableRanks.$inferSelect;

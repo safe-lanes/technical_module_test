@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { EditIcon } from "lucide-react";
+import { EditIcon, Plus, Eye } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,13 +12,43 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Form } from "@shared/schema";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form as FormComponent,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Form, RankGroup, AvailableRank } from "@shared/schema";
 import { FormEditor } from "./FormEditor";
+import { apiRequest } from "@/lib/queryClient";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const rankGroupSchema = z.object({
+  name: z.string().min(1, "Rank group name is required"),
+  ranks: z.array(z.string()).min(1, "At least one rank must be selected"),
+});
 
 export const AdminModule = (): JSX.Element => {
   const [location] = useLocation();
   const [selectedAdminPage, setSelectedAdminPage] = useState("forms");
   const [editingForm, setEditingForm] = useState<Form | null>(null);
+  const [isAddRankGroupOpen, setIsAddRankGroupOpen] = useState(false);
+  const [selectedFormForRankGroup, setSelectedFormForRankGroup] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Fetch forms data from API
   const { data: formsData = [], isLoading, error } = useQuery<Form[]>({
@@ -26,8 +56,44 @@ export const AdminModule = (): JSX.Element => {
     enabled: selectedAdminPage === "forms",
   });
 
+  const { data: availableRanks = [] } = useQuery<AvailableRank[]>({
+    queryKey: ["/api/available-ranks"],
+  });
+
+  const createRankGroupMutation = useMutation({
+    mutationFn: async (data: { formId: number; name: string; ranks: string[] }) => {
+      return await apiRequest("/api/rank-groups", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/forms"] });
+      setIsAddRankGroupOpen(false);
+      setSelectedFormForRankGroup(null);
+    },
+  });
+
   const handleEditClick = (form: Form) => {
     setEditingForm(form);
+  };
+
+  const handleAddRankGroup = (formName: string) => {
+    setSelectedFormForRankGroup(formName);
+    setIsAddRankGroupOpen(true);
+  };
+
+  const getRankGroupRanks = (rankGroupName: string) => {
+    switch (rankGroupName) {
+      case "Senior Officers":
+        return "Master, Chief Officer, Chief Engineer";
+      case "Junior Officers":
+        return "2nd Officer, 3rd Officer, 2nd Engineer, 3rd Engineer";
+      case "Ratings":
+        return "Bosun, AB, OS, Oiler, Wiper";
+      default:
+        return "No ranks assigned";
+    }
   };
 
   const handleFormSave = (formData: any) => {
@@ -38,6 +104,100 @@ export const AdminModule = (): JSX.Element => {
 
   const handleCloseEditor = () => {
     setEditingForm(null);
+  };
+
+  // Add Rank Group Dialog Component
+  const AddRankGroupDialog = () => {
+    const form = useForm({
+      resolver: zodResolver(rankGroupSchema),
+      defaultValues: {
+        name: "",
+        ranks: [],
+      },
+    });
+
+    const onSubmit = (data: { name: string; ranks: string[] }) => {
+      if (selectedFormForRankGroup) {
+        // Find the form ID based on the form name
+        const formId = 1; // For now, assume all rank groups belong to form ID 1
+        createRankGroupMutation.mutate({
+          formId,
+          name: data.name,
+          ranks: data.ranks,
+        });
+      }
+    };
+
+    return (
+      <Dialog open={isAddRankGroupOpen} onOpenChange={setIsAddRankGroupOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Rank Group to {selectedFormForRankGroup}</DialogTitle>
+          </DialogHeader>
+          <FormComponent {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rank Group Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter rank group name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="ranks"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Ranks</FormLabel>
+                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                      {availableRanks.map((rank) => (
+                        <div key={rank.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`rank-${rank.id}`}
+                            checked={field.value.includes(rank.name)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...field.value, rank.name]);
+                              } else {
+                                field.onChange(field.value.filter((r) => r !== rank.name));
+                              }
+                            }}
+                          />
+                          <label htmlFor={`rank-${rank.id}`} className="text-sm">
+                            {rank.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddRankGroupOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={createRankGroupMutation.isPending}>
+                  {createRankGroupMutation.isPending ? "Adding..." : "Add Rank Group"}
+                </Button>
+              </div>
+            </form>
+          </FormComponent>
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   // Group forms by name for hierarchical display
@@ -110,11 +270,39 @@ export const AdminModule = (): JSX.Element => {
                         className="text-[#4f5863] text-[13px] font-semibold py-3 border-r border-gray-200 bg-[#ffffff]" 
                         rowSpan={forms.length}
                       >
-                        {formName}
+                        <div className="flex items-center justify-between">
+                          <span>{formName}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 ml-2"
+                            onClick={() => handleAddRankGroup(formName)}
+                          >
+                            <Plus className="h-4 w-4 text-gray-500" />
+                          </Button>
+                        </div>
                       </TableCell>
                       {/* Second level - First rank group */}
                       <TableCell className="text-[#4f5863] text-[13px] font-normal pl-6">
-                        {forms[0].rankGroup}
+                        <div className="flex items-center justify-between">
+                          <span>{forms[0].rankGroup}</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 ml-2"
+                                >
+                                  <Eye className="h-4 w-4 text-gray-500" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Ranks: {getRankGroupRanks(forms[0].rankGroup)}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </TableCell>
                       <TableCell className="text-[#4f5863] text-[13px] font-normal">
                         {forms[0].versionNo}
@@ -139,7 +327,25 @@ export const AdminModule = (): JSX.Element => {
                     {forms.slice(1).map((form) => (
                       <TableRow key={form.id} className="border-b border-gray-200 bg-white hover:bg-gray-50">
                         <TableCell className="text-[#4f5863] text-[13px] font-normal pl-6">
-                          {form.rankGroup}
+                          <div className="flex items-center justify-between">
+                            <span>{form.rankGroup}</span>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 ml-2"
+                                  >
+                                    <Eye className="h-4 w-4 text-gray-500" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ranks: {getRankGroupRanks(form.rankGroup)}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                         </TableCell>
                         <TableCell className="text-[#4f5863] text-[13px] font-normal">
                           {form.versionNo}
@@ -294,6 +500,9 @@ export const AdminModule = (): JSX.Element => {
           onSave={handleFormSave}
         />
       )}
+
+      {/* Add Rank Group Dialog */}
+      <AddRankGroupDialog />
     </div>
   );
 };
