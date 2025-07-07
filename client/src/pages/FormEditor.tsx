@@ -1204,7 +1204,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar - Stepper Design */}
-          <div className="w-64 overflow-y-auto bg-white">
+          <div className="w-72 overflow-y-auto bg-[#f8fafc]">
             <div className="p-6">
               <nav className="space-y-1">
                 {sections.map((section, index) => {
