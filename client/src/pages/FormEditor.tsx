@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -352,11 +352,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
 
   const renderPartA = () => (
-    <div className="space-y-6">
-      <div className="text-blue-500 text-sm">Enter details as applicable</div>
-      <div className="w-full h-0.5 bg-blue-500"></div>
-      
-      <div className="grid grid-cols-3 gap-4">
+    <Card>
+      <CardHeader>
+        <CardTitle style={{ color: '#16569e' }}>Part A: Seafarer's Information</CardTitle>
+        <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
+        <div className="w-full h-0.5" style={{ backgroundColor: '#16569e' }}></div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="seafarersName">Seafarer's Name</Label>
           <Input
@@ -513,8 +516,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
             <SelectItem value="amiable">Amiable</SelectItem>
           </SelectContent>
         </Select>
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 
   const renderPartB = () => (
