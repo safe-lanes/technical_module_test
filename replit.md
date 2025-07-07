@@ -138,6 +138,22 @@ The architecture supports deployment to platforms like Replit, with specific con
   - Form validation with Zod schema
   - Responsive layout matching original appraisal form
 
+### Configurable Rank Groups
+- **Purpose**: Dynamic configuration of rank groups for different form types
+- **Add Rank Group**: '+' button next to form names opens dialog for creating new rank groups
+- **Rank Selection**: Multi-select interface with all available maritime ranks
+- **Available Ranks**: Predefined ranks including Master, Chief Officer, Engineers, Officers, Bosun, AB, OS, Oiler, Wiper
+- **View Functionality**: Eye icon next to rank group names shows hover tooltip with assigned ranks
+- **Data Structure**: 
+  - Forms table links to rank groups via foreign key
+  - Rank groups store array of assigned rank names
+  - Available ranks categorized by Senior Officers, Junior Officers, Ratings
+- **UI Features**:
+  - Dialog-based rank group creation with form validation
+  - Tooltip hover display of ranks per group
+  - Checkbox multi-select for rank assignment
+  - Real-time rank group management
+
 ### Data Flow
 1. **Navigation**: Top menu Admin → Left sidebar Forms (default)
 2. **Data Fetching**: TanStack Query fetches from `/api/forms`
@@ -153,6 +169,7 @@ Changelog:
 - July 07, 2025. Added Form Editor modal with exact copy of crew appraisal form (Parts A-G), version control starting at v0
 - July 07, 2025. Fixed Part G table alignment issue - G2 Training Followup table now appears correctly below heading, resolved JSX syntax errors, maintained consolidated G1/G2 structure with blue #16569e headings
 - July 07, 2025. Added "Rank Group" column to Admin Forms table, positioned between Form and Version No columns, displays "All Ranks" value for each form
+- July 07, 2025. Implemented configurable rank groups functionality with '+' button for adding rank groups, view button with hover tooltips showing assigned ranks, dialog-based rank group creation with multi-select rank assignment, and backend API endpoints for rank groups and available ranks management
 ```
 
 ## User Preferences
