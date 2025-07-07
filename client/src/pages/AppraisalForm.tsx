@@ -1917,142 +1917,142 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G2. Training Followup</h3>
                             <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="text-gray-600 border-gray-300"
-                              onClick={() => addTrainingFollowup('database')}
-                            >
-                              + Add Training from Database
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="text-gray-600 border-gray-300"
-                              onClick={() => addTrainingFollowup('new')}
-                            >
-                              + Add New Training
-                            </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="text-gray-600 border-gray-300"
+                                onClick={() => addTrainingFollowup('database')}
+                              >
+                                + Add Training from Database
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="text-gray-600 border-gray-300"
+                                onClick={() => addTrainingFollowup('new')}
+                              >
+                                + Add New Training
+                              </Button>
+                            </div>
                           </div>
                           <div className="border rounded-lg overflow-hidden">
                             <table className="w-full">
-                            <thead className="bg-gray-100">
-                              <tr>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Corresponding in DB</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Category</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Target or Compl. Date</th>
-                                <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {form.watch("trainingFollowups").map((followup, index) => (
-                                <React.Fragment key={followup.id}>
-                                  <tr className="border-t">
-                                    <td className="p-3 text-sm">{index + 1}.</td>
-                                    <td className="p-3">
-                                      <Input
-                                        value={followup.training}
-                                        onChange={(e) => updateTrainingFollowup(followup.id, "training", e.target.value)}
-                                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
-                                      />
-                                    </td>
-                                    <td className="p-3">
-                                      <select
-                                        value={followup.correspondingInDB}
-                                        onChange={(e) => updateTrainingFollowup(followup.id, "correspondingInDB", e.target.value)}
-                                        className="w-full p-1 border rounded text-sm"
-                                      >
-                                        <option>Select Training from DB</option>
-                                        <option>Training Option 1</option>
-                                        <option>Training Option 2</option>
-                                      </select>
-                                    </td>
-                                    <td className="p-3">
-                                      <select
-                                        value={followup.category}
-                                        onChange={(e) => updateTrainingFollowup(followup.id, "category", e.target.value)}
-                                        className="w-full p-1 border rounded text-sm"
-                                      >
-                                        <option>Select Rating</option>
-                                        <option>1. Competence</option>
-                                        <option>2- Soft Skills</option>
-                                      </select>
-                                    </td>
-                                    <td className="p-3">
-                                      <select
-                                        value={followup.status}
-                                        onChange={(e) => updateTrainingFollowup(followup.id, "status", e.target.value)}
-                                        className={`w-full p-1 border rounded text-sm ${
-                                          followup.status === "Proposed" ? "bg-gray-200" :
-                                          followup.status === "Approved" ? "bg-blue-200" :
-                                          followup.status === "Planned" ? "bg-yellow-200" :
-                                          followup.status === "Declined" ? "bg-red-200" :
-                                          followup.status === "Completed" ? "bg-green-200" : ""
-                                        }`}
-                                      >
-                                        <option value="Proposed">Proposed</option>
-                                        <option value="Approved">Approved</option>
-                                        <option value="Planned">Planned</option>
-                                        <option value="Declined">Declined</option>
-                                        <option value="Completed">Completed</option>
-                                      </select>
-                                    </td>
-                                    <td className="p-3">
-                                      <Input
-                                        type="date"
-                                        value={followup.targetDate}
-                                        onChange={(e) => updateTrainingFollowup(followup.id, "targetDate", e.target.value)}
-                                        className="w-full"
-                                      />
-                                    </td>
-                                    <td className="p-3">
-                                      <div className="flex justify-center space-x-2">
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Corresponding in DB</th>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Category</th>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Status</th>
+                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Target or Compl. Date</th>
+                                  <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {form.watch("trainingFollowups").map((followup, index) => (
+                                  <React.Fragment key={followup.id}>
+                                    <tr className="border-t">
+                                      <td className="p-3 text-sm">{index + 1}.</td>
+                                      <td className="p-3">
+                                        <Input
+                                          value={followup.training}
+                                          onChange={(e) => updateTrainingFollowup(followup.id, "training", e.target.value)}
+                                          className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                        />
+                                      </td>
+                                      <td className="p-3">
+                                        <select
+                                          value={followup.correspondingInDB}
+                                          onChange={(e) => updateTrainingFollowup(followup.id, "correspondingInDB", e.target.value)}
+                                          className="w-full p-1 border rounded text-sm"
                                         >
-                                          <MessageSquare className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
+                                          <option>Select Training from DB</option>
+                                          <option>Training Option 1</option>
+                                          <option>Training Option 2</option>
+                                        </select>
+                                      </td>
+                                      <td className="p-3">
+                                        <select
+                                          value={followup.category}
+                                          onChange={(e) => updateTrainingFollowup(followup.id, "category", e.target.value)}
+                                          className="w-full p-1 border rounded text-sm"
                                         >
-                                          <Edit2 className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => deleteTrainingFollowup(followup.id)}
+                                          <option>Select Rating</option>
+                                          <option>1. Competence</option>
+                                          <option>2- Soft Skills</option>
+                                        </select>
+                                      </td>
+                                      <td className="p-3">
+                                        <select
+                                          value={followup.status}
+                                          onChange={(e) => updateTrainingFollowup(followup.id, "status", e.target.value)}
+                                          className={`w-full p-1 border rounded text-sm ${
+                                            followup.status === "Proposed" ? "bg-gray-200" :
+                                            followup.status === "Approved" ? "bg-blue-200" :
+                                            followup.status === "Planned" ? "bg-yellow-200" :
+                                            followup.status === "Declined" ? "bg-red-200" :
+                                            followup.status === "Completed" ? "bg-green-200" : ""
+                                          }`}
                                         >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  {followup.comment && (
-                                    <tr>
-                                      <td></td>
-                                      <td colSpan={6} className="p-3">
-                                        <p className="text-blue-600 italic text-sm">
-                                          Comment: {followup.comment}
-                                        </p>
+                                          <option value="Proposed">Proposed</option>
+                                          <option value="Approved">Approved</option>
+                                          <option value="Planned">Planned</option>
+                                          <option value="Declined">Declined</option>
+                                          <option value="Completed">Completed</option>
+                                        </select>
+                                      </td>
+                                      <td className="p-3">
+                                        <Input
+                                          type="date"
+                                          value={followup.targetDate}
+                                          onChange={(e) => updateTrainingFollowup(followup.id, "targetDate", e.target.value)}
+                                          className="w-full"
+                                        />
+                                      </td>
+                                      <td className="p-3">
+                                        <div className="flex justify-center space-x-2">
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                          >
+                                            <MessageSquare className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                          >
+                                            <Edit2 className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => deleteTrainingFollowup(followup.id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </div>
                                       </td>
                                     </tr>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                            </tbody>
+                                    {followup.comment && (
+                                      <tr>
+                                        <td></td>
+                                        <td colSpan={6} className="p-3">
+                                          <p className="text-blue-600 italic text-sm">
+                                            Comment: {followup.comment}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                ))}
+                              </tbody>
                             </table>
                           </div>
-                        </div>
                         </div>
 
                         {/* Action buttons */}
