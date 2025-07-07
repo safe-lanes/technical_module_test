@@ -1069,7 +1069,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
-
+      {/* F1: Overall Score */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
+        <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
+          {calculateOverallScore()}
+        </div>
+      </div>
 
       {/* F2: Appraiser's Recommendations */}
       <div className="space-y-4">
