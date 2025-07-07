@@ -112,10 +112,31 @@ The architecture supports deployment to platforms like Replit, with specific con
 - **API Endpoints**: Full CRUD operations at `/api/forms`
 - **Features**:
   - Table view with Form, Version No, Version Date columns
-  - Edit button for each form (opens form editing modal - to be implemented)
+  - Edit button opens form configuration editor modal
   - Loading states and error handling
   - Pagination display
   - Consistent styling with Appraisals table
+
+### Form Editor Modal
+- **Purpose**: Customize crew appraisal forms for different configurations
+- **Structure**: Exact copy of crew appraisal form (Parts A-G) from appraisal section
+- **Version Control**: 
+  - Initial version starts at Version 0
+  - Subsequent versions will have version number and date tracking
+- **Parts Include**:
+  - Part A: Seafarer's Information
+  - Part B: Information at Start of Appraisal Period  
+  - Part C: Competence Assessment (Professional Knowledge & Skills)
+  - Part D: Behavioural Assessment (Soft Skills)
+  - Part E: Training Needs & Development
+  - Part F: Summary & Recommendations
+  - Part G: Office Review & Followup
+- **UI Features**:
+  - Left sidebar navigation between form sections
+  - Modal overlay design
+  - Save draft functionality
+  - Form validation with Zod schema
+  - Responsive layout matching original appraisal form
 
 ### Data Flow
 1. **Navigation**: Top menu Admin → Left sidebar Forms (default)
@@ -129,6 +150,7 @@ The architecture supports deployment to platforms like Replit, with specific con
 Changelog:
 - July 02, 2025. Initial setup
 - July 07, 2025. Added Admin submodule with Forms configuration table
+- July 07, 2025. Added Form Editor modal with exact copy of crew appraisal form (Parts A-G), version control starting at v0
 ```
 
 ## User Preferences

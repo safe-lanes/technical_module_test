@@ -13,10 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Form } from "@shared/schema";
+import { FormEditor } from "./FormEditor";
 
 export const AdminModule = (): JSX.Element => {
   const [location] = useLocation();
   const [selectedAdminPage, setSelectedAdminPage] = useState("forms");
+  const [editingForm, setEditingForm] = useState<Form | null>(null);
 
   // Fetch forms data from API
   const { data: formsData = [], isLoading, error } = useQuery<Form[]>({
@@ -25,8 +27,17 @@ export const AdminModule = (): JSX.Element => {
   });
 
   const handleEditClick = (form: Form) => {
-    console.log("Edit form:", form);
-    // TODO: Open form editing modal
+    setEditingForm(form);
+  };
+
+  const handleFormSave = (formData: any) => {
+    console.log("Saving form configuration:", formData);
+    // TODO: Implement form configuration save logic
+    setEditingForm(null);
+  };
+
+  const handleCloseEditor = () => {
+    setEditingForm(null);
   };
 
   const renderFormsTable = () => (
@@ -229,6 +240,15 @@ export const AdminModule = (): JSX.Element => {
           {selectedAdminPage === "forms" && renderFormsTable()}
         </main>
       </div>
+
+      {/* Form Editor Modal */}
+      {editingForm && (
+        <FormEditor
+          form={editingForm}
+          onClose={handleCloseEditor}
+          onSave={handleFormSave}
+        />
+      )}
     </div>
   );
 };
