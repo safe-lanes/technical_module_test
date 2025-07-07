@@ -354,6 +354,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
   const renderPartA = () => (
     <div className="space-y-6">
       <div className="text-blue-500 text-sm">Enter details as applicable</div>
+      <div className="w-full h-0.5 bg-blue-500"></div>
       
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
@@ -717,7 +718,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
                     </td>
                   </tr>
                   {targetComments[target.id] !== undefined && (
-                    <tr>
+                    <tr key={`comment-${target.id}`}>
                       <td></td>
                       <td colSpan={3} className="p-3">
                         <Textarea
@@ -808,7 +809,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
                   </td>
                 </tr>
                 {competenceComments[assessment.id] !== undefined && (
-                  <tr>
+                  <tr key={`comment-${assessment.id}`}>
                     <td></td>
                     <td colSpan={4} className="p-3">
                       <Textarea
@@ -899,7 +900,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
                   </td>
                 </tr>
                 {behaviouralComments[assessment.id] !== undefined && (
-                  <tr>
+                  <tr key={`comment-${assessment.id}`}>
                     <td></td>
                     <td colSpan={4} className="p-3">
                       <Textarea
@@ -1006,7 +1007,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
                   </td>
                 </tr>
                 {trainingNeedsComments[trainingNeed.id] !== undefined && (
-                  <tr>
+                  <tr key={`comment-${trainingNeed.id}`}>
                     <td></td>
                     <td colSpan={2} className="p-3">
                       <Textarea
