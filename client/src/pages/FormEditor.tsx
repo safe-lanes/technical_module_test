@@ -522,7 +522,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartB = () => (
     <div className="space-y-8">
-      <div className="text-blue-500 text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part B: Information at Start of Appraisal Period</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
       
       {/* B1. Trainings conducted prior joining vessel */}
       <div>
@@ -758,7 +762,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartC = () => (
     <div className="space-y-6">
-      <div className="text-blue-500 text-sm">Description</div>
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part C: Competence Assessment (Professional Knowledge & Skills)</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
       
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full">
@@ -849,7 +857,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartD = () => (
     <div className="space-y-6">
-      <div className="text-blue-500 text-sm">Description</div>
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part D: Behavioural Assessment (Soft Skills)</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
       
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full">
@@ -939,8 +951,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartE = () => (
     <div className="space-y-6">
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part E: Training Needs & Development</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Specify any training needs identified during the appraisals period</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
+      
       <div className="flex justify-between items-center">
-        <div className="text-blue-500 text-sm">Specify any training needs identified during the appraisals period</div>
+        <div className="text-blue-500 text-sm">Training Management</div>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -1046,7 +1064,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartF = () => (
     <div className="space-y-6">
-      <div className="text-blue-500 text-sm">Add any recommendations related to following</div>
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part F: Summary & Recommendations</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Add any recommendations related to following</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
       
       {/* F1: Overall Score */}
       <div className="border rounded-lg p-4">
@@ -1104,7 +1126,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
   const renderPartG = () => (
     <div className="space-y-6">
-      <div className="text-blue-500 text-sm">This section is visible to office users only</div>
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part G: Office Review & Followup</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">This section is visible to office users only</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
       
       {/* G1: Office Review */}
       <div className="space-y-4">
