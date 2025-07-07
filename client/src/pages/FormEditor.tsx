@@ -1178,7 +1178,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar - Sections */}
-          <div className="w-64 border-r bg-gray-50 overflow-y-auto">
+          <div className="w-64 border-r overflow-y-auto bg-[#f8fafc]">
             <div className="p-4 space-y-2">
               {sections.map((section) => (
                 <button
