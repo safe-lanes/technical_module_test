@@ -107,7 +107,7 @@ export const AdminModule = (): JSX.Element => {
                     {/* First level - Form name with rowspan */}
                     <TableRow className="border-b border-gray-200 bg-white hover:bg-gray-50">
                       <TableCell 
-                        className="text-[#4f5863] text-[13px] font-semibold py-3 bg-gray-50 border-r border-gray-200" 
+                        className="text-[#4f5863] text-[13px] font-semibold py-3 border-r border-gray-200 bg-[#ffffff]" 
                         rowSpan={forms.length}
                       >
                         {formName}
