@@ -571,7 +571,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-lg w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b p-3 sm:p-4 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
@@ -601,24 +601,24 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row">
-          {/* Mobile Navigation Dropdown */}
-          <div className="lg:hidden bg-gray-50 border-b p-3">
-            <select
-              value={activeSection}
-              onChange={(e) => setActiveSection(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm bg-white"
-            >
-              {sections.map((section) => (
-                <option key={section.id} value={section.id}>
-                  {section.title}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Mobile Navigation Dropdown */}
+        <div className="lg:hidden bg-gray-50 border-b p-3">
+          <select
+            value={activeSection}
+            onChange={(e) => setActiveSection(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md text-sm bg-white"
+          >
+            {sections.map((section) => (
+              <option key={section.id} value={section.id}>
+                {section.title}
+              </option>
+            ))}
+          </select>
+        </div>
 
+        <div className="flex flex-1 overflow-hidden">
           {/* Desktop Sidebar Navigation - Stepper Design */}
-          <div className="hidden lg:block w-72 bg-[#f8fafc]">
+          <div className="hidden lg:block w-72 overflow-y-auto bg-[#f8fafc]">
             <div className="p-6">
               <nav className="space-y-1">
                 {sections.map((section, index) => {
@@ -664,7 +664,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 p-3 sm:p-4 lg:p-6 bg-[#f8fafc]">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#f8fafc]">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
                 
