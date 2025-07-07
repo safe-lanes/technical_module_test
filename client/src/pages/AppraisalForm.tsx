@@ -618,7 +618,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
 
           {/* Desktop Sidebar Navigation - Stepper Design */}
-          <div className="hidden lg:block w-80 border-r border-gray-200 bg-[#f8fafc]">
+          <div className="hidden lg:block w-80 bg-white">
             <div className="p-6">
               <nav className="space-y-1">
                 {sections.map((section, index) => {
@@ -654,7 +654,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         </div>
                       </button>
                       {index < sections.length - 1 && (
-                        <div className="absolute left-5 top-16 w-0.5 h-4 bg-gray-300"></div>
+                        <div className="absolute left-[1.25rem] top-16 w-0.5 h-4 bg-gray-300"></div>
                       )}
                     </div>
                   );
