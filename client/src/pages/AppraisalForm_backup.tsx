@@ -2053,7 +2053,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             </table>
                           </div>
                         </div>
-                        </div>
 
                         {/* Action buttons */}
                         <div className="flex justify-end gap-4 mt-6">
