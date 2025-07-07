@@ -84,6 +84,9 @@ export const AdminModule = (): JSX.Element => {
                   <TableHead className="text-white text-xs font-normal">
                     Version Date
                   </TableHead>
+                  <TableHead className="text-white text-xs font-normal">
+                    Rank Group
+                  </TableHead>
                   <TableHead className="text-white text-xs font-normal w-24">
                     Actions
                   </TableHead>
@@ -103,6 +106,9 @@ export const AdminModule = (): JSX.Element => {
                     </TableCell>
                     <TableCell className="text-[#4f5863] text-[13px] font-normal">
                       {form.versionDate}
+                    </TableCell>
+                    <TableCell className="text-[#4f5863] text-[13px] font-normal">
+                      All Ranks
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2 justify-center">
