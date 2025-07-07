@@ -26,14 +26,29 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentFormId = 1;
     
-    // Initialize with sample form data
+    // Initialize with sample form data - multiple rank groups for same form
     this.forms.set(1, {
       id: 1,
       name: "Crew Appraisal Form",
+      rankGroup: "Senior Officers",
       versionNo: "01",
       versionDate: "01-Jan-2025",
     });
-    this.currentFormId = 2;
+    this.forms.set(2, {
+      id: 2,
+      name: "Crew Appraisal Form",
+      rankGroup: "Junior Officers",
+      versionNo: "01",
+      versionDate: "01-Jan-2025",
+    });
+    this.forms.set(3, {
+      id: 3,
+      name: "Crew Appraisal Form",
+      rankGroup: "Ratings",
+      versionNo: "01",
+      versionDate: "01-Jan-2025",
+    });
+    this.currentFormId = 4;
   }
 
   async getUser(id: number): Promise<User | undefined> {

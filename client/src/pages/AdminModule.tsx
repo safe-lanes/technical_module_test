@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,15 @@ export const AdminModule = (): JSX.Element => {
   const handleCloseEditor = () => {
     setEditingForm(null);
   };
+
+  // Group forms by name for hierarchical display
+  const groupedForms = formsData.reduce((acc, form) => {
+    if (!acc[form.name]) {
+      acc[form.name] = [];
+    }
+    acc[form.name].push(form);
+    return acc;
+  }, {} as Record<string, typeof formsData>);
 
   const renderFormsTable = () => (
     <div className="p-6">
@@ -93,36 +102,66 @@ export const AdminModule = (): JSX.Element => {
                 </TableRow>
               </TableHeader>
               <TableBody className="bg-white">
-                {formsData.map((form, index) => (
-                  <TableRow
-                    key={form.id}
-                    className="border-b border-gray-200 bg-white hover:bg-gray-50"
-                  >
-                    <TableCell className="text-[#4f5863] text-[13px] font-normal py-3">
-                      {form.name}
-                    </TableCell>
-                    <TableCell className="text-[#4f5863] text-[13px] font-normal">
-                      All Ranks
-                    </TableCell>
-                    <TableCell className="text-[#4f5863] text-[13px] font-normal">
-                      {form.versionNo}
-                    </TableCell>
-                    <TableCell className="text-[#4f5863] text-[13px] font-normal">
-                      {form.versionDate}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2 justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => handleEditClick(form)}
-                        >
-                          <EditIcon className="h-[18px] w-[18px] text-gray-500" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                {Object.entries(groupedForms).map(([formName, forms]) => (
+                  <React.Fragment key={formName}>
+                    {/* First level - Form name with rowspan */}
+                    <TableRow className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                      <TableCell 
+                        className="text-[#4f5863] text-[13px] font-semibold py-3 bg-gray-50 border-r border-gray-200" 
+                        rowSpan={forms.length}
+                      >
+                        {formName}
+                      </TableCell>
+                      {/* Second level - First rank group */}
+                      <TableCell className="text-[#4f5863] text-[13px] font-normal pl-6">
+                        {forms[0].rankGroup}
+                      </TableCell>
+                      <TableCell className="text-[#4f5863] text-[13px] font-normal">
+                        {forms[0].versionNo}
+                      </TableCell>
+                      <TableCell className="text-[#4f5863] text-[13px] font-normal">
+                        {forms[0].versionDate}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => handleEditClick(forms[0])}
+                          >
+                            <EditIcon className="h-[18px] w-[18px] text-gray-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {/* Remaining rank groups for this form */}
+                    {forms.slice(1).map((form) => (
+                      <TableRow key={form.id} className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                        <TableCell className="text-[#4f5863] text-[13px] font-normal pl-6">
+                          {form.rankGroup}
+                        </TableCell>
+                        <TableCell className="text-[#4f5863] text-[13px] font-normal">
+                          {form.versionNo}
+                        </TableCell>
+                        <TableCell className="text-[#4f5863] text-[13px] font-normal">
+                          {form.versionDate}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2 justify-center">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => handleEditClick(form)}
+                            >
+                              <EditIcon className="h-[18px] w-[18px] text-gray-500" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
