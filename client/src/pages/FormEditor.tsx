@@ -1203,25 +1203,42 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Left Sidebar - Sections */}
-          <div className="w-64 overflow-y-auto bg-[#f8fafc]">
-            <div className="p-4 space-y-2">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full text-left p-3 rounded-lg text-sm transition-colors ${
-                    activeSection === section.id
-                      ? "bg-blue-100 text-blue-700 border border-blue-300"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <div className="font-medium">Part {section.id}: {section.title.split(" ")[0]}</div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {section.title.split(" ").slice(1).join(" ")}
-                  </div>
-                </button>
-              ))}
+          {/* Left Sidebar - Stepper Design */}
+          <div className="w-80 overflow-y-auto bg-white">
+            <div className="p-6">
+              <nav className="space-y-1">
+                {sections.map((section, index) => {
+                  const isActive = activeSection === section.id;
+                  const isCompleted = false; // You can add completion logic here
+                  
+                  return (
+                    <div key={section.id} className="relative">
+                      <button
+                        onClick={() => setActiveSection(section.id)}
+                        className={`w-full flex items-center p-3 rounded-lg text-left transition-colors hover:bg-gray-50 ${
+                          isActive ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <div 
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-4 ${
+                            isActive ? "bg-blue-600" : isCompleted ? "bg-green-500" : "bg-gray-400"
+                          }`}
+                        >
+                          {section.id}
+                        </div>
+                        <div className="flex-1">
+                          <div className={`font-medium text-sm ${isActive ? "text-blue-700" : "text-gray-700"}`}>
+                            {section.title}
+                          </div>
+                        </div>
+                      </button>
+                      {index < sections.length - 1 && (
+                        <div className="absolute left-[2rem] top-16 w-0.5 h-4 bg-gray-300"></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
             </div>
           </div>
 
