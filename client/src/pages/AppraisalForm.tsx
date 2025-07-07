@@ -617,26 +617,48 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
             </select>
           </div>
 
-          {/* Desktop Sidebar Navigation */}
-          <div className="hidden lg:block w-64 xl:w-72 bg-[#f8fafc]">
-            <div className="p-4">
-              <nav className="space-y-2">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`w-full text-left p-3 rounded text-sm transition-colors ${
-                      activeSection === section.id
-                        ? "bg-blue-100 text-blue-700 border border-blue-300"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <div className="font-medium">Part {section.id}: {section.title.split(" ")[0]}</div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {section.title.split(" ").slice(1).join(" ")}
+          {/* Desktop Sidebar Navigation - Stepper Design */}
+          <div className="hidden lg:block w-80 bg-white border-r border-gray-200">
+            <div className="p-6">
+              <nav className="space-y-1">
+                {sections.map((section, index) => {
+                  const isActive = activeSection === section.id;
+                  const isCompleted = false; // You can add completion logic here
+                  const sectionLetter = section.id === "reference" ? "A" : 
+                                       section.id === "information" ? "B" :
+                                       section.id === "competenceAssessment" ? "C" :
+                                       section.id === "behaviouralAssessment" ? "D" :
+                                       section.id === "trainingNeeds" ? "E" :
+                                       section.id === "summary" ? "F" :
+                                       section.id === "officeReview" ? "G" : section.id.charAt(0).toUpperCase();
+                  
+                  return (
+                    <div key={section.id} className="relative">
+                      <button
+                        onClick={() => setActiveSection(section.id)}
+                        className={`w-full flex items-center p-3 rounded-lg text-left transition-colors hover:bg-gray-50 ${
+                          isActive ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <div 
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-4 ${
+                            isActive ? "bg-blue-600" : isCompleted ? "bg-green-500" : "bg-gray-400"
+                          }`}
+                        >
+                          {sectionLetter}
+                        </div>
+                        <div className="flex-1">
+                          <div className={`font-medium text-sm ${isActive ? "text-blue-700" : "text-gray-700"}`}>
+                            {section.title.replace("Part A: ", "").replace("Part B: ", "").replace("Part C: ", "").replace("Part D: ", "").replace("Part E: ", "").replace("Part F: ", "").replace("Part G: ", "")}
+                          </div>
+                        </div>
+                      </button>
+                      {index < sections.length - 1 && (
+                        <div className="absolute left-5 top-16 w-0.5 h-4 bg-gray-300"></div>
+                      )}
                     </div>
-                  </button>
-                ))}
+                  );
+                })}
               </nav>
             </div>
           </div>
