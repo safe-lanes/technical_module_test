@@ -601,7 +601,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
             <Button 
               size="sm"
               onClick={() => form.handleSubmit(onSubmit)()}
-              className="hidden sm:flex"
+              className="hidden sm:flex bg-[#20c43f] hover:bg-[#1ba838]"
             >
               <Send className="h-4 w-4 mr-2" />
               Submit
@@ -1183,11 +1183,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         </div>
                       </div>
 
-                      <div className="flex justify-between mt-6">
-                        <Button className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white px-8">
+                      <div className="flex justify-end gap-4 mt-6">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
                           Save
                         </Button>
-                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                        <Button className="bg-[#20c43f] hover:bg-[#1ba838] text-white px-8">
                           Submit
                         </Button>
                       </div>
@@ -1556,11 +1556,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         </table>
                       </div>
 
-                      <div className="flex justify-between mt-6">
+                      <div className="flex justify-end gap-4 mt-6">
                         <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
                           Save
                         </Button>
-                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                        <Button className="bg-[#20c43f] hover:bg-[#1ba838] text-white px-8">
                           Submit
                         </Button>
                       </div>
@@ -1860,11 +1860,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     </Card>
 
                     {/* Action buttons */}
-                    <div className="flex justify-between mt-6">
+                    <div className="flex justify-end gap-4 mt-6">
                       <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
                         Save
                       </Button>
-                      <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                      <Button className="bg-[#20c43f] hover:bg-[#1ba838] text-white px-8">
                         Submit
                       </Button>
                     </div>
@@ -2082,11 +2082,11 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           </table>
                         </div>
 
-                        <div className="flex justify-between mt-6">
+                        <div className="flex justify-end gap-4 mt-6">
                           <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
                             Save
                           </Button>
-                          <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                          <Button className="bg-[#20c43f] hover:bg-[#1ba838] text-white px-8">
                             Submit
                           </Button>
                         </div>
