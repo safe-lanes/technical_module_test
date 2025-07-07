@@ -585,7 +585,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
               variant="outline" 
               size="sm"
               onClick={() => form.handleSubmit(onSubmit)()}
-              className="items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-xs hidden sm:flex bg-[#20c43f]"
+              className="items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-xs hidden sm:flex bg-[#5fa5fa]"
             >
               <Save className="h-4 w-4 mr-2" />
               Save Draft
@@ -597,21 +597,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
               className="sm:hidden"
             >
               <Save className="h-4 w-4" />
-            </Button>
-            <Button 
-              size="sm"
-              onClick={() => form.handleSubmit(onSubmit)()}
-              className="hidden sm:flex bg-[#20c43f] hover:bg-[#1ba838]"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Submit
-            </Button>
-            <Button 
-              size="sm"
-              onClick={() => form.handleSubmit(onSubmit)()}
-              className="sm:hidden"
-            >
-              <Send className="h-4 w-4" />
             </Button>
           </div>
         </div>
