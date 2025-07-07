@@ -618,7 +618,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
 
           {/* Desktop Sidebar Navigation */}
-          <div className="hidden lg:block w-64 xl:w-72 bg-gray-50 border-r">
+          <div className="hidden lg:block w-64 xl:w-72 bg-[#f8fafc]">
             <div className="p-4">
               <nav className="space-y-2">
                 {sections.map((section) => (
@@ -627,11 +627,14 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full text-left p-3 rounded text-sm transition-colors ${
                       activeSection === section.id
-                        ? "bg-blue-100 text-blue-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-100"
+                        ? "bg-blue-100 text-blue-700 border border-blue-300"
+                        : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    {section.title}
+                    <div className="font-medium">Part {section.id}: {section.title.split(" ")[0]}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {section.title.split(" ").slice(1).join(" ")}
+                    </div>
                   </button>
                 ))}
               </nav>
@@ -639,19 +642,21 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 p-3 sm:p-4 lg:p-6">
+          <div className="flex-1 p-3 sm:p-4 lg:p-6 bg-[#f8fafc]">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
                 
                 {/* Part A: Seafarer's Information */}
                 {activeSection === "reference" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-[#3B82F6]">Part A Seafarer's Information</CardTitle>
-                      <p className="text-sm text-[#60A5FA]">Enter details as applicable</p>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="pb-4 mb-6">
+                        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
+                        <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
+                        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name="seafarersName"
@@ -910,22 +915,25 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           Save
                         </Button>
                       </div>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* Part B: Information at Start of Appraisal Period */}
                 {activeSection === "information" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-blue-700">Part B Information at Start of Appraisal Period</CardTitle>
-                      <p className="text-sm text-blue-500">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</p>
-                    </CardHeader>
-                    <CardContent className="space-y-8">
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="pb-4 mb-6">
+                        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part B: Information at Start of Appraisal Period</h3>
+                        <div style={{ color: '#16569e' }} className="text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
+                        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+                      </div>
+                      <div className="space-y-8">
                       {/* B1. Trainings conducted prior joining vessel */}
                       <div>
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium text-blue-700">B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
+                          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
                           <Button
                             type="button"
                             onClick={addTraining}
@@ -1176,18 +1184,20 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           Submit
                         </Button>
                       </div>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* Part C: Competence Assessment */}
                 {activeSection === "competenceAssessment" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-blue-700">Part C Competence Assessment (Professional Knowledge & Skills)</CardTitle>
-                      <p className="text-sm text-blue-500">Description</p>
-                    </CardHeader>
-                    <CardContent>
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="pb-4 mb-6">
+                        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part C: Competence Assessment (Professional Knowledge & Skills)</h3>
+                        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+                        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+                      </div>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full">
                           <thead className="bg-gray-100">
@@ -1298,24 +1308,24 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
                 {/* Part D: Behavioural Assessment */}
                 {activeSection === "behaviouralAssessment" && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex justify-between items-center">
+                  <Card className="bg-white">
+                    <CardContent className="p-6">
+                      <div className="pb-4 mb-6">
+                        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part D: Behavioural Assessment (Soft Skills)</h3>
+                        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+                        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+                      </div>
+                      <div className="flex justify-between items-center mb-4">
                         <div>
-                          <CardTitle className="text-blue-700">Part D Behavioural Assessment (Soft Skills)</CardTitle>
-                          <p className="text-sm text-blue-500">Description</p>
-                        </div>
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                          className="text-gray-600 border-gray-300"
                         >
                           + Add Criterion
                         </Button>
                       </div>
-                    </CardHeader>
-                    <CardContent>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full">
                           <thead className="bg-gray-100">
@@ -1563,7 +1573,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       </CardHeader>
                       <CardContent>
                         <div className="flex justify-between items-center mb-6">
-                          <h3 className="text-lg font-semibold text-blue-700">F1. Overall Score</h3>
+                          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
                           <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
                             {calculateOverallScore()}
                           </div>
@@ -1575,7 +1585,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     <Card>
                       <CardHeader>
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-semibold text-blue-700">F2. Appraiser's Recommendations</h3>
+                          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
                           <Button
                             type="button"
                             variant="outline"
