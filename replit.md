@@ -97,11 +97,38 @@ The application is configured for modern deployment with:
 
 The architecture supports deployment to platforms like Replit, with specific configurations for development tooling and runtime error handling in the Replit environment.
 
+## Admin Module
+
+### Architecture
+- **Route**: `/admin` - dedicated admin submodule
+- **Navigation**: Clickable Admin menu item in top navigation bar
+- **Left Sidebar**: Contains multiple admin function icons (Forms currently implemented)
+- **Default View**: Opens Forms configuration by default when accessing admin
+
+### Forms Configuration
+- **Purpose**: Configure various forms used across other sub-modules
+- **Data Model**: Forms table with id, name, versionNo, versionDate fields
+- **UI Components**: Reuses exact same table components as Appraisals module
+- **API Endpoints**: Full CRUD operations at `/api/forms`
+- **Features**:
+  - Table view with Form, Version No, Version Date columns
+  - Edit button for each form (opens form editing modal - to be implemented)
+  - Loading states and error handling
+  - Pagination display
+  - Consistent styling with Appraisals table
+
+### Data Flow
+1. **Navigation**: Top menu Admin → Left sidebar Forms (default)
+2. **Data Fetching**: TanStack Query fetches from `/api/forms`
+3. **Backend**: Express routes handle CRUD operations
+4. **Storage**: In-memory storage with sample data initialization
+
 ## Changelog
 
 ```
 Changelog:
 - July 02, 2025. Initial setup
+- July 07, 2025. Added Admin submodule with Forms configuration table
 ```
 
 ## User Preferences

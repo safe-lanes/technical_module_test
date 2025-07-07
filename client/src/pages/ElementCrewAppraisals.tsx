@@ -6,6 +6,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import React, { useState } from "react";
+import { Link } from "wouter";
 import { AppraisalForm } from "./AppraisalForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -262,16 +263,18 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               </div>
 
               {/* Admin Section */}
-              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8]">
-                <div className="w-6 h-6 mb-1">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L15.09 8.26L23 9L17 14.74L18.18 22.02L12 19L5.82 22.02L7 14.74L1 9L8.91 8.26L12 1Z" fill="#6B7280"/>
-                  </svg>
+              <Link href="/admin">
+                <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8] cursor-pointer hover:bg-gray-300">
+                  <div className="w-6 h-6 mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 1L15.09 8.26L23 9L17 14.74L18.18 22.02L12 19L5.82 22.02L7 14.74L1 9L8.91 8.26L12 1Z" fill="#6B7280"/>
+                    </svg>
+                  </div>
+                  <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
+                    Admin
+                  </div>
                 </div>
-                <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
-                  Admin
-                </div>
-              </div>
+              </Link>
             </nav>
 
             {/* User Profile */}

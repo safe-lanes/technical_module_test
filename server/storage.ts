@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser } from "@shared/schema";
+import { users, type User, type InsertUser, type Form, type InsertForm } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -7,15 +7,33 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getForms(): Promise<Form[]>;
+  getForm(id: number): Promise<Form | undefined>;
+  createForm(form: InsertForm): Promise<Form>;
+  updateForm(id: number, form: Partial<InsertForm>): Promise<Form | undefined>;
+  deleteForm(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  currentId: number;
+  private forms: Map<number, Form>;
+  private currentUserId: number;
+  private currentFormId: number;
 
   constructor() {
     this.users = new Map();
-    this.currentId = 1;
+    this.forms = new Map();
+    this.currentUserId = 1;
+    this.currentFormId = 1;
+    
+    // Initialize with sample form data
+    this.forms.set(1, {
+      id: 1,
+      name: "Crew Appraisal Form",
+      versionNo: "01",
+      versionDate: "01-Jan-2025",
+    });
+    this.currentFormId = 2;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -29,10 +47,38 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
+    const id = this.currentUserId++;
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async getForms(): Promise<Form[]> {
+    return Array.from(this.forms.values());
+  }
+
+  async getForm(id: number): Promise<Form | undefined> {
+    return this.forms.get(id);
+  }
+
+  async createForm(insertForm: InsertForm): Promise<Form> {
+    const id = this.currentFormId++;
+    const form: Form = { ...insertForm, id };
+    this.forms.set(id, form);
+    return form;
+  }
+
+  async updateForm(id: number, formData: Partial<InsertForm>): Promise<Form | undefined> {
+    const existingForm = this.forms.get(id);
+    if (!existingForm) return undefined;
+    
+    const updatedForm: Form = { ...existingForm, ...formData };
+    this.forms.set(id, updatedForm);
+    return updatedForm;
+  }
+
+  async deleteForm(id: number): Promise<boolean> {
+    return this.forms.delete(id);
   }
 }
 
