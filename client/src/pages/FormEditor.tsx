@@ -1203,12 +1203,6 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
           {/* Main Content */}
           <div className="flex-1 overflow-y-auto">
             <div className="p-6">
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Part {activeSection}: {sections.find(s => s.id === activeSection)?.title}
-                </h3>
-              </div>
-
               <Card>
                 <CardContent className="p-6">
                   {renderSectionContent()}
