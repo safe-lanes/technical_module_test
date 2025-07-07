@@ -957,8 +957,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
-      <div className="flex justify-between items-center">
-        <div className="text-blue-500 text-sm">Training Management</div>
+      <div className="flex justify-end items-center">
         <div className="flex gap-2">
           <Button
             type="button"
