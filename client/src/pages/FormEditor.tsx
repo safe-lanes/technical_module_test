@@ -531,7 +531,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
       {/* B1. Trainings conducted prior joining vessel */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-blue-700">B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
+          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
           <Button
             type="button"
             onClick={addTraining}
@@ -647,7 +647,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
       {/* B2. Target Setting */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-blue-700">B2. Target Setting</h3>
+          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B2. Target Setting</h3>
           <Button
             type="button"
             onClick={addTarget}
@@ -1073,7 +1073,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
       {/* F1: Overall Score */}
       <div className="border rounded-lg p-4">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-blue-700">F1. Overall Score</h3>
+          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
           <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
             {calculateOverallScore()}
           </div>
@@ -1082,7 +1082,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
       {/* F2: Appraiser's Recommendations */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-blue-700">F2. Appraiser's Recommendations</h3>
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
         <div className="space-y-2">
           <Label htmlFor="recommendations">Recommendations</Label>
           <Textarea
@@ -1096,7 +1096,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
       {/* F3: Appraiser Comments */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-blue-700">F3. Appraiser Comments</h3>
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F3. Appraiser Comments</h3>
         <div className="space-y-2">
           <Label htmlFor="appraiserComments">Appraiser Comments</Label>
           <Textarea
@@ -1110,7 +1110,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
       {/* F4: Seafarer Comments */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-blue-700">F4. Seafarer Comments</h3>
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F4. Seafarer Comments</h3>
         <div className="space-y-2">
           <Label htmlFor="seafarerComments">Seafarer Comments</Label>
           <Textarea
@@ -1134,7 +1134,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
       
       {/* G1: Office Review */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-blue-700">G1. Office Review</h3>
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G1. Office Review</h3>
         <div className="space-y-2">
           <Label htmlFor="officeReviewComments">Office Review Comments</Label>
           <Textarea
@@ -1148,7 +1148,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
       {/* G2: Training Follow-up */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-blue-700">G2. Training Follow-up</h3>
+        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G2. Training Follow-up</h3>
         <div className="space-y-2">
           <Label htmlFor="trainingFollowups">Training Follow-up Actions</Label>
           <Textarea
