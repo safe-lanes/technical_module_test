@@ -352,14 +352,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
 
   const renderPartA = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle style={{ color: '#16569e' }}>Part A: Seafarer's Information</CardTitle>
+    <div className="space-y-6">
+      <div className="border-b pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
-        <div className="w-full h-0.5" style={{ backgroundColor: '#16569e' }}></div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="seafarersName">Seafarer's Name</Label>
           <Input
@@ -517,8 +517,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
           </SelectContent>
         </Select>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 
   const renderPartB = () => (
