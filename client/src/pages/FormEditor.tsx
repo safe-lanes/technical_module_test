@@ -256,6 +256,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     // Check if we're in config mode and need to validate weights
     if (isConfigMode && data.competenceAssessments.length > 0) {
       const totalWeight = calculateTotalWeight();
+      console.log("Weight validation - Total weight:", totalWeight, "Config mode:", isConfigMode);
       if (totalWeight !== 100) {
         setShowWeightWarning(true);
         return; // Stop submission until weights are validated
@@ -1632,6 +1633,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             </Button>
             <Button 
               onClick={() => {
+                // Manual weight validation check before submitting
+                if (isConfigMode) {
+                  const assessments = formMethods.getValues("competenceAssessments");
+                  if (assessments.length > 0) {
+                    const totalWeight = calculateTotalWeight();
+                    console.log("Manual validation - Total weight:", totalWeight, "Assessments:", assessments);
+                    if (totalWeight !== 100) {
+                      setShowWeightWarning(true);
+                      return;
+                    }
+                  }
+                }
                 setHasSavedDraft(true);
                 setActiveVersion("01"); // Switch to draft version when saving
                 formMethods.handleSubmit(onSubmit)();
