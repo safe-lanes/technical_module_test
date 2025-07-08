@@ -170,6 +170,8 @@ Changelog:
 - July 07, 2025. Fixed Part G table alignment issue - G2 Training Followup table now appears correctly below heading, resolved JSX syntax errors, maintained consolidated G1/G2 structure with blue #16569e headings
 - July 07, 2025. Added "Rank Group" column to Admin Forms table, positioned between Form and Version No columns, displays "All Ranks" value for each form
 - July 07, 2025. Implemented configurable rank groups functionality with '+' button for adding rank groups, view button with hover tooltips showing assigned ranks, dialog-based rank group creation with multi-select rank assignment, and backend API endpoints for rank groups and available ranks management
+- July 08, 2025. Implemented enhanced version control UI with proper state management, single interactive bar in configuration mode, multiple clickable bars in normal mode when draft exists, automatic switching to draft version when saving, and proper "Release Ver"/"Discard Ver" functionality
+- July 08, 2025. Added configurable fields functionality with "Hide Field" button for Personality Index (PI) Category field - button appears only in configuration mode with #52baf3 color, fields and labels are completely hidden when not in config mode, field state persists across mode changes
 ```
 
 ## User Preferences
