@@ -804,6 +804,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       </div>
           )}
 
+          {/* Hidden B1 placeholder in config mode */}
+          {isConfigMode && !sectionVisibility.partB1 && (
+            <div className="opacity-50 bg-gray-50 p-4 rounded border-2 border-dashed border-gray-300">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-400">B1. Trainings conducted prior joining vessel (Hidden)</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleSectionVisibility('partB1')}
+                  className="text-sm px-3 py-1 h-7"
+                  style={{ 
+                    borderColor: '#52baf3',
+                    color: '#52baf3'
+                  }}
+                >
+                  Show Section
+                </Button>
+              </div>
+              <div className="text-gray-400 text-sm">Section is hidden</div>
+            </div>
+          )}
+
           {/* B2. Target Setting */}
           {sectionVisibility.partB2 && (
             <div>
@@ -936,7 +959,53 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
       </div>
             )}
+
+          {/* Hidden B2 placeholder in config mode */}
+          {isConfigMode && !sectionVisibility.partB2 && (
+            <div className="opacity-50 bg-gray-50 p-4 rounded border-2 border-dashed border-gray-300">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-400">B2. Target Setting (Hidden)</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleSectionVisibility('partB2')}
+                  className="text-sm px-3 py-1 h-7"
+                  style={{ 
+                    borderColor: '#52baf3',
+                    color: '#52baf3'
+                  }}
+                >
+                  Show Section
+                </Button>
+              </div>
+              <div className="text-gray-400 text-sm">Section is hidden</div>
+            </div>
+          )}
         </>
+      )}
+
+      {/* Hidden Part B placeholder in config mode */}
+      {isConfigMode && !sectionVisibility.partB && (
+        <div className="opacity-50 bg-gray-50 p-6 rounded border-2 border-dashed border-gray-300">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-400">Part B: Information at Start of Appraisal Period (Hidden)</h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSectionVisibility('partB')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              Show Section
+            </Button>
+          </div>
+          <div className="text-gray-400 text-sm">Section is hidden</div>
+        </div>
       )}
     </div>
   );
