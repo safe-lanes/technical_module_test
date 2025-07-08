@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Plus, MessageSquare, Edit2, Trash2, Settings } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowLeft, Save, Plus, MessageSquare, Edit2, Trash2, Settings, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { Form } from "@shared/schema";
 
 // Training and Target schemas - matching AppraisalForm
@@ -117,6 +120,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [configurableFields, setConfigurableFields] = useState<Set<string>>(new Set());
   const [configurableSections, setConfigurableSections] = useState<Set<string>>(new Set());
+  const [hasSavedDraft, setHasSavedDraft] = useState(false);
+  const [selectedVersionNo, setSelectedVersionNo] = useState<string>("");
+  const [selectedVersionDate, setSelectedVersionDate] = useState<Date | undefined>();
 
   // Configuration helper functions
   const toggleFieldConfigurable = (fieldId: string) => {
@@ -1220,7 +1226,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <h2 className="text-lg font-semibold">
-              {form.name} - Version {formVersion}
+              Crew Appraisal Form - Rank Group
             </h2>
             {isConfigMode && (
               <Badge variant="outline" className="ml-2">
@@ -1229,6 +1235,34 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
             )}
           </div>
           <div className="flex items-center gap-2">
+            {!isConfigMode ? (
+              <Button
+                variant={hasSavedDraft ? "default" : "outline"}
+                size="sm"
+                className={`flex items-center gap-2 ${
+                  hasSavedDraft 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                disabled={!hasSavedDraft}
+              >
+                Release Ver
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setIsConfigMode(false);
+                  setHasSavedDraft(false);
+                  setSelectedVersionNo("");
+                  setSelectedVersionDate(undefined);
+                }}
+              >
+                Discard Ver
+              </Button>
+            )}
             <Button
               variant={isConfigMode ? "default" : "outline"}
               onClick={() => setIsConfigMode(!isConfigMode)}
@@ -1238,12 +1272,75 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
               {isConfigMode ? "Exit Config" : "Configure Fields"}
             </Button>
             <Button 
-              onClick={formMethods.handleSubmit(onSubmit)}
+              onClick={() => {
+                setHasSavedDraft(true);
+                formMethods.handleSubmit(onSubmit)();
+              }}
               className="flex items-center gap-2"
             >
               <Save className="h-4 w-4" />
               Save Draft
             </Button>
+          </div>
+        </div>
+
+        {/* Version Display Bar */}
+        <div className="px-4 py-3 bg-gray-50 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Version No:</span>
+                {isConfigMode ? (
+                  <Select
+                    value={selectedVersionNo}
+                    onValueChange={setSelectedVersionNo}
+                  >
+                    <SelectTrigger className="w-24 h-8">
+                      <SelectValue placeholder="01" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="01">01</SelectItem>
+                      <SelectItem value="02">02</SelectItem>
+                      <SelectItem value="03">03</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <span className="text-sm font-semibold">00</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Version Date:</span>
+                {isConfigMode ? (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-36 h-8 justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedVersionDate ? format(selectedVersionDate, "dd-MMM-yyyy") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={selectedVersionDate}
+                        onSelect={setSelectedVersionDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  <span className="text-sm font-semibold">01-Jan-2025</span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Status:</span>
+              <span className="text-sm font-semibold text-green-600">
+                {isConfigMode ? "Draft" : "Released"}
+              </span>
+            </div>
           </div>
         </div>
 
