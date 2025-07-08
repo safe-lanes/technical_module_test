@@ -1294,26 +1294,31 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
   const renderPartD = () => (
     <div className="space-y-6">
-      <div className="pb-4 mb-6 flex justify-between items-center">
-        <div>
-          <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
-          <div style={{ color: '#16569e' }} className="text-sm">Description</div>
-          <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
-        </div>
-        {isConfigMode && (
+      <div className="pb-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
+        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      </div>
+      
+      {/* Add Criterion Button */}
+      {isConfigMode && (
+        <div className="flex justify-end items-center mb-4">
           <Button
             type="button"
+            onClick={addBehaviouralAssessment}
             variant="outline"
             size="sm"
-            onClick={addBehaviouralAssessment}
-            className="flex items-center gap-2"
-            style={{ color: '#52baf3', borderColor: '#52baf3' }}
+            className="text-sm px-3 py-1 h-7"
+            style={{ 
+              borderColor: '#52baf3',
+              color: '#52baf3'
+            }}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 mr-1" />
             Add Criterion
           </Button>
-        )}
-      </div>
+        </div>
+      )}
       
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full">
