@@ -236,30 +236,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       trainings: [],
       targets: [],
       competenceAssessments: [],
-      behaviouralAssessments: [
-        { id: "1", assessmentCriteria: "Leadership", weight: 10, effectiveness: "", comment: "" },
-        { id: "2", assessmentCriteria: "Attitude", weight: 10, effectiveness: "", comment: "" },
-        { id: "3", assessmentCriteria: "Emotional Intelligence", weight: 10, effectiveness: "", comment: "" },
-        { id: "4", assessmentCriteria: "Work Ethics", weight: 10, effectiveness: "", comment: "" },
-        { id: "5", assessmentCriteria: "Situational Awareness", weight: 10, effectiveness: "", comment: "" },
-        { id: "6", assessmentCriteria: "Decision Making", weight: 10, effectiveness: "", comment: "" },
-        { id: "7", assessmentCriteria: "Teamwork", weight: 10, effectiveness: "", comment: "" },
-        { id: "8", assessmentCriteria: "Assessment Criteria 8", weight: 10, effectiveness: "", comment: "" },
-        { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
-        { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
-      ],
+      behaviouralAssessments: [],
       trainingNeeds: [],
     },
   });
 
   const onSubmit = (data: AppraisalFormData) => {
     // Check if we're in config mode and need to validate weights
-    if (isConfigMode && data.competenceAssessments.length > 0) {
-      const totalWeight = calculateTotalWeight();
-      console.log("Weight validation - Total weight:", totalWeight, "Config mode:", isConfigMode);
-      if (totalWeight !== 100) {
-        setShowWeightWarning(true);
-        return; // Stop submission until weights are validated
+    if (isConfigMode) {
+      if (data.competenceAssessments.length > 0) {
+        const totalWeight = calculateTotalWeight();
+        console.log("Weight validation - Competence total weight:", totalWeight, "Config mode:", isConfigMode);
+        if (totalWeight !== 100) {
+          setShowWeightWarning(true);
+          return; // Stop submission until weights are validated
+        }
+      }
+      
+      if (data.behaviouralAssessments.length > 0) {
+        const totalWeight = calculateBehaviouralTotalWeight();
+        console.log("Weight validation - Behavioural total weight:", totalWeight, "Config mode:", isConfigMode);
+        if (totalWeight !== 100) {
+          setShowWeightWarning(true);
+          return; // Stop submission until weights are validated
+        }
       }
     }
     
@@ -486,6 +486,45 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     }));
     
     formMethods.setValue("competenceAssessments", updatedAssessments);
+  };
+
+  // Behavioural Assessment functions
+  const addBehaviouralAssessment = () => {
+    const newAssessment = {
+      id: Date.now().toString(),
+      assessmentCriteria: "",
+      weight: 0,
+      effectiveness: "",
+      comment: "",
+    };
+    const currentAssessments = formMethods.getValues("behaviouralAssessments");
+    formMethods.setValue("behaviouralAssessments", [...currentAssessments, newAssessment]);
+  };
+
+  const deleteBehaviouralAssessment = (id: string) => {
+    const currentAssessments = formMethods.getValues("behaviouralAssessments");
+    const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+    formMethods.setValue("behaviouralAssessments", updatedAssessments);
+  };
+
+  const calculateBehaviouralTotalWeight = () => {
+    const assessments = formMethods.getValues("behaviouralAssessments");
+    return assessments.reduce((total, assessment) => total + (assessment.weight || 0), 0);
+  };
+
+  const distributeBehaviouralWeightsEqually = () => {
+    const assessments = formMethods.getValues("behaviouralAssessments");
+    if (assessments.length === 0) return;
+    
+    const equalWeight = Math.floor(100 / assessments.length);
+    const remainder = 100 % assessments.length;
+    
+    const updatedAssessments = assessments.map((assessment, index) => ({
+      ...assessment,
+      weight: index < remainder ? equalWeight + 1 : equalWeight
+    }));
+    
+    formMethods.setValue("behaviouralAssessments", updatedAssessments);
   };
 
   // Calculate overall score (F1)
@@ -1255,10 +1294,25 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
   const renderPartD = () => (
     <div className="space-y-6">
-      <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
-        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
-        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+      <div className="pb-4 mb-6 flex justify-between items-center">
+        <div>
+          <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
+          <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+          <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
+        </div>
+        {isConfigMode && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addBehaviouralAssessment}
+            className="flex items-center gap-2"
+            style={{ color: '#52baf3', borderColor: '#52baf3' }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Criterion
+          </Button>
+        )}
       </div>
       
       <div className="border rounded-lg overflow-hidden">
@@ -1277,8 +1331,32 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               <React.Fragment key={assessment.id}>
                 <tr className="border-t">
                   <td className="p-3 text-sm">{index + 1}.</td>
-                  <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
-                  <td className="p-3 text-sm text-center">{assessment.weight}%</td>
+                  <td className="p-3 text-sm">
+                    {isConfigMode ? (
+                      <Input
+                        value={assessment.assessmentCriteria}
+                        onChange={(e) => updateBehaviouralAssessment(assessment.id, "assessmentCriteria", e.target.value)}
+                        placeholder="Enter Assessment Criteria"
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                        style={{ color: '#52baf3' }}
+                      />
+                    ) : (
+                      assessment.assessmentCriteria
+                    )}
+                  </td>
+                  <td className="p-3 text-sm text-center">
+                    {isConfigMode ? (
+                      <Input
+                        type="number"
+                        value={assessment.weight}
+                        onChange={(e) => updateBehaviouralAssessment(assessment.id, "weight", parseInt(e.target.value) || 0)}
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-center w-16"
+                        style={{ color: '#52baf3' }}
+                      />
+                    ) : (
+                      `${assessment.weight}%`
+                    )}
+                  </td>
                   <td className="p-3">
                     <Select
                       value={assessment.effectiveness}
@@ -1309,6 +1387,17 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       >
                         <MessageSquare className="h-4 w-4" />
                       </Button>
+                      {isConfigMode && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteBehaviouralAssessment(assessment.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -1635,10 +1724,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               onClick={() => {
                 // Manual weight validation check before submitting
                 if (isConfigMode) {
-                  const assessments = formMethods.getValues("competenceAssessments");
-                  if (assessments.length > 0) {
+                  const competenceAssessments = formMethods.getValues("competenceAssessments");
+                  const behaviouralAssessments = formMethods.getValues("behaviouralAssessments");
+                  
+                  if (competenceAssessments.length > 0) {
                     const totalWeight = calculateTotalWeight();
-                    console.log("Manual validation - Total weight:", totalWeight, "Assessments:", assessments);
+                    console.log("Manual validation - Competence total weight:", totalWeight, "Assessments:", competenceAssessments);
+                    if (totalWeight !== 100) {
+                      setShowWeightWarning(true);
+                      return;
+                    }
+                  }
+                  
+                  if (behaviouralAssessments.length > 0) {
+                    const totalWeight = calculateBehaviouralTotalWeight();
+                    console.log("Manual validation - Behavioural total weight:", totalWeight, "Assessments:", behaviouralAssessments);
                     if (totalWeight !== 100) {
                       setShowWeightWarning(true);
                       return;
@@ -1805,7 +1905,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Weight Validation</h3>
             <p className="text-gray-600 mb-4">
-              Total weight must be 100, but current total is {calculateTotalWeight()}%. 
+              Total weight must be 100%. 
+              {(() => {
+                const competenceAssessments = formMethods.getValues("competenceAssessments");
+                const behaviouralAssessments = formMethods.getValues("behaviouralAssessments");
+                
+                if (competenceAssessments.length > 0 && calculateTotalWeight() !== 100) {
+                  return `Part C current total is ${calculateTotalWeight()}%.`;
+                }
+                if (behaviouralAssessments.length > 0 && calculateBehaviouralTotalWeight() !== 100) {
+                  return `Part D current total is ${calculateBehaviouralTotalWeight()}%.`;
+                }
+                return "";
+              })()}
               Do you want to equally distribute the weights?
             </p>
             <div className="flex justify-end gap-2">
@@ -1817,7 +1929,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               </Button>
               <Button
                 onClick={() => {
-                  distributeWeightsEqually();
+                  const competenceAssessments = formMethods.getValues("competenceAssessments");
+                  const behaviouralAssessments = formMethods.getValues("behaviouralAssessments");
+                  
+                  if (competenceAssessments.length > 0 && calculateTotalWeight() !== 100) {
+                    distributeWeightsEqually();
+                  }
+                  if (behaviouralAssessments.length > 0 && calculateBehaviouralTotalWeight() !== 100) {
+                    distributeBehaviouralWeightsEqually();
+                  }
                   setShowWeightWarning(false);
                 }}
               >
