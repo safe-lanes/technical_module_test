@@ -124,6 +124,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
   const [selectedVersionNo, setSelectedVersionNo] = useState<string>("");
   const [selectedVersionDate, setSelectedVersionDate] = useState<Date | undefined>();
+  const [activeVersion, setActiveVersion] = useState<string>("00"); // Track which version is currently being viewed
+  
+  // Mock version data - in real implementation this would come from API
+  const versions = [
+    ...(hasSavedDraft ? [{
+      versionNo: "01",
+      versionDate: selectedVersionDate ? format(selectedVersionDate, "dd-MMM-yyyy") : "02-Jul-2025",
+      status: "Draft"
+    }] : []),
+    {
+      versionNo: "00",
+      versionDate: "01-Jan-2025",
+      status: "Released"
+    }
+  ];
 
   // Configuration helper functions
   const toggleFieldConfigurable = (fieldId: string) => {
@@ -1259,6 +1274,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   setHasSavedDraft(false);
                   setSelectedVersionNo("");
                   setSelectedVersionDate(undefined);
+                  setActiveVersion("00"); // Return to released version
                 }}
               >
                 Discard Ver
@@ -1275,6 +1291,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             <Button 
               onClick={() => {
                 setHasSavedDraft(true);
+                setActiveVersion("01"); // Switch to draft version when saving
                 formMethods.handleSubmit(onSubmit)();
               }}
               className="flex items-center gap-2"
@@ -1285,64 +1302,78 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
 
-        {/* Version Display Bar */}
-        <div className="px-4 py-3 bg-gray-50 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">Version No:</span>
-                {isConfigMode ? (
-                  <Select
-                    value={selectedVersionNo}
-                    onValueChange={setSelectedVersionNo}
-                  >
-                    <SelectTrigger className="w-24 h-8">
-                      <SelectValue placeholder="01" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="01">01</SelectItem>
-                      <SelectItem value="02">02</SelectItem>
-                      <SelectItem value="03">03</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <span className="text-sm font-semibold">00</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">Version Date:</span>
-                {isConfigMode ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-36 h-8 justify-start text-left font-normal"
+        {/* Version Display Bars */}
+        <div className="border-b">
+          {versions.map((version, index) => (
+            <div
+              key={version.versionNo}
+              className={`px-4 py-3 cursor-pointer transition-colors hover:bg-gray-100 ${
+                activeVersion === version.versionNo 
+                  ? 'bg-blue-50 border-l-4 border-blue-500' 
+                  : 'bg-gray-50'
+              } ${index < versions.length - 1 ? 'border-b border-gray-200' : ''}`}
+              onClick={() => setActiveVersion(version.versionNo)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">Version No:</span>
+                    {isConfigMode && version.status === "Draft" ? (
+                      <Select
+                        value={selectedVersionNo || version.versionNo}
+                        onValueChange={setSelectedVersionNo}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedVersionDate ? format(selectedVersionDate, "dd-MMM-yyyy") : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={selectedVersionDate}
-                        onSelect={setSelectedVersionDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                ) : (
-                  <span className="text-sm font-semibold">01-Jan-2025</span>
-                )}
+                        <SelectTrigger className="w-24 h-8">
+                          <SelectValue placeholder={version.versionNo} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="01">01</SelectItem>
+                          <SelectItem value="02">02</SelectItem>
+                          <SelectItem value="03">03</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-sm font-semibold">{version.versionNo}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">Version Date:</span>
+                    {isConfigMode && version.status === "Draft" ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-36 h-8 justify-start text-left font-normal"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {selectedVersionDate ? format(selectedVersionDate, "dd-MMM-yyyy") : version.versionDate}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={selectedVersionDate}
+                            onSelect={setSelectedVersionDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <span className="text-sm font-semibold">{version.versionDate}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">Status:</span>
+                  <span className={`text-sm font-semibold ${
+                    version.status === "Released" ? "text-green-600" : "text-blue-600"
+                  }`}>
+                    {version.status}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Status:</span>
-              <span className="text-sm font-semibold text-green-600">
-                {isConfigMode ? "Draft" : "Released"}
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
 
         <div className="flex flex-1 overflow-hidden">
