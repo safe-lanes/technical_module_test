@@ -14,7 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Plus, MessageSquare, Edit2, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Save, Plus, MessageSquare, Edit2, Trash2, Settings, Lock, Unlock } from "lucide-react";
 import { Form } from "@shared/schema";
 
 // Training and Target schemas - matching AppraisalForm
@@ -111,6 +113,107 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
   const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
   const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
+  
+  // Configuration state for tracking which fields are configurable
+  const [isConfigMode, setIsConfigMode] = useState(false);
+  const [configurableFields, setConfigurableFields] = useState<Set<string>>(new Set());
+  const [configurableSections, setConfigurableSections] = useState<Set<string>>(new Set());
+
+  // Configuration helper functions
+  const toggleFieldConfigurable = (fieldId: string) => {
+    setConfigurableFields(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fieldId)) {
+        newSet.delete(fieldId);
+      } else {
+        newSet.add(fieldId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSectionConfigurable = (sectionId: string) => {
+    setConfigurableSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+
+  // ConfigurableField component
+  const ConfigurableField: React.FC<{
+    fieldId: string;
+    children: React.ReactNode;
+    label?: string;
+    className?: string;
+  }> = ({ fieldId, children, label, className = "" }) => {
+    const isConfigurable = configurableFields.has(fieldId);
+    
+    return (
+      <div className={`relative ${className}`}>
+        {isConfigMode && (
+          <div className="absolute top-0 right-0 z-10 flex items-center gap-1">
+            <Badge 
+              variant={isConfigurable ? "default" : "secondary"}
+              className="text-xs"
+            >
+              {isConfigurable ? "Configurable" : "Fixed"}
+            </Badge>
+            <Checkbox
+              checked={isConfigurable}
+              onCheckedChange={() => toggleFieldConfigurable(fieldId)}
+            />
+          </div>
+        )}
+        <div className={`${isConfigurable && isConfigMode ? 'ring-2 ring-blue-500 ring-opacity-50 rounded-md p-2' : ''}`}>
+          {label && isConfigMode && (
+            <div className="flex items-center gap-2 mb-1">
+              <Label className="text-sm font-medium">{label}</Label>
+              {isConfigurable && <Lock className="h-3 w-3 text-blue-500" />}
+            </div>
+          )}
+          {children}
+        </div>
+      </div>
+    );
+  };
+
+  // ConfigurableSection component
+  const ConfigurableSection: React.FC<{
+    sectionId: string;
+    title: string;
+    children: React.ReactNode;
+    className?: string;
+  }> = ({ sectionId, title, children, className = "" }) => {
+    const isConfigurable = configurableSections.has(sectionId);
+    
+    return (
+      <div className={`${className} ${isConfigurable && isConfigMode ? 'ring-2 ring-green-500 ring-opacity-50 rounded-md' : ''}`}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-[#16569e]">{title}</h3>
+          {isConfigMode && (
+            <div className="flex items-center gap-2">
+              <Badge 
+                variant={isConfigurable ? "default" : "secondary"}
+                className="text-xs"
+              >
+                {isConfigurable ? "Section Configurable" : "Section Fixed"}
+              </Badge>
+              <Checkbox
+                checked={isConfigurable}
+                onCheckedChange={() => toggleSectionConfigurable(sectionId)}
+              />
+            </div>
+          )}
+        </div>
+        {children}
+      </div>
+    );
+  };
 
   const formMethods = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -352,87 +455,92 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
 
 
   const renderPartA = () => (
-    <div className="space-y-6">
-      <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
+    <ConfigurableSection sectionId="part-a" title="Part A: Seafarer's Information">
+      <div className="space-y-6">
         <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
-        <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
-      </div>
-      
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="seafarersName">Seafarer's Name</Label>
-          <Input
-            id="seafarersName"
-            placeholder="James Michael"
-            {...formMethods.register("seafarersName")}
-          />
-        </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="seafarersRank">Seafarer's Rank</Label>
-          <Select
-            value={formMethods.watch("seafarersRank") || ""}
-            onValueChange={(value) => formMethods.setValue("seafarersRank", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select rank" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="master">Master</SelectItem>
-              <SelectItem value="chief-officer">Chief Officer</SelectItem>
-              <SelectItem value="second-officer">Second Officer</SelectItem>
-              <SelectItem value="third-officer">Third Officer</SelectItem>
-              <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
-              <SelectItem value="second-engineer">Second Engineer</SelectItem>
-              <SelectItem value="third-engineer">Third Engineer</SelectItem>
-              <SelectItem value="able-seaman">Able Seaman</SelectItem>
-              <SelectItem value="bosun">Bosun</SelectItem>
-              <SelectItem value="cook">Cook</SelectItem>
-              <SelectItem value="steward">Steward</SelectItem>
-              <SelectItem value="electrician">Electrician</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <ConfigurableField fieldId="seafarers-name" label="Seafarer's Name">
+            <div className="space-y-2">
+              <Label htmlFor="seafarersName">Seafarer's Name</Label>
+              <Input
+                id="seafarersName"
+                placeholder="James Michael"
+                {...formMethods.register("seafarersName")}
+              />
+            </div>
+          </ConfigurableField>
+          
+          <ConfigurableField fieldId="seafarers-rank" label="Seafarer's Rank">
+            <div className="space-y-2">
+              <Label htmlFor="seafarersRank">Seafarer's Rank</Label>
+              <Select
+                value={formMethods.watch("seafarersRank") || ""}
+                onValueChange={(value) => formMethods.setValue("seafarersRank", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select rank" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="master">Master</SelectItem>
+                  <SelectItem value="chief-officer">Chief Officer</SelectItem>
+                  <SelectItem value="second-officer">Second Officer</SelectItem>
+                  <SelectItem value="third-officer">Third Officer</SelectItem>
+                  <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
+                  <SelectItem value="second-engineer">Second Engineer</SelectItem>
+                  <SelectItem value="third-engineer">Third Engineer</SelectItem>
+                  <SelectItem value="able-seaman">Able Seaman</SelectItem>
+                  <SelectItem value="bosun">Bosun</SelectItem>
+                  <SelectItem value="cook">Cook</SelectItem>
+                  <SelectItem value="steward">Steward</SelectItem>
+                  <SelectItem value="electrician">Electrician</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </ConfigurableField>
         
-        <div className="space-y-2">
-          <Label htmlFor="nationality">Nationality</Label>
-          <Select
-            value={formMethods.watch("nationality") || ""}
-            onValueChange={(value) => formMethods.setValue("nationality", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select nationality..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="british">British</SelectItem>
-              <SelectItem value="indian">Indian</SelectItem>
-              <SelectItem value="philippines">Philippines</SelectItem>
-              <SelectItem value="german">German</SelectItem>
-              <SelectItem value="norwegian">Norwegian</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <ConfigurableField fieldId="nationality" label="Nationality">
+            <div className="space-y-2">
+              <Label htmlFor="nationality">Nationality</Label>
+              <Select
+                value={formMethods.watch("nationality") || ""}
+                onValueChange={(value) => formMethods.setValue("nationality", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select nationality..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="british">British</SelectItem>
+                  <SelectItem value="indian">Indian</SelectItem>
+                  <SelectItem value="philippines">Philippines</SelectItem>
+                  <SelectItem value="german">German</SelectItem>
+                  <SelectItem value="norwegian">Norwegian</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </ConfigurableField>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="vessel">Vessel</Label>
-          <Select
-            value={formMethods.watch("vessel") || ""}
-            onValueChange={(value) => formMethods.setValue("vessel", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select vessel" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="mt-sail-one">MT Sail One</SelectItem>
-              <SelectItem value="mt-sail-two">MT Sail Two</SelectItem>
-              <SelectItem value="mt-sail-three">MT Sail Three</SelectItem>
-              <SelectItem value="mv-sail-seven">MV Sail Seven</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <ConfigurableField fieldId="vessel" label="Vessel">
+          <div className="space-y-2">
+            <Label htmlFor="vessel">Vessel</Label>
+            <Select
+              value={formMethods.watch("vessel") || ""}
+              onValueChange={(value) => formMethods.setValue("vessel", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select vessel" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mt-sail-one">MT Sail One</SelectItem>
+                <SelectItem value="mt-sail-two">MT Sail Two</SelectItem>
+                <SelectItem value="mt-sail-three">MT Sail Three</SelectItem>
+                <SelectItem value="mv-sail-seven">MV Sail Seven</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </ConfigurableField>
         
         <div className="space-y-2">
           <Label htmlFor="signOn">Sign On Date</Label>
@@ -517,7 +625,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
           </SelectContent>
         </Select>
         </div>
-    </div>
+      </div>
+    </ConfigurableSection>
   );
 
   const renderPartB = () => (
@@ -1189,14 +1298,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
             <h2 className="text-lg font-semibold">
               {form.name} - Version {formVersion}
             </h2>
+            {isConfigMode && (
+              <Badge variant="outline" className="ml-2">
+                Configuration Mode
+              </Badge>
+            )}
           </div>
-          <Button 
-            onClick={formMethods.handleSubmit(onSubmit)}
-            className="flex items-center gap-2"
-          >
-            <Save className="h-4 w-4" />
-            Save Draft
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={isConfigMode ? "default" : "outline"}
+              onClick={() => setIsConfigMode(!isConfigMode)}
+              className="flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              {isConfigMode ? "Exit Config" : "Configure Fields"}
+            </Button>
+            <Button 
+              onClick={formMethods.handleSubmit(onSubmit)}
+              className="flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save Draft
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
