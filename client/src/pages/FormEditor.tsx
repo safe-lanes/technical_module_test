@@ -127,11 +127,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     personalityIndexCategory: true,
   });
   
+  // Section visibility state
+  const [sectionVisibility, setSectionVisibility] = useState({
+    partB: true,
+    partB1: true,
+    partB2: true,
+  });
+  
   // Function to toggle field visibility
   const toggleFieldVisibility = (fieldName: string) => {
     setFieldVisibility(prev => ({
       ...prev,
       [fieldName]: !prev[fieldName]
+    }));
+  };
+  
+  // Function to toggle section visibility
+  const toggleSectionVisibility = (sectionName: string) => {
+    setSectionVisibility(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
     }));
   };
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
@@ -630,25 +645,62 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartB = () => (
     <div className="space-y-8">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part B: Information at Start of Appraisal Period</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-xl font-semibold" style={{ color: '#16569e' }}>Part B: Information at Start of Appraisal Period</h3>
+          {isConfigMode && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSectionVisibility('partB')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              {sectionVisibility.partB ? 'Hide Section' : 'Show Section'}
+            </Button>
+          )}
+        </div>
         <div style={{ color: '#16569e' }} className="text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
-      {/* B1. Trainings conducted prior joining vessel */}
-      <div>
+      {sectionVisibility.partB && (
+        <>
+          {/* B1. Trainings conducted prior joining vessel */}
+          {sectionVisibility.partB1 && (
+            <div>
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
-          <Button
-            type="button"
-            onClick={addTraining}
-            variant="outline"
-            size="sm"
-            className="text-gray-600 border-gray-300"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Training
-          </Button>
+          <div className="flex items-center gap-2">
+            {isConfigMode && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toggleSectionVisibility('partB1')}
+                className="text-sm px-3 py-1 h-7"
+                style={{ 
+                  borderColor: '#52baf3',
+                  color: '#52baf3'
+                }}
+              >
+                {sectionVisibility.partB1 ? 'Hide Section' : 'Show Section'}
+              </Button>
+            )}
+            <Button
+              type="button"
+              onClick={addTraining}
+              variant="outline"
+              size="sm"
+              className="text-gray-600 border-gray-300"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Training
+            </Button>
+          </div>
         </div>
         
         <div className="border rounded-lg overflow-hidden">
@@ -750,21 +802,40 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
       </div>
+          )}
 
-      {/* B2. Target Setting */}
-      <div>
+          {/* B2. Target Setting */}
+          {sectionVisibility.partB2 && (
+            <div>
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B2. Target Setting</h3>
-          <Button
-            type="button"
-            onClick={addTarget}
-            variant="outline"
-            size="sm"
-            className="text-gray-600 border-gray-300"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Target
-          </Button>
+          <div className="flex items-center gap-2">
+            {isConfigMode && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toggleSectionVisibility('partB2')}
+                className="text-sm px-3 py-1 h-7"
+                style={{ 
+                  borderColor: '#52baf3',
+                  color: '#52baf3'
+                }}
+              >
+                {sectionVisibility.partB2 ? 'Hide Section' : 'Show Section'}
+              </Button>
+            )}
+            <Button
+              type="button"
+              onClick={addTarget}
+              variant="outline"
+              size="sm"
+              className="text-gray-600 border-gray-300"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Target
+            </Button>
+          </div>
         </div>
         
         <div className="border rounded-lg overflow-hidden">
@@ -864,6 +935,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </table>
         </div>
       </div>
+            )}
+        </>
+      )}
     </div>
   );
 
