@@ -135,6 +135,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     partB: true,
     partB1: true,
     partB2: true,
+    partD: true,
   });
   
   // Function to toggle field visibility
@@ -165,7 +166,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     
     // Check which sections are visible
     if (sectionVisibility.partB) visibleSections.push('B');
-    visibleSections.push('C', 'D', 'E', 'F', 'G'); // These aren't configurable yet
+    visibleSections.push('C'); // C is not configurable yet
+    if (sectionVisibility.partD) visibleSections.push('D');
+    visibleSections.push('E', 'F', 'G'); // These aren't configurable yet
     
     const originalIndex = sectionOrder.indexOf(originalLetter);
     const visibleIndex = visibleSections.indexOf(originalLetter);
@@ -547,6 +550,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     if (isConfigMode) return true;
     // Outside config mode, filter out hidden sections
     if (section.id === "B" && !sectionVisibility.partB) return false;
+    if (section.id === "D" && !sectionVisibility.partD) return false;
     return true;
   }).map((section, index) => ({
     ...section,
@@ -1295,149 +1299,193 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartD = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-xl font-semibold" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
+          {isConfigMode && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSectionVisibility('partD')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              {sectionVisibility.partD ? 'Hide Section' : 'Show Section'}
+            </Button>
+          )}
+        </div>
         <div style={{ color: '#16569e' }} className="text-sm">Description</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
-      {/* Add Criterion Button */}
-      {isConfigMode && (
-        <div className="flex justify-end items-center mb-4">
-          <Button
-            type="button"
-            onClick={addBehaviouralAssessment}
-            variant="outline"
-            size="sm"
-            className="text-sm px-3 py-1 h-7"
-            style={{ 
-              borderColor: '#52baf3',
-              color: '#52baf3'
-            }}
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Criterion
-          </Button>
+      {sectionVisibility.partD && (
+        <>
+          {/* Add Criterion Button */}
+          {isConfigMode && (
+            <div className="flex justify-end items-center mb-4">
+              <Button
+                type="button"
+                onClick={addBehaviouralAssessment}
+                variant="outline"
+                size="sm"
+                className="text-sm px-3 py-1 h-7"
+                style={{ 
+                  borderColor: '#52baf3',
+                  color: '#52baf3'
+                }}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Criterion
+              </Button>
+            </div>
+          )}
+          
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                  <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
+                  <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
+                  <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
+                  <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formMethods.watch("behaviouralAssessments").map((assessment, index) => (
+                  <React.Fragment key={assessment.id}>
+                    <tr className="border-t">
+                      <td className="p-3 text-sm">{index + 1}.</td>
+                      <td className="p-3 text-sm">
+                        {isConfigMode ? (
+                          <Input
+                            value={assessment.assessmentCriteria}
+                            onChange={(e) => updateBehaviouralAssessment(assessment.id, "assessmentCriteria", e.target.value)}
+                            placeholder="Enter Assessment Criteria"
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                            style={{ color: '#52baf3' }}
+                          />
+                        ) : (
+                          assessment.assessmentCriteria
+                        )}
+                      </td>
+                      <td className="p-3 text-sm text-center">
+                        {isConfigMode ? (
+                          <Input
+                            type="number"
+                            value={assessment.weight}
+                            onChange={(e) => updateBehaviouralAssessment(assessment.id, "weight", parseInt(e.target.value) || 0)}
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0 text-center w-16"
+                            style={{ color: '#52baf3' }}
+                          />
+                        ) : (
+                          `${assessment.weight}%`
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <Select
+                          value={assessment.effectiveness}
+                          onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
+                        >
+                          <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                            <SelectValue placeholder="Select Rating" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
+                            <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
+                            <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
+                            <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
+                            <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex space-x-2">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setBehaviouralComments(prev => ({
+                              ...prev,
+                              [assessment.id]: prev[assessment.id] || ""
+                            }))}
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                          {isConfigMode && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteBehaviouralAssessment(assessment.id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {behaviouralComments[assessment.id] !== undefined && (
+                      <tr key={`comment-${assessment.id}`}>
+                        <td></td>
+                        <td colSpan={4} className="p-3">
+                          <Textarea
+                            value={behaviouralComments[assessment.id]}
+                            onChange={(e) => {
+                              setBehaviouralComments(prev => ({
+                                ...prev,
+                                [assessment.id]: e.target.value
+                              }));
+                              updateBehaviouralAssessment(assessment.id, "comment", e.target.value);
+                            }}
+                            placeholder="Comment: Add your observations here..."
+                            className="text-blue-600 italic border-blue-200"
+                            rows={2}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-600">Section Score:</span>
+            <div className={`px-4 py-2 rounded text-lg font-semibold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).textColor}`}>
+              {calculateBehaviouralSectionScore()}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Hidden Part D placeholder in config mode */}
+      {isConfigMode && !sectionVisibility.partD && (
+        <div className="opacity-50 bg-gray-50 p-6 rounded border-2 border-dashed border-gray-300">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-400">Part D: Behavioural Assessment (Soft Skills) (Hidden)</h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSectionVisibility('partD')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              Show Section
+            </Button>
+          </div>
+          <div className="text-gray-400 text-sm">Section is hidden</div>
         </div>
       )}
-      
-      <div className="border rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formMethods.watch("behaviouralAssessments").map((assessment, index) => (
-              <React.Fragment key={assessment.id}>
-                <tr className="border-t">
-                  <td className="p-3 text-sm">{index + 1}.</td>
-                  <td className="p-3 text-sm">
-                    {isConfigMode ? (
-                      <Input
-                        value={assessment.assessmentCriteria}
-                        onChange={(e) => updateBehaviouralAssessment(assessment.id, "assessmentCriteria", e.target.value)}
-                        placeholder="Enter Assessment Criteria"
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
-                        style={{ color: '#52baf3' }}
-                      />
-                    ) : (
-                      assessment.assessmentCriteria
-                    )}
-                  </td>
-                  <td className="p-3 text-sm text-center">
-                    {isConfigMode ? (
-                      <Input
-                        type="number"
-                        value={assessment.weight}
-                        onChange={(e) => updateBehaviouralAssessment(assessment.id, "weight", parseInt(e.target.value) || 0)}
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-center w-16"
-                        style={{ color: '#52baf3' }}
-                      />
-                    ) : (
-                      `${assessment.weight}%`
-                    )}
-                  </td>
-                  <td className="p-3">
-                    <Select
-                      value={assessment.effectiveness}
-                      onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
-                    >
-                      <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
-                        <SelectValue placeholder="Select Rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
-                        <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
-                        <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
-                        <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
-                        <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setBehaviouralComments(prev => ({
-                          ...prev,
-                          [assessment.id]: prev[assessment.id] || ""
-                        }))}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
-                      {isConfigMode && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteBehaviouralAssessment(assessment.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-                {behaviouralComments[assessment.id] !== undefined && (
-                  <tr key={`comment-${assessment.id}`}>
-                    <td></td>
-                    <td colSpan={4} className="p-3">
-                      <Textarea
-                        value={behaviouralComments[assessment.id]}
-                        onChange={(e) => {
-                          setBehaviouralComments(prev => ({
-                            ...prev,
-                            [assessment.id]: e.target.value
-                          }));
-                          updateBehaviouralAssessment(assessment.id, "comment", e.target.value);
-                        }}
-                        placeholder="Comment: Add your observations here..."
-                        className="text-blue-600 italic border-blue-200"
-                        rows={2}
-                      />
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
-        <span className="text-sm font-medium text-gray-600">Section Score:</span>
-        <div className={`px-4 py-2 rounded text-lg font-semibold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateBehaviouralSectionScore())).textColor}`}>
-          {calculateBehaviouralSectionScore()}
-        </div>
-      </div>
     </div>
   );
 
@@ -1656,7 +1704,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       case "A": return renderPartA();
       case "B": return (sectionVisibility.partB || isConfigMode) ? renderPartB() : renderPartA();
       case "C": return renderPartC();
-      case "D": return renderPartD();
+      case "D": return (sectionVisibility.partD || isConfigMode) ? renderPartD() : renderPartA();
       case "E": return renderPartE();
       case "F": return renderPartF();
       case "G": return renderPartG();
