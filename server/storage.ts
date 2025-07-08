@@ -40,7 +40,7 @@ export class MemStorage implements IStorage {
     this.currentRankGroupId = 1;
     this.currentAvailableRankId = 1;
     
-    // Initialize with sample form data - multiple rank groups for same form
+    // Initialize with sample form data - showing only 1 rank group for configuration
     this.forms.set(1, {
       id: 1,
       name: "Crew Appraisal Form",
@@ -48,21 +48,7 @@ export class MemStorage implements IStorage {
       versionNo: "01",
       versionDate: "01-Jan-2025",
     });
-    this.forms.set(2, {
-      id: 2,
-      name: "Crew Appraisal Form",
-      rankGroup: "Junior Officers",
-      versionNo: "01",
-      versionDate: "01-Jan-2025",
-    });
-    this.forms.set(3, {
-      id: 3,
-      name: "Crew Appraisal Form",
-      rankGroup: "Ratings",
-      versionNo: "01",
-      versionDate: "01-Jan-2025",
-    });
-    this.currentFormId = 4;
+    this.currentFormId = 2;
     
     // Initialize with sample available ranks
     this.availableRanks.set(1, { id: 1, name: "Master", category: "Senior Officers" });
@@ -79,26 +65,14 @@ export class MemStorage implements IStorage {
     this.availableRanks.set(12, { id: 12, name: "Wiper", category: "Ratings" });
     this.currentAvailableRankId = 13;
     
-    // Initialize with sample rank groups
+    // Initialize with sample rank groups - showing only 1 for configuration
     this.rankGroups.set(1, {
       id: 1,
       formId: 1,
       name: "Senior Officers",
       ranks: ["Master", "Chief Officer", "Chief Engineer"]
     });
-    this.rankGroups.set(2, {
-      id: 2,
-      formId: 1,
-      name: "Junior Officers", 
-      ranks: ["2nd Officer", "3rd Officer", "2nd Engineer", "3rd Engineer"]
-    });
-    this.rankGroups.set(3, {
-      id: 3,
-      formId: 1,
-      name: "Ratings",
-      ranks: ["Bosun", "AB", "OS", "Oiler", "Wiper"]
-    });
-    this.currentRankGroupId = 4;
+    this.currentRankGroupId = 2;
   }
 
   async getUser(id: number): Promise<User | undefined> {
