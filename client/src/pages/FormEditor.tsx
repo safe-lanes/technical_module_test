@@ -149,6 +149,28 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       [sectionName]: !prev[sectionName]
     }));
   };
+
+  // Function to get dynamic section letter based on visibility
+  const getDynamicSectionLetter = (originalLetter: string) => {
+    if (isConfigMode) return originalLetter; // In config mode, keep original letters
+    
+    const sectionOrder = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    const visibleSections = [];
+    
+    // Always include Part A as it's not configurable yet
+    visibleSections.push('A');
+    
+    // Check which sections are visible
+    if (sectionVisibility.partB) visibleSections.push('B');
+    visibleSections.push('C', 'D', 'E', 'F', 'G'); // These aren't configurable yet
+    
+    const originalIndex = sectionOrder.indexOf(originalLetter);
+    const visibleIndex = visibleSections.indexOf(originalLetter);
+    
+    if (visibleIndex === -1) return originalLetter; // Section not found
+    
+    return String.fromCharCode(65 + visibleIndex); // Convert to letter (A=65)
+  };
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
   const [selectedVersionNo, setSelectedVersionNo] = useState<string>("");
   const [selectedVersionDate, setSelectedVersionDate] = useState<Date | undefined>();
@@ -430,7 +452,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     { id: "E", title: "Training Needs & Development", active: false },
     { id: "F", title: "Summary & Recommendations", active: false },
     { id: "G", title: "Office Review & Followup", active: false },
-  ];
+  ].filter(section => {
+    // In config mode, show all sections
+    if (isConfigMode) return true;
+    // Outside config mode, filter out hidden sections
+    if (section.id === "B" && !sectionVisibility.partB) return false;
+    return true;
+  }).map((section, index) => ({
+    ...section,
+    // Update the display ID to use dynamic lettering
+    displayId: isConfigMode ? section.id : String.fromCharCode(65 + index),
+    displayTitle: isConfigMode ? section.title : section.title
+  }));
 
 
 
@@ -646,7 +679,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     <div className="space-y-8">
       <div className="pb-4 mb-6">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold" style={{ color: '#16569e' }}>Part B: Information at Start of Appraisal Period</h3>
+          <h3 className="text-xl font-semibold" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('B')}: Information at Start of Appraisal Period</h3>
           {isConfigMode && (
             <Button
               type="button"
@@ -1013,7 +1046,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartC = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part C: Competence Assessment (Professional Knowledge & Skills)</h3>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('C')}: Competence Assessment (Professional Knowledge & Skills)</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Description</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
@@ -1108,7 +1141,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartD = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part D: Behavioural Assessment (Soft Skills)</h3>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('D')}: Behavioural Assessment (Soft Skills)</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Description</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
@@ -1202,7 +1235,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartE = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part E: Training Needs & Development</h3>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('E')}: Training Needs & Development</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Specify any training needs identified during the appraisals period</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
@@ -1314,7 +1347,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartF = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part F: Summary & Recommendations</h3>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('F')}: Summary & Recommendations</h3>
         <div style={{ color: '#16569e' }} className="text-sm">Add any recommendations related to following</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
@@ -1374,7 +1407,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderPartG = () => (
     <div className="space-y-6">
       <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part G: Office Review & Followup</h3>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('G')}: Office Review & Followup</h3>
         <div style={{ color: '#16569e' }} className="text-sm">This section is visible to office users only</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
@@ -1412,7 +1445,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const renderSectionContent = () => {
     switch (activeSection) {
       case "A": return renderPartA();
-      case "B": return renderPartB();
+      case "B": return (sectionVisibility.partB || isConfigMode) ? renderPartB() : renderPartA();
       case "C": return renderPartC();
       case "D": return renderPartD();
       case "E": return renderPartE();
@@ -1608,7 +1641,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                             isActive ? "bg-blue-600" : isCompleted ? "bg-green-500" : "bg-gray-400"
                           }`}
                         >
-                          {section.id}
+                          {section.displayId}
                         </div>
                         <div className="flex-1">
                           <div className={`font-medium text-sm ${isActive ? "text-blue-700" : "text-gray-700"}`}>
