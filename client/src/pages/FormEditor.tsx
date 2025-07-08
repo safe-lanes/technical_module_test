@@ -121,6 +121,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [configurableFields, setConfigurableFields] = useState<Set<string>>(new Set());
   const [configurableSections, setConfigurableSections] = useState<Set<string>>(new Set());
+  
+  // Field visibility state
+  const [fieldVisibility, setFieldVisibility] = useState({
+    personalityIndexCategory: true,
+  });
+  
+  // Function to toggle field visibility
+  const toggleFieldVisibility = (fieldName: string) => {
+    setFieldVisibility(prev => ({
+      ...prev,
+      [fieldName]: !prev[fieldName]
+    }));
+  };
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
   const [selectedVersionNo, setSelectedVersionNo] = useState<string>("");
   const [selectedVersionDate, setSelectedVersionDate] = useState<Date | undefined>();
@@ -556,22 +569,41 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="personalityIndexCategory">Personality Index (PI) Category</Label>
-        <Select
-          value={formMethods.watch("personalityIndexCategory") || ""}
-          onValueChange={(value) => formMethods.setValue("personalityIndexCategory", value)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="analytical">Analytical</SelectItem>
-            <SelectItem value="driver">Driver</SelectItem>
-            <SelectItem value="expressive">Expressive</SelectItem>
-            <SelectItem value="amiable">Amiable</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="personalityIndexCategory">Personality Index (PI) Category</Label>
+          {isConfigMode && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleFieldVisibility('personalityIndexCategory')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              {fieldVisibility.personalityIndexCategory ? 'Hide Field' : 'Show Field'}
+            </Button>
+          )}
         </div>
+        {fieldVisibility.personalityIndexCategory && (
+          <Select
+            value={formMethods.watch("personalityIndexCategory") || ""}
+            onValueChange={(value) => formMethods.setValue("personalityIndexCategory", value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="analytical">Analytical</SelectItem>
+              <SelectItem value="driver">Driver</SelectItem>
+              <SelectItem value="expressive">Expressive</SelectItem>
+              <SelectItem value="amiable">Amiable</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
     </div>
   );
 
