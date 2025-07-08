@@ -46,6 +46,7 @@ export const AdminModule = (): JSX.Element => {
   const [location] = useLocation();
   const [selectedAdminPage, setSelectedAdminPage] = useState("forms");
   const [editingForm, setEditingForm] = useState<Form | null>(null);
+  const [editingRankGroup, setEditingRankGroup] = useState<string | null>(null);
   const [isAddRankGroupOpen, setIsAddRankGroupOpen] = useState(false);
   const [selectedFormForRankGroup, setSelectedFormForRankGroup] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -76,6 +77,7 @@ export const AdminModule = (): JSX.Element => {
 
   const handleEditClick = (form: Form) => {
     setEditingForm(form);
+    setEditingRankGroup("Senior Officers"); // Default to Senior Officers for now
   };
 
   const handleAddRankGroup = (formName: string) => {
@@ -104,6 +106,7 @@ export const AdminModule = (): JSX.Element => {
 
   const handleCloseEditor = () => {
     setEditingForm(null);
+    setEditingRankGroup(null);
   };
 
   // Add Rank Group Dialog Component
@@ -496,6 +499,7 @@ export const AdminModule = (): JSX.Element => {
       {editingForm && (
         <FormEditor
           form={editingForm}
+          rankGroupName={editingRankGroup}
           onClose={handleCloseEditor}
           onSave={handleFormSave}
         />

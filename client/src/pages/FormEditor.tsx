@@ -103,11 +103,12 @@ type AppraisalFormData = z.infer<typeof appraisalSchema>;
 
 interface FormEditorProps {
   form: Form;
+  rankGroupName?: string;
   onClose: () => void;
   onSave: (data: any) => void;
 }
 
-export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave }) => {
+export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onClose, onSave }) => {
   const [activeSection, setActiveSection] = useState("A");
   const [formVersion] = useState(0); // Starting version 0
   const [trainingComments, setTrainingComments] = useState<{[key: string]: string}>({});
@@ -1226,7 +1227,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, onClose, onSave })
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <h2 className="text-lg font-semibold">
-              Crew Appraisal Form - Rank Group
+              Crew Appraisal Form - {rankGroupName || "Rank Group"}
             </h2>
             {isConfigMode && (
               <Badge variant="outline" className="ml-2">
