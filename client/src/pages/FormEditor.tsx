@@ -568,26 +568,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="personalityIndexCategory">Personality Index (PI) Category</Label>
-          {isConfigMode && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => toggleFieldVisibility('personalityIndexCategory')}
-              className="text-sm px-3 py-1 h-7"
-              style={{ 
-                borderColor: '#52baf3',
-                color: '#52baf3'
-              }}
-            >
-              {fieldVisibility.personalityIndexCategory ? 'Hide Field' : 'Show Field'}
-            </Button>
-          )}
-        </div>
-        {fieldVisibility.personalityIndexCategory && (
+      {fieldVisibility.personalityIndexCategory && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="personalityIndexCategory">Personality Index (PI) Category</Label>
+            {isConfigMode && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toggleFieldVisibility('personalityIndexCategory')}
+                className="text-sm px-3 py-1 h-7"
+                style={{ 
+                  borderColor: '#52baf3',
+                  color: '#52baf3'
+                }}
+              >
+                Hide Field
+              </Button>
+            )}
+          </div>
           <Select
             value={formMethods.watch("personalityIndexCategory") || ""}
             onValueChange={(value) => formMethods.setValue("personalityIndexCategory", value)}
@@ -602,8 +602,28 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               <SelectItem value="amiable">Amiable</SelectItem>
             </SelectContent>
           </Select>
-        )}
-      </div>
+        </div>
+      )}
+      {isConfigMode && !fieldVisibility.personalityIndexCategory && (
+        <div className="space-y-2 opacity-50">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="personalityIndexCategory" className="text-gray-400">Personality Index (PI) Category (Hidden)</Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toggleFieldVisibility('personalityIndexCategory')}
+              className="text-sm px-3 py-1 h-7"
+              style={{ 
+                borderColor: '#52baf3',
+                color: '#52baf3'
+              }}
+            >
+              Show Field
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 
