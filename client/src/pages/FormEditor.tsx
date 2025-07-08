@@ -122,6 +122,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [configurableFields, setConfigurableFields] = useState<Set<string>>(new Set());
   const [configurableSections, setConfigurableSections] = useState<Set<string>>(new Set());
   
+  // Weight validation dialog state
+  const [showWeightWarning, setShowWeightWarning] = useState(false);
+  
   // Field visibility state
   const [fieldVisibility, setFieldVisibility] = useState({
     personalityIndexCategory: true,
@@ -232,18 +235,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       primaryAppraiser: "",
       trainings: [],
       targets: [],
-      competenceAssessments: [
-        { id: "1", assessmentCriteria: "Safety Performance and Open Reporting", weight: 10, effectiveness: "", comment: "" },
-        { id: "2", assessmentCriteria: "Shipboard operational performance & technical skills - Navigation", weight: 10, effectiveness: "", comment: "" },
-        { id: "3", assessmentCriteria: "Assessment Criteria 3", weight: 10, effectiveness: "", comment: "" },
-        { id: "4", assessmentCriteria: "Assessment Criteria 4", weight: 10, effectiveness: "", comment: "" },
-        { id: "5", assessmentCriteria: "Assessment Criteria 5", weight: 10, effectiveness: "", comment: "" },
-        { id: "6", assessmentCriteria: "Assessment Criteria 6", weight: 10, effectiveness: "", comment: "" },
-        { id: "7", assessmentCriteria: "Assessment Criteria 7", weight: 10, effectiveness: "", comment: "" },
-        { id: "8", assessmentCriteria: "Assessment Criteria 8", weight: 10, effectiveness: "", comment: "" },
-        { id: "9", assessmentCriteria: "Assessment Criteria 9", weight: 10, effectiveness: "", comment: "" },
-        { id: "10", assessmentCriteria: "Assessment Criteria 10", weight: 10, effectiveness: "", comment: "" }
-      ],
+      competenceAssessments: [],
       behaviouralAssessments: [
         { id: "1", assessmentCriteria: "Leadership", weight: 10, effectiveness: "", comment: "" },
         { id: "2", assessmentCriteria: "Attitude", weight: 10, effectiveness: "", comment: "" },
@@ -261,6 +253,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   });
 
   const onSubmit = (data: AppraisalFormData) => {
+    // Check if we're in config mode and need to validate weights
+    if (isConfigMode && data.competenceAssessments.length > 0) {
+      const totalWeight = calculateTotalWeight();
+      if (totalWeight !== 100) {
+        setShowWeightWarning(true);
+        return; // Stop submission until weights are validated
+      }
+    }
+    
     onSave({
       ...data,
       formId: form.id,
@@ -435,6 +436,55 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       t.id === id ? { ...t, [field]: value } : t
     );
     formMethods.setValue("trainingNeeds", updatedTrainingNeeds);
+  };
+
+  // Competence Assessment functions
+  const addCompetenceCriterion = () => {
+    const currentAssessments = formMethods.getValues("competenceAssessments");
+    const newAssessment = {
+      id: Date.now().toString(),
+      assessmentCriteria: "",
+      weight: 0,
+      effectiveness: "",
+      comment: ""
+    };
+    formMethods.setValue("competenceAssessments", [...currentAssessments, newAssessment]);
+  };
+
+  const updateCompetenceCriterion = (id: string, field: string, value: string | number) => {
+    const currentAssessments = formMethods.getValues("competenceAssessments");
+    const updatedAssessments = currentAssessments.map(assessment => 
+      assessment.id === id ? { ...assessment, [field]: value } : assessment
+    );
+    formMethods.setValue("competenceAssessments", updatedAssessments);
+  };
+
+  const deleteCompetenceCriterion = (id: string) => {
+    const currentAssessments = formMethods.getValues("competenceAssessments");
+    const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+    formMethods.setValue("competenceAssessments", updatedAssessments);
+  };
+
+  // Function to calculate total weight
+  const calculateTotalWeight = () => {
+    const assessments = formMethods.getValues("competenceAssessments");
+    return assessments.reduce((total, assessment) => total + (assessment.weight || 0), 0);
+  };
+
+  // Function to distribute weights equally
+  const distributeWeightsEqually = () => {
+    const assessments = formMethods.getValues("competenceAssessments");
+    if (assessments.length === 0) return;
+    
+    const equalWeight = Math.floor(100 / assessments.length);
+    const remainder = 100 % assessments.length;
+    
+    const updatedAssessments = assessments.map((assessment, index) => ({
+      ...assessment,
+      weight: index < remainder ? equalWeight + 1 : equalWeight
+    }));
+    
+    formMethods.setValue("competenceAssessments", updatedAssessments);
   };
 
   // Calculate overall score (F1)
@@ -1051,6 +1101,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
+      {/* Add Criterion Button */}
+      {isConfigMode && (
+        <div className="flex justify-end items-center mb-4">
+          <Button
+            type="button"
+            onClick={addCompetenceCriterion}
+            variant="outline"
+            size="sm"
+            className="text-sm px-3 py-1 h-7"
+            style={{ 
+              borderColor: '#52baf3',
+              color: '#52baf3'
+            }}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add Criterion
+          </Button>
+        </div>
+      )}
+      
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-100">
@@ -1067,12 +1137,39 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               <React.Fragment key={assessment.id}>
                 <tr className="border-t">
                   <td className="p-3 text-sm">{index + 1}.</td>
-                  <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
-                  <td className="p-3 text-sm">{assessment.weight}%</td>
+                  <td className="p-3">
+                    {isConfigMode ? (
+                      <Input
+                        value={assessment.assessmentCriteria}
+                        onChange={(e) => updateCompetenceCriterion(assessment.id, "assessmentCriteria", e.target.value)}
+                        placeholder="Enter assessment criteria"
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                        style={{ color: '#52baf3' }}
+                      />
+                    ) : (
+                      <span className="text-sm">{assessment.assessmentCriteria}</span>
+                    )}
+                  </td>
+                  <td className="p-3">
+                    {isConfigMode ? (
+                      <Input
+                        type="number"
+                        value={assessment.weight}
+                        onChange={(e) => updateCompetenceCriterion(assessment.id, "weight", parseInt(e.target.value) || 0)}
+                        placeholder="0"
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0 w-16"
+                        style={{ color: '#52baf3' }}
+                        min="0"
+                        max="100"
+                      />
+                    ) : (
+                      <span className="text-sm">{assessment.weight}%</span>
+                    )}
+                  </td>
                   <td className="p-3">
                     <Select
                       value={assessment.effectiveness}
-                      onValueChange={(value) => updateCompetenceAssessment(assessment.id, "effectiveness", value)}
+                      onValueChange={(value) => updateCompetenceCriterion(assessment.id, "effectiveness", value)}
                     >
                       <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
                         <SelectValue placeholder="Select Rating" />
@@ -1099,6 +1196,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       >
                         <MessageSquare className="h-4 w-4" />
                       </Button>
+                      {isConfigMode && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteCompetenceCriterion(assessment.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -1113,7 +1220,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                             ...prev,
                             [assessment.id]: e.target.value
                           }));
-                          updateCompetenceAssessment(assessment.id, "comment", e.target.value);
+                          updateCompetenceCriterion(assessment.id, "comment", e.target.value);
                         }}
                         placeholder="Comment: Add your observations here..."
                         className="text-blue-600 italic border-blue-200"
@@ -1124,6 +1231,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 )}
               </React.Fragment>
             ))}
+            {formMethods.watch("competenceAssessments").length === 0 && (
+              <tr>
+                <td colSpan={5} className="p-8 text-center text-gray-500">
+                  {isConfigMode ? "No assessment criteria added yet. Click \"Add Criterion\" to get started." : "No assessment criteria configured."}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -1671,6 +1785,35 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
       </div>
+      
+      {/* Weight Warning Dialog */}
+      {showWeightWarning && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Weight Validation</h3>
+            <p className="text-gray-600 mb-4">
+              Total weight must be 100, but current total is {calculateTotalWeight()}%. 
+              Do you want to equally distribute the weights?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowWeightWarning(false)}
+              >
+                No
+              </Button>
+              <Button
+                onClick={() => {
+                  distributeWeightsEqually();
+                  setShowWeightWarning(false);
+                }}
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
