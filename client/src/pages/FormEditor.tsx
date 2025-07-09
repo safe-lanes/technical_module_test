@@ -221,6 +221,38 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [selectedVersionDate, setSelectedVersionDate] = useState<Date | undefined>();
   const [activeVersion, setActiveVersion] = useState<string>("00"); // Track which version is currently being viewed
   
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: () => {}
+  });
+  
+  // Helper functions for confirmation dialog
+  const showConfirmDialog = (title: string, description: string, onConfirm: () => void) => {
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      description,
+      onConfirm
+    });
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      title: "",
+      description: "",
+      onConfirm: () => {}
+    });
+  };
+
   // Mock version data - in real implementation this would come from API
   const versions = [
     ...(hasSavedDraft ? [{
@@ -335,15 +367,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTraining = (id: string) => {
-    if (window.confirm('Do you want to delete this training?')) {
-      const currentTrainings = formMethods.getValues("trainings");
-      formMethods.setValue("trainings", currentTrainings.filter(t => t.id !== id));
-      setTrainingComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Training",
+      "Are you sure you want to delete this training?",
+      () => {
+        const currentTrainings = formMethods.getValues("trainings");
+        formMethods.setValue("trainings", currentTrainings.filter(t => t.id !== id));
+        setTrainingComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   const updateTraining = (id: string, field: string, value: string) => {
@@ -367,15 +404,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTarget = (id: string) => {
-    if (window.confirm('Do you want to delete this target?')) {
-      const currentTargets = formMethods.getValues("targets");
-      formMethods.setValue("targets", currentTargets.filter(t => t.id !== id));
-      setTargetComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Target",
+      "Are you sure you want to delete this target?",
+      () => {
+        const currentTargets = formMethods.getValues("targets");
+        formMethods.setValue("targets", currentTargets.filter(t => t.id !== id));
+        setTargetComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   const updateTarget = (id: string, field: string, value: string) => {
@@ -477,15 +519,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingNeed = (id: string) => {
-    if (window.confirm('Do you want to delete this training need?')) {
-      const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
-      formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
-      setTrainingNeedsComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Training Need",
+      "Are you sure you want to delete this training need?",
+      () => {
+        const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
+        formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
+        setTrainingNeedsComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   // Training Followup management functions
@@ -512,15 +559,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingFollowup = (id: string) => {
-    if (window.confirm('Do you want to delete this training followup?')) {
-      const currentFollowups = formMethods.getValues("trainingFollowups");
-      formMethods.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
-      setTrainingFollowupComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Training Followup",
+      "Are you sure you want to delete this training followup?",
+      () => {
+        const currentFollowups = formMethods.getValues("trainingFollowups");
+        formMethods.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+        setTrainingFollowupComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   // State for configuration mode dialog
@@ -602,10 +654,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteAppraisalTypeOption = (index: number) => {
-    if (window.confirm('Do you want to delete this appraisal type option?')) {
-      const newOptions = appraisalTypeOptions.filter((_, i) => i !== index);
-      setAppraisalTypeOptions(newOptions);
-    }
+    showConfirmDialog(
+      "Delete Appraisal Type",
+      "Are you sure you want to delete this appraisal type option?",
+      () => {
+        const newOptions = appraisalTypeOptions.filter((_, i) => i !== index);
+        setAppraisalTypeOptions(newOptions);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const saveAppraisalTypeOption = () => {
@@ -640,10 +697,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deletePiCategoryOption = (index: number) => {
-    if (window.confirm('Do you want to delete this PI category option?')) {
-      const newOptions = piCategoryOptions.filter((_, i) => i !== index);
-      setPiCategoryOptions(newOptions);
-    }
+    showConfirmDialog(
+      "Delete PI Category",
+      "Are you sure you want to delete this PI category option?",
+      () => {
+        const newOptions = piCategoryOptions.filter((_, i) => i !== index);
+        setPiCategoryOptions(newOptions);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const savePiCategoryOption = () => {
@@ -678,10 +740,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteEffectivenessOption = (index: number) => {
-    if (window.confirm('Do you want to delete this effectiveness option?')) {
-      const newOptions = effectivenessOptions.filter((_, i) => i !== index);
-      setEffectivenessOptions(newOptions);
-    }
+    showConfirmDialog(
+      "Delete Effectiveness Option",
+      "Are you sure you want to delete this effectiveness option?",
+      () => {
+        const newOptions = effectivenessOptions.filter((_, i) => i !== index);
+        setEffectivenessOptions(newOptions);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const saveEffectivenessOption = () => {
@@ -716,10 +783,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingCategoryOption = (index: number) => {
-    if (window.confirm('Do you want to delete this training category option?')) {
-      const newOptions = trainingCategoryOptions.filter((_, i) => i !== index);
-      setTrainingCategoryOptions(newOptions);
-    }
+    showConfirmDialog(
+      "Delete Training Category",
+      "Are you sure you want to delete this training category option?",
+      () => {
+        const newOptions = trainingCategoryOptions.filter((_, i) => i !== index);
+        setTrainingCategoryOptions(newOptions);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const saveTrainingCategoryOption = () => {
@@ -754,10 +826,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingStatusOption = (index: number) => {
-    if (window.confirm('Do you want to delete this training status option?')) {
-      const newOptions = trainingStatusOptions.filter((_, i) => i !== index);
-      setTrainingStatusOptions(newOptions);
-    }
+    showConfirmDialog(
+      "Delete Training Status",
+      "Are you sure you want to delete this training status option?",
+      () => {
+        const newOptions = trainingStatusOptions.filter((_, i) => i !== index);
+        setTrainingStatusOptions(newOptions);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const saveTrainingStatusOption = () => {
@@ -880,15 +957,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     
     // Only allow deletion of custom recommendations
     if (recommendationToDelete && recommendationToDelete.isCustom) {
-      if (window.confirm('Do you want to delete this custom recommendation?')) {
-        const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
-        formMethods.setValue("recommendations", filteredRecommendations);
-        setRecommendationComments(prev => {
-          const newComments = { ...prev };
-          delete newComments[id];
-          return newComments;
-        });
-      }
+      showConfirmDialog(
+        "Delete Custom Recommendation",
+        "Are you sure you want to delete this custom recommendation?",
+        () => {
+          const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
+          formMethods.setValue("recommendations", filteredRecommendations);
+          setRecommendationComments(prev => {
+            const newComments = { ...prev };
+            delete newComments[id];
+            return newComments;
+          });
+          closeConfirmDialog();
+        }
+      );
     }
   };
 
@@ -922,11 +1004,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteCompetenceCriterion = (id: string) => {
-    if (window.confirm('Do you want to delete this competence criterion?')) {
-      const currentAssessments = formMethods.getValues("competenceAssessments");
-      const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
-      formMethods.setValue("competenceAssessments", updatedAssessments);
-    }
+    showConfirmDialog(
+      "Delete Competence Criterion",
+      "Are you sure you want to delete this competence criterion?",
+      () => {
+        const currentAssessments = formMethods.getValues("competenceAssessments");
+        const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+        formMethods.setValue("competenceAssessments", updatedAssessments);
+        closeConfirmDialog();
+      }
+    );
   };
 
   // Function to calculate total weight
@@ -965,11 +1052,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteBehaviouralAssessment = (id: string) => {
-    if (window.confirm('Do you want to delete this behavioural assessment?')) {
-      const currentAssessments = formMethods.getValues("behaviouralAssessments");
-      const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
-      formMethods.setValue("behaviouralAssessments", updatedAssessments);
-    }
+    showConfirmDialog(
+      "Delete Behavioural Assessment",
+      "Are you sure you want to delete this behavioural assessment?",
+      () => {
+        const currentAssessments = formMethods.getValues("behaviouralAssessments");
+        const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+        formMethods.setValue("behaviouralAssessments", updatedAssessments);
+        closeConfirmDialog();
+      }
+    );
   };
 
   const calculateBehaviouralTotalWeight = () => {
@@ -3393,6 +3485,22 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             <AlertDialogAction onClick={() => setShowValidationDialog(false)}>
               OK
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={confirmDialog.isOpen} onOpenChange={closeConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeConfirmDialog}>No</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDialog.onConfirm}>Yes</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
