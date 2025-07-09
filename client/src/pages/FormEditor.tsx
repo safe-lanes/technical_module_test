@@ -1116,30 +1116,31 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
 
   const renderPartA = () => (
-    <div className="space-y-6">
-      <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
-        <div style={{ color: '#16569e' }} className="text-sm">Enter details as applicable</div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="pb-3 sm:pb-4 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part A: Seafarer's Information</h3>
+        <div style={{ color: '#16569e' }} className="text-xs sm:text-sm">Enter details as applicable</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="seafarersName">Seafarer's Name</Label>
+          <Label htmlFor="seafarersName" className="text-sm">Seafarer's Name</Label>
           <Input
             id="seafarersName"
             placeholder="James Michael"
             {...formMethods.register("seafarersName")}
+            className="text-sm"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="seafarersRank">Seafarer's Rank</Label>
+          <Label htmlFor="seafarersRank" className="text-sm">Seafarer's Rank</Label>
           <Select
             value={formMethods.watch("seafarersRank") || ""}
             onValueChange={(value) => formMethods.setValue("seafarersRank", value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select rank" />
             </SelectTrigger>
             <SelectContent>
@@ -1160,12 +1161,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="nationality">Nationality</Label>
+          <Label htmlFor="nationality" className="text-sm">Nationality</Label>
           <Select
             value={formMethods.watch("nationality") || ""}
             onValueChange={(value) => formMethods.setValue("nationality", value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select nationality..." />
             </SelectTrigger>
             <SelectContent>
@@ -1179,14 +1180,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="vessel">Vessel</Label>
+          <Label htmlFor="vessel" className="text-sm">Vessel</Label>
           <Select
             value={formMethods.watch("vessel") || ""}
             onValueChange={(value) => formMethods.setValue("vessel", value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select vessel" />
             </SelectTrigger>
             <SelectContent>
@@ -1199,18 +1200,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="signOn">Sign On Date</Label>
+          <Label htmlFor="signOn" className="text-sm">Sign On Date</Label>
           <Input
             id="signOn"
             type="date"
             {...formMethods.register("signOn")}
+            className="text-sm"
           />
         </div>
         
         <div className="space-y-2">
           <Label 
             htmlFor="appraisalType" 
-            className={isConfigMode ? "cursor-pointer" : ""}
+            className={`text-sm ${isConfigMode ? "cursor-pointer" : ""}`}
             style={isConfigMode ? { color: '#52baf3' } : {}}
             onClick={isConfigMode ? () => setShowAppraisalTypeDialog(true) : undefined}
           >
@@ -1226,7 +1228,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             }}
           >
             <SelectTrigger 
-              className={isConfigMode ? "cursor-pointer" : ""}
+              className={`text-sm ${isConfigMode ? "cursor-pointer" : ""}`}
               style={isConfigMode ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
             >
               <SelectValue placeholder="Select type" />
@@ -1242,32 +1244,34 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="appraisalPeriodFrom">Appraisal Period From</Label>
+          <Label htmlFor="appraisalPeriodFrom" className="text-sm">Appraisal Period From</Label>
           <Input
             id="appraisalPeriodFrom"
             type="date"
             {...formMethods.register("appraisalPeriodFrom")}
+            className="text-sm"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="appraisalPeriodTo">Appraisal Period To</Label>
+          <Label htmlFor="appraisalPeriodTo" className="text-sm">Appraisal Period To</Label>
           <Input
             id="appraisalPeriodTo"
             type="date"
             {...formMethods.register("appraisalPeriodTo")}
+            className="text-sm"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="primaryAppraiser">Primary Appraiser</Label>
+          <Label htmlFor="primaryAppraiser" className="text-sm">Primary Appraiser</Label>
           <Select
             value={formMethods.watch("primaryAppraiser") || ""}
             onValueChange={(value) => formMethods.setValue("primaryAppraiser", value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-sm">
               <SelectValue placeholder="Select appraiser" />
             </SelectTrigger>
             <SelectContent>
@@ -1281,10 +1285,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {fieldVisibility.personalityIndexCategory && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <Label 
               htmlFor="personalityIndexCategory"
-              className={isConfigMode ? "cursor-pointer" : ""}
+              className={`text-sm ${isConfigMode ? "cursor-pointer" : ""}`}
               style={isConfigMode ? { color: '#52baf3' } : {}}
               onClick={isConfigMode ? () => setShowPiCategoryDialog(true) : undefined}
             >
@@ -1296,7 +1300,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 variant="outline"
                 size="sm"
                 onClick={() => toggleFieldVisibility('personalityIndexCategory')}
-                className="text-sm px-3 py-1 h-7"
+                className="text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7"
                 style={{ 
                   borderColor: '#52baf3',
                   color: '#52baf3'
@@ -1316,7 +1320,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             }}
           >
             <SelectTrigger 
-              className={`w-full ${isConfigMode ? "cursor-pointer" : ""}`}
+              className={`w-full text-sm ${isConfigMode ? "cursor-pointer" : ""}`}
               style={isConfigMode ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
             >
               <SelectValue placeholder="Select category" />
@@ -1333,14 +1337,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       )}
       {isConfigMode && !fieldVisibility.personalityIndexCategory && (
         <div className="space-y-2 opacity-50">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="personalityIndexCategory" className="text-gray-400">Personality Index (PI) Category (Hidden)</Label>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <Label htmlFor="personalityIndexCategory" className="text-gray-400 text-sm">Personality Index (PI) Category (Hidden)</Label>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => toggleFieldVisibility('personalityIndexCategory')}
-              className="text-sm px-3 py-1 h-7"
+              className="text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7"
               style={{ 
                 borderColor: '#52baf3',
                 color: '#52baf3'
@@ -1349,23 +1353,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               Show Field
             </Button>
           </div>
+          <div className="p-3 bg-gray-100 rounded border-2 border-dashed border-gray-300">
+            <div className="text-gray-400 text-xs sm:text-sm">Field is hidden</div>
+          </div>
         </div>
       )}
     </div>
   );
 
   const renderPartB = () => (
-    <div className="space-y-8">
-      <div className="pb-4 mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('B')}: Information at Start of Appraisal Period</h3>
+    <div className="space-y-6 sm:space-y-8">
+      <div className="pb-3 sm:pb-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-3 sm:gap-0">
+          <h3 className="text-lg sm:text-xl font-semibold" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('B')}: Information at Start of Appraisal Period</h3>
           {isConfigMode && (
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => toggleSectionVisibility('partB')}
-              className="text-sm px-3 py-1 h-7"
+              className="text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7 shrink-0"
               style={{ 
                 borderColor: '#52baf3',
                 color: '#52baf3'
@@ -1375,7 +1382,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             </Button>
           )}
         </div>
-        <div style={{ color: '#16569e' }} className="text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
+        <div style={{ color: '#16569e' }} className="text-xs sm:text-sm">Add below at the start of the Appraisal Period except the Evaluation which must be completed at the end of the Appraisal Period</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
@@ -1384,16 +1391,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           {/* B1. Trainings conducted prior joining vessel */}
           {sectionVisibility.partB1 && (
             <div>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
+          <h3 className="text-base sm:text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
+          <div className="flex items-center gap-2 shrink-0">
             {isConfigMode && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => toggleSectionVisibility('partB1')}
-                className="text-sm px-3 py-1 h-7"
+                className="text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7"
                 style={{ 
                   borderColor: '#52baf3',
                   color: '#52baf3'
@@ -1407,10 +1414,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               onClick={addTraining}
               variant="outline"
               size="sm"
-              className="text-gray-600 border-gray-300"
+              className="text-gray-600 border-gray-300 text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7"
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Training
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+              <span className="hidden sm:inline">Add Training</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
         </div>
@@ -1430,16 +1438,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 {formMethods.watch("trainings").map((training, index) => (
                   <React.Fragment key={training.id}>
                     <tr className="border-t">
-                      <td className="p-3 text-sm">{index + 1}.</td>
-                      <td className="p-3">
+                      <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}.</td>
+                      <td className="p-2 sm:p-3">
                         <Input
                           value={training.training}
                           onChange={(e) => updateTraining(training.id, "training", e.target.value)}
                           placeholder={`Training ${index + 1}`}
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm"
                         />
                       </td>
-                      <td className="p-3">
+                      <td className="p-2 sm:p-3">
                         <Select
                           value={training.evaluation}
                           onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
@@ -1450,7 +1458,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           }}
                         >
                           <SelectTrigger 
-                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                             style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                           >
                             <SelectValue placeholder="Select Rating" />
@@ -1464,8 +1472,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="p-3">
-                        <div className="flex space-x-2">
+                      <td className="p-2 sm:p-3">
+                        <div className="flex space-x-1 sm:space-x-2">
                           <Button
                             type="button"
                             variant="ghost"
@@ -1474,16 +1482,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                               ...prev,
                               [training.id]: prev[training.id] || ""
                             }))}
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
-                            <MessageSquare className="h-4 w-4" />
+                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteTraining(training.id)}
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
                       </td>
@@ -1491,7 +1501,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     {trainingComments[training.id] !== undefined && (
                       <tr>
                         <td></td>
-                        <td colSpan={3} className="p-3">
+                        <td colSpan={3} className="p-2 sm:p-3">
                           <Textarea
                             value={trainingComments[training.id]}
                             onChange={(e) => {
@@ -1502,7 +1512,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                               updateTraining(training.id, "comment", e.target.value);
                             }}
                             placeholder="Comment: Add your observations here..."
-                            className="text-blue-600 italic border-blue-200"
+                            className="text-blue-600 italic border-blue-200 text-xs sm:text-sm"
                             rows={2}
                           />
                         </td>
@@ -1739,10 +1749,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   );
 
   const renderPartC = () => (
-    <div className="space-y-6">
-      <div className="pb-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('C')}: Competence Assessment (Professional Knowledge & Skills)</h3>
-        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="pb-3 sm:pb-4 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('C')}: Competence Assessment (Professional Knowledge & Skills)</h3>
+        <div style={{ color: '#16569e' }} className="text-xs sm:text-sm">Description</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
@@ -1754,151 +1764,156 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             onClick={addCompetenceCriterion}
             variant="outline"
             size="sm"
-            className="text-sm px-3 py-1 h-7"
+            className="text-xs sm:text-sm px-2 sm:px-3 py-1 h-6 sm:h-7"
             style={{ 
               borderColor: '#52baf3',
               color: '#52baf3'
             }}
           >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Criterion
+            <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+            <span className="hidden sm:inline">Add Criterion</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       )}
       
       <div className="border rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formMethods.watch("competenceAssessments").map((assessment, index) => (
-              <React.Fragment key={assessment.id}>
-                <tr className="border-t">
-                  <td className="p-3 text-sm">{index + 1}.</td>
-                  <td className="p-3">
-                    {isConfigMode ? (
-                      <Input
-                        value={assessment.assessmentCriteria}
-                        onChange={(e) => updateCompetenceCriterion(assessment.id, "assessmentCriteria", e.target.value)}
-                        placeholder="Enter assessment criteria"
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
-                        style={{ color: '#52baf3' }}
-                      />
-                    ) : (
-                      <span className="text-sm">{assessment.assessmentCriteria}</span>
-                    )}
-                  </td>
-                  <td className="p-3">
-                    {isConfigMode ? (
-                      <Input
-                        type="number"
-                        value={assessment.weight}
-                        onChange={(e) => updateCompetenceCriterion(assessment.id, "weight", parseInt(e.target.value) || 0)}
-                        placeholder="0"
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0 w-16"
-                        style={{ color: '#52baf3' }}
-                        min="0"
-                        max="100"
-                      />
-                    ) : (
-                      <span className="text-sm">{assessment.weight}%</span>
-                    )}
-                  </td>
-                  <td className="p-3">
-                    <Select
-                      value={assessment.effectiveness}
-                      onValueChange={(value) => updateCompetenceCriterion(assessment.id, "effectiveness", value)}
-                      onOpenChange={(open) => {
-                        if (isConfigMode && open && index === 0) {
-                          setShowEffectivenessDialog(true);
-                        }
-                      }}
-                    >
-                      <SelectTrigger 
-                        className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
-                        style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">S.No</th>
+                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Assessment Criteria</th>
+                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Weight %</th>
+                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Effectiveness</th>
+                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {formMethods.watch("competenceAssessments").map((assessment, index) => (
+                <React.Fragment key={assessment.id}>
+                  <tr className="border-t">
+                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}.</td>
+                    <td className="p-2 sm:p-3">
+                      {isConfigMode ? (
+                        <Input
+                          value={assessment.assessmentCriteria}
+                          onChange={(e) => updateCompetenceCriterion(assessment.id, "assessmentCriteria", e.target.value)}
+                          placeholder="Enter assessment criteria"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm"
+                          style={{ color: '#52baf3' }}
+                        />
+                      ) : (
+                        <span className="text-xs sm:text-sm">{assessment.assessmentCriteria}</span>
+                      )}
+                    </td>
+                    <td className="p-2 sm:p-3">
+                      {isConfigMode ? (
+                        <Input
+                          type="number"
+                          value={assessment.weight}
+                          onChange={(e) => updateCompetenceCriterion(assessment.id, "weight", parseInt(e.target.value) || 0)}
+                          placeholder="0"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 w-12 sm:w-16 text-xs sm:text-sm"
+                          style={{ color: '#52baf3' }}
+                          min="0"
+                          max="100"
+                        />
+                      ) : (
+                        <span className="text-xs sm:text-sm">{assessment.weight}%</span>
+                      )}
+                    </td>
+                    <td className="p-2 sm:p-3">
+                      <Select
+                        value={assessment.effectiveness}
+                        onValueChange={(value) => updateCompetenceCriterion(assessment.id, "effectiveness", value)}
+                        onOpenChange={(open) => {
+                          if (isConfigMode && open && index === 0) {
+                            setShowEffectivenessDialog(true);
+                          }
+                        }}
                       >
-                        <SelectValue placeholder="Select Rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {effectivenessOptions.map((option, optionIndex) => (
-                          <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setCompetenceComments(prev => ({
-                          ...prev,
-                          [assessment.id]: prev[assessment.id] || ""
-                        }))}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
-                      {isConfigMode && (
+                        <SelectTrigger 
+                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                          style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                        >
+                          <SelectValue placeholder="Select Rating" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {effectivenessOptions.map((option, optionIndex) => (
+                            <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="p-2 sm:p-3">
+                      <div className="flex space-x-1 sm:space-x-2">
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          onClick={() => deleteCompetenceCriterion(assessment.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-                {competenceComments[assessment.id] !== undefined && (
-                  <tr key={`comment-${assessment.id}`}>
-                    <td></td>
-                    <td colSpan={4} className="p-3">
-                      <Textarea
-                        value={competenceComments[assessment.id]}
-                        onChange={(e) => {
-                          setCompetenceComments(prev => ({
+                          onClick={() => setCompetenceComments(prev => ({
                             ...prev,
-                            [assessment.id]: e.target.value
-                          }));
-                          updateCompetenceCriterion(assessment.id, "comment", e.target.value);
-                        }}
-                        placeholder="Comment: Add your observations here..."
-                        className="text-blue-600 italic border-blue-200"
-                        rows={2}
-                      />
+                            [assessment.id]: prev[assessment.id] || ""
+                          }))}
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                        >
+                          <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                        </Button>
+                        {isConfigMode && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteCompetenceCriterion(assessment.id)}
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                          >
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
-            {formMethods.watch("competenceAssessments").length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-500">
-                  {isConfigMode ? "No assessment criteria added yet. Click \"Add Criterion\" to get started." : "No assessment criteria configured."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  {competenceComments[assessment.id] !== undefined && (
+                    <tr key={`comment-${assessment.id}`}>
+                      <td></td>
+                      <td colSpan={4} className="p-2 sm:p-3">
+                        <Textarea
+                          value={competenceComments[assessment.id]}
+                          onChange={(e) => {
+                            setCompetenceComments(prev => ({
+                              ...prev,
+                              [assessment.id]: e.target.value
+                            }));
+                            updateCompetenceCriterion(assessment.id, "comment", e.target.value);
+                          }}
+                          placeholder="Comment: Add your observations here..."
+                          className="text-blue-600 italic border-blue-200 text-xs sm:text-sm"
+                          rows={2}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+              {formMethods.watch("competenceAssessments").length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-6 sm:p-8 text-center text-gray-500 text-xs sm:text-sm">
+                    {isConfigMode ? "No assessment criteria added yet. Click \"Add Criterion\" to get started." : "No assessment criteria configured."}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Section Score */}
-      <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
-        <div className="text-sm font-medium text-gray-700">Section Score:</div>
-        <div className={`px-4 py-2 rounded text-lg font-semibold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateSectionScore())).textColor}`}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+        <div className="text-xs sm:text-sm font-medium text-gray-700">Section Score:</div>
+        <div className={`px-3 sm:px-4 py-2 rounded text-base sm:text-lg font-semibold min-w-[48px] sm:min-w-[64px] text-center ${getScoreColors(parseFloat(calculateSectionScore())).bgColor} ${getScoreColors(parseFloat(calculateSectionScore())).textColor}`}>
           {calculateSectionScore()}
         </div>
       </div>
@@ -2763,47 +2778,48 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full h-[90%] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-[95vw] h-[95vh] sm:h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8"
+              className="h-8 w-8 shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-sm sm:text-lg font-semibold truncate">
               Crew Appraisal Form - {rankGroupName || "Rank Group"}
             </h2>
             {isConfigMode && (
-              <Badge variant="outline" className="ml-2">
+              <Badge variant="outline" className="ml-1 sm:ml-2 text-xs hidden sm:inline-flex">
                 Configuration Mode
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {!isConfigMode ? (
               <Button
                 variant={hasSavedDraft ? "default" : "outline"}
                 size="sm"
-                className={`flex items-center gap-2 ${
+                className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ${
                   hasSavedDraft 
                     ? 'bg-green-600 hover:bg-green-700 text-white' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={!hasSavedDraft}
               >
-                Release Ver
+                <span className="hidden sm:inline">Release Ver</span>
+                <span className="sm:hidden">Release</span>
               </Button>
             ) : (
               <Button
                 variant="destructive"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                 onClick={() => {
                   setIsConfigMode(false);
                   setHasSavedDraft(false);
@@ -2812,7 +2828,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   setActiveVersion("00"); // Return to released version
                 }}
               >
-                Discard Ver
+                <span className="hidden sm:inline">Discard Ver</span>
+                <span className="sm:hidden">Discard</span>
               </Button>
             )}
             <Button
@@ -2829,10 +2846,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 }
                 setIsConfigMode(!isConfigMode);
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              size="sm"
             >
               <Settings className="h-4 w-4" />
-              {isConfigMode ? "Exit Config" : "Configure Fields"}
+              <span className="hidden sm:inline">{isConfigMode ? "Exit Config" : "Configure Fields"}</span>
+              <span className="sm:hidden">{isConfigMode ? "Exit" : "Config"}</span>
             </Button>
             <Button 
               onClick={() => {
@@ -2871,10 +2890,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 setActiveVersion("01"); // Switch to draft version when saving
                 formMethods.handleSubmit(onSubmit)();
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              size="sm"
             >
               <Save className="h-4 w-4" />
-              Save Draft
+              <span className="hidden sm:inline">Save Draft</span>
+              <span className="sm:hidden">Save</span>
             </Button>
           </div>
         </div>
@@ -2883,16 +2904,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         <div className="border-b">
           {isConfigMode ? (
             // In configuration mode, show only draft version bar with interactive controls
-            <div className="px-4 py-3 bg-blue-50 border-l-4 border-blue-500">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6">
+            <div className="px-3 sm:px-4 py-3 bg-blue-50 border-l-4 border-blue-500">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Version No:</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">Version No:</span>
                     <Select
                       value={selectedVersionNo || "01"}
                       onValueChange={setSelectedVersionNo}
                     >
-                      <SelectTrigger className="w-24 h-8">
+                      <SelectTrigger className="w-20 sm:w-24 h-8 text-xs sm:text-sm">
                         <SelectValue placeholder="01" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2903,14 +2924,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     </Select>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Version Date:</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">Version Date:</span>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-36 h-8 justify-start text-left font-normal"
+                          className="w-32 sm:w-36 h-8 justify-start text-left font-normal text-xs sm:text-sm"
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           {selectedVersionDate ? format(selectedVersionDate, "dd-MMM-yyyy") : "Select date"}
                         </Button>
                       </PopoverTrigger>
@@ -2926,8 +2947,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">Status:</span>
-                  <span className="text-sm font-semibold text-blue-600">Draft</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">Status:</span>
+                  <span className="text-xs sm:text-sm font-semibold text-blue-600">Draft</span>
                 </div>
               </div>
             </div>
@@ -2936,27 +2957,27 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             versions.map((version, index) => (
               <div
                 key={version.versionNo}
-                className={`px-4 py-3 cursor-pointer transition-colors hover:bg-gray-100 ${
+                className={`px-3 sm:px-4 py-3 cursor-pointer transition-colors hover:bg-gray-100 ${
                   activeVersion === version.versionNo 
                     ? 'bg-blue-50 border-l-4 border-blue-500' 
                     : 'bg-gray-50'
                 } ${index < versions.length - 1 ? 'border-b border-gray-200' : ''}`}
                 onClick={() => setActiveVersion(version.versionNo)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 w-full sm:w-auto">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Version No:</span>
-                      <span className="text-sm font-semibold">{version.versionNo}</span>
+                      <span className="text-xs sm:text-sm font-medium text-gray-700">Version No:</span>
+                      <span className="text-xs sm:text-sm font-semibold">{version.versionNo}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Version Date:</span>
-                      <span className="text-sm font-semibold">{version.versionDate}</span>
+                      <span className="text-xs sm:text-sm font-medium text-gray-700">Version Date:</span>
+                      <span className="text-xs sm:text-sm font-semibold">{version.versionDate}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Status:</span>
-                    <span className={`text-sm font-semibold ${
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">Status:</span>
+                    <span className={`text-xs sm:text-sm font-semibold ${
                       version.status === "Released" ? "text-green-600" : "text-blue-600"
                     }`}>
                       {version.status}
@@ -2970,8 +2991,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar - Stepper Design */}
-          <div className="w-72 overflow-y-auto bg-[#f8fafc]">
-            <div className="p-6">
+          <div className="w-16 sm:w-20 md:w-72 overflow-y-auto bg-[#f8fafc] border-r">
+            <div className="p-2 sm:p-3 md:p-6">
               <nav className="space-y-1">
                 {sections.map((section, index) => {
                   const isActive = activeSection === section.id;
@@ -2981,25 +3002,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     <div key={section.id} className="relative">
                       <button
                         onClick={() => setActiveSection(section.id)}
-                        className={`w-full flex items-center p-3 rounded-lg text-left transition-colors hover:bg-gray-50 ${
+                        className={`w-full flex items-center p-2 sm:p-3 rounded-lg text-left transition-colors hover:bg-gray-50 ${
                           isActive ? "bg-blue-50" : ""
                         }`}
+                        title={section.title} // Add tooltip for mobile
                       >
                         <div 
-                          className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-4 ${
+                          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-semibold mr-2 sm:mr-4 ${
                             isActive ? "bg-blue-600" : isCompleted ? "bg-green-500" : "bg-gray-400"
                           }`}
                         >
-                          {section.displayId}
+                          <span className="text-xs sm:text-sm">{section.displayId}</span>
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 hidden md:block">
                           <div className={`font-medium text-sm ${isActive ? "text-blue-700" : "text-gray-700"}`}>
                             {section.title}
                           </div>
                         </div>
                       </button>
                       {index < sections.length - 1 && (
-                        <div className="absolute left-[2rem] top-16 w-0.5 h-4 bg-gray-300"></div>
+                        <div className="absolute left-[1rem] sm:left-[1.25rem] md:left-[2rem] top-12 sm:top-16 w-0.5 h-3 sm:h-4 bg-gray-300 hidden md:block"></div>
                       )}
                     </div>
                   );
@@ -3010,9 +3032,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
           {/* Main Content */}
           <div className="flex-1 overflow-y-auto bg-[#f8fafc]">
-            <div className="p-6">
+            <div className="p-3 sm:p-4 md:p-6">
               <Card className="bg-white">
-                <CardContent className="p-6">
+                <CardContent className="p-3 sm:p-4 md:p-6">
                   {renderSectionContent()}
                 </CardContent>
               </Card>
@@ -3023,10 +3045,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       
       {/* Weight Warning Dialog */}
       {showWeightWarning && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Weight Validation</h3>
-            <p className="text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-4 sm:p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Weight Validation</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-4">
               Total weight must be 100%. 
               {(() => {
                 const competenceAssessments = formMethods.getValues("competenceAssessments");
@@ -3042,10 +3064,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               })()}
               Do you want to equally distribute the weights?
             </p>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2">
               <Button
                 variant="outline"
                 onClick={() => setShowWeightWarning(false)}
+                className="text-sm sm:text-base"
+                size="sm"
               >
                 No
               </Button>
@@ -3062,6 +3086,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   }
                   setShowWeightWarning(false);
                 }}
+                className="text-sm sm:text-base"
+                size="sm"
               >
                 Yes
               </Button>
@@ -3088,19 +3114,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {/* Appraisal Type Configuration Dialog */}
       <Dialog open={showAppraisalTypeDialog} onOpenChange={setShowAppraisalTypeDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-[90vw] sm:w-full mx-4">
           <DialogHeader>
-            <DialogTitle>Configure Appraisal Type Options</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Configure Appraisal Type Options</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {/* Current options list */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Current Options:</Label>
-              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+              <Label className="text-xs sm:text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-32 sm:max-h-48 overflow-y-auto">
                 {appraisalTypeOptions.map((option, index) => (
                   <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                    <span className="text-sm">{option}</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm truncate flex-1 mr-2">{option}</span>
+                    <div className="flex items-center gap-1 shrink-0">
                       <Button
                         type="button"
                         variant="ghost"
@@ -3127,15 +3153,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
             {/* Add/Edit option input */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">
+              <Label className="text-xs sm:text-sm font-medium">
                 {editingAppraisalTypeIndex === -1 ? "Add New Option:" : "Edit Option:"}
               </Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={editingAppraisalType}
                   onChange={(e) => setEditingAppraisalType(e.target.value)}
                   placeholder="Enter option name"
-                  className="flex-1"
+                  className="flex-1 text-xs sm:text-sm"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       saveAppraisalTypeOption();
@@ -3147,6 +3173,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   onClick={saveAppraisalTypeOption}
                   disabled={!editingAppraisalType.trim()}
                   size="sm"
+                  className="text-xs sm:text-sm"
                 >
                   {editingAppraisalTypeIndex === -1 ? "Add" : "Save"}
                 </Button>
@@ -3156,7 +3183,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAppraisalTypeDialog(false)}>
+            <Button variant="outline" onClick={() => setShowAppraisalTypeDialog(false)} className="text-xs sm:text-sm">
               Done
             </Button>
           </DialogFooter>
@@ -3165,19 +3192,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {/* PI Category Configuration Dialog */}
       <Dialog open={showPiCategoryDialog} onOpenChange={setShowPiCategoryDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-[90vw] sm:w-full mx-4">
           <DialogHeader>
-            <DialogTitle>Configure PI Category Options</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Configure PI Category Options</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {/* Current options list */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Current Options:</Label>
-              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+              <Label className="text-xs sm:text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-32 sm:max-h-48 overflow-y-auto">
                 {piCategoryOptions.map((option, index) => (
                   <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                    <span className="text-sm">{option}</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm truncate flex-1 mr-2">{option}</span>
+                    <div className="flex items-center gap-1 shrink-0">
                       <Button
                         type="button"
                         variant="ghost"
@@ -3204,15 +3231,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
             {/* Add/Edit option input */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">
+              <Label className="text-xs sm:text-sm font-medium">
                 {editingPiCategoryIndex === -1 ? "Add New Option:" : "Edit Option:"}
               </Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={editingPiCategory}
                   onChange={(e) => setEditingPiCategory(e.target.value)}
                   placeholder="Enter option name"
-                  className="flex-1"
+                  className="flex-1 text-xs sm:text-sm"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       savePiCategoryOption();
@@ -3224,6 +3251,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   onClick={savePiCategoryOption}
                   disabled={!editingPiCategory.trim()}
                   size="sm"
+                  className="text-xs sm:text-sm"
                 >
                   {editingPiCategoryIndex === -1 ? "Add" : "Save"}
                 </Button>
@@ -3232,7 +3260,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPiCategoryDialog(false)}>
+            <Button variant="outline" onClick={() => setShowPiCategoryDialog(false)} className="text-xs sm:text-sm">
               Done
             </Button>
           </DialogFooter>
