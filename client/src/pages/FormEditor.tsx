@@ -28,6 +28,13 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter 
+} from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { Form } from "@shared/schema";
 
@@ -514,6 +521,54 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   // State for tracking which recommendation fields are in edit mode
   const [editingRecommendations, setEditingRecommendations] = useState<Set<string>>(new Set());
 
+  // Appraisal Type configuration state
+  const [appraisalTypeOptions, setAppraisalTypeOptions] = useState<string[]>([
+    "End of Contract",
+    "Mid Term", 
+    "Special",
+    "Probation",
+    "Appraiser SCOT"
+  ]);
+  const [showAppraisalTypeDialog, setShowAppraisalTypeDialog] = useState(false);
+  const [editingAppraisalType, setEditingAppraisalType] = useState<string>("");
+  const [editingAppraisalTypeIndex, setEditingAppraisalTypeIndex] = useState<number>(-1);
+
+  // Appraisal Type management functions
+  const addAppraisalTypeOption = () => {
+    setEditingAppraisalType("");
+    setEditingAppraisalTypeIndex(-1);
+    setShowAppraisalTypeDialog(true);
+  };
+
+  const editAppraisalTypeOption = (index: number) => {
+    setEditingAppraisalType(appraisalTypeOptions[index]);
+    setEditingAppraisalTypeIndex(index);
+    setShowAppraisalTypeDialog(true);
+  };
+
+  const deleteAppraisalTypeOption = (index: number) => {
+    const newOptions = appraisalTypeOptions.filter((_, i) => i !== index);
+    setAppraisalTypeOptions(newOptions);
+  };
+
+  const saveAppraisalTypeOption = () => {
+    if (editingAppraisalType.trim() === "") return;
+    
+    if (editingAppraisalTypeIndex === -1) {
+      // Adding new option
+      setAppraisalTypeOptions([...appraisalTypeOptions, editingAppraisalType.trim()]);
+    } else {
+      // Editing existing option
+      const newOptions = [...appraisalTypeOptions];
+      newOptions[editingAppraisalTypeIndex] = editingAppraisalType.trim();
+      setAppraisalTypeOptions(newOptions);
+    }
+    
+    setShowAppraisalTypeDialog(false);
+    setEditingAppraisalType("");
+    setEditingAppraisalTypeIndex(-1);
+  };
+
   // Recommendation management functions
   const addRecommendation = () => {
     if (!isConfigMode) {
@@ -846,20 +901,35 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="appraisalType">Appraisal Type</Label>
+          <Label 
+            htmlFor="appraisalType" 
+            className={isConfigMode ? "cursor-pointer" : ""}
+            style={isConfigMode ? { color: '#52baf3' } : {}}
+            onClick={isConfigMode ? () => setShowAppraisalTypeDialog(true) : undefined}
+          >
+            Appraisal Type
+          </Label>
           <Select
             value={formMethods.watch("appraisalType") || ""}
             onValueChange={(value) => formMethods.setValue("appraisalType", value)}
+            onOpenChange={(open) => {
+              if (isConfigMode && open) {
+                setShowAppraisalTypeDialog(true);
+              }
+            }}
           >
-            <SelectTrigger>
+            <SelectTrigger 
+              className={isConfigMode ? "cursor-pointer" : ""}
+              style={isConfigMode ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+            >
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="end-of-contract">End of Contract</SelectItem>
-              <SelectItem value="mid-term">Mid Term</SelectItem>
-              <SelectItem value="special">Special</SelectItem>
-              <SelectItem value="probation">Probation</SelectItem>
-              <SelectItem value="appraiser-s-off">Appraiser S/Off</SelectItem>
+              {appraisalTypeOptions.map((option, index) => (
+                <SelectItem key={index} value={option.toLowerCase().replace(/\s+/g, '-')}>
+                  {option}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -2628,6 +2698,92 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Appraisal Type Configuration Dialog */}
+      <Dialog open={showAppraisalTypeDialog} onOpenChange={setShowAppraisalTypeDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure Appraisal Type Options</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Current options list */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {appraisalTypeOptions.map((option, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <span className="text-sm">{option}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editAppraisalTypeOption(index)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteAppraisalTypeOption(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add/Edit option input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {editingAppraisalTypeIndex === -1 ? "Add New Option:" : "Edit Option:"}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingAppraisalType}
+                  onChange={(e) => setEditingAppraisalType(e.target.value)}
+                  placeholder="Enter option name"
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      saveAppraisalTypeOption();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={saveAppraisalTypeOption}
+                  disabled={!editingAppraisalType.trim()}
+                  size="sm"
+                >
+                  {editingAppraisalTypeIndex === -1 ? "Add" : "Save"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Add new option button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addAppraisalTypeOption}
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Option
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAppraisalTypeDialog(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Field Validation Dialog */}
       <AlertDialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
