@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Switch, Route } from "wouter";
-import ElementCrewAppraisals from "./pages/ElementCrewAppraisals";
-import AdminModule from "./pages/AdminModule";
+import { ElementCrewAppraisals } from "./pages/ElementCrewAppraisals";
+import { AdminModule } from "./pages/AdminModule";
 import NotFound from "./pages/not-found";
 import { useMicroFrontendConfig } from "./micro-frontend/MicroFrontendWrapper";
 
