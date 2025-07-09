@@ -63,10 +63,7 @@ export const AdminModule = (): JSX.Element => {
 
   const createRankGroupMutation = useMutation({
     mutationFn: async (data: { formId: number; name: string; ranks: string[] }) => {
-      return await apiRequest("/api/rank-groups", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("POST", "/api/rank-groups", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/forms"] });
@@ -237,6 +234,9 @@ export const AdminModule = (): JSX.Element => {
       {error && (
         <div className="flex justify-center items-center p-8">
           <div className="text-red-500 text-sm">Error loading forms. Please try again.</div>
+          <div className="text-red-500 text-xs mt-2">
+            {error instanceof Error ? error.message : String(error)}
+          </div>
         </div>
       )}
 
