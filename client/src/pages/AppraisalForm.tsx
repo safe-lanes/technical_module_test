@@ -1458,26 +1458,26 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         <table className="w-full">
                           <thead className="bg-gray-100">
                             <tr>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Assessment Criteria</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Weight %</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Effectiveness</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             {form.watch("competenceAssessments").map((assessment, index) => (
                               <React.Fragment key={assessment.id}>
                                 <tr className="border-t">
-                                  <td className="p-3 text-sm">{index + 1}.</td>
-                                  <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
-                                  <td className="p-3 text-sm">{assessment.weight}%</td>
-                                  <td className="p-3">
+                                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{assessment.assessmentCriteria}</td>
+                                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{assessment.weight}%</td>
+                                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                     <Select
                                       value={assessment.effectiveness}
                                       onValueChange={(value) => updateCompetenceAssessment(assessment.id, "effectiveness", value)}
                                     >
-                                      <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                      <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6">
                                         <SelectValue placeholder="Select Rating" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1489,26 +1489,28 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       </SelectContent>
                                     </Select>
                                   </td>
-                                  <td className="p-3">
-                                    <div className="flex space-x-2">
+                                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                                    <div className="flex gap-2 justify-center">
                                       <Button
                                         type="button"
                                         variant="ghost"
-                                        size="sm"
+                                        size="icon"
+                                        className="h-6 w-6"
                                         onClick={() => setCompetenceComments(prev => ({
                                           ...prev,
                                           [assessment.id]: prev[assessment.id] || ""
                                         }))}
                                       >
-                                        <MessageSquare className="h-4 w-4" />
+                                        <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                       </Button>
 
                                       <Button
                                         type="button"
                                         variant="ghost"
-                                        size="sm"
+                                        size="icon"
+                                        className="h-6 w-6"
                                       >
-                                        <Trash2 className="h-4 w-4" />
+                                        <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                       </Button>
                                     </div>
                                   </td>
@@ -1604,26 +1606,26 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         <table className="w-full">
                           <thead className="bg-gray-100">
                             <tr>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Assessment Criteria</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Weight %</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Effectiveness</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                           {form.watch("behaviouralAssessments").map((assessment, index) => (
                             <React.Fragment key={assessment.id}>
                               <tr className="border-t">
-                                <td className="p-3 text-sm">{index + 1}.</td>
-                                <td className="p-3 text-sm">{assessment.assessmentCriteria}</td>
-                                <td className="p-3 text-sm text-center">{assessment.weight}%</td>
-                                <td className="p-3">
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{assessment.assessmentCriteria}</td>
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">{assessment.weight}%</td>
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                   <Select
                                     value={assessment.effectiveness}
                                     onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
                                   >
-                                    <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                    <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6">
                                       <SelectValue placeholder="Select Rating" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1635,25 +1637,27 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                     </SelectContent>
                                   </Select>
                                 </td>
-                                <td className="p-3">
-                                  <div className="flex space-x-2">
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                                  <div className="flex gap-2 justify-center">
                                     <Button
                                       type="button"
                                       variant="ghost"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-6 w-6"
                                       onClick={() => setBehaviouralComments(prev => ({
                                         ...prev,
                                         [assessment.id]: prev[assessment.id] || ""
                                       }))}
                                     >
-                                      <MessageSquare className="h-4 w-4" />
+                                      <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                     </Button>
                                     <Button
                                       type="button"
                                       variant="ghost"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-6 w-6"
                                     >
-                                      <Trash2 className="h-4 w-4" />
+                                      <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                     </Button>
                                   </div>
                                 </td>
@@ -1760,44 +1764,46 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         <table className="w-full">
                           <thead className="bg-gray-100">
                             <tr>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
-                              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Training</th>
+                              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                           {form.watch("trainingNeeds").map((trainingNeed, index) => (
                             <React.Fragment key={trainingNeed.id}>
                               <tr className="border-t">
-                                <td className="p-3 text-sm">{index + 1}.</td>
-                                <td className="p-3">
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                   <Input
                                     value={trainingNeed.training}
                                     onChange={(e) => updateTrainingNeed(trainingNeed.id, "training", e.target.value)}
                                     placeholder={`Training ${index + 1}`}
-                                    className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                    className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                                   />
                                 </td>
-                                <td className="p-3">
-                                  <div className="flex space-x-2">
+                                <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                                  <div className="flex gap-2 justify-center">
                                     <Button
                                       type="button"
                                       variant="ghost"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-6 w-6"
                                       onClick={() => setTrainingNeedsComments(prev => ({
                                         ...prev,
                                         [trainingNeed.id]: prev[trainingNeed.id] || ""
                                       }))}
                                     >
-                                      <MessageSquare className="h-4 w-4" />
+                                      <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                     </Button>
                                     <Button
                                       type="button"
                                       variant="ghost"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-6 w-6"
                                       onClick={() => deleteTrainingNeed(trainingNeed.id)}
                                     >
-                                      <Trash2 className="h-4 w-4" />
+                                      <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                     </Button>
                                   </div>
                                 </td>
@@ -2250,54 +2256,54 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <table className="w-full">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Corresponding in DB</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Category</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Status</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Target or Compl. Date</th>
-                                  <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Training</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Corresponding in DB</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Category</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Status</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Target or Compl. Date</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {form.watch("trainingFollowups").map((followup, index) => (
                                   <React.Fragment key={followup.id}>
                                     <tr className="border-t">
-                                      <td className="p-3 text-sm">{index + 1}.</td>
-                                      <td className="p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                         <Input
                                           value={followup.training}
                                           onChange={(e) => updateTrainingFollowup(followup.id, "training", e.target.value)}
-                                          className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                                         />
                                       </td>
-                                      <td className="p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                         <select
                                           value={followup.correspondingInDB}
                                           onChange={(e) => updateTrainingFollowup(followup.id, "correspondingInDB", e.target.value)}
-                                          className="w-full p-1 border rounded text-sm"
+                                          className="w-full p-1 border rounded text-[13px] h-6"
                                         >
                                           <option>Select Training from DB</option>
                                           <option>Training Option 1</option>
                                           <option>Training Option 2</option>
                                         </select>
                                       </td>
-                                      <td className="p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                         <select
                                           value={followup.category}
                                           onChange={(e) => updateTrainingFollowup(followup.id, "category", e.target.value)}
-                                          className="w-full p-1 border rounded text-sm"
+                                          className="w-full p-1 border rounded text-[13px] h-6"
                                         >
                                           <option>Select Rating</option>
                                           <option>1. Competence</option>
                                           <option>2- Soft Skills</option>
                                         </select>
                                       </td>
-                                      <td className="p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                         <select
                                           value={followup.status}
                                           onChange={(e) => updateTrainingFollowup(followup.id, "status", e.target.value)}
-                                          className={`w-full p-1 border rounded text-sm ${
+                                          className={`w-full p-1 border rounded text-[13px] h-6 ${
                                             followup.status === "Proposed" ? "bg-gray-200" :
                                             followup.status === "Approved" ? "bg-blue-200" :
                                             followup.status === "Planned" ? "bg-yellow-200" :
@@ -2312,34 +2318,36 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           <option value="Completed">Completed</option>
                                         </select>
                                       </td>
-                                      <td className="p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                         <Input
                                           type="date"
                                           value={followup.targetDate}
                                           onChange={(e) => updateTrainingFollowup(followup.id, "targetDate", e.target.value)}
-                                          className="w-full"
+                                          className="w-full text-[13px] h-6"
                                         />
                                       </td>
-                                      <td className="p-3">
-                                        <div className="flex justify-center space-x-2">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                                        <div className="flex justify-center gap-2">
                                           <Button
                                             type="button"
                                             variant="ghost"
-                                            size="sm"
+                                            size="icon"
+                                            className="h-6 w-6"
                                             onClick={() => setTrainingFollowupComments(prev => ({
                                               ...prev,
                                               [followup.id]: prev[followup.id] || ""
                                             }))}
                                           >
-                                            <MessageSquare className="h-4 w-4" />
+                                            <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                           </Button>
                                           <Button
                                             type="button"
                                             variant="ghost"
-                                            size="sm"
+                                            size="icon"
+                                            className="h-6 w-6"
                                             onClick={() => deleteTrainingFollowup(followup.id)}
                                           >
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                           </Button>
                                         </div>
                                       </td>

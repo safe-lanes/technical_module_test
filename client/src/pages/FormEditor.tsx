@@ -1784,48 +1784,48 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           <table className="w-full min-w-[600px]">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">S.No</th>
-                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Assessment Criteria</th>
-                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Weight %</th>
-                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Effectiveness</th>
-                <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Actions</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Assessment Criteria</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Weight %</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Effectiveness</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {formMethods.watch("competenceAssessments").map((assessment, index) => (
                 <React.Fragment key={assessment.id}>
                   <tr className="border-t">
-                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}.</td>
-                    <td className="p-2 sm:p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       {isConfigMode ? (
                         <Input
                           value={assessment.assessmentCriteria}
                           onChange={(e) => updateCompetenceCriterion(assessment.id, "assessmentCriteria", e.target.value)}
                           placeholder="Enter assessment criteria"
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[13px] h-6"
                           style={{ color: '#52baf3' }}
                         />
                       ) : (
-                        <span className="text-xs sm:text-sm">{assessment.assessmentCriteria}</span>
+                        <span className="text-[13px]">{assessment.assessmentCriteria}</span>
                       )}
                     </td>
-                    <td className="p-2 sm:p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       {isConfigMode ? (
                         <Input
                           type="number"
                           value={assessment.weight}
                           onChange={(e) => updateCompetenceCriterion(assessment.id, "weight", parseInt(e.target.value) || 0)}
                           placeholder="0"
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0 w-12 sm:w-16 text-xs sm:text-sm"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 w-12 text-[13px] h-6"
                           style={{ color: '#52baf3' }}
                           min="0"
                           max="100"
                         />
                       ) : (
-                        <span className="text-xs sm:text-sm">{assessment.weight}%</span>
+                        <span className="text-[13px]">{assessment.weight}%</span>
                       )}
                     </td>
-                    <td className="p-2 sm:p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Select
                         value={assessment.effectiveness}
                         onValueChange={(value) => updateCompetenceCriterion(assessment.id, "effectiveness", value)}
@@ -1836,7 +1836,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         }}
                       >
                         <SelectTrigger 
-                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[13px] h-6 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                           style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                         >
                           <SelectValue placeholder="Select Rating" />
@@ -1850,29 +1850,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-2 sm:p-3">
-                      <div className="flex space-x-1 sm:space-x-2">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                      <div className="flex gap-2 justify-center">
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => setCompetenceComments(prev => ({
                             ...prev,
                             [assessment.id]: prev[assessment.id] || ""
                           }))}
-                          className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                          className="h-6 w-6"
                         >
-                          <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                         </Button>
                         {isConfigMode && (
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={() => deleteCompetenceCriterion(assessment.id)}
-                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                            className="h-6 w-6"
                           >
-                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                           </Button>
                         )}
                       </div>
@@ -2158,44 +2158,46 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Training</th>
-              <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Training</th>
+              <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
             {formMethods.watch("trainingNeeds").map((trainingNeed, index) => (
               <React.Fragment key={trainingNeed.id}>
                 <tr className="border-t">
-                  <td className="p-3 text-sm">{index + 1}.</td>
-                  <td className="p-3">
+                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                     <Input
                       value={trainingNeed.training}
                       onChange={(e) => updateTrainingNeed(trainingNeed.id, "training", e.target.value)}
                       placeholder={`Training ${index + 1}`}
-                      className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                      className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                     />
                   </td>
-                  <td className="p-3">
-                    <div className="flex space-x-2">
+                  <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                    <div className="flex gap-2 justify-center">
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => setTrainingNeedsComments(prev => ({
                           ...prev,
                           [trainingNeed.id]: prev[trainingNeed.id] || ""
                         }))}
+                        className="h-6 w-6"
                       >
-                        <MessageSquare className="h-4 w-4" />
+                        <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                       </Button>
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => deleteTrainingNeed(trainingNeed.id)}
+                        className="h-6 w-6"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                       </Button>
                     </div>
                   </td>
