@@ -1,3 +1,4 @@
+
 import { users, type User, type InsertUser, type Form, type InsertForm, type RankGroup, type InsertRankGroup, type AvailableRank, type InsertAvailableRank } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -66,11 +67,12 @@ export class MemStorage implements IStorage {
     this.currentAvailableRankId = 13;
     
     // Initialize with sample rank groups - showing only 1 for configuration
+    // Note: Using JSON string for ranks array compatibility with MySQL
     this.rankGroups.set(1, {
       id: 1,
       formId: 1,
       name: "Senior Officers",
-      ranks: ["Master", "Chief Officer", "Chief Engineer"]
+      ranks: JSON.stringify(["Master", "Chief Officer", "Chief Engineer"])
     });
     this.currentRankGroupId = 2;
   }
@@ -126,7 +128,14 @@ export class MemStorage implements IStorage {
 
   async createRankGroup(insertRankGroup: InsertRankGroup): Promise<RankGroup> {
     const id = this.currentRankGroupId++;
-    const rankGroup: RankGroup = { ...insertRankGroup, id };
+    // Convert array to JSON string for MySQL compatibility
+    const rankGroup: RankGroup = { 
+      ...insertRankGroup, 
+      id,
+      ranks: typeof insertRankGroup.ranks === 'string' 
+        ? insertRankGroup.ranks 
+        : JSON.stringify(insertRankGroup.ranks)
+    };
     this.rankGroups.set(id, rankGroup);
     return rankGroup;
   }
@@ -135,7 +144,15 @@ export class MemStorage implements IStorage {
     const existingRankGroup = this.rankGroups.get(id);
     if (!existingRankGroup) return undefined;
     
-    const updatedRankGroup: RankGroup = { ...existingRankGroup, ...rankGroupData };
+    const updatedRankGroup: RankGroup = { 
+      ...existingRankGroup, 
+      ...rankGroupData,
+      ranks: rankGroupData.ranks 
+        ? (typeof rankGroupData.ranks === 'string' 
+          ? rankGroupData.ranks 
+          : JSON.stringify(rankGroupData.ranks))
+        : existingRankGroup.ranks
+    };
     this.rankGroups.set(id, updatedRankGroup);
     return updatedRankGroup;
   }

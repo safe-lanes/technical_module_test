@@ -1,0 +1,27 @@
+
+# Database Configuration for MySQL
+DATABASE_URL=mysql://username:password@localhost:3306/element_crew_appraisals
+
+# Alternative format for MySQL
+# DATABASE_URL=mysql://username:password@host:port/database_name
+
+# For Replit or cloud MySQL services:
+# DATABASE_URL=mysql://username:password@hostname.replit.co:3306/database_name
+
+# Example for PlanetScale (MySQL-compatible):
+# DATABASE_URL=mysql://username:password@hostname.planetscale.com:3306/database_name?sslaccept=strict
+
+# Example for AWS RDS MySQL:
+# DATABASE_URL=mysql://username:password@rds-hostname.amazonaws.com:3306/database_name
+
+# Example for Google Cloud SQL MySQL:
+# DATABASE_URL=mysql://username:password@google-cloud-sql-ip:3306/database_name
+
+# Micro Frontend Configuration (optional)
+MICRO_FRONTEND_MODE=false
+MICRO_FRONTEND_BASE_PATH=/appraisals
+PARENT_APP_API_BASE=http://localhost:4200/api
+
+# Development
+NODE_ENV=development
+PORT=5000

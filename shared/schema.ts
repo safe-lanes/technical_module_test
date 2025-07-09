@@ -1,30 +1,31 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+
+import { mysqlTable, text, int, boolean } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = mysqlTable("users", {
+  id: int("id").primaryKey().autoincrement(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
 
-export const forms = pgTable("forms", {
-  id: serial("id").primaryKey(),
+export const forms = mysqlTable("forms", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   rankGroup: text("rank_group").notNull(),
   versionNo: text("version_no").notNull(),
   versionDate: text("version_date").notNull(),
 });
 
-export const rankGroups = pgTable("rank_groups", {
-  id: serial("id").primaryKey(),
-  formId: integer("form_id").references(() => forms.id).notNull(),
+export const rankGroups = mysqlTable("rank_groups", {
+  id: int("id").primaryKey().autoincrement(),
+  formId: int("form_id").notNull().references(() => forms.id),
   name: text("name").notNull(),
-  ranks: text("ranks").array().notNull(), // Array of rank names
+  ranks: text("ranks").notNull(), // JSON string for MySQL compatibility
 });
 
-export const availableRanks = pgTable("available_ranks", {
-  id: serial("id").primaryKey(),
+export const availableRanks = mysqlTable("available_ranks", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   category: text("category").notNull(), // Senior Officers, Junior Officers, Ratings, etc.
 });

@@ -9,7 +9,11 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <script>
+      // Micro frontend detection
+      if (window.parent !== window) {
+        window.__MICRO_FRONTEND_MODE__ = true;
+      }
+    </script>
   </body>
 </html>

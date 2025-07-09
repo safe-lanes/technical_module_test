@@ -1,31 +1,44 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
+import { Toaster } from "@/components/ui/toaster";
+import { Switch, Route } from "wouter";
+import ElementCrewAppraisals from "./pages/ElementCrewAppraisals";
+import AdminModule from "./pages/AdminModule";
+import NotFound from "./pages/not-found";
+import { useMicroFrontendConfig } from "./micro-frontend/MicroFrontendWrapper";
 
-import { ElementCrewAppraisals } from "@/pages/ElementCrewAppraisals";
-import { AdminModule } from "@/pages/AdminModule";
-
-function Router() {
-  return (
-    <Switch>
-      {/* Add pages below */}
-      <Route path="/" component={ElementCrewAppraisals} />
-      <Route path="/admin" component={AdminModule} />
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+const queryClient = new QueryClient();
 
 function App() {
+  // Check if we're running in micro frontend mode
+  const isMicroFrontend = typeof window !== 'undefined' && 
+    (window as any).__MICRO_FRONTEND_MODE__;
+
+  if (isMicroFrontend) {
+    // In micro frontend mode, just return the routing without providers
+    // as they're handled by MicroFrontendWrapper
+    return (
+      <>
+        <Switch>
+          <Route path="/" component={ElementCrewAppraisals} />
+          <Route path="/admin" component={AdminModule} />
+          <Route component={NotFound} />
+        </Switch>
+        <Toaster />
+      </>
+    );
+  }
+
+  // Standalone mode with full providers
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <Switch>
+          <Route path="/" component={ElementCrewAppraisals} />
+          <Route path="/admin" component={AdminModule} />
+          <Route component={NotFound} />
+        </Switch>
         <Toaster />
-        <Router />
       </TooltipProvider>
     </QueryClientProvider>
   );
