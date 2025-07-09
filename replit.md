@@ -179,6 +179,7 @@ Changelog:
 - July 09, 2025. Implemented configurable dropdown functionality for "Appraisal Type" field with blue #52baf3 highlighting in configuration mode, clickable label and dropdown opens dialog for editing dropdown options with add/edit/delete capabilities
 - July 09, 2025. Extended configurable dropdown functionality to "Personality Index (PI) Category" field with same blue styling and dialog-based option management
 - July 09, 2025. Implemented configurable "Effectiveness" Rating dropdown common across Parts B, C, and D tables - blue indication shown only in first row of each table, single configuration affects all tables with shared rating options
+- July 09, 2025. Added configurable dropdown functionality for "Category" and "Status" fields in Part G2 Training Followup table - blue indication shown only in first row, separate configuration dialogs for each field type with add/edit/delete capabilities
 ```
 
 ## User Preferences

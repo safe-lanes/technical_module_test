@@ -556,6 +556,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [editingEffectiveness, setEditingEffectiveness] = useState<string>("");
   const [editingEffectivenessIndex, setEditingEffectivenessIndex] = useState<number>(-1);
 
+  // G2 Training Category configuration state
+  const [trainingCategoryOptions, setTrainingCategoryOptions] = useState<string[]>([
+    "1. Competence",
+    "2. Soft Skills",
+    "3. Safety",
+    "4. Technical",
+    "5. Leadership"
+  ]);
+  const [showTrainingCategoryDialog, setShowTrainingCategoryDialog] = useState(false);
+  const [editingTrainingCategory, setEditingTrainingCategory] = useState<string>("");
+  const [editingTrainingCategoryIndex, setEditingTrainingCategoryIndex] = useState<number>(-1);
+
+  // G2 Training Status configuration state
+  const [trainingStatusOptions, setTrainingStatusOptions] = useState<string[]>([
+    "Proposed",
+    "Approved",
+    "Planned",
+    "Declined",
+    "Completed"
+  ]);
+  const [showTrainingStatusDialog, setShowTrainingStatusDialog] = useState(false);
+  const [editingTrainingStatus, setEditingTrainingStatus] = useState<string>("");
+  const [editingTrainingStatusIndex, setEditingTrainingStatusIndex] = useState<number>(-1);
+
   // Appraisal Type management functions
   const addAppraisalTypeOption = () => {
     setEditingAppraisalType("");
@@ -662,6 +686,78 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     // Clear the input field for next entry
     setEditingEffectiveness("");
     setEditingEffectivenessIndex(-1);
+  };
+
+  // Training Category management functions
+  const addTrainingCategoryOption = () => {
+    setEditingTrainingCategory("");
+    setEditingTrainingCategoryIndex(-1);
+    setShowTrainingCategoryDialog(true);
+  };
+
+  const editTrainingCategoryOption = (index: number) => {
+    setEditingTrainingCategory(trainingCategoryOptions[index]);
+    setEditingTrainingCategoryIndex(index);
+    setShowTrainingCategoryDialog(true);
+  };
+
+  const deleteTrainingCategoryOption = (index: number) => {
+    const newOptions = trainingCategoryOptions.filter((_, i) => i !== index);
+    setTrainingCategoryOptions(newOptions);
+  };
+
+  const saveTrainingCategoryOption = () => {
+    if (editingTrainingCategory.trim() === "") return;
+    
+    if (editingTrainingCategoryIndex === -1) {
+      // Adding new option
+      setTrainingCategoryOptions([...trainingCategoryOptions, editingTrainingCategory.trim()]);
+    } else {
+      // Editing existing option
+      const newOptions = [...trainingCategoryOptions];
+      newOptions[editingTrainingCategoryIndex] = editingTrainingCategory.trim();
+      setTrainingCategoryOptions(newOptions);
+    }
+    
+    // Clear the input field for next entry
+    setEditingTrainingCategory("");
+    setEditingTrainingCategoryIndex(-1);
+  };
+
+  // Training Status management functions
+  const addTrainingStatusOption = () => {
+    setEditingTrainingStatus("");
+    setEditingTrainingStatusIndex(-1);
+    setShowTrainingStatusDialog(true);
+  };
+
+  const editTrainingStatusOption = (index: number) => {
+    setEditingTrainingStatus(trainingStatusOptions[index]);
+    setEditingTrainingStatusIndex(index);
+    setShowTrainingStatusDialog(true);
+  };
+
+  const deleteTrainingStatusOption = (index: number) => {
+    const newOptions = trainingStatusOptions.filter((_, i) => i !== index);
+    setTrainingStatusOptions(newOptions);
+  };
+
+  const saveTrainingStatusOption = () => {
+    if (editingTrainingStatus.trim() === "") return;
+    
+    if (editingTrainingStatusIndex === -1) {
+      // Adding new option
+      setTrainingStatusOptions([...trainingStatusOptions, editingTrainingStatus.trim()]);
+    } else {
+      // Editing existing option
+      const newOptions = [...trainingStatusOptions];
+      newOptions[editingTrainingStatusIndex] = editingTrainingStatus.trim();
+      setTrainingStatusOptions(newOptions);
+    }
+    
+    // Clear the input field for next entry
+    setEditingTrainingStatus("");
+    setEditingTrainingStatusIndex(-1);
   };
 
   // Recommendation management functions
@@ -2415,17 +2511,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         <Select
                           value={followup.category}
                           onValueChange={(value) => updateTrainingFollowup(followup.id, 'category', value)}
+                          onOpenChange={(open) => {
+                            if (isConfigMode && open && index === 0) {
+                              setShowTrainingCategoryDialog(true);
+                            }
+                          }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger 
+                            className={`w-full ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                          >
                             <SelectValue placeholder="Select Rating" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Select Rating">Select Rating</SelectItem>
-                            <SelectItem value="1. Competence">1. Competence</SelectItem>
-                            <SelectItem value="2. Soft Skills">2. Soft Skills</SelectItem>
-                            <SelectItem value="3. Safety">3. Safety</SelectItem>
-                            <SelectItem value="4. Technical">4. Technical</SelectItem>
-                            <SelectItem value="5. Leadership">5. Leadership</SelectItem>
+                            {trainingCategoryOptions.map((option, optionIndex) => (
+                              <SelectItem key={optionIndex} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </td>
@@ -2433,16 +2536,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         <Select
                           value={followup.status}
                           onValueChange={(value) => updateTrainingFollowup(followup.id, 'status', value)}
+                          onOpenChange={(open) => {
+                            if (isConfigMode && open && index === 0) {
+                              setShowTrainingStatusDialog(true);
+                            }
+                          }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger 
+                            className={`w-full ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                          >
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Proposed">Proposed</SelectItem>
-                            <SelectItem value="Approved">Approved</SelectItem>
-                            <SelectItem value="Planned">Planned</SelectItem>
-                            <SelectItem value="Declined">Declined</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
+                            {trainingStatusOptions.map((option, optionIndex) => (
+                              <SelectItem key={optionIndex} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </td>
@@ -3065,6 +3176,158 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEffectivenessDialog(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Training Category Configuration Dialog */}
+      <Dialog open={showTrainingCategoryDialog} onOpenChange={setShowTrainingCategoryDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure Training Category Options</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Current options list */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {trainingCategoryOptions.map((option, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <span className="text-sm">{option}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editTrainingCategoryOption(index)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteTrainingCategoryOption(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add/Edit option input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {editingTrainingCategoryIndex === -1 ? "Add New Option:" : "Edit Option:"}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingTrainingCategory}
+                  onChange={(e) => setEditingTrainingCategory(e.target.value)}
+                  placeholder="Enter option name"
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      saveTrainingCategoryOption();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={saveTrainingCategoryOption}
+                  disabled={!editingTrainingCategory.trim()}
+                  size="sm"
+                >
+                  {editingTrainingCategoryIndex === -1 ? "Add" : "Save"}
+                </Button>
+              </div>
+            </div>
+
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTrainingCategoryDialog(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Training Status Configuration Dialog */}
+      <Dialog open={showTrainingStatusDialog} onOpenChange={setShowTrainingStatusDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure Training Status Options</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Current options list */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {trainingStatusOptions.map((option, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <span className="text-sm">{option}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editTrainingStatusOption(index)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteTrainingStatusOption(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add/Edit option input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {editingTrainingStatusIndex === -1 ? "Add New Option:" : "Edit Option:"}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingTrainingStatus}
+                  onChange={(e) => setEditingTrainingStatus(e.target.value)}
+                  placeholder="Enter option name"
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      saveTrainingStatusOption();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={saveTrainingStatusOption}
+                  disabled={!editingTrainingStatus.trim()}
+                  size="sm"
+                >
+                  {editingTrainingStatusIndex === -1 ? "Add" : "Save"}
+                </Button>
+              </div>
+            </div>
+
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTrainingStatusDialog(false)}>
               Done
             </Button>
           </DialogFooter>
