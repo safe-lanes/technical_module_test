@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import { 
   users, 
   forms, 
@@ -25,15 +25,15 @@ import { type IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
   private db: ReturnType<typeof drizzle>;
-  private pool: Pool;
+  private pool: mysql.Pool;
 
   constructor() {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL environment variable is required");
     }
     
-    this.pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+    this.pool = mysql.createPool({
+      uri: process.env.DATABASE_URL,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
     this.db = drizzle(this.pool);
@@ -81,7 +81,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteForm(id: number): Promise<boolean> {
     const result = await this.db.delete(forms).where(eq(forms.id, id));
-    return result.rowCount > 0;
+    return result.affectedRows > 0;
   }
 
   // Rank Group methods
@@ -101,7 +101,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteRankGroup(id: number): Promise<boolean> {
     const result = await this.db.delete(rankGroups).where(eq(rankGroups.id, id));
-    return result.rowCount > 0;
+    return result.affectedRows > 0;
   }
 
   // Available Rank methods
@@ -136,7 +136,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCrewMember(id: string): Promise<boolean> {
     const result = await this.db.delete(crewMembers).where(eq(crewMembers.id, id));
-    return result.rowCount > 0;
+    return result.affectedRows > 0;
   }
 
   // Appraisal Result methods
@@ -165,7 +165,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAppraisalResult(id: number): Promise<boolean> {
     const result = await this.db.delete(appraisalResults).where(eq(appraisalResults.id, id));
-    return result.rowCount > 0;
+    return result.affectedRows > 0;
   }
 
   // Seed data for initial setup

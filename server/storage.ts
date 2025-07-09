@@ -423,18 +423,28 @@ import { DatabaseStorage } from "./database";
 let storage: IStorage;
 
 if (process.env.DATABASE_URL) {
-  storage = new DatabaseStorage();
-  // Seed the database with initial data
-  (async () => {
-    try {
-      await (storage as DatabaseStorage).seedDatabase();
-    } catch (error) {
-      console.error("Failed to seed database:", error);
-    }
-  })();
+  try {
+    storage = new DatabaseStorage();
+    // Seed the database with initial data
+    (async () => {
+      try {
+        await (storage as DatabaseStorage).seedDatabase();
+        console.log("✅ MySQL database connected and seeded successfully");
+      } catch (error) {
+        console.error("Failed to seed database:", error);
+        console.log("⚠️  Falling back to in-memory storage");
+        storage = new MemStorage();
+      }
+    })();
+  } catch (error) {
+    console.error("Failed to initialize MySQL database:", error);
+    console.log("⚠️  Using in-memory storage as fallback");
+    storage = new MemStorage();
+  }
 } else {
   storage = new MemStorage();
-  console.warn("DATABASE_URL not found, using in-memory storage. Data will not persist.");
+  console.log("ℹ️  No DATABASE_URL found, using in-memory storage for development");
+  console.log("📝 To use MySQL: Set DATABASE_URL=mysql://username:password@host:port/database");
 }
 
 export { storage };

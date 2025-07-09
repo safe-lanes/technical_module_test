@@ -1,37 +1,37 @@
 
-import { pgTable, text, serial, boolean, timestamp } from "drizzle-orm/pg-core";
+import { mysqlTable, text, int, boolean, timestamp } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = mysqlTable("users", {
+  id: int("id").primaryKey().autoincrement(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
 
-export const forms = pgTable("forms", {
-  id: serial("id").primaryKey(),
+export const forms = mysqlTable("forms", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   rankGroup: text("rank_group").notNull(),
   versionNo: text("version_no").notNull(),
   versionDate: text("version_date").notNull(),
-  configuration: text("configuration"), // JSON string for form configuration
+  configuration: text("configuration", { length: 65535 }), // JSON string for form configuration
 });
 
-export const rankGroups = pgTable("rank_groups", {
-  id: serial("id").primaryKey(),
-  formId: serial("form_id").notNull().references(() => forms.id),
+export const rankGroups = mysqlTable("rank_groups", {
+  id: int("id").primaryKey().autoincrement(),
+  formId: int("form_id").notNull().references(() => forms.id),
   name: text("name").notNull(),
-  ranks: text("ranks").notNull(), // JSON string for compatibility
+  ranks: text("ranks").notNull(), // JSON string for MySQL compatibility
 });
 
-export const availableRanks = pgTable("available_ranks", {
-  id: serial("id").primaryKey(),
+export const availableRanks = mysqlTable("available_ranks", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   category: text("category").notNull(), // Senior Officers, Junior Officers, Ratings, etc.
 });
 
-export const crewMembers = pgTable("crew_members", {
+export const crewMembers = mysqlTable("crew_members", {
   id: text("id").primaryKey(),
   firstName: text("first_name").notNull(),
   middleName: text("middle_name"),
@@ -45,13 +45,13 @@ export const crewMembers = pgTable("crew_members", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const appraisalResults = pgTable("appraisal_results", {
-  id: serial("id").primaryKey(),
+export const appraisalResults = mysqlTable("appraisal_results", {
+  id: int("id").primaryKey().autoincrement(),
   crewMemberId: text("crew_member_id").notNull().references(() => crewMembers.id),
-  formId: serial("form_id").notNull().references(() => forms.id),
+  formId: int("form_id").notNull().references(() => forms.id),
   appraisalType: text("appraisal_type").notNull(),
   appraisalDate: text("appraisal_date").notNull(),
-  appraisalData: text("appraisal_data").notNull(), // JSON string
+  appraisalData: text("appraisal_data", { length: 65535 }).notNull(), // JSON string
   competenceRating: text("competence_rating"),
   behavioralRating: text("behavioral_rating"),
   overallRating: text("overall_rating"),

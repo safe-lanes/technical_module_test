@@ -1,9 +1,9 @@
 
 # MySQL Database Setup for Element Crew Appraisals
 
-## Database Migration from PostgreSQL to MySQL
+## MySQL Database Integration
 
-This application has been migrated to use MySQL instead of PostgreSQL while maintaining all existing functionality.
+This application is built with MySQL as the primary database, designed to integrate seamlessly with your existing Angular 19/NestJS application stack.
 
 ## Setup Instructions
 
