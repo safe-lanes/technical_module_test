@@ -2275,20 +2275,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">Recommendations</th>
-                <th className="text-center p-3 text-sm font-medium text-gray-600">Yes</th>
-                <th className="text-center p-3 text-sm font-medium text-gray-600">No</th>
-                <th className="text-center p-3 text-sm font-medium text-gray-600">NA</th>
-                <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Recommendations</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">Yes</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">No</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">NA</th>
+                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {formMethods.watch("recommendations").map((recommendation, index) => (
                 <React.Fragment key={recommendation.id}>
                   <tr className="border-t">
-                    <td className="p-3 text-sm">{index + 1}.</td>
-                    <td className="p-3 text-sm" style={{ 
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4" style={{ 
                       color: recommendation.isCustom && isConfigMode ? '#52baf3' : 'inherit'
                     }}>
                       {recommendation.isCustom && isConfigMode ? (
@@ -2298,13 +2298,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                             onChange={(e) => updateRecommendation(recommendation.id, "question", e.target.value)}
                             onBlur={() => handleRecommendationBlur(recommendation.id)}
                             placeholder="Add new recommendation"
-                            className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[13px] h-6"
                             style={{ color: '#52baf3' }}
                             autoFocus
                           />
                         ) : (
                           <div
-                            className="cursor-pointer p-0"
+                            className="cursor-pointer p-0 text-[13px]"
                             onClick={() => startEditingRecommendation(recommendation.id)}
                             style={{ color: '#52baf3' }}
                           >
@@ -2312,10 +2312,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           </div>
                         )
                       ) : (
-                        recommendation.question
+                        <span className="text-[13px]">{recommendation.question}</span>
                       )}
                     </td>
-                    <td className="text-center p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                       <input
                         type="radio"
                         name={`recommendation-${recommendation.id}`}
@@ -2324,7 +2324,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         className="w-4 h-4"
                       />
                     </td>
-                    <td className="text-center p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                       <input
                         type="radio"
                         name={`recommendation-${recommendation.id}`}
@@ -2333,7 +2333,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         className="w-4 h-4"
                       />
                     </td>
-                    <td className="text-center p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                       <input
                         type="radio"
                         name={`recommendation-${recommendation.id}`}
@@ -2342,38 +2342,41 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         className="w-4 h-4"
                       />
                     </td>
-                    <td className="p-3">
-                      <div className="flex justify-center space-x-2">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                      <div className="flex justify-center gap-2">
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => setRecommendationComments(prev => ({
                             ...prev,
                             [recommendation.id]: prev[recommendation.id] || ""
                           }))}
+                          className="h-6 w-6"
                         >
-                          <MessageSquare className="h-4 w-4" />
+                          <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                         </Button>
                         {recommendation.isCustom && isConfigMode && (
                           <>
                             <Button
                               type="button"
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               style={{ color: '#52baf3' }}
                               onClick={() => startEditingRecommendation(recommendation.id)}
+                              className="h-6 w-6"
                             >
-                              <Edit2 className="h-4 w-4" />
+                              <Edit2 className="h-[18px] w-[18px]" />
                             </Button>
                             <Button
                               type="button"
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => deleteRecommendation(recommendation.id)}
                               style={{ color: '#52baf3' }}
+                              className="h-6 w-6"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-[18px] w-[18px]" />
                             </Button>
                           </>
                         )}
@@ -2495,31 +2498,31 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Training</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Corresponding in DB</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Category</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Status</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Target Date</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b w-20">Actions</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Training</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Corresponding in DB</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Category</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Status</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Target Date</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {isConfigMode ? (
                   // Show only one configuration row in config mode
                   <tr className="border-b">
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Input
                         placeholder="Training name"
                         value=""
                         readOnly
-                        className="w-full bg-gray-50"
+                        className="w-full bg-gray-50 text-[13px] h-6"
                       />
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Select disabled>
-                        <SelectTrigger className="w-full bg-gray-50">
+                        <SelectTrigger className="w-full bg-gray-50 text-[13px] h-6">
                           <SelectValue placeholder="Select Training from DB" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2534,7 +2537,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Select
                         onOpenChange={(open) => {
                           if (open) {
@@ -2543,7 +2546,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         }}
                       >
                         <SelectTrigger 
-                          className="w-full cursor-pointer"
+                          className="w-full cursor-pointer text-[13px] h-6"
                           style={{ borderColor: '#52baf3', color: '#52baf3' }}
                         >
                           <SelectValue placeholder="Select Rating" />
@@ -2557,7 +2560,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Select
                         onOpenChange={(open) => {
                           if (open) {
@@ -2566,7 +2569,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         }}
                       >
                         <SelectTrigger 
-                          className="w-full cursor-pointer"
+                          className="w-full cursor-pointer text-[13px] h-6"
                           style={{ borderColor: '#52baf3', color: '#52baf3' }}
                         >
                           <SelectValue placeholder="Proposed" />
@@ -2580,42 +2583,42 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <Input
                         type="date"
                         value=""
                         readOnly
-                        className="w-full bg-gray-50"
+                        className="w-full bg-gray-50 text-[13px] h-6"
                       />
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                       <div className="flex items-center gap-1">
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           disabled
-                          className="text-gray-400"
+                          className="text-gray-400 h-6 w-6"
                         >
-                          <MessageSquare className="h-4 w-4" />
+                          <MessageSquare className="h-[18px] w-[18px]" />
                         </Button>
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           disabled
-                          className="text-gray-400"
+                          className="text-gray-400 h-6 w-6"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-[18px] w-[18px]" />
                         </Button>
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           disabled
-                          className="text-gray-400"
+                          className="text-gray-400 h-6 w-6"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-[18px] w-[18px]" />
                         </Button>
                       </div>
                     </td>

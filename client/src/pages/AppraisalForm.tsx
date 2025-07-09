@@ -1909,21 +1909,21 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <table className="w-full">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                                  <th className="text-left p-3 text-sm font-medium text-gray-600">Recommendations</th>
-                                  <th className="text-center p-3 text-sm font-medium text-gray-600">Yes</th>
-                                  <th className="text-center p-3 text-sm font-medium text-gray-600">No</th>
-                                  <th className="text-center p-3 text-sm font-medium text-gray-600">NA</th>
-                                  <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Recommendations</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">Yes</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">No</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">NA</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-center">Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {form.watch("recommendations").map((recommendation, index) => (
                                   <React.Fragment key={recommendation.id}>
                                     <tr className="border-t">
-                                      <td className="p-3 text-sm">{index + 1}.</td>
-                                      <td className="p-3 text-sm">{recommendation.question}</td>
-                                      <td className="text-center p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{recommendation.question}</td>
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                                         <input
                                           type="radio"
                                           name={`recommendation-${recommendation.id}`}
@@ -1932,7 +1932,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           className="w-4 h-4"
                                         />
                                       </td>
-                                      <td className="text-center p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                                         <input
                                           type="radio"
                                           name={`recommendation-${recommendation.id}`}
@@ -1941,7 +1941,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           className="w-4 h-4"
                                         />
                                       </td>
-                                      <td className="text-center p-3">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                                         <input
                                           type="radio"
                                           name={`recommendation-${recommendation.id}`}
@@ -1950,18 +1950,19 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           className="w-4 h-4"
                                         />
                                       </td>
-                                      <td className="p-3">
-                                        <div className="flex justify-center space-x-2">
+                                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                                        <div className="flex justify-center">
                                           <Button
                                             type="button"
                                             variant="ghost"
-                                            size="sm"
+                                            size="icon"
                                             onClick={() => setRecommendationComments(prev => ({
                                               ...prev,
                                               [recommendation.id]: prev[recommendation.id] || ""
                                             }))}
+                                            className="h-6 w-6"
                                           >
-                                            <MessageSquare className="h-4 w-4" />
+                                            <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                           </Button>
                                         </div>
                                       </td>
