@@ -18,6 +18,16 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, Save, Plus, MessageSquare, Edit2, Trash2, Settings, Calendar as CalendarIcon } from "lucide-react";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { Form } from "@shared/schema";
 
@@ -450,27 +460,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     });
   };
 
+  // State for configuration mode dialog
+  const [showConfigDialog, setShowConfigDialog] = useState(false);
+
   // Recommendation management functions
   const addRecommendation = () => {
     if (!isConfigMode) {
-      const shouldEnterConfigMode = window.confirm(
-        "Click 'Configure Fields' button to configure the table. Enter configuration mode? Yes No"
-      );
-      if (shouldEnterConfigMode) {
-        setIsConfigMode(true);
-      }
+      setShowConfigDialog(true);
       return;
     }
     
     const currentRecommendations = formMethods.getValues("recommendations");
     const newRecommendation = {
       id: Date.now().toString(),
-      question: "New recommendation",
+      question: "Add new recommendation",
       answer: "Yes",
       comment: "",
       isCustom: true // Mark as custom/additional recommendation
     };
     formMethods.setValue("recommendations", [...currentRecommendations, newRecommendation]);
+  };
+
+  const handleEnterConfigMode = () => {
+    setIsConfigMode(true);
+    setShowConfigDialog(false);
   };
 
   const updateRecommendation = (id: string, field: string, value: string) => {
@@ -1720,9 +1733,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     }}>
                       {recommendation.isCustom && isConfigMode ? (
                         <Input
-                          value={recommendation.question}
+                          value={recommendation.question === "Add new recommendation" ? "" : recommendation.question}
                           onChange={(e) => updateRecommendation(recommendation.id, "question", e.target.value)}
-                          placeholder="Enter recommendation question"
+                          placeholder="Add new recommendation"
                           className="border-0 bg-transparent p-0 focus-visible:ring-0"
                           style={{ color: '#52baf3' }}
                         />
@@ -2190,6 +2203,22 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
       )}
+      
+      {/* Configuration Mode Dialog */}
+      <AlertDialog open={showConfigDialog} onOpenChange={setShowConfigDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Enter Configuration Mode?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You need to be in configuration mode to add new recommendations.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction onClick={handleEnterConfigMode}>Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
