@@ -452,6 +452,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
   // Recommendation management functions
   const addRecommendation = () => {
+    if (!isConfigMode) {
+      const shouldEnterConfigMode = window.confirm(
+        "Click 'Configure Fields' button to configure the table. Enter configuration mode? Yes No"
+      );
+      if (shouldEnterConfigMode) {
+        setIsConfigMode(true);
+      }
+      return;
+    }
+    
     const currentRecommendations = formMethods.getValues("recommendations");
     const newRecommendation = {
       id: Date.now().toString(),
@@ -1680,8 +1690,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             size="sm"
             className="text-sm px-3 py-1 h-7"
             style={{ 
-              borderColor: '#52baf3',
-              color: '#52baf3'
+              borderColor: isConfigMode ? '#52baf3' : '#d1d5db',
+              color: isConfigMode ? '#52baf3' : '#6b7280'
             }}
             onClick={addRecommendation}
           >
