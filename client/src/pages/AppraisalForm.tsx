@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 // Comprehensive list of world nationalities
@@ -190,6 +191,19 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [editingTrainingNeedsComment, setEditingTrainingNeedsComment] = useState<string | null>(null);
   const [editingRecommendationComment, setEditingRecommendationComment] = useState<string | null>(null);
   const [editingTrainingFollowupComment, setEditingTrainingFollowupComment] = useState<string | null>(null);
+  
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: () => {}
+  });
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -269,6 +283,25 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     onClose();
   };
 
+  // Helper function to show confirmation dialog
+  const showConfirmDialog = (title: string, description: string, onConfirm: () => void) => {
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      description,
+      onConfirm
+    });
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      title: "",
+      description: "",
+      onConfirm: () => {}
+    });
+  };
+
   // Training management functions
   const addTraining = () => {
     const newTraining = {
@@ -282,15 +315,20 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTraining = (id: string) => {
-    if (window.confirm('Do you want to delete this training?')) {
-      const currentTrainings = form.getValues("trainings");
-      form.setValue("trainings", currentTrainings.filter(t => t.id !== id));
-      setTrainingComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Training",
+      "Are you sure you want to delete this training record?",
+      () => {
+        const currentTrainings = form.getValues("trainings");
+        form.setValue("trainings", currentTrainings.filter(t => t.id !== id));
+        setTrainingComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   const updateTraining = (id: string, field: string, value: string) => {
@@ -314,15 +352,20 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTarget = (id: string) => {
-    if (window.confirm('Do you want to delete this target?')) {
-      const currentTargets = form.getValues("targets");
-      form.setValue("targets", currentTargets.filter(t => t.id !== id));
-      setTargetComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Target",
+      "Are you sure you want to delete this target?",
+      () => {
+        const currentTargets = form.getValues("targets");
+        form.setValue("targets", currentTargets.filter(t => t.id !== id));
+        setTargetComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   const updateTarget = (id: string, field: string, value: string) => {
@@ -414,80 +457,115 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
   // Comment management helper functions
   const deleteTrainingComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setTrainingComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingTrainingComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setTrainingComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingTrainingComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteTargetComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setTargetComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingTargetComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setTargetComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingTargetComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteCompetenceComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setCompetenceComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingCompetenceComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setCompetenceComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingCompetenceComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteBehaviouralComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setBehaviouralComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingBehaviouralComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setBehaviouralComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingBehaviouralComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteTrainingNeedsComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setTrainingNeedsComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingTrainingNeedsComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setTrainingNeedsComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingTrainingNeedsComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteRecommendationComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setRecommendationComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingRecommendationComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setRecommendationComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingRecommendationComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
   
   const deleteTrainingFollowupComment = (id: string) => {
-    if (window.confirm('Do you want to delete this comment?')) {
-      setTrainingFollowupComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-      setEditingTrainingFollowupComment(null);
-    }
+    showConfirmDialog(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      () => {
+        setTrainingFollowupComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        setEditingTrainingFollowupComment(null);
+        closeConfirmDialog();
+      }
+    );
   };
 
   // Training Needs management functions
@@ -502,15 +580,20 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTrainingNeed = (id: string) => {
-    if (window.confirm('Do you want to delete this training need?')) {
-      const currentTrainingNeeds = form.getValues("trainingNeeds");
-      form.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
-      setTrainingNeedsComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
-    }
+    showConfirmDialog(
+      "Delete Training Need",
+      "Are you sure you want to delete this training need?",
+      () => {
+        const currentTrainingNeeds = form.getValues("trainingNeeds");
+        form.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
+        setTrainingNeedsComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+        closeConfirmDialog();
+      }
+    );
   };
 
   const updateTrainingNeed = (id: string, field: string, value: string) => {
@@ -559,10 +642,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteAppraiserComment = (id: string) => {
-    if (window.confirm('Do you want to delete this appraiser comment?')) {
-      const currentComments = form.getValues("appraiserComments");
-      form.setValue("appraiserComments", currentComments.filter(c => c.id !== id));
-    }
+    showConfirmDialog(
+      "Delete Appraiser Comment",
+      "Are you sure you want to delete this appraiser comment?",
+      () => {
+        const currentComments = form.getValues("appraiserComments");
+        form.setValue("appraiserComments", currentComments.filter(c => c.id !== id));
+        closeConfirmDialog();
+      }
+    );
   };
 
   // Seafarer Comments management
@@ -596,10 +684,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteOfficeReview = (id: string) => {
-    if (window.confirm('Do you want to delete this office review?')) {
-      const currentReviews = form.getValues("officeReviews");
-      form.setValue("officeReviews", currentReviews.filter(r => r.id !== id));
-    }
+    showConfirmDialog(
+      "Delete Office Review",
+      "Are you sure you want to delete this office review?",
+      () => {
+        const currentReviews = form.getValues("officeReviews");
+        form.setValue("officeReviews", currentReviews.filter(r => r.id !== id));
+        closeConfirmDialog();
+      }
+    );
   };
 
   // Training Followup management
@@ -626,10 +719,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTrainingFollowup = (id: string) => {
-    if (window.confirm('Do you want to delete this training followup?')) {
-      const currentFollowups = form.getValues("trainingFollowups");
-      form.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
-    }
+    showConfirmDialog(
+      "Delete Training Followup",
+      "Are you sure you want to delete this training followup?",
+      () => {
+        const currentFollowups = form.getValues("trainingFollowups");
+        form.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+        closeConfirmDialog();
+      }
+    );
   };
 
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
@@ -2311,6 +2409,22 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
         </div>
       </div>
+      
+      {/* Confirmation Dialog */}
+      <AlertDialog open={confirmDialog.isOpen} onOpenChange={closeConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeConfirmDialog}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDialog.onConfirm}>Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
