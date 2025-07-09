@@ -55,10 +55,24 @@ export const AdminModule = (): JSX.Element => {
   const { data: formsData = [], isLoading, error } = useQuery<Form[]>({
     queryKey: ["/api/forms"],
     enabled: selectedAdminPage === "forms",
+    queryFn: async () => {
+      const response = await fetch("/api/forms");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
   });
 
   const { data: availableRanks = [] } = useQuery<AvailableRank[]>({
     queryKey: ["/api/available-ranks"],
+    queryFn: async () => {
+      const response = await fetch("/api/available-ranks");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
   });
 
   const createRankGroupMutation = useMutation({
