@@ -1671,7 +1671,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             type="button"
             variant="outline"
             size="sm"
-            className="text-blue-600 border-blue-300"
+            className="text-sm px-3 py-1 h-7"
+            style={{ 
+              borderColor: '#52baf3',
+              color: '#52baf3'
+            }}
             onClick={addRecommendation}
           >
             + Add Recommendation
