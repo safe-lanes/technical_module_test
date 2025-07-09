@@ -1075,14 +1075,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         >
                                           <MessageSquare className="h-4 w-4" />
                                         </Button>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => setEditingTraining(training.id)}
-                                        >
-                                          <Edit2 className="h-4 w-4" />
-                                        </Button>
+
                                         <Button
                                           type="button"
                                           variant="ghost"
@@ -1221,14 +1214,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         >
                                           <MessageSquare className="h-4 w-4" />
                                         </Button>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => setEditingTarget(target.id)}
-                                        >
-                                          <Edit2 className="h-4 w-4" />
-                                        </Button>
+
                                         <Button
                                           type="button"
                                           variant="ghost"
@@ -1367,13 +1353,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       >
                                         <MessageSquare className="h-4 w-4" />
                                       </Button>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                      >
-                                        <Edit2 className="h-4 w-4" />
-                                      </Button>
+
                                       <Button
                                         type="button"
                                         variant="ghost"
@@ -1524,13 +1504,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       variant="ghost"
                                       size="sm"
                                     >
-                                      <Edit2 className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                    >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
                                   </div>
@@ -1668,13 +1641,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       }))}
                                     >
                                       <MessageSquare className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                    >
-                                      <Edit2 className="h-4 w-4" />
                                     </Button>
                                     <Button
                                       type="button"
