@@ -2058,29 +2058,36 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                     <p className="font-medium text-blue-600">
                                       {review.name}, <span className="font-normal italic">{review.position}:</span>
                                     </p>
-                                    <p className="text-blue-600 italic text-sm mt-1">
-                                      {review.feedback}
-                                    </p>
+                                    {editingOfficeReview === review.id ? (
+                                      <Textarea
+                                        value={review.feedback}
+                                        onChange={(e) => updateOfficeReview(review.id, "feedback", e.target.value)}
+                                        onBlur={() => setEditingOfficeReview(null)}
+                                        placeholder="Add office review feedback..."
+                                        className="text-blue-600 italic border-blue-200 mt-1"
+                                        rows={2}
+                                        autoFocus
+                                      />
+                                    ) : (
+                                      <p 
+                                        className="text-blue-600 italic text-sm mt-1 cursor-pointer p-2 rounded hover:bg-gray-50"
+                                        onClick={() => setEditingOfficeReview(review.id)}
+                                      >
+                                        {review.feedback || "Click to add feedback..."}
+                                      </p>
+                                    )}
                                   </div>
                                   <div className="flex space-x-2 ml-4">
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => setEditingOfficeReview(review.id)}
-                                >
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => deleteOfficeReview(review.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
+                                      onClick={() => deleteOfficeReview(review.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
                           </div>
                         ))}
                           </div>
