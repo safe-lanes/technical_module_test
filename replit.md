@@ -215,6 +215,7 @@ Changelog:
 - July 09, 2025. Added configurable dropdown functionality for "Category" and "Status" fields in Part G2 Training Followup table - blue indication shown only in first row, separate configuration dialogs for each field type with add/edit/delete capabilities
 - July 09, 2025. **PRODUCTION DEPLOYMENT**: Complete PostgreSQL database integration with real data persistence, automatic seeding, all API endpoints functional, crew members and appraisals loading from database with full CRUD operations
 - July 09, 2025. **MYSQL MIGRATION**: Successfully converted from PostgreSQL to MySQL for Angular 19/NestJS stack compatibility, maintained all functionality including data persistence, API endpoints, CRUD operations, automatic seeding, and micro frontend capabilities
+- July 09, 2025. **ENHANCED COMMENT FUNCTIONALITY**: Improved comment system with click-to-edit behavior - comments display as uneditable text when not in edit mode, clicking comment text enables editing with textarea, only delete button remains on right side, comments auto-save when focus is lost
 ```
 
 ## User Preferences

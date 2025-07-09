@@ -1122,15 +1122,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                             >
                                               {trainingComments[training.id] || "Click to add comment..."}
                                             </div>
-                                            <div className="flex space-x-2 ml-2">
-                                              <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setEditingTrainingComment(training.id)}
-                                              >
-                                                <Edit2 className="h-4 w-4" />
-                                              </Button>
+                                            <div className="ml-2">
                                               <Button
                                                 type="button"
                                                 variant="ghost"
@@ -1276,15 +1268,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                             >
                                               {targetComments[target.id] || "Click to add comment..."}
                                             </div>
-                                            <div className="flex space-x-2 ml-2">
-                                              <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setEditingTargetComment(target.id)}
-                                              >
-                                                <Edit2 className="h-4 w-4" />
-                                              </Button>
+                                            <div className="ml-2">
                                               <Button
                                                 type="button"
                                                 variant="ghost"
@@ -1428,15 +1412,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           >
                                             {competenceComments[assessment.id] || "Click to add comment..."}
                                           </div>
-                                          <div className="flex space-x-2 ml-2">
-                                            <Button
-                                              type="button"
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => setEditingCompetenceComment(assessment.id)}
-                                            >
-                                              <Edit2 className="h-4 w-4" />
-                                            </Button>
+                                          <div className="ml-2">
                                             <Button
                                               type="button"
                                               variant="ghost"
@@ -1588,15 +1564,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         >
                                           {behaviouralComments[assessment.id] || "Click to add comment..."}
                                         </div>
-                                        <div className="flex space-x-2 ml-2">
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setEditingBehaviouralComment(assessment.id)}
-                                          >
-                                            <Edit2 className="h-4 w-4" />
-                                          </Button>
+                                        <div className="ml-2">
                                           <Button
                                             type="button"
                                             variant="ghost"
@@ -1747,15 +1715,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         >
                                           {trainingNeedsComments[trainingNeed.id] || "Click to add comment..."}
                                         </div>
-                                        <div className="flex space-x-2 ml-2">
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setEditingTrainingNeedsComment(trainingNeed.id)}
-                                          >
-                                            <Edit2 className="h-4 w-4" />
-                                          </Button>
+                                        <div className="ml-2">
                                           <Button
                                             type="button"
                                             variant="ghost"
