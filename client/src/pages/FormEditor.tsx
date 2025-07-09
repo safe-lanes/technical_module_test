@@ -281,12 +281,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       ],
       // Part G: Office Review & Followup
       officeReviewComments: "",
-      trainingFollowups: [
-        { id: "1", training: "Training 1", correspondingInDB: "Select Training from DB", category: "Select Rating", status: "Proposed", targetDate: "", comment: "" },
-        { id: "2", training: "Training 2", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Approved", targetDate: "", comment: "" },
-        { id: "3", training: "Training 3", correspondingInDB: "Select Training from DB", category: "2. Soft Skills", status: "Planned", targetDate: "", comment: "" },
-        { id: "4", training: "Training 4", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Declined", targetDate: "", comment: "The officer will no longer be sent on this type of vessel, so this training is not required." },
-      ],
+      trainingFollowups: [],
     },
   });
 
@@ -2026,31 +2021,33 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         
         {/* Training Followup Table */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">Training Follow-up Actions</Label>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addTrainingFollowup('database')}
-                className="flex items-center gap-1"
-              >
-                <Plus className="h-3 w-3" />
-                Add from Database
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addTrainingFollowup('new')}
-                className="flex items-center gap-1"
-              >
-                <Plus className="h-3 w-3" />
-                Add New
-              </Button>
+          {!isConfigMode && (
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">Training Follow-up Actions</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addTrainingFollowup('database')}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add from Database
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addTrainingFollowup('new')}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add New
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
@@ -2061,27 +2058,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                   <th className="text-left p-3 font-medium text-gray-700 border-b">Category</th>
                   <th className="text-left p-3 font-medium text-gray-700 border-b">Status</th>
                   <th className="text-left p-3 font-medium text-gray-700 border-b">Target Date</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Comment</th>
-                  <th className="text-left p-3 font-medium text-gray-700 border-b">Actions</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b w-20">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {formMethods.watch("trainingFollowups").map((followup, index) => (
-                  <tr key={followup.id} className="border-b">
+                {isConfigMode ? (
+                  // Show only one configuration row in config mode
+                  <tr className="border-b">
                     <td className="p-3">
                       <Input
                         placeholder="Training name"
-                        value={followup.training}
-                        onChange={(e) => updateTrainingFollowup(followup.id, 'training', e.target.value)}
-                        className="w-full"
+                        value=""
+                        readOnly
+                        className="w-full bg-gray-50"
                       />
                     </td>
                     <td className="p-3">
-                      <Select
-                        value={followup.correspondingInDB}
-                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'correspondingInDB', value)}
-                      >
-                        <SelectTrigger className="w-full">
+                      <Select disabled>
+                        <SelectTrigger className="w-full bg-gray-50">
                           <SelectValue placeholder="Select Training from DB" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2097,11 +2091,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       </Select>
                     </td>
                     <td className="p-3">
-                      <Select
-                        value={followup.category}
-                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'category', value)}
-                      >
-                        <SelectTrigger className="w-full">
+                      <Select disabled>
+                        <SelectTrigger className="w-full bg-gray-50">
                           <SelectValue placeholder="Select Rating" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2115,12 +2106,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       </Select>
                     </td>
                     <td className="p-3">
-                      <Select
-                        value={followup.status}
-                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'status', value)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
+                      <Select disabled>
+                        <SelectTrigger className="w-full bg-gray-50">
+                          <SelectValue placeholder="Proposed" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Proposed">Proposed</SelectItem>
@@ -2134,40 +2122,168 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     <td className="p-3">
                       <Input
                         type="date"
-                        value={followup.targetDate}
-                        onChange={(e) => updateTrainingFollowup(followup.id, 'targetDate', e.target.value)}
-                        className="w-full"
+                        value=""
+                        readOnly
+                        className="w-full bg-gray-50"
                       />
                     </td>
                     <td className="p-3">
-                      <Textarea
-                        placeholder="Comments"
-                        value={trainingFollowupComments[followup.id] || followup.comment || ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setTrainingFollowupComments(prev => ({
-                            ...prev,
-                            [followup.id]: value
-                          }));
-                          updateTrainingFollowup(followup.id, 'comment', value);
-                        }}
-                        className="w-full resize-none"
-                        rows={2}
-                      />
-                    </td>
-                    <td className="p-3">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteTrainingFollowup(followup.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled
+                          className="text-gray-400"
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled
+                          className="text-gray-400"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled
+                          className="text-gray-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  // Show actual data rows outside config mode
+                  formMethods.watch("trainingFollowups").map((followup, index) => (
+                    <tr key={followup.id} className="border-b">
+                      <td className="p-3">
+                        <div className="space-y-1">
+                          <Input
+                            placeholder="Training name"
+                            value={followup.training}
+                            onChange={(e) => updateTrainingFollowup(followup.id, 'training', e.target.value)}
+                            className="w-full"
+                          />
+                          {trainingFollowupComments[followup.id] && (
+                            <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                              {trainingFollowupComments[followup.id]}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <Select
+                          value={followup.correspondingInDB}
+                          onValueChange={(value) => updateTrainingFollowup(followup.id, 'correspondingInDB', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Training from DB" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Select Training from DB">Select Training from DB</SelectItem>
+                            <SelectItem value="STCW Basic Safety Training">STCW Basic Safety Training</SelectItem>
+                            <SelectItem value="Advanced Fire Fighting">Advanced Fire Fighting</SelectItem>
+                            <SelectItem value="Medical First Aid">Medical First Aid</SelectItem>
+                            <SelectItem value="Ship Security Officer">Ship Security Officer</SelectItem>
+                            <SelectItem value="Bridge Resource Management">Bridge Resource Management</SelectItem>
+                            <SelectItem value="Engine Resource Management">Engine Resource Management</SelectItem>
+                            <SelectItem value="Leadership and Management">Leadership and Management</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="p-3">
+                        <Select
+                          value={followup.category}
+                          onValueChange={(value) => updateTrainingFollowup(followup.id, 'category', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Rating" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Select Rating">Select Rating</SelectItem>
+                            <SelectItem value="1. Competence">1. Competence</SelectItem>
+                            <SelectItem value="2. Soft Skills">2. Soft Skills</SelectItem>
+                            <SelectItem value="3. Safety">3. Safety</SelectItem>
+                            <SelectItem value="4. Technical">4. Technical</SelectItem>
+                            <SelectItem value="5. Leadership">5. Leadership</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="p-3">
+                        <Select
+                          value={followup.status}
+                          onValueChange={(value) => updateTrainingFollowup(followup.id, 'status', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Proposed">Proposed</SelectItem>
+                            <SelectItem value="Approved">Approved</SelectItem>
+                            <SelectItem value="Planned">Planned</SelectItem>
+                            <SelectItem value="Declined">Declined</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="p-3">
+                        <Input
+                          type="date"
+                          value={followup.targetDate}
+                          onChange={(e) => updateTrainingFollowup(followup.id, 'targetDate', e.target.value)}
+                          className="w-full"
+                        />
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const currentComment = trainingFollowupComments[followup.id] || followup.comment || "";
+                              const newComment = prompt("Enter comment:", currentComment);
+                              if (newComment !== null) {
+                                setTrainingFollowupComments(prev => ({
+                                  ...prev,
+                                  [followup.id]: newComment
+                                }));
+                                updateTrainingFollowup(followup.id, 'comment', newComment);
+                              }
+                            }}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-600 hover:text-gray-700"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteTrainingFollowup(followup.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
