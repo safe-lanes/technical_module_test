@@ -15,17 +15,18 @@ function App() {
     (window as any).__MICRO_FRONTEND_MODE__;
 
   if (isMicroFrontend) {
-    // In micro frontend mode, just return the routing without providers
-    // as they're handled by MicroFrontendWrapper
+    // In micro frontend mode, still need QueryClientProvider for AdminModule
     return (
-      <>
-        <Switch>
-          <Route path="/" component={ElementCrewAppraisals} />
-          <Route path="/admin" component={AdminModule} />
-          <Route component={NotFound} />
-        </Switch>
-        <Toaster />
-      </>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Switch>
+            <Route path="/" component={ElementCrewAppraisals} />
+            <Route path="/admin" component={AdminModule} />
+            <Route component={NotFound} />
+          </Switch>
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
     );
   }
 
