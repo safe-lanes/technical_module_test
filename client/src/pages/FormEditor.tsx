@@ -67,6 +67,7 @@ const recommendationSchema = z.object({
   question: z.string().min(1, "Question is required"),
   answer: z.enum(["Yes", "No", "NA"]),
   comment: z.string().optional(),
+  isCustom: z.boolean().optional().default(false),
 });
 
 // Appraisal form schema - exact copy from AppraisalForm
@@ -251,10 +252,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       behaviouralAssessments: [],
       trainingNeeds: [],
       recommendations: [
-        { id: "1", question: "Recommended for continued service on board?", answer: "Yes", comment: "" },
-        { id: "2", question: "Recommended for re-employment?", answer: "Yes", comment: "" },
-        { id: "3", question: "Recommended for promotion?", answer: "Yes", comment: "" },
-        { id: "4", question: "Career Development recommendations (If Any)?", answer: "Yes", comment: "" },
+        { id: "1", question: "Recommended for continued service on board?", answer: "Yes", comment: "", isCustom: false },
+        { id: "2", question: "Recommended for re-employment?", answer: "Yes", comment: "", isCustom: false },
+        { id: "3", question: "Recommended for promotion?", answer: "Yes", comment: "", isCustom: false },
+        { id: "4", question: "Career Development recommendations (If Any)?", answer: "Yes", comment: "", isCustom: false },
       ],
     },
   });
@@ -456,7 +457,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       id: Date.now().toString(),
       question: "New recommendation",
       answer: "Yes",
-      comment: ""
+      comment: "",
+      isCustom: true // Mark as custom/additional recommendation
     };
     formMethods.setValue("recommendations", [...currentRecommendations, newRecommendation]);
   };
@@ -471,13 +473,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
   const deleteRecommendation = (id: string) => {
     const currentRecommendations = formMethods.getValues("recommendations");
-    const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
-    formMethods.setValue("recommendations", filteredRecommendations);
-    setRecommendationComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    const recommendationToDelete = currentRecommendations.find(r => r.id === id);
+    
+    // Only allow deletion of custom recommendations
+    if (recommendationToDelete && recommendationToDelete.isCustom) {
+      const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
+      formMethods.setValue("recommendations", filteredRecommendations);
+      setRecommendationComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTrainingNeed = (id: string, field: string, value: string) => {
@@ -1698,7 +1705,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                 <React.Fragment key={recommendation.id}>
                   <tr className="border-t">
                     <td className="p-3 text-sm">{index + 1}.</td>
-                    <td className="p-3 text-sm">{recommendation.question}</td>
+                    <td className="p-3 text-sm" style={{ 
+                      color: recommendation.isCustom && isConfigMode ? '#52baf3' : 'inherit'
+                    }}>
+                      {recommendation.isCustom && isConfigMode ? (
+                        <Input
+                          value={recommendation.question}
+                          onChange={(e) => updateRecommendation(recommendation.id, "question", e.target.value)}
+                          placeholder="Enter recommendation question"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                          style={{ color: '#52baf3' }}
+                        />
+                      ) : (
+                        recommendation.question
+                      )}
+                    </td>
                     <td className="text-center p-3">
                       <input
                         type="radio"
@@ -1739,21 +1760,27 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         >
                           <MessageSquare className="h-4 w-4" />
                         </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteRecommendation(recommendation.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {recommendation.isCustom && isConfigMode && (
+                          <>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              style={{ color: '#52baf3' }}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteRecommendation(recommendation.id)}
+                              style={{ color: '#52baf3' }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
