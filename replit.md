@@ -177,6 +177,8 @@ Changelog:
 - July 09, 2025. Enhanced Part F2 recommendations system with default non-deletable recommendations, configurable additional recommendations with blue #52baf3 styling, proper AlertDialog for configuration mode prompts, placeholder text behavior for new recommendations, and editable/non-editable field functionality with Edit button control
 - July 09, 2025. Added comprehensive validation system for blank assessment criteria fields in Parts C and D, blank custom recommendation fields in Part F, preventing save draft or configuration mode exit until all required fields are filled, with clear error dialog showing specific validation issues
 - July 09, 2025. Implemented configurable dropdown functionality for "Appraisal Type" field with blue #52baf3 highlighting in configuration mode, clickable label and dropdown opens dialog for editing dropdown options with add/edit/delete capabilities
+- July 09, 2025. Extended configurable dropdown functionality to "Personality Index (PI) Category" field with same blue styling and dialog-based option management
+- July 09, 2025. Implemented configurable "Effectiveness" Rating dropdown common across Parts B, C, and D tables - blue indication shown only in first row of each table, single configuration affects all tables with shared rating options
 ```
 
 ## User Preferences

@@ -544,6 +544,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [editingPiCategory, setEditingPiCategory] = useState<string>("");
   const [editingPiCategoryIndex, setEditingPiCategoryIndex] = useState<number>(-1);
 
+  // Effectiveness Rating configuration state (common to Parts B, C, D)
+  const [effectivenessOptions, setEffectivenessOptions] = useState<string[]>([
+    "5- Exceeded Expectations",
+    "4- Meets Expectations", 
+    "3- Somewhat Meets Expectations",
+    "2- Below Expectations",
+    "1- Significantly Below Expectations"
+  ]);
+  const [showEffectivenessDialog, setShowEffectivenessDialog] = useState(false);
+  const [editingEffectiveness, setEditingEffectiveness] = useState<string>("");
+  const [editingEffectivenessIndex, setEditingEffectivenessIndex] = useState<number>(-1);
+
   // Appraisal Type management functions
   const addAppraisalTypeOption = () => {
     setEditingAppraisalType("");
@@ -614,6 +626,42 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     // Clear the input field for next entry
     setEditingPiCategory("");
     setEditingPiCategoryIndex(-1);
+  };
+
+  // Effectiveness Rating management functions
+  const addEffectivenessOption = () => {
+    setEditingEffectiveness("");
+    setEditingEffectivenessIndex(-1);
+    setShowEffectivenessDialog(true);
+  };
+
+  const editEffectivenessOption = (index: number) => {
+    setEditingEffectiveness(effectivenessOptions[index]);
+    setEditingEffectivenessIndex(index);
+    setShowEffectivenessDialog(true);
+  };
+
+  const deleteEffectivenessOption = (index: number) => {
+    const newOptions = effectivenessOptions.filter((_, i) => i !== index);
+    setEffectivenessOptions(newOptions);
+  };
+
+  const saveEffectivenessOption = () => {
+    if (editingEffectiveness.trim() === "") return;
+    
+    if (editingEffectivenessIndex === -1) {
+      // Adding new option
+      setEffectivenessOptions([...effectivenessOptions, editingEffectiveness.trim()]);
+    } else {
+      // Editing existing option
+      const newOptions = [...effectivenessOptions];
+      newOptions[editingEffectivenessIndex] = editingEffectiveness.trim();
+      setEffectivenessOptions(newOptions);
+    }
+    
+    // Clear the input field for next entry
+    setEditingEffectiveness("");
+    setEditingEffectivenessIndex(-1);
   };
 
   // Recommendation management functions
@@ -1183,16 +1231,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         <Select
                           value={training.evaluation}
                           onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
+                          onOpenChange={(open) => {
+                            if (isConfigMode && open && index === 0) {
+                              setShowEffectivenessDialog(true);
+                            }
+                          }}
                         >
-                          <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                          <SelectTrigger 
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                          >
                             <SelectValue placeholder="Select Rating" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="5-exceeded-expectations">5- Exceeded Expectations</SelectItem>
-                            <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
-                            <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
-                            <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
-                            <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                            {effectivenessOptions.map((option, optionIndex) => (
+                              <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </td>
@@ -1340,16 +1396,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       <Select
                         value={target.evaluation}
                         onValueChange={(value) => updateTarget(target.id, "evaluation", value)}
+                        onOpenChange={(open) => {
+                          if (isConfigMode && open && index === 0) {
+                            setShowEffectivenessDialog(true);
+                          }
+                        }}
                       >
-                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                        <SelectTrigger 
+                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                          style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                        >
                           <SelectValue placeholder="Select Rating" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="5-exceeded-set-target">5- Exceeded Set Target</SelectItem>
-                          <SelectItem value="4-fully-met-target">4- Fully Met Target</SelectItem>
-                          <SelectItem value="3-missed-target-small-margin">3- Missed Target by a Small Margin</SelectItem>
-                          <SelectItem value="2-missed-target-significant-margin">2- Missed Target by a Significant Margin</SelectItem>
-                          <SelectItem value="1-failed-to-achieve-target">1- Failed to Achieve Target</SelectItem>
+                          {effectivenessOptions.map((option, optionIndex) => (
+                            <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
+                              {option}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </td>
@@ -1539,16 +1603,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                     <Select
                       value={assessment.effectiveness}
                       onValueChange={(value) => updateCompetenceCriterion(assessment.id, "effectiveness", value)}
+                      onOpenChange={(open) => {
+                        if (isConfigMode && open && index === 0) {
+                          setShowEffectivenessDialog(true);
+                        }
+                      }}
                     >
-                      <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                      <SelectTrigger 
+                        className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                        style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                      >
                         <SelectValue placeholder="Select Rating" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
-                        <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
-                        <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
-                        <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
-                        <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                        {effectivenessOptions.map((option, optionIndex) => (
+                          <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
+                            {option}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </td>
@@ -1714,16 +1786,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         <Select
                           value={assessment.effectiveness}
                           onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
+                          onOpenChange={(open) => {
+                            if (isConfigMode && open && index === 0) {
+                              setShowEffectivenessDialog(true);
+                            }
+                          }}
                         >
-                          <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                          <SelectTrigger 
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+                          >
                             <SelectValue placeholder="Select Rating" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="5-exceeds-expectations">5- Exceeds Expectations</SelectItem>
-                            <SelectItem value="4-meets-expectations">4- Meets Expectations</SelectItem>
-                            <SelectItem value="3-somewhat-meets-expectations">3- Somewhat Meets Expectations</SelectItem>
-                            <SelectItem value="2-below-expectations">2- Below Expectations</SelectItem>
-                            <SelectItem value="1-significantly-below-expectations">1- Significantly Below Expectations</SelectItem>
+                            {effectivenessOptions.map((option, optionIndex) => (
+                              <SelectItem key={optionIndex} value={option.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </td>
@@ -2909,6 +2989,82 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPiCategoryDialog(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Effectiveness Rating Configuration Dialog */}
+      <Dialog open={showEffectivenessDialog} onOpenChange={setShowEffectivenessDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure Effectiveness Rating Options</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Current options list */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {effectivenessOptions.map((option, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <span className="text-sm">{option}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editEffectivenessOption(index)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteEffectivenessOption(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add/Edit option input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {editingEffectivenessIndex === -1 ? "Add New Option:" : "Edit Option:"}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingEffectiveness}
+                  onChange={(e) => setEditingEffectiveness(e.target.value)}
+                  placeholder="Enter option name"
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      saveEffectivenessOption();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={saveEffectivenessOption}
+                  disabled={!editingEffectiveness.trim()}
+                  size="sm"
+                >
+                  {editingEffectivenessIndex === -1 ? "Add" : "Save"}
+                </Button>
+              </div>
+            </div>
+
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEffectivenessDialog(false)}>
               Done
             </Button>
           </DialogFooter>
