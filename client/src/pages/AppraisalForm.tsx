@@ -1590,18 +1590,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         <div style={{ color: '#16569e' }} className="text-sm">Description</div>
                         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
                       </div>
-                      <div className="flex justify-between items-center mb-4">
-                        <div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-gray-600 border-gray-300"
-                          >
-                            + Add Criterion
-                          </Button>
-                        </div>
-                      </div>
+
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full">
                           <thead className="bg-gray-100">
@@ -1896,14 +1885,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         <div className="space-y-4 mb-6">
                           <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="text-blue-600 border-blue-300"
-                            >
-                              + Add Recommendation
-                            </Button>
                           </div>
                           <div className="border rounded-lg overflow-hidden">
                             <table className="w-full">
