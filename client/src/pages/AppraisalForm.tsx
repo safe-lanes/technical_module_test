@@ -1171,18 +1171,18 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <table className="w-full min-w-[600px]">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
-                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Training</th>
-                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
-                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Training</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Evaluation</th>
+                                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                                 </tr>
                               </thead>
                               <tbody className="bg-white">
                               {form.watch("trainings").map((training, index) => (
                                 <React.Fragment key={training.id}>
                                   <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <Input
                                         value={training.training}
                                         onChange={(e) => updateTraining(training.id, "training", e.target.value)}
@@ -1190,7 +1190,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                                       />
                                     </td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <Select
                                         value={training.evaluation}
                                         onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
@@ -1207,7 +1207,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         </SelectContent>
                                       </Select>
                                     </td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <div className="flex gap-2 justify-center">
                                         <Button
                                           type="button"
@@ -1312,18 +1312,18 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           <table className="w-full">
                             <thead className="bg-gray-100">
                               <tr>
-                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
-                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Target Setting</th>
-                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
-                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
+                                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Target Setting</th>
+                                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Evaluation</th>
+                                <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                               </tr>
                             </thead>
                             <tbody className="bg-white">
                               {form.watch("targets").map((target, index) => (
                                 <React.Fragment key={target.id}>
                                   <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <Input
                                         value={target.targetSetting}
                                         onChange={(e) => updateTarget(target.id, "targetSetting", e.target.value)}
@@ -1331,7 +1331,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                                       />
                                     </td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <Select
                                         value={target.evaluation}
                                         onValueChange={(value) => updateTarget(target.id, "evaluation", value)}
@@ -1348,7 +1348,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         </SelectContent>
                                       </Select>
                                     </td>
-                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                                       <div className="flex gap-2 justify-center">
                                         <Button
                                           type="button"
