@@ -1423,31 +1423,31 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
         
-        <div className="border rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">S.No</th>
-                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Training</th>
-                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Evaluation</th>
-                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Actions</th>
+                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
+                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Training</th>
+                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
+                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white">
                 {formMethods.watch("trainings").map((training, index) => (
                   <React.Fragment key={training.id}>
-                    <tr className="border-t">
-                      <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}.</td>
-                      <td className="p-2 sm:p-3">
+                    <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
+                      <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                         <Input
                           value={training.training}
                           onChange={(e) => updateTraining(training.id, "training", e.target.value)}
                           placeholder={`Training ${index + 1}`}
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                         />
                       </td>
-                      <td className="p-2 sm:p-3">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                         <Select
                           value={training.evaluation}
                           onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
@@ -1458,7 +1458,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           }}
                         >
                           <SelectTrigger 
-                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-xs sm:text-sm ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                             style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                           >
                             <SelectValue placeholder="Select Rating" />
@@ -1472,28 +1472,28 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="p-2 sm:p-3">
-                        <div className="flex space-x-1 sm:space-x-2">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                        <div className="flex gap-2 justify-center">
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={() => setTrainingComments(prev => ({
                               ...prev,
                               [training.id]: prev[training.id] || ""
                             }))}
-                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                            className="h-6 w-6"
                           >
-                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                           </Button>
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={() => deleteTraining(training.id)}
-                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                            className="h-6 w-6"
                           >
-                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                           </Button>
                         </div>
                       </td>
@@ -1591,30 +1591,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
         </div>
         
-        <div className="border rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">Target Setting</th>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">Evaluation</th>
-                <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
+                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Target Setting</th>
+                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
+                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white">
               {formMethods.watch("targets").map((target, index) => (
                 <React.Fragment key={target.id}>
-                  <tr className="border-t">
-                    <td className="p-3 text-sm">{index + 1}.</td>
-                    <td className="p-3">
+                  <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
+                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                       <Input
                         value={target.targetSetting}
                         onChange={(e) => updateTarget(target.id, "targetSetting", e.target.value)}
                         placeholder={`Target ${index + 1}`}
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                       />
                     </td>
-                    <td className="p-3">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                       <Select
                         value={target.evaluation}
                         onValueChange={(value) => updateTarget(target.id, "evaluation", value)}
@@ -1625,7 +1625,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         }}
                       >
                         <SelectTrigger 
-                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                           style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                         >
                           <SelectValue placeholder="Select Rating" />
@@ -1639,26 +1639,28 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-3">
-                      <div className="flex space-x-2">
+                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                      <div className="flex gap-2 justify-center">
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => setTargetComments(prev => ({
                             ...prev,
                             [target.id]: prev[target.id] || ""
                           }))}
+                          className="h-6 w-6"
                         >
-                          <MessageSquare className="h-4 w-4" />
+                          <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                         </Button>
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => deleteTarget(target.id)}
+                          className="h-6 w-6"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                         </Button>
                       </div>
                     </td>

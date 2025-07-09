@@ -1166,36 +1166,36 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           </Button>
                         </div>
                         
-                        <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-white rounded-lg shadow-md overflow-hidden">
                           <div className="overflow-x-auto">
                             <table className="w-full min-w-[600px]">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">S.No</th>
-                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Training</th>
-                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Evaluation</th>
-                                  <th className="text-left p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-600">Actions</th>
+                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
+                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Training</th>
+                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
+                                  <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
                                 </tr>
                               </thead>
-                              <tbody>
+                              <tbody className="bg-white">
                               {form.watch("trainings").map((training, index) => (
                                 <React.Fragment key={training.id}>
-                                  <tr className="border-t">
-                                    <td className="p-3 text-sm">{index + 1}.</td>
-                                    <td className="p-3">
+                                  <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                                       <Input
                                         value={training.training}
                                         onChange={(e) => updateTraining(training.id, "training", e.target.value)}
                                         placeholder={`Training ${index + 1}`}
-                                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                                       />
                                     </td>
-                                    <td className="p-3">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                                       <Select
                                         value={training.evaluation}
                                         onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
                                       >
-                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal">
                                           <SelectValue placeholder="Select Rating" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -1207,27 +1207,29 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         </SelectContent>
                                       </Select>
                                     </td>
-                                    <td className="p-3">
-                                      <div className="flex space-x-2">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                      <div className="flex gap-2 justify-center">
                                         <Button
                                           type="button"
                                           variant="ghost"
-                                          size="sm"
+                                          size="icon"
+                                          className="h-6 w-6"
                                           onClick={() => setTrainingComments(prev => ({
                                             ...prev,
                                             [training.id]: prev[training.id] || ""
                                           }))}
                                         >
-                                          <MessageSquare className="h-4 w-4" />
+                                          <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                         </Button>
 
                                         <Button
                                           type="button"
                                           variant="ghost"
-                                          size="sm"
+                                          size="icon"
+                                          className="h-6 w-6"
                                           onClick={() => deleteTraining(training.id)}
                                         >
-                                          <Trash2 className="h-4 w-4" />
+                                          <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                         </Button>
                                       </div>
                                     </td>
@@ -1293,7 +1295,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       {/* B2. Target Setting */}
                       <div>
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium text-blue-700">B2. Target Setting</h3>
+                          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B2. Target Setting</h3>
                           <Button
                             type="button"
                             onClick={addTarget}
@@ -1306,35 +1308,35 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                           </Button>
                         </div>
                         
-                        <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-white rounded-lg shadow-md overflow-hidden">
                           <table className="w-full">
                             <thead className="bg-gray-100">
                               <tr>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Target Setting</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Evaluation</th>
-                                <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">S.No</th>
+                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Target Setting</th>
+                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Evaluation</th>
+                                <th className="text-gray-600 text-xs font-normal py-3 px-4 text-left">Actions</th>
                               </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="bg-white">
                               {form.watch("targets").map((target, index) => (
                                 <React.Fragment key={target.id}>
-                                  <tr className="border-t">
-                                    <td className="p-3 text-sm">{index + 1}.</td>
-                                    <td className="p-3">
+                                  <tr className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">{index + 1}.</td>
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                                       <Input
                                         value={target.targetSetting}
                                         onChange={(e) => updateTarget(target.id, "targetSetting", e.target.value)}
                                         placeholder={`Target ${index + 1}`}
-                                        className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
                                       />
                                     </td>
-                                    <td className="p-3">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
                                       <Select
                                         value={target.evaluation}
                                         onValueChange={(value) => updateTarget(target.id, "evaluation", value)}
                                       >
-                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0">
+                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal">
                                           <SelectValue placeholder="Select Rating" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -1346,27 +1348,29 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         </SelectContent>
                                       </Select>
                                     </td>
-                                    <td className="p-3">
-                                      <div className="flex space-x-2">
+                                    <td className="text-[#4f5863] text-[13px] font-normal py-3 px-4">
+                                      <div className="flex gap-2 justify-center">
                                         <Button
                                           type="button"
                                           variant="ghost"
-                                          size="sm"
+                                          size="icon"
+                                          className="h-6 w-6"
                                           onClick={() => setTargetComments(prev => ({
                                             ...prev,
                                             [target.id]: prev[target.id] || ""
                                           }))}
                                         >
-                                          <MessageSquare className="h-4 w-4" />
+                                          <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                                         </Button>
 
                                         <Button
                                           type="button"
                                           variant="ghost"
-                                          size="sm"
+                                          size="icon"
+                                          className="h-6 w-6"
                                           onClick={() => deleteTarget(target.id)}
                                         >
-                                          <Trash2 className="h-4 w-4" />
+                                          <Trash2 className="h-[18px] w-[18px] text-gray-500" />
                                         </Button>
                                       </div>
                                     </td>
