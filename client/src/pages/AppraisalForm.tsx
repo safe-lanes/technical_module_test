@@ -2232,7 +2232,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           ) : (
                                             <div className="flex justify-between items-start">
                                               <div 
-                                                className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                                className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50 text-[14px]"
                                                 onClick={() => setEditingTrainingFollowupComment(followup.id)}
                                               >
                                                 {trainingFollowupComments[followup.id] || "Click to add comment..."}
