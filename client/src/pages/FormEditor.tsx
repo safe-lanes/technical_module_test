@@ -533,6 +533,17 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [editingAppraisalType, setEditingAppraisalType] = useState<string>("");
   const [editingAppraisalTypeIndex, setEditingAppraisalTypeIndex] = useState<number>(-1);
 
+  // PI Category configuration state
+  const [piCategoryOptions, setPiCategoryOptions] = useState<string[]>([
+    "Analytical",
+    "Driver",
+    "Expressive",
+    "Amiable"
+  ]);
+  const [showPiCategoryDialog, setShowPiCategoryDialog] = useState(false);
+  const [editingPiCategory, setEditingPiCategory] = useState<string>("");
+  const [editingPiCategoryIndex, setEditingPiCategoryIndex] = useState<number>(-1);
+
   // Appraisal Type management functions
   const addAppraisalTypeOption = () => {
     setEditingAppraisalType("");
@@ -567,6 +578,42 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     // Clear the input field for next entry
     setEditingAppraisalType("");
     setEditingAppraisalTypeIndex(-1);
+  };
+
+  // PI Category management functions
+  const addPiCategoryOption = () => {
+    setEditingPiCategory("");
+    setEditingPiCategoryIndex(-1);
+    setShowPiCategoryDialog(true);
+  };
+
+  const editPiCategoryOption = (index: number) => {
+    setEditingPiCategory(piCategoryOptions[index]);
+    setEditingPiCategoryIndex(index);
+    setShowPiCategoryDialog(true);
+  };
+
+  const deletePiCategoryOption = (index: number) => {
+    const newOptions = piCategoryOptions.filter((_, i) => i !== index);
+    setPiCategoryOptions(newOptions);
+  };
+
+  const savePiCategoryOption = () => {
+    if (editingPiCategory.trim() === "") return;
+    
+    if (editingPiCategoryIndex === -1) {
+      // Adding new option
+      setPiCategoryOptions([...piCategoryOptions, editingPiCategory.trim()]);
+    } else {
+      // Editing existing option
+      const newOptions = [...piCategoryOptions];
+      newOptions[editingPiCategoryIndex] = editingPiCategory.trim();
+      setPiCategoryOptions(newOptions);
+    }
+    
+    // Clear the input field for next entry
+    setEditingPiCategory("");
+    setEditingPiCategoryIndex(-1);
   };
 
   // Recommendation management functions
@@ -975,7 +1022,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       {fieldVisibility.personalityIndexCategory && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="personalityIndexCategory">Personality Index (PI) Category</Label>
+            <Label 
+              htmlFor="personalityIndexCategory"
+              className={isConfigMode ? "cursor-pointer" : ""}
+              style={isConfigMode ? { color: '#52baf3' } : {}}
+              onClick={isConfigMode ? () => setShowPiCategoryDialog(true) : undefined}
+            >
+              Personality Index (PI) Category
+            </Label>
             {isConfigMode && (
               <Button
                 type="button"
@@ -995,15 +1049,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           <Select
             value={formMethods.watch("personalityIndexCategory") || ""}
             onValueChange={(value) => formMethods.setValue("personalityIndexCategory", value)}
+            onOpenChange={(open) => {
+              if (isConfigMode && open) {
+                setShowPiCategoryDialog(true);
+              }
+            }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger 
+              className={`w-full ${isConfigMode ? "cursor-pointer" : ""}`}
+              style={isConfigMode ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
+            >
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="analytical">Analytical</SelectItem>
-              <SelectItem value="driver">Driver</SelectItem>
-              <SelectItem value="expressive">Expressive</SelectItem>
-              <SelectItem value="amiable">Amiable</SelectItem>
+              {piCategoryOptions.map((option, index) => (
+                <SelectItem key={index} value={option.toLowerCase().replace(/\s+/g, '-')}>
+                  {option}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -2770,6 +2833,82 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAppraisalTypeDialog(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* PI Category Configuration Dialog */}
+      <Dialog open={showPiCategoryDialog} onOpenChange={setShowPiCategoryDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure PI Category Options</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Current options list */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Current Options:</Label>
+              <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                {piCategoryOptions.map((option, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <span className="text-sm">{option}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editPiCategoryOption(index)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deletePiCategoryOption(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add/Edit option input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                {editingPiCategoryIndex === -1 ? "Add New Option:" : "Edit Option:"}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingPiCategory}
+                  onChange={(e) => setEditingPiCategory(e.target.value)}
+                  placeholder="Enter option name"
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      savePiCategoryOption();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={savePiCategoryOption}
+                  disabled={!editingPiCategory.trim()}
+                  size="sm"
+                >
+                  {editingPiCategoryIndex === -1 ? "Add" : "Save"}
+                </Button>
+              </div>
+            </div>
+
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPiCategoryDialog(false)}>
               Done
             </Button>
           </DialogFooter>
