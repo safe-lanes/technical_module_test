@@ -1,5 +1,5 @@
 
-import { users, type User, type InsertUser, type Form, type InsertForm, type RankGroup, type InsertRankGroup, type AvailableRank, type InsertAvailableRank } from "@shared/schema";
+import { users, type User, type InsertUser, type Form, type InsertForm, type RankGroup, type InsertRankGroup, type AvailableRank, type InsertAvailableRank, type CrewMember, type InsertCrewMember, type AppraisalResult, type InsertAppraisalResult } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -19,6 +19,19 @@ export interface IStorage {
   deleteRankGroup(id: number): Promise<boolean>;
   getAvailableRanks(): Promise<AvailableRank[]>;
   createAvailableRank(rank: InsertAvailableRank): Promise<AvailableRank>;
+  // Crew Members
+  getCrewMembers(): Promise<CrewMember[]>;
+  getCrewMember(id: string): Promise<CrewMember | undefined>;
+  createCrewMember(crewMember: InsertCrewMember): Promise<CrewMember>;
+  updateCrewMember(id: string, crewMember: Partial<InsertCrewMember>): Promise<CrewMember | undefined>;
+  deleteCrewMember(id: string): Promise<boolean>;
+  // Appraisal Results
+  getAppraisalResults(): Promise<AppraisalResult[]>;
+  getAppraisalResult(id: number): Promise<AppraisalResult | undefined>;
+  getAppraisalResultsByCrewMember(crewMemberId: string): Promise<AppraisalResult[]>;
+  createAppraisalResult(appraisalResult: InsertAppraisalResult): Promise<AppraisalResult>;
+  updateAppraisalResult(id: number, appraisalResult: Partial<InsertAppraisalResult>): Promise<AppraisalResult | undefined>;
+  deleteAppraisalResult(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -26,20 +39,26 @@ export class MemStorage implements IStorage {
   private forms: Map<number, Form>;
   private rankGroups: Map<number, RankGroup>;
   private availableRanks: Map<number, AvailableRank>;
+  private crewMembers: Map<string, CrewMember>;
+  private appraisalResults: Map<number, AppraisalResult>;
   private currentUserId: number;
   private currentFormId: number;
   private currentRankGroupId: number;
   private currentAvailableRankId: number;
+  private currentAppraisalResultId: number;
 
   constructor() {
     this.users = new Map();
     this.forms = new Map();
     this.rankGroups = new Map();
     this.availableRanks = new Map();
+    this.crewMembers = new Map();
+    this.appraisalResults = new Map();
     this.currentUserId = 1;
     this.currentFormId = 1;
     this.currentRankGroupId = 1;
     this.currentAvailableRankId = 1;
+    this.currentAppraisalResultId = 1;
     
     // Initialize with sample form data - showing only 1 rank group for configuration
     this.forms.set(1, {
@@ -75,6 +94,155 @@ export class MemStorage implements IStorage {
       ranks: JSON.stringify(["Master", "Chief Officer", "Chief Engineer"])
     });
     this.currentRankGroupId = 2;
+
+    // Initialize with sample crew member data
+    this.crewMembers.set("2025-05-14", {
+      id: "2025-05-14",
+      firstName: "James",
+      middleName: "Michael",
+      lastName: "",
+      rank: "Master",
+      nationality: "British",
+      vessel: "MT Sail One",
+      vesselType: "Oil Tanker",
+      signOnDate: "01-Feb-2025",
+      createdAt: new Date("2025-02-01"),
+      updatedAt: new Date("2025-02-01")
+    });
+
+    this.crewMembers.set("2025-03-12", {
+      id: "2025-03-12",
+      firstName: "Anna",
+      middleName: "Marie",
+      lastName: "Johnson",
+      rank: "Chief Engineer",
+      nationality: "British",
+      vessel: "MT Sail Ten",
+      vesselType: "LPG Tanker",
+      signOnDate: "01-Jan-2025",
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01")
+    });
+
+    this.crewMembers.set("2025-02-12", {
+      id: "2025-02-12",
+      firstName: "David",
+      middleName: "Lee",
+      lastName: "Brown",
+      rank: "Able Seaman",
+      nationality: "Indian",
+      vessel: "MT Sail Two",
+      vesselType: "Container",
+      signOnDate: "01-Feb-2025",
+      createdAt: new Date("2025-02-01"),
+      updatedAt: new Date("2025-02-01")
+    });
+
+    this.crewMembers.set("2025-05-14-2", {
+      id: "2025-05-14-2",
+      firstName: "Emily",
+      middleName: "Grace",
+      lastName: "Davis",
+      rank: "Chief Mate",
+      nationality: "Indian",
+      vessel: "MT Sail Five",
+      vesselType: "Bulk",
+      signOnDate: "01-Jan-2025",
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01")
+    });
+
+    this.crewMembers.set("2025-03-12-2", {
+      id: "2025-03-12-2",
+      firstName: "John",
+      middleName: "Paul",
+      lastName: "Williams",
+      rank: "Electrician",
+      nationality: "Indian",
+      vessel: "MT Sail Eight",
+      vesselType: "Bulk",
+      signOnDate: "01-Feb-2025",
+      createdAt: new Date("2025-02-01"),
+      updatedAt: new Date("2025-02-01")
+    });
+
+    // Initialize with sample appraisal results
+    this.appraisalResults.set(1, {
+      id: 1,
+      crewMemberId: "2025-05-14",
+      formId: 1,
+      appraisalType: "End of Contract",
+      appraisalDate: "06-Jun-2025",
+      appraisalData: JSON.stringify({}),
+      competenceRating: "4.9",
+      behavioralRating: "4.5",
+      overallRating: "4.7",
+      submittedBy: "admin",
+      status: "submitted",
+      submittedAt: new Date("2025-06-06")
+    });
+
+    this.appraisalResults.set(2, {
+      id: 2,
+      crewMemberId: "2025-03-12",
+      formId: 1,
+      appraisalType: "Mid Term",
+      appraisalDate: "07-May-2025",
+      appraisalData: JSON.stringify({}),
+      competenceRating: "3.5",
+      behavioralRating: "4.5",
+      overallRating: "4.0",
+      submittedBy: "admin",
+      status: "submitted",
+      submittedAt: new Date("2025-05-07")
+    });
+
+    this.appraisalResults.set(3, {
+      id: 3,
+      crewMemberId: "2025-02-12",
+      formId: 1,
+      appraisalType: "Special",
+      appraisalDate: "06-Jun-2025",
+      appraisalData: JSON.stringify({}),
+      competenceRating: "2.5",
+      behavioralRating: "3.5",
+      overallRating: "3.0",
+      submittedBy: "admin",
+      status: "submitted",
+      submittedAt: new Date("2025-06-06")
+    });
+
+    this.appraisalResults.set(4, {
+      id: 4,
+      crewMemberId: "2025-05-14-2",
+      formId: 1,
+      appraisalType: "Probation",
+      appraisalDate: "07-May-2025",
+      appraisalData: JSON.stringify({}),
+      competenceRating: "3.5",
+      behavioralRating: "4.5",
+      overallRating: "4.0",
+      submittedBy: "admin",
+      status: "submitted",
+      submittedAt: new Date("2025-05-07")
+    });
+
+    this.appraisalResults.set(5, {
+      id: 5,
+      crewMemberId: "2025-03-12-2",
+      formId: 1,
+      appraisalType: "Appraiser S/Off",
+      appraisalDate: "06-Jun-2025",
+      appraisalData: JSON.stringify({}),
+      competenceRating: "4.5",
+      behavioralRating: "2.5",
+      overallRating: "3.5",
+      submittedBy: "admin",
+      status: "submitted",
+      submittedAt: new Date("2025-06-06")
+    });
+
+    this.currentAppraisalResultId = 6;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -170,6 +338,82 @@ export class MemStorage implements IStorage {
     const availableRank: AvailableRank = { ...insertAvailableRank, id };
     this.availableRanks.set(id, availableRank);
     return availableRank;
+  }
+
+  // Crew Members Methods
+  async getCrewMembers(): Promise<CrewMember[]> {
+    return Array.from(this.crewMembers.values());
+  }
+
+  async getCrewMember(id: string): Promise<CrewMember | undefined> {
+    return this.crewMembers.get(id);
+  }
+
+  async createCrewMember(insertCrewMember: InsertCrewMember): Promise<CrewMember> {
+    const crewMember: CrewMember = { 
+      ...insertCrewMember, 
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.crewMembers.set(crewMember.id, crewMember);
+    return crewMember;
+  }
+
+  async updateCrewMember(id: string, crewMemberData: Partial<InsertCrewMember>): Promise<CrewMember | undefined> {
+    const existingCrewMember = this.crewMembers.get(id);
+    if (!existingCrewMember) return undefined;
+    
+    const updatedCrewMember: CrewMember = { 
+      ...existingCrewMember, 
+      ...crewMemberData,
+      updatedAt: new Date()
+    };
+    this.crewMembers.set(id, updatedCrewMember);
+    return updatedCrewMember;
+  }
+
+  async deleteCrewMember(id: string): Promise<boolean> {
+    return this.crewMembers.delete(id);
+  }
+
+  // Appraisal Results Methods
+  async getAppraisalResults(): Promise<AppraisalResult[]> {
+    return Array.from(this.appraisalResults.values());
+  }
+
+  async getAppraisalResult(id: number): Promise<AppraisalResult | undefined> {
+    return this.appraisalResults.get(id);
+  }
+
+  async getAppraisalResultsByCrewMember(crewMemberId: string): Promise<AppraisalResult[]> {
+    return Array.from(this.appraisalResults.values()).filter(ar => ar.crewMemberId === crewMemberId);
+  }
+
+  async createAppraisalResult(insertAppraisalResult: InsertAppraisalResult): Promise<AppraisalResult> {
+    const id = this.currentAppraisalResultId++;
+    const appraisalResult: AppraisalResult = { 
+      ...insertAppraisalResult, 
+      id,
+      submittedAt: new Date()
+    };
+    this.appraisalResults.set(id, appraisalResult);
+    return appraisalResult;
+  }
+
+  async updateAppraisalResult(id: number, appraisalResultData: Partial<InsertAppraisalResult>): Promise<AppraisalResult | undefined> {
+    const existingAppraisalResult = this.appraisalResults.get(id);
+    if (!existingAppraisalResult) return undefined;
+    
+    const updatedAppraisalResult: AppraisalResult = { 
+      ...existingAppraisalResult, 
+      ...appraisalResultData
+    };
+    this.appraisalResults.set(id, updatedAppraisalResult);
+    return updatedAppraisalResult;
+  }
+
+  async deleteAppraisalResult(id: number): Promise<boolean> {
+    return this.appraisalResults.delete(id);
   }
 }
 

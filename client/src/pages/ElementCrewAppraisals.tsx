@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { AppraisalForm } from "./AppraisalForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,13 +28,54 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CrewMember, AppraisalResult } from "@shared/schema";
+
+// Interface for combined crew member and appraisal data
+interface CrewAppraisalData {
+  id: string;
+  name: { first: string; middle: string; last: string };
+  rank: string;
+  nationality: string;
+  vessel: string;
+  vesselType: string;
+  signOn: string;
+  appraisalType: string;
+  appraisalDate: string;
+  competenceRating: { value: string; color: string };
+  behavioralRating: { value: string; color: string };
+  overallRating: { value: string; color: string };
+  appraisalId?: number;
+}
 
 export const ElementCrewAppraisals = (): JSX.Element => {
-  const [selectedCrewMember, setSelectedCrewMember] = useState<any>(null);
+  const [selectedCrewMember, setSelectedCrewMember] = useState<CrewAppraisalData | null>(null);
   const [showAppraisalForm, setShowAppraisalForm] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
 
-  const handleEditClick = (crewMember: any) => {
+  // Fetch crew members and appraisal results
+  const { data: crewMembers = [], isLoading: isLoadingCrew } = useQuery<CrewMember[]>({
+    queryKey: ["/api/crew-members"],
+    queryFn: async () => {
+      const response = await fetch("/api/crew-members");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
+  });
+
+  const { data: appraisalResults = [], isLoading: isLoadingAppraisals } = useQuery<AppraisalResult[]>({
+    queryKey: ["/api/appraisals"],
+    queryFn: async () => {
+      const response = await fetch("/api/appraisals");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
+  });
+
+  const handleEditClick = (crewMember: CrewAppraisalData) => {
     setSelectedCrewMember(crewMember);
     setShowAppraisalForm(true);
   };
@@ -43,149 +85,57 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     setSelectedCrewMember(null);
   };
 
-  // Crew data for the table
-  const crewData = [
-    {
-      id: "2025-05-14",
-      name: { first: "James", middle: "Michael", last: "" },
-      rank: "Master",
-      nationality: "British",
-      vessel: "MT Sail One",
-      vesselType: "Oil Tanker",
-      signOn: "01-Feb-2025",
-      appraisalType: "End of Contract",
-      appraisalDate: "06-Jun-2025",
-      competenceRating: { value: "4.9", color: "bg-[#286e34] text-white" },
-      behavioralRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      overallRating: { value: "4.7", color: "bg-[#286e34] text-white" },
-    },
-    {
-      id: "2025-03-12",
-      name: { first: "Anna", middle: "Marie", last: "Johnson" },
-      rank: "Chief Engineer",
-      nationality: "British",
-      vessel: "MT Sail Ten",
-      vesselType: "LPG Tanker",
-      signOn: "01-Jan-2025",
-      appraisalType: "Mid Term",
-      appraisalDate: "07-May-2025",
-      competenceRating: { value: "3.5", color: "bg-[#814c02] text-white" },
-      behavioralRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      overallRating: { value: "4", color: "bg-[#286e34] text-white" },
-    },
-    {
-      id: "2025-02-12",
-      name: { first: "David", middle: "Lee", last: "Brown" },
-      rank: "Able Seaman",
-      nationality: "Indian",
-      vessel: "MT Sail Two",
-      vesselType: "Container",
-      signOn: "01-Feb-2025",
-      appraisalType: "Special",
-      appraisalDate: "06-Jun-2025",
-      competenceRating: { value: "2.5", color: "bg-[#811f1a] text-white" },
-      behavioralRating: { value: "3.5", color: "bg-[#814c02] text-white" },
-      overallRating: { value: "3", color: "bg-[#814c02] text-white" },
-    },
-    {
-      id: "2025-05-14",
-      name: { first: "Emily", middle: "Grace", last: "Davis" },
-      rank: "Chief Mate",
-      nationality: "Indian",
-      vessel: "MT Sail Five",
-      vesselType: "Bulk",
-      signOn: "01-Jan-2025",
-      appraisalType: "Probation",
-      appraisalDate: "07-May-2025",
-      competenceRating: { value: "3.5", color: "bg-[#814c02] text-white" },
-      behavioralRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      overallRating: { value: "4", color: "bg-[#286e34] text-white" },
-    },
-    {
-      id: "2025-03-12",
-      name: { first: "John", middle: "Paul", last: "Williams" },
-      rank: "Electrician",
-      nationality: "Indian",
-      vessel: "MT Sail Eight",
-      vesselType: "Bulk",
-      signOn: "01-Feb-2025",
-      appraisalType: "Appraiser S/Off",
-      appraisalDate: "06-Jun-2025",
-      competenceRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      behavioralRating: { value: "2.5", color: "bg-[#811f1a] text-white" },
-      overallRating: { value: "3.1", color: "bg-[#814c02] text-white" },
-    },
-    {
-      id: "2025-02-12",
-      name: { first: "Sophia", middle: "Rose", last: "Clark" },
-      rank: "Second Officer",
-      nationality: "Philippines",
-      vessel: "MT Sail Three",
-      vesselType: "Oil Tanker",
-      signOn: "01-Jan-2025",
-      appraisalType: "End of Contract",
-      appraisalDate: "07-May-2025",
-      competenceRating: { value: "1.2", color: "bg-[#811f1a] text-white" },
-      behavioralRating: { value: "2", color: "bg-[#811f1a] text-white" },
-      overallRating: { value: "1.7", color: "bg-[#811f1a] text-white" },
-    },
-    {
-      id: "2025-05-14",
-      name: { first: "Liam", middle: "James", last: "" },
-      rank: "Bosun",
-      nationality: "Philippines",
-      vessel: "MT Sail Eleven",
-      vesselType: "Oil Tanker",
-      signOn: "01-Feb-2025",
-      appraisalType: "Mid Term",
-      appraisalDate: "06-Jun-2025",
-      competenceRating: { value: "2.5", color: "bg-[#811f1a] text-white" },
-      behavioralRating: { value: "3.5", color: "bg-[#814c02] text-white" },
-      overallRating: { value: "3", color: "bg-[#814c02] text-white" },
-    },
-    {
-      id: "2025-03-12",
-      name: { first: "Olivia", middle: "Mae", last: "Walker" },
-      rank: "Third Engineer",
-      nationality: "Philippines",
-      vessel: "MT Sail Four",
-      vesselType: "Bulk",
-      signOn: "01-Jan-2025",
-      appraisalType: "Special",
-      appraisalDate: "07-May-2025",
-      competenceRating: { value: "3.5", color: "bg-[#814c02] text-white" },
-      behavioralRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      overallRating: { value: "4.1", color: "bg-[#286e34] text-white" },
-    },
-    {
-      id: "2025-02-12",
-      name: { first: "Noah", middle: "Alexander", last: "" },
-      rank: "Cook",
-      nationality: "Philippines",
-      vessel: "MV Sail Seven",
-      vesselType: "Bulk",
-      signOn: "01-Feb-2025",
-      appraisalType: "Probation",
-      appraisalDate: "06-Jun-2025",
-      competenceRating: { value: "4.5", color: "bg-[#286e34] text-white" },
-      behavioralRating: { value: "2.5", color: "bg-[#811f1a] text-white" },
-      overallRating: { value: "3.1", color: "bg-[#814c02] text-white" },
-    },
-    {
-      id: "2025-02-12",
-      name: { first: "Mia", middle: "Lily", last: "Scott" },
-      rank: "Steward",
-      nationality: "Philippines",
-      vessel: "MT Sail Thirteen",
-      vesselType: "Oil Tanker",
-      signOn: "01-Jan-2025",
-      appraisalType: "Appraiser S/Off",
-      appraisalDate: "07-May-2025",
-      competenceRating: { value: "1.2", color: "bg-[#811f1a] text-white" },
-      behavioralRating: { value: "2.6", color: "bg-[#811f1a] text-white" },
-      overallRating: { value: "2", color: "bg-[#811f1a] text-white" },
-    },
-  ];
+  // Helper function to get rating color based on value
+  const getRatingColor = (rating: string): string => {
+    const numRating = parseFloat(rating);
+    if (numRating >= 4.0) return "bg-[#286e34] text-white"; // Green
+    if (numRating >= 3.0) return "bg-[#814c02] text-white"; // Orange
+    return "bg-[#811f1a] text-white"; // Red
+  };
+
+  // Combine crew member and appraisal data
+  const crewData: CrewAppraisalData[] = crewMembers.map((crewMember) => {
+    const appraisal = appraisalResults.find(ar => ar.crewMemberId === crewMember.id);
+    
+    return {
+      id: crewMember.id,
+      name: {
+        first: crewMember.firstName,
+        middle: crewMember.middleName || "",
+        last: crewMember.lastName || "",
+      },
+      rank: crewMember.rank,
+      nationality: crewMember.nationality,
+      vessel: crewMember.vessel,
+      vesselType: crewMember.vesselType,
+      signOn: crewMember.signOnDate,
+      appraisalType: appraisal?.appraisalType || "Not Started",
+      appraisalDate: appraisal?.appraisalDate || "N/A",
+      competenceRating: {
+        value: appraisal?.competenceRating || "N/A",
+        color: appraisal?.competenceRating ? getRatingColor(appraisal.competenceRating) : "bg-gray-400 text-white",
+      },
+      behavioralRating: {
+        value: appraisal?.behavioralRating || "N/A",
+        color: appraisal?.behavioralRating ? getRatingColor(appraisal.behavioralRating) : "bg-gray-400 text-white",
+      },
+      overallRating: {
+        value: appraisal?.overallRating || "N/A",
+        color: appraisal?.overallRating ? getRatingColor(appraisal.overallRating) : "bg-gray-400 text-white",
+      },
+      appraisalId: appraisal?.id,
+    };
+  });
+
+  if (isLoadingCrew || isLoadingAppraisals) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg">Loading crew appraisals...</div>
+      </div>
+    );
+  }
+
+
 
   // Rating badge component
   const RatingBadge = ({ value, color }: { value: string; color: string }) => {
