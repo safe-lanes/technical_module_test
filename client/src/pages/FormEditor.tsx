@@ -2400,31 +2400,48 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       </Select>
                     </td>
                     <td className="p-3">
-                      <Select disabled>
-                        <SelectTrigger className="w-full bg-gray-50">
+                      <Select
+                        onOpenChange={(open) => {
+                          if (open) {
+                            setShowTrainingCategoryDialog(true);
+                          }
+                        }}
+                      >
+                        <SelectTrigger 
+                          className="w-full cursor-pointer"
+                          style={{ borderColor: '#52baf3', color: '#52baf3' }}
+                        >
                           <SelectValue placeholder="Select Rating" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Select Rating">Select Rating</SelectItem>
-                          <SelectItem value="1. Competence">1. Competence</SelectItem>
-                          <SelectItem value="2. Soft Skills">2. Soft Skills</SelectItem>
-                          <SelectItem value="3. Safety">3. Safety</SelectItem>
-                          <SelectItem value="4. Technical">4. Technical</SelectItem>
-                          <SelectItem value="5. Leadership">5. Leadership</SelectItem>
+                          {trainingCategoryOptions.map((option, optionIndex) => (
+                            <SelectItem key={optionIndex} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </td>
                     <td className="p-3">
-                      <Select disabled>
-                        <SelectTrigger className="w-full bg-gray-50">
+                      <Select
+                        onOpenChange={(open) => {
+                          if (open) {
+                            setShowTrainingStatusDialog(true);
+                          }
+                        }}
+                      >
+                        <SelectTrigger 
+                          className="w-full cursor-pointer"
+                          style={{ borderColor: '#52baf3', color: '#52baf3' }}
+                        >
                           <SelectValue placeholder="Proposed" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Proposed">Proposed</SelectItem>
-                          <SelectItem value="Approved">Approved</SelectItem>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="Declined">Declined</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
+                          {trainingStatusOptions.map((option, optionIndex) => (
+                            <SelectItem key={optionIndex} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </td>
