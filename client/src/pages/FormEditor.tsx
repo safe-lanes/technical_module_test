@@ -462,6 +462,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
   // State for configuration mode dialog
   const [showConfigDialog, setShowConfigDialog] = useState(false);
+  
+  // State for tracking which recommendation fields are in edit mode
+  const [editingRecommendations, setEditingRecommendations] = useState<Set<string>>(new Set());
 
   // Recommendation management functions
   const addRecommendation = () => {
@@ -471,19 +474,40 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     }
     
     const currentRecommendations = formMethods.getValues("recommendations");
+    const newRecommendationId = Date.now().toString();
     const newRecommendation = {
-      id: Date.now().toString(),
+      id: newRecommendationId,
       question: "Add new recommendation",
       answer: "Yes",
       comment: "",
       isCustom: true // Mark as custom/additional recommendation
     };
     formMethods.setValue("recommendations", [...currentRecommendations, newRecommendation]);
+    
+    // Automatically set new recommendation to edit mode
+    startEditingRecommendation(newRecommendationId);
   };
 
   const handleEnterConfigMode = () => {
     setIsConfigMode(true);
     setShowConfigDialog(false);
+  };
+
+  // Functions to handle recommendation editing
+  const startEditingRecommendation = (id: string) => {
+    setEditingRecommendations(prev => new Set(prev).add(id));
+  };
+
+  const stopEditingRecommendation = (id: string) => {
+    setEditingRecommendations(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
+  };
+
+  const handleRecommendationBlur = (id: string) => {
+    stopEditingRecommendation(id);
   };
 
   const updateRecommendation = (id: string, field: string, value: string) => {
@@ -1732,13 +1756,25 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                       color: recommendation.isCustom && isConfigMode ? '#52baf3' : 'inherit'
                     }}>
                       {recommendation.isCustom && isConfigMode ? (
-                        <Input
-                          value={recommendation.question === "Add new recommendation" ? "" : recommendation.question}
-                          onChange={(e) => updateRecommendation(recommendation.id, "question", e.target.value)}
-                          placeholder="Add new recommendation"
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0"
-                          style={{ color: '#52baf3' }}
-                        />
+                        editingRecommendations.has(recommendation.id) ? (
+                          <Input
+                            value={recommendation.question === "Add new recommendation" ? "" : recommendation.question}
+                            onChange={(e) => updateRecommendation(recommendation.id, "question", e.target.value)}
+                            onBlur={() => handleRecommendationBlur(recommendation.id)}
+                            placeholder="Add new recommendation"
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                            style={{ color: '#52baf3' }}
+                            autoFocus
+                          />
+                        ) : (
+                          <div
+                            className="cursor-pointer p-0"
+                            onClick={() => startEditingRecommendation(recommendation.id)}
+                            style={{ color: '#52baf3' }}
+                          >
+                            {recommendation.question}
+                          </div>
+                        )
                       ) : (
                         recommendation.question
                       )}
@@ -1790,6 +1826,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                               variant="ghost"
                               size="sm"
                               style={{ color: '#52baf3' }}
+                              onClick={() => startEditingRecommendation(recommendation.id)}
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
