@@ -1818,13 +1818,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                           >
                                             <MessageSquare className="h-4 w-4" />
                                           </Button>
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
                                         </div>
                                       </td>
                                     </tr>
