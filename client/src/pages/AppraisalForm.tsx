@@ -176,6 +176,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
   const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
   const [recommendationComments, setRecommendationComments] = useState<{[key: string]: string}>({});
+  const [trainingFollowupComments, setTrainingFollowupComments] = useState<{[key: string]: string}>({});
   const [editingAppraiserComment, setEditingAppraiserComment] = useState<string | null>(null);
   const [editingSeafarerComment, setEditingSeafarerComment] = useState<string | null>(null);
   const [nationalityOpen, setNationalityOpen] = useState(false);
@@ -188,6 +189,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [editingBehaviouralComment, setEditingBehaviouralComment] = useState<string | null>(null);
   const [editingTrainingNeedsComment, setEditingTrainingNeedsComment] = useState<string | null>(null);
   const [editingRecommendationComment, setEditingRecommendationComment] = useState<string | null>(null);
+  const [editingTrainingFollowupComment, setEditingTrainingFollowupComment] = useState<string | null>(null);
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -459,6 +461,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       return newComments;
     });
     setEditingRecommendationComment(null);
+  };
+  
+  const deleteTrainingFollowupComment = (id: string) => {
+    setTrainingFollowupComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingTrainingFollowupComment(null);
   };
 
   // Training Needs management functions
@@ -2180,6 +2191,10 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                             type="button"
                                             variant="ghost"
                                             size="sm"
+                                            onClick={() => setTrainingFollowupComments(prev => ({
+                                              ...prev,
+                                              [followup.id]: prev[followup.id] || ""
+                                            }))}
                                           >
                                             <MessageSquare className="h-4 w-4" />
                                           </Button>
@@ -2194,13 +2209,46 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         </div>
                                       </td>
                                     </tr>
-                                    {followup.comment && (
+                                    {trainingFollowupComments[followup.id] !== undefined && (
                                       <tr>
                                         <td></td>
                                         <td colSpan={6} className="p-3">
-                                          <p className="text-blue-600 italic text-sm">
-                                            Comment: {followup.comment}
-                                          </p>
+                                          {editingTrainingFollowupComment === followup.id ? (
+                                            <Textarea
+                                              value={trainingFollowupComments[followup.id]}
+                                              onChange={(e) => {
+                                                setTrainingFollowupComments(prev => ({
+                                                  ...prev,
+                                                  [followup.id]: e.target.value
+                                                }));
+                                                updateTrainingFollowup(followup.id, "comment", e.target.value);
+                                              }}
+                                              onBlur={() => setEditingTrainingFollowupComment(null)}
+                                              placeholder="Comment: Add your observations here..."
+                                              className="text-blue-600 italic border-blue-200"
+                                              rows={2}
+                                              autoFocus
+                                            />
+                                          ) : (
+                                            <div className="flex justify-between items-start">
+                                              <div 
+                                                className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                                onClick={() => setEditingTrainingFollowupComment(followup.id)}
+                                              >
+                                                {trainingFollowupComments[followup.id] || "Click to add comment..."}
+                                              </div>
+                                              <div className="ml-2">
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => deleteTrainingFollowupComment(followup.id)}
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          )}
                                         </td>
                                       </tr>
                                     )}
