@@ -1973,45 +1973,45 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Assessment Criteria</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Weight %</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Effectiveness</th>
-                  <th className="text-left p-3 text-sm font-medium text-gray-600">Actions</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">S.No</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Assessment Criteria</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Weight %</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Effectiveness</th>
+                  <th className="text-gray-600 text-xs font-normal py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {formMethods.watch("behaviouralAssessments").map((assessment, index) => (
                   <React.Fragment key={assessment.id}>
                     <tr className="border-t">
-                      <td className="p-3 text-sm">{index + 1}.</td>
-                      <td className="p-3 text-sm">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">{index + 1}.</td>
+                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                         {isConfigMode ? (
                           <Input
                             value={assessment.assessmentCriteria}
                             onChange={(e) => updateBehaviouralAssessment(assessment.id, "assessmentCriteria", e.target.value)}
                             placeholder="Enter Assessment Criteria"
-                            className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[13px] h-6"
                             style={{ color: '#52baf3' }}
                           />
                         ) : (
-                          assessment.assessmentCriteria
+                          <span className="text-[13px]">{assessment.assessmentCriteria}</span>
                         )}
                       </td>
-                      <td className="p-3 text-sm text-center">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4 text-center">
                         {isConfigMode ? (
                           <Input
                             type="number"
                             value={assessment.weight}
                             onChange={(e) => updateBehaviouralAssessment(assessment.id, "weight", parseInt(e.target.value) || 0)}
-                            className="border-0 bg-transparent p-0 focus-visible:ring-0 text-center w-16"
+                            className="border-0 bg-transparent p-0 focus-visible:ring-0 text-center w-16 text-[13px] h-6"
                             style={{ color: '#52baf3' }}
                           />
                         ) : (
-                          `${assessment.weight}%`
+                          <span className="text-[13px]">{assessment.weight}%</span>
                         )}
                       </td>
-                      <td className="p-3">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
                         <Select
                           value={assessment.effectiveness}
                           onValueChange={(value) => updateBehaviouralAssessment(assessment.id, "effectiveness", value)}
@@ -2022,7 +2022,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           }}
                         >
                           <SelectTrigger 
-                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[13px] h-6 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                             style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                           >
                             <SelectValue placeholder="Select Rating" />
@@ -2036,28 +2036,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="p-3">
-                        <div className="flex space-x-2">
+                      <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
+                        <div className="flex gap-2">
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={() => setBehaviouralComments(prev => ({
                               ...prev,
                               [assessment.id]: prev[assessment.id] || ""
                             }))}
+                            className="h-6 w-6"
                           >
-                            <MessageSquare className="h-4 w-4" />
+                            <MessageSquare className="h-[18px] w-[18px] text-gray-500" />
                           </Button>
                           {isConfigMode && (
                             <Button
                               type="button"
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => deleteBehaviouralAssessment(assessment.id)}
-                              className="text-red-600 hover:text-red-800"
+                              className="text-red-600 hover:text-red-800 h-6 w-6"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-[18px] w-[18px]" />
                             </Button>
                           )}
                         </div>
