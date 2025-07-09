@@ -417,4 +417,24 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from "./database";
+
+// Use database storage if DATABASE_URL is provided, otherwise fallback to memory storage
+let storage: IStorage;
+
+if (process.env.DATABASE_URL) {
+  storage = new DatabaseStorage();
+  // Seed the database with initial data
+  (async () => {
+    try {
+      await (storage as DatabaseStorage).seedDatabase();
+    } catch (error) {
+      console.error("Failed to seed database:", error);
+    }
+  })();
+} else {
+  storage = new MemStorage();
+  console.warn("DATABASE_URL not found, using in-memory storage. Data will not persist.");
+}
+
+export { storage };
