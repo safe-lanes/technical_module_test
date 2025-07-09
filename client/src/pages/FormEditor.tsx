@@ -335,13 +335,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTraining = (id: string) => {
-    const currentTrainings = formMethods.getValues("trainings");
-    formMethods.setValue("trainings", currentTrainings.filter(t => t.id !== id));
-    setTrainingComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this training?')) {
+      const currentTrainings = formMethods.getValues("trainings");
+      formMethods.setValue("trainings", currentTrainings.filter(t => t.id !== id));
+      setTrainingComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTraining = (id: string, field: string, value: string) => {
@@ -365,13 +367,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTarget = (id: string) => {
-    const currentTargets = formMethods.getValues("targets");
-    formMethods.setValue("targets", currentTargets.filter(t => t.id !== id));
-    setTargetComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this target?')) {
+      const currentTargets = formMethods.getValues("targets");
+      formMethods.setValue("targets", currentTargets.filter(t => t.id !== id));
+      setTargetComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTarget = (id: string, field: string, value: string) => {
@@ -473,13 +477,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingNeed = (id: string) => {
-    const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
-    formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
-    setTrainingNeedsComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this training need?')) {
+      const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
+      formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
+      setTrainingNeedsComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   // Training Followup management functions
@@ -506,13 +512,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingFollowup = (id: string) => {
-    const currentFollowups = formMethods.getValues("trainingFollowups");
-    formMethods.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
-    setTrainingFollowupComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this training followup?')) {
+      const currentFollowups = formMethods.getValues("trainingFollowups");
+      formMethods.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+      setTrainingFollowupComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   // State for configuration mode dialog
@@ -594,8 +602,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteAppraisalTypeOption = (index: number) => {
-    const newOptions = appraisalTypeOptions.filter((_, i) => i !== index);
-    setAppraisalTypeOptions(newOptions);
+    if (window.confirm('Do you want to delete this appraisal type option?')) {
+      const newOptions = appraisalTypeOptions.filter((_, i) => i !== index);
+      setAppraisalTypeOptions(newOptions);
+    }
   };
 
   const saveAppraisalTypeOption = () => {
@@ -630,8 +640,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deletePiCategoryOption = (index: number) => {
-    const newOptions = piCategoryOptions.filter((_, i) => i !== index);
-    setPiCategoryOptions(newOptions);
+    if (window.confirm('Do you want to delete this PI category option?')) {
+      const newOptions = piCategoryOptions.filter((_, i) => i !== index);
+      setPiCategoryOptions(newOptions);
+    }
   };
 
   const savePiCategoryOption = () => {
@@ -666,8 +678,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteEffectivenessOption = (index: number) => {
-    const newOptions = effectivenessOptions.filter((_, i) => i !== index);
-    setEffectivenessOptions(newOptions);
+    if (window.confirm('Do you want to delete this effectiveness option?')) {
+      const newOptions = effectivenessOptions.filter((_, i) => i !== index);
+      setEffectivenessOptions(newOptions);
+    }
   };
 
   const saveEffectivenessOption = () => {
@@ -702,8 +716,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingCategoryOption = (index: number) => {
-    const newOptions = trainingCategoryOptions.filter((_, i) => i !== index);
-    setTrainingCategoryOptions(newOptions);
+    if (window.confirm('Do you want to delete this training category option?')) {
+      const newOptions = trainingCategoryOptions.filter((_, i) => i !== index);
+      setTrainingCategoryOptions(newOptions);
+    }
   };
 
   const saveTrainingCategoryOption = () => {
@@ -738,8 +754,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteTrainingStatusOption = (index: number) => {
-    const newOptions = trainingStatusOptions.filter((_, i) => i !== index);
-    setTrainingStatusOptions(newOptions);
+    if (window.confirm('Do you want to delete this training status option?')) {
+      const newOptions = trainingStatusOptions.filter((_, i) => i !== index);
+      setTrainingStatusOptions(newOptions);
+    }
   };
 
   const saveTrainingStatusOption = () => {
@@ -862,13 +880,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     
     // Only allow deletion of custom recommendations
     if (recommendationToDelete && recommendationToDelete.isCustom) {
-      const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
-      formMethods.setValue("recommendations", filteredRecommendations);
-      setRecommendationComments(prev => {
-        const newComments = { ...prev };
-        delete newComments[id];
-        return newComments;
-      });
+      if (window.confirm('Do you want to delete this custom recommendation?')) {
+        const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
+        formMethods.setValue("recommendations", filteredRecommendations);
+        setRecommendationComments(prev => {
+          const newComments = { ...prev };
+          delete newComments[id];
+          return newComments;
+        });
+      }
     }
   };
 
@@ -902,9 +922,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteCompetenceCriterion = (id: string) => {
-    const currentAssessments = formMethods.getValues("competenceAssessments");
-    const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
-    formMethods.setValue("competenceAssessments", updatedAssessments);
+    if (window.confirm('Do you want to delete this competence criterion?')) {
+      const currentAssessments = formMethods.getValues("competenceAssessments");
+      const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+      formMethods.setValue("competenceAssessments", updatedAssessments);
+    }
   };
 
   // Function to calculate total weight
@@ -943,9 +965,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   };
 
   const deleteBehaviouralAssessment = (id: string) => {
-    const currentAssessments = formMethods.getValues("behaviouralAssessments");
-    const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
-    formMethods.setValue("behaviouralAssessments", updatedAssessments);
+    if (window.confirm('Do you want to delete this behavioural assessment?')) {
+      const currentAssessments = formMethods.getValues("behaviouralAssessments");
+      const updatedAssessments = currentAssessments.filter(assessment => assessment.id !== id);
+      formMethods.setValue("behaviouralAssessments", updatedAssessments);
+    }
   };
 
   const calculateBehaviouralTotalWeight = () => {

@@ -282,13 +282,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTraining = (id: string) => {
-    const currentTrainings = form.getValues("trainings");
-    form.setValue("trainings", currentTrainings.filter(t => t.id !== id));
-    setTrainingComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this training?')) {
+      const currentTrainings = form.getValues("trainings");
+      form.setValue("trainings", currentTrainings.filter(t => t.id !== id));
+      setTrainingComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTraining = (id: string, field: string, value: string) => {
@@ -312,13 +314,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTarget = (id: string) => {
-    const currentTargets = form.getValues("targets");
-    form.setValue("targets", currentTargets.filter(t => t.id !== id));
-    setTargetComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this target?')) {
+      const currentTargets = form.getValues("targets");
+      form.setValue("targets", currentTargets.filter(t => t.id !== id));
+      setTargetComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTarget = (id: string, field: string, value: string) => {
@@ -410,66 +414,80 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
   // Comment management helper functions
   const deleteTrainingComment = (id: string) => {
-    setTrainingComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingTrainingComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setTrainingComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingTrainingComment(null);
+    }
   };
   
   const deleteTargetComment = (id: string) => {
-    setTargetComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingTargetComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setTargetComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingTargetComment(null);
+    }
   };
   
   const deleteCompetenceComment = (id: string) => {
-    setCompetenceComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingCompetenceComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setCompetenceComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingCompetenceComment(null);
+    }
   };
   
   const deleteBehaviouralComment = (id: string) => {
-    setBehaviouralComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingBehaviouralComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setBehaviouralComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingBehaviouralComment(null);
+    }
   };
   
   const deleteTrainingNeedsComment = (id: string) => {
-    setTrainingNeedsComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingTrainingNeedsComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setTrainingNeedsComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingTrainingNeedsComment(null);
+    }
   };
   
   const deleteRecommendationComment = (id: string) => {
-    setRecommendationComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingRecommendationComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setRecommendationComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingRecommendationComment(null);
+    }
   };
   
   const deleteTrainingFollowupComment = (id: string) => {
-    setTrainingFollowupComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
-    setEditingTrainingFollowupComment(null);
+    if (window.confirm('Do you want to delete this comment?')) {
+      setTrainingFollowupComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+      setEditingTrainingFollowupComment(null);
+    }
   };
 
   // Training Needs management functions
@@ -484,13 +502,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTrainingNeed = (id: string) => {
-    const currentTrainingNeeds = form.getValues("trainingNeeds");
-    form.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
-    setTrainingNeedsComments(prev => {
-      const newComments = { ...prev };
-      delete newComments[id];
-      return newComments;
-    });
+    if (window.confirm('Do you want to delete this training need?')) {
+      const currentTrainingNeeds = form.getValues("trainingNeeds");
+      form.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
+      setTrainingNeedsComments(prev => {
+        const newComments = { ...prev };
+        delete newComments[id];
+        return newComments;
+      });
+    }
   };
 
   const updateTrainingNeed = (id: string, field: string, value: string) => {
@@ -539,8 +559,10 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteAppraiserComment = (id: string) => {
-    const currentComments = form.getValues("appraiserComments");
-    form.setValue("appraiserComments", currentComments.filter(c => c.id !== id));
+    if (window.confirm('Do you want to delete this appraiser comment?')) {
+      const currentComments = form.getValues("appraiserComments");
+      form.setValue("appraiserComments", currentComments.filter(c => c.id !== id));
+    }
   };
 
   // Seafarer Comments management
@@ -574,8 +596,10 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteOfficeReview = (id: string) => {
-    const currentReviews = form.getValues("officeReviews");
-    form.setValue("officeReviews", currentReviews.filter(r => r.id !== id));
+    if (window.confirm('Do you want to delete this office review?')) {
+      const currentReviews = form.getValues("officeReviews");
+      form.setValue("officeReviews", currentReviews.filter(r => r.id !== id));
+    }
   };
 
   // Training Followup management
@@ -602,8 +626,10 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   };
 
   const deleteTrainingFollowup = (id: string) => {
-    const currentFollowups = form.getValues("trainingFollowups");
-    form.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+    if (window.confirm('Do you want to delete this training followup?')) {
+      const currentFollowups = form.getValues("trainingFollowups");
+      form.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+    }
   };
 
   const RatingRadioGroup = ({ name, label }: { name: string; label: string }) => (
