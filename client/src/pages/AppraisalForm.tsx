@@ -1187,7 +1187,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         value={training.training}
                                         onChange={(e) => updateTraining(training.id, "training", e.target.value)}
                                         placeholder={`Training ${index + 1}`}
-                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
+                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                                       />
                                     </td>
                                     <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
@@ -1195,7 +1195,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         value={training.evaluation}
                                         onValueChange={(value) => updateTraining(training.id, "evaluation", value)}
                                       >
-                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal">
+                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6">
                                           <SelectValue placeholder="Select Rating" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -1328,7 +1328,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         value={target.targetSetting}
                                         onChange={(e) => updateTarget(target.id, "targetSetting", e.target.value)}
                                         placeholder={`Target ${index + 1}`}
-                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
+                                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                                       />
                                     </td>
                                     <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
@@ -1336,7 +1336,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                         value={target.evaluation}
                                         onValueChange={(value) => updateTarget(target.id, "evaluation", value)}
                                       >
-                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal">
+                                        <SelectTrigger className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6">
                                           <SelectValue placeholder="Select Rating" />
                                         </SelectTrigger>
                                         <SelectContent>

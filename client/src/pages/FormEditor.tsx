@@ -1444,7 +1444,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           value={training.training}
                           onChange={(e) => updateTraining(training.id, "training", e.target.value)}
                           placeholder={`Training ${index + 1}`}
-                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
+                          className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                         />
                       </td>
                       <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
@@ -1458,7 +1458,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                           }}
                         >
                           <SelectTrigger 
-                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                            className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                             style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                           >
                             <SelectValue placeholder="Select Rating" />
@@ -1611,7 +1611,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         value={target.targetSetting}
                         onChange={(e) => updateTarget(target.id, "targetSetting", e.target.value)}
                         placeholder={`Target ${index + 1}`}
-                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal"
+                        className="border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6"
                       />
                     </td>
                     <td className="text-[#4f5863] text-[13px] font-normal py-2 px-4">
@@ -1625,7 +1625,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
                         }}
                       >
                         <SelectTrigger 
-                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
+                          className={`border-0 bg-transparent p-0 focus-visible:ring-0 text-[#4f5863] text-[13px] font-normal h-6 ${isConfigMode && index === 0 ? "cursor-pointer" : ""}`}
                           style={isConfigMode && index === 0 ? { borderColor: '#52baf3', color: '#52baf3' } : {}}
                         >
                           <SelectValue placeholder="Select Rating" />
