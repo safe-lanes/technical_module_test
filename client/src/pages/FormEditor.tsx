@@ -564,7 +564,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       setAppraisalTypeOptions(newOptions);
     }
     
-    setShowAppraisalTypeDialog(false);
+    // Clear the input field for next entry
     setEditingAppraisalType("");
     setEditingAppraisalTypeIndex(-1);
   };
@@ -2766,16 +2766,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
               </div>
             </div>
 
-            {/* Add new option button */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addAppraisalTypeOption}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Option
-            </Button>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAppraisalTypeDialog(false)}>
