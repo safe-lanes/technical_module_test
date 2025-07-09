@@ -180,6 +180,13 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [editingSeafarerComment, setEditingSeafarerComment] = useState<string | null>(null);
   const [nationalityOpen, setNationalityOpen] = useState(false);
   const [editingOfficeReview, setEditingOfficeReview] = useState<string | null>(null);
+  
+  // States for tracking which comments are being edited
+  const [editingTrainingComment, setEditingTrainingComment] = useState<string | null>(null);
+  const [editingTargetComment, setEditingTargetComment] = useState<string | null>(null);
+  const [editingCompetenceComment, setEditingCompetenceComment] = useState<string | null>(null);
+  const [editingBehaviouralComment, setEditingBehaviouralComment] = useState<string | null>(null);
+  const [editingTrainingNeedsComment, setEditingTrainingNeedsComment] = useState<string | null>(null);
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -396,6 +403,52 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     });
     
     return totalWeight > 0 ? (totalScore * 100 / totalWeight).toFixed(1) : "0.0";
+  };
+
+  // Comment management helper functions
+  const deleteTrainingComment = (id: string) => {
+    setTrainingComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingTrainingComment(null);
+  };
+  
+  const deleteTargetComment = (id: string) => {
+    setTargetComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingTargetComment(null);
+  };
+  
+  const deleteCompetenceComment = (id: string) => {
+    setCompetenceComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingCompetenceComment(null);
+  };
+  
+  const deleteBehaviouralComment = (id: string) => {
+    setBehaviouralComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingBehaviouralComment(null);
+  };
+  
+  const deleteTrainingNeedsComment = (id: string) => {
+    setTrainingNeedsComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingTrainingNeedsComment(null);
   };
 
   // Training Needs management functions
@@ -1045,19 +1098,50 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                     <tr>
                                       <td></td>
                                       <td colSpan={3} className="p-3">
-                                        <Textarea
-                                          value={trainingComments[training.id]}
-                                          onChange={(e) => {
-                                            setTrainingComments(prev => ({
-                                              ...prev,
-                                              [training.id]: e.target.value
-                                            }));
-                                            updateTraining(training.id, "comment", e.target.value);
-                                          }}
-                                          placeholder="Comment: Add your observations here..."
-                                          className="text-blue-600 italic border-blue-200"
-                                          rows={2}
-                                        />
+                                        {editingTrainingComment === training.id ? (
+                                          <Textarea
+                                            value={trainingComments[training.id]}
+                                            onChange={(e) => {
+                                              setTrainingComments(prev => ({
+                                                ...prev,
+                                                [training.id]: e.target.value
+                                              }));
+                                              updateTraining(training.id, "comment", e.target.value);
+                                            }}
+                                            onBlur={() => setEditingTrainingComment(null)}
+                                            placeholder="Comment: Add your observations here..."
+                                            className="text-blue-600 italic border-blue-200"
+                                            rows={2}
+                                            autoFocus
+                                          />
+                                        ) : (
+                                          <div className="flex justify-between items-start">
+                                            <div 
+                                              className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                              onClick={() => setEditingTrainingComment(training.id)}
+                                            >
+                                              {trainingComments[training.id] || "Click to add comment..."}
+                                            </div>
+                                            <div className="flex space-x-2 ml-2">
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setEditingTrainingComment(training.id)}
+                                              >
+                                                <Edit2 className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => deleteTrainingComment(training.id)}
+                                              >
+                                                <Trash2 className="h-4 w-4" />
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        )}
                                       </td>
                                     </tr>
                                   )}
@@ -1168,19 +1252,50 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                     <tr>
                                       <td></td>
                                       <td colSpan={3} className="p-3">
-                                        <Textarea
-                                          value={targetComments[target.id]}
-                                          onChange={(e) => {
-                                            setTargetComments(prev => ({
-                                              ...prev,
-                                              [target.id]: e.target.value
-                                            }));
-                                            updateTarget(target.id, "comment", e.target.value);
-                                          }}
-                                          placeholder="Comment: Add your observations here..."
-                                          className="text-blue-600 italic border-blue-200"
-                                          rows={2}
-                                        />
+                                        {editingTargetComment === target.id ? (
+                                          <Textarea
+                                            value={targetComments[target.id]}
+                                            onChange={(e) => {
+                                              setTargetComments(prev => ({
+                                                ...prev,
+                                                [target.id]: e.target.value
+                                              }));
+                                              updateTarget(target.id, "comment", e.target.value);
+                                            }}
+                                            onBlur={() => setEditingTargetComment(null)}
+                                            placeholder="Comment: Add your observations here..."
+                                            className="text-blue-600 italic border-blue-200"
+                                            rows={2}
+                                            autoFocus
+                                          />
+                                        ) : (
+                                          <div className="flex justify-between items-start">
+                                            <div 
+                                              className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                              onClick={() => setEditingTargetComment(target.id)}
+                                            >
+                                              {targetComments[target.id] || "Click to add comment..."}
+                                            </div>
+                                            <div className="flex space-x-2 ml-2">
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setEditingTargetComment(target.id)}
+                                              >
+                                                <Edit2 className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => deleteTargetComment(target.id)}
+                                              >
+                                                <Trash2 className="h-4 w-4" />
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        )}
                                       </td>
                                     </tr>
                                   )}
@@ -1289,19 +1404,50 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                   <tr>
                                     <td></td>
                                     <td colSpan={4} className="p-3">
-                                      <Textarea
-                                        value={competenceComments[assessment.id]}
-                                        onChange={(e) => {
-                                          setCompetenceComments(prev => ({
-                                            ...prev,
-                                            [assessment.id]: e.target.value
-                                          }));
-                                          updateCompetenceAssessment(assessment.id, "comment", e.target.value);
-                                        }}
-                                        placeholder="Comment: Add your observations here..."
-                                        className="text-blue-600 italic border-blue-200"
-                                        rows={2}
-                                      />
+                                      {editingCompetenceComment === assessment.id ? (
+                                        <Textarea
+                                          value={competenceComments[assessment.id]}
+                                          onChange={(e) => {
+                                            setCompetenceComments(prev => ({
+                                              ...prev,
+                                              [assessment.id]: e.target.value
+                                            }));
+                                            updateCompetenceAssessment(assessment.id, "comment", e.target.value);
+                                          }}
+                                          onBlur={() => setEditingCompetenceComment(null)}
+                                          placeholder="Comment: Add your observations here..."
+                                          className="text-blue-600 italic border-blue-200"
+                                          rows={2}
+                                          autoFocus
+                                        />
+                                      ) : (
+                                        <div className="flex justify-between items-start">
+                                          <div 
+                                            className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                            onClick={() => setEditingCompetenceComment(assessment.id)}
+                                          >
+                                            {competenceComments[assessment.id] || "Click to add comment..."}
+                                          </div>
+                                          <div className="flex space-x-2 ml-2">
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => setEditingCompetenceComment(assessment.id)}
+                                            >
+                                              <Edit2 className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => deleteCompetenceComment(assessment.id)}
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      )}
                                     </td>
                                   </tr>
                                 )}
@@ -1418,19 +1564,50 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                 <tr>
                                   <td></td>
                                   <td colSpan={4} className="p-3">
-                                    <Textarea
-                                      value={behaviouralComments[assessment.id]}
-                                      onChange={(e) => {
-                                        setBehaviouralComments(prev => ({
-                                          ...prev,
-                                          [assessment.id]: e.target.value
-                                        }));
-                                        updateBehaviouralAssessment(assessment.id, "comment", e.target.value);
-                                      }}
-                                      placeholder="Comment: Add your observations here..."
-                                      className="text-blue-600 italic border-blue-200"
-                                      rows={2}
-                                    />
+                                    {editingBehaviouralComment === assessment.id ? (
+                                      <Textarea
+                                        value={behaviouralComments[assessment.id]}
+                                        onChange={(e) => {
+                                          setBehaviouralComments(prev => ({
+                                            ...prev,
+                                            [assessment.id]: e.target.value
+                                          }));
+                                          updateBehaviouralAssessment(assessment.id, "comment", e.target.value);
+                                        }}
+                                        onBlur={() => setEditingBehaviouralComment(null)}
+                                        placeholder="Comment: Add your observations here..."
+                                        className="text-blue-600 italic border-blue-200"
+                                        rows={2}
+                                        autoFocus
+                                      />
+                                    ) : (
+                                      <div className="flex justify-between items-start">
+                                        <div 
+                                          className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                          onClick={() => setEditingBehaviouralComment(assessment.id)}
+                                        >
+                                          {behaviouralComments[assessment.id] || "Click to add comment..."}
+                                        </div>
+                                        <div className="flex space-x-2 ml-2">
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setEditingBehaviouralComment(assessment.id)}
+                                          >
+                                            <Edit2 className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => deleteBehaviouralComment(assessment.id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
                                   </td>
                                 </tr>
                               )}
@@ -1546,19 +1723,50 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                 <tr>
                                   <td></td>
                                   <td colSpan={2} className="p-3">
-                                    <Textarea
-                                      value={trainingNeedsComments[trainingNeed.id]}
-                                      onChange={(e) => {
-                                        setTrainingNeedsComments(prev => ({
-                                          ...prev,
-                                          [trainingNeed.id]: e.target.value
-                                        }));
-                                        updateTrainingNeed(trainingNeed.id, "comment", e.target.value);
-                                      }}
-                                      placeholder="Comment: Add your observations here..."
-                                      className="text-blue-600 italic border-blue-200"
-                                      rows={2}
-                                    />
+                                    {editingTrainingNeedsComment === trainingNeed.id ? (
+                                      <Textarea
+                                        value={trainingNeedsComments[trainingNeed.id]}
+                                        onChange={(e) => {
+                                          setTrainingNeedsComments(prev => ({
+                                            ...prev,
+                                            [trainingNeed.id]: e.target.value
+                                          }));
+                                          updateTrainingNeed(trainingNeed.id, "comment", e.target.value);
+                                        }}
+                                        onBlur={() => setEditingTrainingNeedsComment(null)}
+                                        placeholder="Comment: Add your observations here..."
+                                        className="text-blue-600 italic border-blue-200"
+                                        rows={2}
+                                        autoFocus
+                                      />
+                                    ) : (
+                                      <div className="flex justify-between items-start">
+                                        <div 
+                                          className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                          onClick={() => setEditingTrainingNeedsComment(trainingNeed.id)}
+                                        >
+                                          {trainingNeedsComments[trainingNeed.id] || "Click to add comment..."}
+                                        </div>
+                                        <div className="flex space-x-2 ml-2">
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setEditingTrainingNeedsComment(trainingNeed.id)}
+                                          >
+                                            <Edit2 className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => deleteTrainingNeedsComment(trainingNeed.id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
                                   </td>
                                 </tr>
                               )}
