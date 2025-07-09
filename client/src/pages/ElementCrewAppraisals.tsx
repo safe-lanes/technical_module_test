@@ -51,6 +51,16 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   const [selectedCrewMember, setSelectedCrewMember] = useState<CrewAppraisalData | null>(null);
   const [showAppraisalForm, setShowAppraisalForm] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  
+  // Filter state
+  const [filters, setFilters] = useState({
+    searchName: "",
+    rank: "",
+    vesselType: "",
+    nationality: "",
+    appraisalType: "",
+    rating: ""
+  });
 
   // Fetch crew members and appraisal results
   const { data: crewMembers = [], isLoading: isLoadingCrew } = useQuery<CrewMember[]>({
@@ -94,7 +104,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   };
 
   // Combine crew member and appraisal data
-  const crewData: CrewAppraisalData[] = crewMembers.map((crewMember) => {
+  const allCrewData: CrewAppraisalData[] = crewMembers.map((crewMember) => {
     const appraisal = appraisalResults.find(ar => ar.crewMemberId === crewMember.id);
     
     return {
@@ -125,6 +135,46 @@ export const ElementCrewAppraisals = (): JSX.Element => {
       },
       appraisalId: appraisal?.id,
     };
+  });
+
+  // Filter crew data based on filter state
+  const crewData = allCrewData.filter((crew) => {
+    const fullName = `${crew.name.first} ${crew.name.middle} ${crew.name.last}`.toLowerCase();
+    
+    // Name search filter
+    if (filters.searchName && !fullName.includes(filters.searchName.toLowerCase())) {
+      return false;
+    }
+    
+    // Rank filter
+    if (filters.rank && crew.rank.toLowerCase() !== filters.rank.toLowerCase()) {
+      return false;
+    }
+    
+    // Vessel type filter
+    if (filters.vesselType && crew.vesselType.toLowerCase() !== filters.vesselType.toLowerCase()) {
+      return false;
+    }
+    
+    // Nationality filter
+    if (filters.nationality && crew.nationality.toLowerCase() !== filters.nationality.toLowerCase()) {
+      return false;
+    }
+    
+    // Appraisal type filter
+    if (filters.appraisalType && crew.appraisalType.toLowerCase() !== filters.appraisalType.toLowerCase()) {
+      return false;
+    }
+    
+    // Rating filter
+    if (filters.rating && crew.overallRating.value !== "N/A") {
+      const rating = parseFloat(crew.overallRating.value);
+      if (filters.rating === "high" && rating < 4.0) return false;
+      if (filters.rating === "medium" && (rating < 3.0 || rating >= 4.0)) return false;
+      if (filters.rating === "low" && rating >= 3.0) return false;
+    }
+    
+    return true;
   });
 
   if (isLoadingCrew || isLoadingAppraisals) {
@@ -284,62 +334,63 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                     <Input
                       className="h-8 pl-10 text-[#8798ad] text-xs"
                       placeholder="Search Name"
+                      value={filters.searchName}
+                      onChange={(e) => setFilters(prev => ({ ...prev, searchName: e.target.value }))}
                     />
                     <SearchIcon className="w-4 h-4 absolute left-3 top-2 text-[#8798ad]" />
                   </div>
 
-                  <Select>
+                  <Select value={filters.rank} onValueChange={(value) => setFilters(prev => ({ ...prev, rank: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Rank" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="master">Master</SelectItem>
-                      <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
-                      <SelectItem value="able-seaman">Able Seaman</SelectItem>
+                      <SelectItem value="Master">Master</SelectItem>
+                      <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
+                      <SelectItem value="Chief Mate">Chief Mate</SelectItem>
+                      <SelectItem value="Able Seaman">Able Seaman</SelectItem>
+                      <SelectItem value="Electrician">Electrician</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select>
+                  <Select value={filters.vesselType} onValueChange={(value) => setFilters(prev => ({ ...prev, vesselType: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Vessel type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="oil-tanker">Oil Tanker</SelectItem>
-                      <SelectItem value="lpg-tanker">LPG Tanker</SelectItem>
-                      <SelectItem value="container">Container</SelectItem>
-                      <SelectItem value="bulk">Bulk</SelectItem>
+                      <SelectItem value="Oil Tanker">Oil Tanker</SelectItem>
+                      <SelectItem value="LPG Tanker">LPG Tanker</SelectItem>
+                      <SelectItem value="Container">Container</SelectItem>
+                      <SelectItem value="Bulk">Bulk</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select>
+                  <Select value={filters.nationality} onValueChange={(value) => setFilters(prev => ({ ...prev, nationality: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Nationality" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="british">British</SelectItem>
-                      <SelectItem value="indian">Indian</SelectItem>
-                      <SelectItem value="philippines">Philippines</SelectItem>
+                      <SelectItem value="British">British</SelectItem>
+                      <SelectItem value="Indian">Indian</SelectItem>
+                      <SelectItem value="Philippines">Philippines</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select>
+                  <Select value={filters.appraisalType} onValueChange={(value) => setFilters(prev => ({ ...prev, appraisalType: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Appraisal Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="end-of-contract">
-                        End of Contract
-                      </SelectItem>
-                      <SelectItem value="mid-term">Mid Term</SelectItem>
-                      <SelectItem value="special">Special</SelectItem>
-                      <SelectItem value="probation">Probation</SelectItem>
-                      <SelectItem value="appraiser-s-off">
-                        Appraiser S/Off
-                      </SelectItem>
+                      <SelectItem value="End of Contract">End of Contract</SelectItem>
+                      <SelectItem value="Mid Term">Mid Term</SelectItem>
+                      <SelectItem value="Special">Special</SelectItem>
+                      <SelectItem value="Probation">Probation</SelectItem>
+                      <SelectItem value="Appraiser SCOT">Appraiser SCOT</SelectItem>
+                      <SelectItem value="Not Started">Not Started</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Select>
+                  <Select value={filters.rating} onValueChange={(value) => setFilters(prev => ({ ...prev, rating: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Rating" />
                     </SelectTrigger>
@@ -359,6 +410,14 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                   <Button
                     variant="outline"
                     className="h-8 w-20 text-[#8798ad] text-xs border-[#e1e8ed]"
+                    onClick={() => setFilters({
+                      searchName: "",
+                      rank: "",
+                      vesselType: "",
+                      nationality: "",
+                      appraisalType: "",
+                      rating: ""
+                    })}
                   >
                     Clear
                   </Button>
