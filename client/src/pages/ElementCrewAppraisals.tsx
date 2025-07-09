@@ -56,6 +56,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   const [filters, setFilters] = useState({
     searchName: "",
     rank: "",
+    vessel: "",
     vesselType: "",
     nationality: "",
     appraisalType: "",
@@ -148,6 +149,11 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     
     // Rank filter
     if (filters.rank && crew.rank.toLowerCase() !== filters.rank.toLowerCase()) {
+      return false;
+    }
+    
+    // Vessel filter
+    if (filters.vessel && crew.vessel.toLowerCase() !== filters.vessel.toLowerCase()) {
       return false;
     }
     
@@ -353,6 +359,17 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                     </SelectContent>
                   </Select>
 
+                  <Select value={filters.vessel} onValueChange={(value) => setFilters(prev => ({ ...prev, vessel: value }))}>
+                    <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
+                      <SelectValue placeholder="Vessel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MV Atlantic Star">MV Atlantic Star</SelectItem>
+                      <SelectItem value="MV Pacific Dawn">MV Pacific Dawn</SelectItem>
+                      <SelectItem value="MV Northern Light">MV Northern Light</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Select value={filters.vesselType} onValueChange={(value) => setFilters(prev => ({ ...prev, vesselType: value }))}>
                     <SelectTrigger className="w-[150px] h-8 bg-white text-[#8a8a8a] text-xs">
                       <SelectValue placeholder="Vessel type" />
@@ -413,6 +430,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                     onClick={() => setFilters({
                       searchName: "",
                       rank: "",
+                      vessel: "",
                       vesselType: "",
                       nationality: "",
                       appraisalType: "",
