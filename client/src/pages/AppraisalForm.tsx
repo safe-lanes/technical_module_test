@@ -187,6 +187,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   const [editingCompetenceComment, setEditingCompetenceComment] = useState<string | null>(null);
   const [editingBehaviouralComment, setEditingBehaviouralComment] = useState<string | null>(null);
   const [editingTrainingNeedsComment, setEditingTrainingNeedsComment] = useState<string | null>(null);
+  const [editingRecommendationComment, setEditingRecommendationComment] = useState<string | null>(null);
 
   const form = useForm<AppraisalFormData>({
     resolver: zodResolver(appraisalSchema),
@@ -449,6 +450,15 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
       return newComments;
     });
     setEditingTrainingNeedsComment(null);
+  };
+  
+  const deleteRecommendationComment = (id: string) => {
+    setRecommendationComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+    setEditingRecommendationComment(null);
   };
 
   // Training Needs management functions
@@ -1813,13 +1823,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                             variant="ghost"
                                             size="sm"
                                           >
-                                            <Edit2 className="h-4 w-4" />
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                          >
                                             <Trash2 className="h-4 w-4" />
                                           </Button>
                                         </div>
@@ -1829,9 +1832,42 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       <tr>
                                         <td></td>
                                         <td colSpan={5} className="p-3">
-                                          <p className="text-blue-600 italic text-sm">
-                                            Comment: Recommended as there seemed to be a large gap in officer's understanding.
-                                          </p>
+                                          {editingRecommendationComment === recommendation.id ? (
+                                            <Textarea
+                                              value={recommendationComments[recommendation.id]}
+                                              onChange={(e) => {
+                                                setRecommendationComments(prev => ({
+                                                  ...prev,
+                                                  [recommendation.id]: e.target.value
+                                                }));
+                                                updateRecommendation(recommendation.id, "comment", e.target.value);
+                                              }}
+                                              onBlur={() => setEditingRecommendationComment(null)}
+                                              placeholder="Comment: Add your observations here..."
+                                              className="text-blue-600 italic border-blue-200"
+                                              rows={2}
+                                              autoFocus
+                                            />
+                                          ) : (
+                                            <div className="flex justify-between items-start">
+                                              <div 
+                                                className="flex-1 text-blue-600 italic cursor-pointer p-2 rounded hover:bg-gray-50"
+                                                onClick={() => setEditingRecommendationComment(recommendation.id)}
+                                              >
+                                                {recommendationComments[recommendation.id] || "Click to add comment..."}
+                                              </div>
+                                              <div className="ml-2">
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => deleteRecommendationComment(recommendation.id)}
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          )}
                                         </td>
                                       </tr>
                                     )}
@@ -2153,13 +2189,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                             size="sm"
                                           >
                                             <MessageSquare className="h-4 w-4" />
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                          >
-                                            <Edit2 className="h-4 w-4" />
                                           </Button>
                                           <Button
                                             type="button"
