@@ -80,6 +80,17 @@ const recommendationSchema = z.object({
   isCustom: z.boolean().optional().default(false),
 });
 
+// Training Followup schema
+const trainingFollowupSchema = z.object({
+  id: z.string(),
+  training: z.string(),
+  correspondingInDB: z.string(),
+  category: z.string(),
+  status: z.enum(["Proposed", "Approved", "Planned", "Declined", "Completed"]),
+  targetDate: z.string().optional(),
+  comment: z.string().optional(),
+});
+
 // Appraisal form schema - exact copy from AppraisalForm
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
@@ -115,7 +126,7 @@ const appraisalSchema = z.object({
 
   // Part G: Office Review & Followup
   officeReviewComments: z.string().optional(),
-  trainingFollowups: z.string().optional(),
+  trainingFollowups: z.array(trainingFollowupSchema).default([]),
 });
 
 type AppraisalFormData = z.infer<typeof appraisalSchema>;
@@ -136,6 +147,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
   const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
   const [recommendationComments, setRecommendationComments] = useState<{[key: string]: string}>({});
+  const [trainingFollowupComments, setTrainingFollowupComments] = useState<{[key: string]: string}>({});
   
   // Configuration state for tracking which fields are configurable
   const [isConfigMode, setIsConfigMode] = useState(false);
@@ -266,6 +278,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
         { id: "2", question: "Recommended for re-employment?", answer: "Yes", comment: "", isCustom: false },
         { id: "3", question: "Recommended for promotion?", answer: "Yes", comment: "", isCustom: false },
         { id: "4", question: "Career Development recommendations (If Any)?", answer: "Yes", comment: "", isCustom: false },
+      ],
+      // Part G: Office Review & Followup
+      officeReviewComments: "",
+      trainingFollowups: [
+        { id: "1", training: "Training 1", correspondingInDB: "Select Training from DB", category: "Select Rating", status: "Proposed", targetDate: "", comment: "" },
+        { id: "2", training: "Training 2", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Approved", targetDate: "", comment: "" },
+        { id: "3", training: "Training 3", correspondingInDB: "Select Training from DB", category: "2. Soft Skills", status: "Planned", targetDate: "", comment: "" },
+        { id: "4", training: "Training 4", correspondingInDB: "Select Training from DB", category: "1. Competence", status: "Declined", targetDate: "", comment: "The officer will no longer be sent on this type of vessel, so this training is not required." },
       ],
     },
   });
@@ -454,6 +474,39 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
     formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
     setTrainingNeedsComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+  };
+
+  // Training Followup management functions
+  const addTrainingFollowup = (type: 'database' | 'new') => {
+    const currentFollowups = formMethods.getValues("trainingFollowups");
+    const newFollowup = {
+      id: Date.now().toString(),
+      training: "",
+      correspondingInDB: "Select Training from DB",
+      category: "Select Rating",
+      status: "Proposed" as const,
+      targetDate: "",
+      comment: "",
+    };
+    formMethods.setValue("trainingFollowups", [...currentFollowups, newFollowup]);
+  };
+
+  const updateTrainingFollowup = (id: string, field: string, value: string) => {
+    const currentFollowups = formMethods.getValues("trainingFollowups");
+    const updatedFollowups = currentFollowups.map(f => 
+      f.id === id ? { ...f, [field]: value } : f
+    );
+    formMethods.setValue("trainingFollowups", updatedFollowups);
+  };
+
+  const deleteTrainingFollowup = (id: string) => {
+    const currentFollowups = formMethods.getValues("trainingFollowups");
+    formMethods.setValue("trainingFollowups", currentFollowups.filter(f => f.id !== id));
+    setTrainingFollowupComments(prev => {
       const newComments = { ...prev };
       delete newComments[id];
       return newComments;
@@ -1970,14 +2023,154 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       {/* G2: Training Follow-up */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G2. Training Follow-up</h3>
-        <div className="space-y-2">
-          <Label htmlFor="trainingFollowups">Training Follow-up Actions</Label>
-          <Textarea
-            id="trainingFollowups"
-            placeholder="Specify training follow-up actions and timeline..."
-            {...formMethods.register("trainingFollowups")}
-            rows={4}
-          />
+        
+        {/* Training Followup Table */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-medium">Training Follow-up Actions</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => addTrainingFollowup('database')}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                Add from Database
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => addTrainingFollowup('new')}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                Add New
+              </Button>
+            </div>
+          </div>
+
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Training</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Corresponding in DB</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Category</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Status</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Target Date</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Comment</th>
+                  <th className="text-left p-3 font-medium text-gray-700 border-b">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formMethods.watch("trainingFollowups").map((followup, index) => (
+                  <tr key={followup.id} className="border-b">
+                    <td className="p-3">
+                      <Input
+                        placeholder="Training name"
+                        value={followup.training}
+                        onChange={(e) => updateTrainingFollowup(followup.id, 'training', e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <Select
+                        value={followup.correspondingInDB}
+                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'correspondingInDB', value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Training from DB" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Select Training from DB">Select Training from DB</SelectItem>
+                          <SelectItem value="STCW Basic Safety Training">STCW Basic Safety Training</SelectItem>
+                          <SelectItem value="Advanced Fire Fighting">Advanced Fire Fighting</SelectItem>
+                          <SelectItem value="Medical First Aid">Medical First Aid</SelectItem>
+                          <SelectItem value="Ship Security Officer">Ship Security Officer</SelectItem>
+                          <SelectItem value="Bridge Resource Management">Bridge Resource Management</SelectItem>
+                          <SelectItem value="Engine Resource Management">Engine Resource Management</SelectItem>
+                          <SelectItem value="Leadership and Management">Leadership and Management</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="p-3">
+                      <Select
+                        value={followup.category}
+                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'category', value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Rating" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Select Rating">Select Rating</SelectItem>
+                          <SelectItem value="1. Competence">1. Competence</SelectItem>
+                          <SelectItem value="2. Soft Skills">2. Soft Skills</SelectItem>
+                          <SelectItem value="3. Safety">3. Safety</SelectItem>
+                          <SelectItem value="4. Technical">4. Technical</SelectItem>
+                          <SelectItem value="5. Leadership">5. Leadership</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="p-3">
+                      <Select
+                        value={followup.status}
+                        onValueChange={(value) => updateTrainingFollowup(followup.id, 'status', value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Proposed">Proposed</SelectItem>
+                          <SelectItem value="Approved">Approved</SelectItem>
+                          <SelectItem value="Planned">Planned</SelectItem>
+                          <SelectItem value="Declined">Declined</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="p-3">
+                      <Input
+                        type="date"
+                        value={followup.targetDate}
+                        onChange={(e) => updateTrainingFollowup(followup.id, 'targetDate', e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <Textarea
+                        placeholder="Comments"
+                        value={trainingFollowupComments[followup.id] || followup.comment || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setTrainingFollowupComments(prev => ({
+                            ...prev,
+                            [followup.id]: value
+                          }));
+                          updateTrainingFollowup(followup.id, 'comment', value);
+                        }}
+                        className="w-full resize-none"
+                        rows={2}
+                      />
+                    </td>
+                    <td className="p-3">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteTrainingFollowup(followup.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
