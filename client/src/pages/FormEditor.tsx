@@ -510,6 +510,50 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     stopEditingRecommendation(id);
   };
 
+  // Validation functions for assessment criteria
+  const validateAssessmentCriteria = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // Check Part C competence assessments
+    const competenceAssessments = formMethods.getValues("competenceAssessments");
+    const blankCompetenceFields = competenceAssessments.filter(
+      assessment => !assessment.assessmentCriteria?.trim()
+    );
+    
+    if (blankCompetenceFields.length > 0) {
+      errors.push(`Part C has ${blankCompetenceFields.length} blank assessment criteria field(s)`);
+    }
+    
+    // Check Part D behavioural assessments
+    const behaviouralAssessments = formMethods.getValues("behaviouralAssessments");
+    const blankBehaviouralFields = behaviouralAssessments.filter(
+      assessment => !assessment.assessmentCriteria?.trim()
+    );
+    
+    if (blankBehaviouralFields.length > 0) {
+      errors.push(`Part D has ${blankBehaviouralFields.length} blank assessment criteria field(s)`);
+    }
+    
+    // Check custom recommendations
+    const recommendations = formMethods.getValues("recommendations");
+    const blankRecommendations = recommendations.filter(
+      rec => rec.isCustom && (!rec.question?.trim() || rec.question === "Add new recommendation")
+    );
+    
+    if (blankRecommendations.length > 0) {
+      errors.push(`Part F has ${blankRecommendations.length} blank recommendation field(s)`);
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
+  // State for validation error dialog
+  const [showValidationDialog, setShowValidationDialog] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
   const updateRecommendation = (id: string, field: string, value: string) => {
     const currentRecommendations = formMethods.getValues("recommendations");
     const updatedRecommendations = currentRecommendations.map(r => 
@@ -2007,7 +2051,18 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             )}
             <Button
               variant={isConfigMode ? "default" : "outline"}
-              onClick={() => setIsConfigMode(!isConfigMode)}
+              onClick={() => {
+                if (isConfigMode) {
+                  // Validate assessment criteria fields before exiting config mode
+                  const validationResult = validateAssessmentCriteria();
+                  if (!validationResult.isValid) {
+                    setValidationErrors(validationResult.errors);
+                    setShowValidationDialog(true);
+                    return;
+                  }
+                }
+                setIsConfigMode(!isConfigMode);
+              }}
               className="flex items-center gap-2"
             >
               <Settings className="h-4 w-4" />
@@ -2015,6 +2070,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             </Button>
             <Button 
               onClick={() => {
+                // Validate assessment criteria fields
+                const validationResult = validateAssessmentCriteria();
+                if (!validationResult.isValid) {
+                  setValidationErrors(validationResult.errors);
+                  setShowValidationDialog(true);
+                  return;
+                }
+                
                 // Manual weight validation check before submitting
                 if (isConfigMode) {
                   const competenceAssessments = formMethods.getValues("competenceAssessments");
@@ -2253,6 +2316,28 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           <AlertDialogFooter>
             <AlertDialogCancel>No</AlertDialogCancel>
             <AlertDialogAction onClick={handleEnterConfigMode}>Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Field Validation Dialog */}
+      <AlertDialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Validation Errors</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please fix the following errors before proceeding:
+              <ul className="mt-2 space-y-1">
+                {validationErrors.map((error, index) => (
+                  <li key={index} className="text-red-600 font-medium">• {error}</li>
+                ))}
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowValidationDialog(false)}>
+              OK
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
