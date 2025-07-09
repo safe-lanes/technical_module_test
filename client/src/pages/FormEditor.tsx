@@ -61,6 +61,14 @@ const trainingNeedsSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Recommendation schema
+const recommendationSchema = z.object({
+  id: z.string(),
+  question: z.string().min(1, "Question is required"),
+  answer: z.enum(["Yes", "No", "NA"]),
+  comment: z.string().optional(),
+});
+
 // Appraisal form schema - exact copy from AppraisalForm
 const appraisalSchema = z.object({
   // Part A: Seafarer's Information
@@ -90,7 +98,7 @@ const appraisalSchema = z.object({
 
   // Part F: Summary & Recommendations
   overallScore: z.string().optional(),
-  recommendations: z.string().optional(),
+  recommendations: z.array(recommendationSchema).default([]),
   appraiserComments: z.string().optional(),
   seafarerComments: z.string().optional(),
 
@@ -116,6 +124,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
   const [competenceComments, setCompetenceComments] = useState<{[key: string]: string}>({});
   const [behaviouralComments, setBehaviouralComments] = useState<{[key: string]: string}>({});
   const [trainingNeedsComments, setTrainingNeedsComments] = useState<{[key: string]: string}>({});
+  const [recommendationComments, setRecommendationComments] = useState<{[key: string]: string}>({});
   
   // Configuration state for tracking which fields are configurable
   const [isConfigMode, setIsConfigMode] = useState(false);
@@ -241,6 +250,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       competenceAssessments: [],
       behaviouralAssessments: [],
       trainingNeeds: [],
+      recommendations: [
+        { id: "1", question: "Recommended for continued service on board?", answer: "Yes", comment: "" },
+        { id: "2", question: "Recommended for re-employment?", answer: "Yes", comment: "" },
+        { id: "3", question: "Recommended for promotion?", answer: "Yes", comment: "" },
+        { id: "4", question: "Career Development recommendations (If Any)?", answer: "Yes", comment: "" },
+      ],
     },
   });
 
@@ -428,6 +443,37 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     const currentTrainingNeeds = formMethods.getValues("trainingNeeds");
     formMethods.setValue("trainingNeeds", currentTrainingNeeds.filter(t => t.id !== id));
     setTrainingNeedsComments(prev => {
+      const newComments = { ...prev };
+      delete newComments[id];
+      return newComments;
+    });
+  };
+
+  // Recommendation management functions
+  const addRecommendation = () => {
+    const currentRecommendations = formMethods.getValues("recommendations");
+    const newRecommendation = {
+      id: Date.now().toString(),
+      question: "New recommendation",
+      answer: "Yes",
+      comment: ""
+    };
+    formMethods.setValue("recommendations", [...currentRecommendations, newRecommendation]);
+  };
+
+  const updateRecommendation = (id: string, field: string, value: string) => {
+    const currentRecommendations = formMethods.getValues("recommendations");
+    const updatedRecommendations = currentRecommendations.map(r => 
+      r.id === id ? { ...r, [field]: value } : r
+    );
+    formMethods.setValue("recommendations", updatedRecommendations);
+  };
+
+  const deleteRecommendation = (id: string) => {
+    const currentRecommendations = formMethods.getValues("recommendations");
+    const filteredRecommendations = currentRecommendations.filter(r => r.id !== id);
+    formMethods.setValue("recommendations", filteredRecommendations);
+    setRecommendationComments(prev => {
       const newComments = { ...prev };
       delete newComments[id];
       return newComments;
@@ -1618,16 +1664,119 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       </div>
 
       {/* F2: Appraiser's Recommendations */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
-        <div className="space-y-2">
-          <Label htmlFor="recommendations">Recommendations</Label>
-          <Textarea
-            id="recommendations"
-            placeholder="Provide specific recommendations..."
-            {...formMethods.register("recommendations")}
-            rows={4}
-          />
+      <div className="space-y-4 mb-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="text-blue-600 border-blue-300"
+            onClick={addRecommendation}
+          >
+            + Add Recommendation
+          </Button>
+        </div>
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-left p-3 text-sm font-medium text-gray-600">S.No</th>
+                <th className="text-left p-3 text-sm font-medium text-gray-600">Recommendations</th>
+                <th className="text-center p-3 text-sm font-medium text-gray-600">Yes</th>
+                <th className="text-center p-3 text-sm font-medium text-gray-600">No</th>
+                <th className="text-center p-3 text-sm font-medium text-gray-600">NA</th>
+                <th className="text-center p-3 text-sm font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {formMethods.watch("recommendations").map((recommendation, index) => (
+                <React.Fragment key={recommendation.id}>
+                  <tr className="border-t">
+                    <td className="p-3 text-sm">{index + 1}.</td>
+                    <td className="p-3 text-sm">{recommendation.question}</td>
+                    <td className="text-center p-3">
+                      <input
+                        type="radio"
+                        name={`recommendation-${recommendation.id}`}
+                        checked={recommendation.answer === "Yes"}
+                        onChange={() => updateRecommendation(recommendation.id, "answer", "Yes")}
+                        className="w-4 h-4"
+                      />
+                    </td>
+                    <td className="text-center p-3">
+                      <input
+                        type="radio"
+                        name={`recommendation-${recommendation.id}`}
+                        checked={recommendation.answer === "No"}
+                        onChange={() => updateRecommendation(recommendation.id, "answer", "No")}
+                        className="w-4 h-4"
+                      />
+                    </td>
+                    <td className="text-center p-3">
+                      <input
+                        type="radio"
+                        name={`recommendation-${recommendation.id}`}
+                        checked={recommendation.answer === "NA"}
+                        onChange={() => updateRecommendation(recommendation.id, "answer", "NA")}
+                        className="w-4 h-4"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <div className="flex justify-center space-x-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setRecommendationComments(prev => ({
+                            ...prev,
+                            [recommendation.id]: prev[recommendation.id] || ""
+                          }))}
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteRecommendation(recommendation.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                  {recommendationComments[recommendation.id] !== undefined && (
+                    <tr key={`comment-${recommendation.id}`}>
+                      <td></td>
+                      <td colSpan={5} className="p-3">
+                        <Textarea
+                          value={recommendationComments[recommendation.id]}
+                          onChange={(e) => {
+                            setRecommendationComments(prev => ({
+                              ...prev,
+                              [recommendation.id]: e.target.value
+                            }));
+                            updateRecommendation(recommendation.id, "comment", e.target.value);
+                          }}
+                          placeholder="Comment: Add your observations here..."
+                          className="text-blue-600 italic border-blue-200"
+                          rows={2}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
