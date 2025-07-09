@@ -217,6 +217,7 @@ Changelog:
 - July 09, 2025. **MYSQL MIGRATION**: Successfully converted from PostgreSQL to MySQL for Angular 19/NestJS stack compatibility, maintained all functionality including data persistence, API endpoints, CRUD operations, automatic seeding, and micro frontend capabilities
 - July 09, 2025. **ENHANCED COMMENT FUNCTIONALITY**: Improved comment system with click-to-edit behavior - comments display as uneditable text when not in edit mode, clicking comment text enables editing with textarea, only delete button remains on right side, comments auto-save when focus is lost
 - July 09, 2025. **COMPLETE CONFIRMATION DIALOGS**: Added confirmation dialogs ("Do you want to delete? Yes/No") to all delete functions across the entire application - training records, targets, training needs, competence/behavioral assessments, recommendations, office reviews, training followups, all comment deletions, and all FormEditor configuration options - prevents accidental deletions throughout the system
+- July 09, 2025. **UNIFIED REACT DIALOGS**: Successfully replaced all browser window.confirm() popups with proper React AlertDialog components across both AppraisalForm.tsx and FormEditor.tsx - 12 different delete functions now use consistent "Delete [Item]" / "Are you sure you want to delete..." dialog pattern with Yes/No buttons, improving user experience and maintaining design consistency
 ```
 
 ## User Preferences
