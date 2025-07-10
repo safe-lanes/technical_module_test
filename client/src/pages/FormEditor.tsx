@@ -1392,7 +1392,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           {sectionVisibility.partB1 && (
             <div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
-          <h3 className="text-base sm:text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
+          <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
           <div className="flex items-center gap-2 shrink-0">
             {isConfigMode && (
               <Button
@@ -1561,7 +1561,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
           {sectionVisibility.partB2 && (
             <div>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B2. Target Setting</h3>
+          <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>B2. Target Setting</h3>
           <div className="flex items-center gap-2">
             {isConfigMode && (
               <Button
@@ -2248,7 +2248,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       
       {/* F1: Overall Score */}
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
+        <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>F1. Overall Score</h3>
         <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
           {calculateOverallScore()}
         </div>
@@ -2257,7 +2257,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       {/* F2: Appraiser's Recommendations */}
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
+          <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
           <Button
             type="button"
             variant="outline"
@@ -2413,7 +2413,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {/* F3: Appraiser Comments */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F3. Appraiser Comments</h3>
+        <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>F3. Appraiser Comments</h3>
         <div className="space-y-2">
           <Label htmlFor="appraiserComments">Appraiser Comments</Label>
           <Textarea
@@ -2427,7 +2427,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {/* F4: Seafarer Comments */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F4. Seafarer Comments</h3>
+        <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>F4. Seafarer Comments</h3>
         <div className="space-y-2">
           <Label htmlFor="seafarerComments">Seafarer Comments</Label>
           <Textarea
@@ -2451,7 +2451,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
       
       {/* G1: Office Review */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G1. Office Review</h3>
+        <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>G1. Office Review</h3>
         <div className="space-y-2">
           <Label htmlFor="officeReviewComments">Office Review Comments</Label>
           <Textarea
@@ -2465,7 +2465,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
 
       {/* G2: Training Follow-up */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G2. Training Follow-up</h3>
+        <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>G2. Training Follow-up</h3>
         
         {/* Training Followup Table */}
         <div className="space-y-4">
