@@ -1153,7 +1153,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       {/* B1. Trainings conducted prior joining vessel */}
                       <div>
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
+                          <h3 className="font-medium text-[16px] text-[#15569e]" style={{ color: '#16569e' }}>B1. Trainings conducted prior joining vessel (To Assess Effectiveness)</h3>
                           <Button
                             type="button"
                             onClick={addTraining}
@@ -2403,7 +2403,6 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
           </div>
         </div>
       </div>
-      
       {/* Confirmation Dialog */}
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={closeConfirmDialog}>
         <AlertDialogContent>
