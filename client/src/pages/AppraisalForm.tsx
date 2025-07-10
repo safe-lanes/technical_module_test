@@ -1295,7 +1295,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                       {/* B2. Target Setting */}
                       <div>
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium" style={{ color: '#16569e' }}>B2. Target Setting</h3>
+                          <h3 className="text-lg font-medium bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>B2. Target Setting</h3>
                           <Button
                             type="button"
                             onClick={addTarget}
@@ -1875,7 +1875,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
                         {/* F1: Overall Score */}
                         <div className="flex justify-between items-center mb-6">
-                          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F1. Overall Score</h3>
+                          <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>F1. Overall Score</h3>
                           <div className={`px-4 py-2 rounded text-lg font-bold min-w-[64px] text-center ${getScoreColors(parseFloat(calculateOverallScore())).bgColor} ${getScoreColors(parseFloat(calculateOverallScore())).textColor}`}>
                             {calculateOverallScore()}
                           </div>
@@ -1884,7 +1884,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         {/* F2: Appraiser's Recommendations */}
                         <div className="space-y-4 mb-6">
                           <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
+                            <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>F2. Appraiser's Recommendations</h3>
                           </div>
                           <div className="border rounded-lg overflow-hidden">
                             <table className="w-full">
@@ -2001,7 +2001,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         {/* F3: Appraiser Comments */}
                         <div className="space-y-4 mb-6">
                           <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F3. Appraiser Comments</h3>
+                            <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>F3. Appraiser Comments</h3>
                             <Button
                               type="button"
                               variant="outline"
@@ -2076,7 +2076,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
 
                         {/* F4: Seafarer Comments */}
                         <div className="space-y-4">
-                          <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>F4. Seafarer Comments</h3>
+                          <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>F4. Seafarer Comments</h3>
                           <div className="space-y-4">
                             {form.watch("seafarerComments").map((seafarer, index) => (
                               <div key={seafarer.id} className="space-y-2">
@@ -2155,7 +2155,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         {/* G1: Office Review */}
                         <div className="space-y-4 mb-6">
                           <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G1. Office Review</h3>
+                            <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>G1. Office Review</h3>
                             <Button
                               type="button"
                               variant="outline"
@@ -2212,7 +2212,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                         {/* G2: Training Followup */}
                         <div className="space-y-4">
                           <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold" style={{ color: '#16569e' }}>G2. Training Followup</h3>
+                            <h3 className="text-lg font-semibold bg-[#ffffff] p-2 rounded" style={{ color: '#16569e' }}>G2. Training Followup</h3>
                             <div className="flex gap-2">
                               <Button
                                 type="button"
