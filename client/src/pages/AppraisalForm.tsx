@@ -2171,7 +2171,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <div key={review.id} className="space-y-2">
                                 <div className="flex justify-between items-start">
                                   <div className="flex-1">
-                                    <p className="font-medium text-blue-600">
+                                    <p className="font-medium text-[14px]" style={{ color: '#3164f4' }}>
                                       {review.name}, <span className="font-normal italic">{review.position}:</span>
                                     </p>
                                     {editingOfficeReview === review.id ? (
