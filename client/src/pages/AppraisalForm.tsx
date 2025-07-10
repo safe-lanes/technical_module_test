@@ -898,7 +898,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Seafarer's Rank</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
+                                  <SelectTrigger className="bg-[#ffffff]">
                                     <SelectValue placeholder="Select rank" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -933,7 +933,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                                       role="combobox"
                                       aria-expanded={nationalityOpen}
                                       className={cn(
-                                        "w-full justify-between bg-gray-50 border-gray-200 hover:bg-gray-100",
+                                        "w-full justify-between bg-[#ffffff] border-gray-200 hover:bg-gray-100",
                                         !field.value && "text-muted-foreground"
                                       )}
                                     >
@@ -992,7 +992,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Vessel</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
+                                  <SelectTrigger className="bg-[#ffffff]">
                                     <SelectValue placeholder="Select vessel" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -1020,7 +1020,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <FormItem>
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Sign On Date</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="dd/mm/yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="dd/mm/yyyy" type="date" className="bg-[#ffffff]" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1034,7 +1034,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Appraisal Type</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
+                                  <SelectTrigger className="bg-[#ffffff]">
                                     <SelectValue placeholder="Select type" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -1060,7 +1060,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <FormItem>
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Appraisal Period From</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-[#ffffff]" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1073,7 +1073,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <FormItem>
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Appraisal Period To</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-gray-50" />
+                                <Input {...field} placeholder="dd.mm.yyyy" type="date" className="bg-[#ffffff]" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1087,7 +1087,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Primary Appraiser</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
+                                  <SelectTrigger className="bg-[#ffffff]">
                                     <SelectValue placeholder="Select appraiser" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -1113,7 +1113,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Personality Index (PI) Category</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-gray-50">
+                                  <SelectTrigger className="bg-[#ffffff]">
                                     <SelectValue placeholder="Select category" />
                                   </SelectTrigger>
                                 </FormControl>
