@@ -193,6 +193,32 @@ The architecture supports deployment to platforms like Replit, with specific con
 - 1 configured form with rank groups
 - All data sourced from database, no static/mock data
 
+## Standard Form Popup Component
+
+### FormPopup Component
+- **Purpose**: Provides consistent spacing and styling for all form modal popups
+- **Location**: `client/src/components/ui/form-popup.tsx`
+- **Features**:
+  - Equal spacing on all sides (1rem padding via `p-4`)
+  - Consistent modal height calculation: `h-[calc(100vh-2rem)]`
+  - Responsive design for mobile and desktop
+  - Standard close button behavior
+  - Optional title header with close button
+- **Usage**: 
+  ```tsx
+  import { FormPopup } from "@/components/ui/form-popup"
+  
+  <FormPopup title="Form Title" onClose={handleClose}>
+    <FormContent />
+  </FormPopup>
+  ```
+- **Default Styling**: Ensures all future form popups have uniform spacing, eliminating excessive vertical gaps and maintaining visual consistency
+
+### Alternative Components
+- **FormPopupOverlay**: Standalone overlay for custom implementations
+- **FormPopupContent**: Content wrapper with consistent spacing
+- **StandardFormPopup**: Main component (aliased as FormPopup)
+
 ## Changelog
 
 ```
@@ -220,6 +246,7 @@ Changelog:
 - July 09, 2025. **UNIFIED REACT DIALOGS**: Successfully replaced all browser window.confirm() popups with proper React AlertDialog components across both AppraisalForm.tsx and FormEditor.tsx - 12 different delete functions now use consistent "Delete [Item]" / "Are you sure you want to delete..." dialog pattern with Yes/No buttons, improving user experience and maintaining design consistency
 - July 09, 2025. **OPERATIONAL FILTERS**: Implemented fully functional filter system for Crew Appraisals table - added state management for all filter inputs (Search Name, Rank, Vessel Type, Nationality, Appraisal Type, Rating), real-time filtering logic, and Clear button functionality - filters now work immediately as users type or select options, providing dynamic table filtering experience
 - July 09, 2025. **RESPONSIVE FORM EDITOR**: Made Admin Sub-module's Crew Appraisal Form Editor fully responsive and mobile-friendly - enhanced modal dialog structure with responsive sizing (max-w-[95vw] on mobile), mobile-optimized sidebar navigation with collapsible behavior, responsive grid layouts for form sections, horizontal scrolling tables for mobile interaction, mobile-compatible configuration dialogs, and touch-friendly button sizing throughout
+- July 10, 2025. **STANDARDIZED FORM POPUP SPACING**: Created StandardFormPopup component with consistent spacing (p-4 padding, h-[calc(100vh-2rem)] height) for all form modals - fixed excessive vertical spacing in both Admin FormEditor and Crew Appraisal Form popups, ensuring equal spacing on all sides, and established reusable component pattern for future form popup development
 ```
 
 ## User Preferences
