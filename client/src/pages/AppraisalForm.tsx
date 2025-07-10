@@ -884,7 +884,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                             <FormItem>
                               <FormLabel className="text-xs text-gray-500 tracking-wide">Seafarer's Name</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="Enter seafarer's name" className="bg-gray-50" />
+                                <Input {...field} placeholder="Enter seafarer's name" className="bg-[#ffffff]" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
