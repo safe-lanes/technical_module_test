@@ -2019,7 +2019,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                               <div key={appraiser.id} className="space-y-2">
                                 <div className="flex justify-between items-center">
                                   <div>
-                                    <p className="font-medium text-blue-600 text-[14px]">
+                                    <p className="font-medium text-[14px] text-[#3164f4]">
                                       {index === 0 ? form.watch("primaryAppraiser") || "Capt. John Leki, Master (Primary Appraiser)" : `${appraiser.name}, ${appraiser.rank}`}
                                     </p>
                                   </div>
