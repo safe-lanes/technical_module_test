@@ -328,7 +328,7 @@ export const AdminModule = (): JSX.Element => {
                         {forms[0].versionDate}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-3 justify-center">
+                        <div className="flex gap-2 justify-center">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -371,7 +371,7 @@ export const AdminModule = (): JSX.Element => {
                           {form.versionDate}
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-3 justify-center">
+                          <div className="flex gap-2 justify-center">
                             <Button
                               variant="ghost"
                               size="icon"
