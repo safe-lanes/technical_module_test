@@ -403,7 +403,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
     } else if (score >= 2.0) {
       return { bgColor: 'bg-[#f9ecef]', textColor: 'text-[#811f1a]' };
     } else {
-      return { bgColor: 'bg-[#f9ecef]', textColor: 'text-[#811f1a]' };
+      return { bgColor: 'bg-red-600', textColor: 'text-white' };
     }
   };
 

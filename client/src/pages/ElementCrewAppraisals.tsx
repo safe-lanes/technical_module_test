@@ -101,7 +101,8 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     const numRating = parseFloat(rating);
     if (numRating >= 4.0) return "bg-[#c3f2cb] text-[#286e34]"; // Green
     if (numRating >= 3.0) return "bg-[#ffeaa7] text-[#814c02]"; // Yellow
-    return "bg-[#f9ecef] text-[#811f1a]"; // Light Pink
+    if (numRating >= 2.0) return "bg-[#f9ecef] text-[#811f1a]"; // Light Pink
+    return "bg-red-600 text-white"; // Dark Red
   };
 
   // Combine crew member and appraisal data
@@ -210,8 +211,8 @@ export const ElementCrewAppraisals = (): JSX.Element => {
       bgColor = 'bg-[#f9ecef]';
       textColor = 'text-[#811f1a]';
     } else {
-      bgColor = 'bg-[#f9ecef]';
-      textColor = 'text-[#811f1a]';
+      bgColor = 'bg-red-600';
+      textColor = 'text-white';
     }
     
     return (
