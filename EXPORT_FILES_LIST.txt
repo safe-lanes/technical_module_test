@@ -1,41 +1,62 @@
-Essential files to copy to your new Replit project:
+ELEMENT CREW APPRAISALS SYSTEM - EXPORT FILES LIST
 
-CONFIGURATION FILES:
-- package.json
-- tsconfig.json
-- vite.config.ts
-- tailwind.config.ts
-- postcss.config.js
-- drizzle.config.ts
-- components.json
+ESSENTIAL FILES FOR EXPORT:
 
-FRONTEND FILES:
-- client/index.html
-- client/src/main.tsx
-- client/src/App.tsx
-- client/src/index.css
-- client/src/lib/utils.ts
-- client/src/lib/queryClient.ts
-- client/src/hooks/use-toast.ts
-- client/src/hooks/use-mobile.tsx
-- client/src/pages/ElementCrewAppraisals.tsx
-- client/src/pages/not-found.tsx
+ROOT CONFIGURATION:
+- package.json (dependencies and scripts)
+- package-lock.json (exact dependency versions)
+- tsconfig.json (TypeScript configuration)
+- tailwind.config.ts (Tailwind CSS configuration)
+- vite.config.ts (Vite build configuration)
+- drizzle.config.ts (Database configuration)
+- postcss.config.js (PostCSS configuration)
+- components.json (shadcn/ui configuration)
+- environment.example (environment variables template)
 
-UI COMPONENTS (all files in):
-- client/src/components/ui/ (all .tsx files)
+FRONTEND APPLICATION (client/):
+- client/src/App.tsx (main application component)
+- client/src/main.tsx (application entry point)
+- client/src/index.css (global styles and Tailwind)
 
-BACKEND FILES:
-- server/index.ts
-- server/routes.ts
-- server/storage.ts
-- server/vite.ts
+FRONTEND PAGES:
+- client/src/pages/ElementCrewAppraisals.tsx (main crew appraisals page)
+- client/src/pages/AppraisalForm.tsx (crew appraisal form)
+- client/src/pages/AdminModule.tsx (admin configuration)
+- client/src/pages/FormEditor.tsx (form editor with configuration)
 
-SHARED FILES:
-- shared/schema.ts
+FRONTEND COMPONENTS:
+- client/src/components/ui/ (entire directory - shadcn/ui components)
+- client/src/components/ui/form-popup.tsx (standardized form popup)
+- client/src/lib/utils.ts (utility functions)
+- client/src/lib/queryClient.ts (TanStack Query configuration)
+- client/src/hooks/use-toast.ts (toast hook)
+
+BACKEND APPLICATION (server/):
+- server/index.ts (Express server entry point)
+- server/routes.ts (API route definitions)
+- server/storage.ts (storage interface and in-memory implementation)
+- server/database.ts (MySQL database implementation)
+- server/vite.ts (Vite development server integration)
+
+SHARED TYPES:
+- shared/schema.ts (database schema and type definitions)
+
+DATABASE SCRIPTS:
+- scripts/init-db.ts (database initialization)
+- scripts/setup-mysql.ts (MySQL setup script)
 
 DOCUMENTATION:
-- replit.md
-- EXPORT_PACKAGE.md
+- replit.md (project documentation and architecture)
+- EXPORT_PACKAGE.md (export and integration guide)
+- FORM_POPUP_STANDARDS.md (form popup standards)
+- MYSQL_SETUP.md (MySQL setup instructions)
 
-ASSETS (if you have figma assets):
-- client/public/figmaAssets/ (if present)
+OPTIONAL FILES:
+- .gitignore (Git ignore patterns)
+- micro-frontend.config.js (micro frontend configuration)
+
+STATIC ASSETS:
+- Any files in client/public/ (if they exist)
+
+TOTAL ESSENTIAL FILES: ~30-35 files
+The system is completely self-contained with all dependencies specified in package.json.

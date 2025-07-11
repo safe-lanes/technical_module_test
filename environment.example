@@ -1,33 +1,33 @@
+# Element Crew Appraisals System - Environment Variables Template
 
-# Database Configuration for MySQL
-DATABASE_URL=mysql://username:password@localhost:3306/element_crew_appraisals
+# Database Configuration (Primary - MySQL)
+DATABASE_URL="mysql://username:password@host:port/database_name"
 
-# Alternative format for MySQL
-# DATABASE_URL=mysql://username:password@host:port/database_name
+# Alternative MySQL Configuration (if DATABASE_URL not used)
+MYSQL_HOST="localhost"
+MYSQL_PORT="3306"
+MYSQL_USER="your_username"
+MYSQL_PASSWORD="your_password"
+MYSQL_DATABASE="crew_appraisals"
 
-# For Local MySQL Development:
-# DATABASE_URL=mysql://root:password@localhost:3306/element_crew_appraisals
+# Server Configuration
+NODE_ENV="production"
+PORT="5000"
 
-# For PlanetScale (MySQL-compatible):
-# DATABASE_URL=mysql://username:password@hostname.planetscale.com:3306/database_name?sslaccept=strict
+# Session Configuration
+SESSION_SECRET="your-super-secret-session-key-here"
 
-# For AWS RDS MySQL:
-# DATABASE_URL=mysql://username:password@rds-hostname.amazonaws.com:3306/database_name
+# Optional: External API Keys (if needed for future features)
+# STRIPE_SECRET_KEY="sk_test_..."
+# SENDGRID_API_KEY="SG...."
+# TWILIO_ACCOUNT_SID="AC...."
+# TWILIO_AUTH_TOKEN="your-auth-token"
 
-# For Google Cloud SQL MySQL:
-# DATABASE_URL=mysql://username:password@google-cloud-sql-ip:3306/database_name
+# Development Settings (only needed for development)
+# VITE_API_BASE_URL="http://localhost:5000"
+# LOG_LEVEL="debug"
 
-# For Azure Database for MySQL:
-# DATABASE_URL=mysql://username:password@hostname.mysql.database.azure.com:3306/database_name?ssl=true
-
-# Custom MySQL Configuration (Compatible with Angular 19/NestJS stack):
-# DATABASE_URL=mysql://your_username:your_password@your_host:3306/your_database_name
-
-# Micro Frontend Configuration (optional)
-MICRO_FRONTEND_MODE=false
-MICRO_FRONTEND_BASE_PATH=/appraisals
-PARENT_APP_API_BASE=http://localhost:4200/api
-
-# Development
-NODE_ENV=development
-PORT=5000
+# Production Settings
+# CORS_ORIGIN="https://your-domain.com"
+# SECURE_COOKIES="true"
+# TRUST_PROXY="true"

@@ -1,222 +1,185 @@
+# MySQL Database Setup Guide
 
-# MySQL Database Setup for Element Crew Appraisals
+## Prerequisites
+- MySQL 5.7+ or MariaDB 10.2+
+- Node.js 18+ with npm
 
-## MySQL Database Integration
+## Database Setup Steps
 
-This application is built with MySQL as the primary database, designed to integrate seamlessly with your existing Angular 19/NestJS application stack.
-
-## Setup Instructions
-
-### 1. MySQL Database Setup
-
-#### Option A: Local MySQL Installation
-```bash
-# Install MySQL (Ubuntu/Debian)
-sudo apt update
-sudo apt install mysql-server
-
-# Start MySQL service
-sudo systemctl start mysql
-sudo systemctl enable mysql
-
-# Create database and user
-sudo mysql -u root -p
-```
-
+### 1. Create MySQL Database
 ```sql
-CREATE DATABASE element_crew_appraisals;
-CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'your_secure_password';
-GRANT ALL PRIVILEGES ON element_crew_appraisals.* TO 'app_user'@'localhost';
+-- Connect to MySQL as root or admin user
+CREATE DATABASE crew_appraisals CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Create dedicated user (recommended)
+CREATE USER 'crew_admin'@'localhost' IDENTIFIED BY 'secure_password_here';
+GRANT ALL PRIVILEGES ON crew_appraisals.* TO 'crew_admin'@'localhost';
 FLUSH PRIVILEGES;
-EXIT;
 ```
 
-#### Option B: Cloud MySQL Services
-
-**PlanetScale (Recommended for production):**
-```bash
-# Sign up at planetscale.com
-# Create a new database
-# Get connection string from dashboard
-```
-
-**AWS RDS MySQL:**
-```bash
-# Create RDS MySQL instance in AWS console
-# Configure security groups and VPC
-# Get endpoint and credentials
-```
-
-**Google Cloud SQL:**
-```bash
-# Create Cloud SQL MySQL instance
-# Configure authorized networks
-# Get connection details
-```
-
-### 2. Environment Configuration
-
-1. Copy the example environment file:
+### 2. Configure Environment Variables
+Copy `environment.example` to `.env` and update:
 ```bash
 cp environment.example .env
 ```
 
-2. Update the DATABASE_URL with your MySQL connection string:
+Edit `.env`:
 ```env
-DATABASE_URL=mysql://username:password@localhost:3306/element_crew_appraisals
+DATABASE_URL="mysql://crew_admin:secure_password_here@localhost:3306/crew_appraisals"
+SESSION_SECRET="your-unique-session-secret"
+NODE_ENV="production"
+PORT="5000"
 ```
 
-### 3. Database Migration
-
-Run the database migration to create tables:
+### 3. Install Dependencies
 ```bash
-npm run db:push
-```
-
-### 4. Installation and Startup
-
-```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# For production
-npm run build
-npm run start
 ```
 
-## Micro Frontend Integration
-
-### Standalone Mode (Default)
-The application runs as a complete standalone React app with its own routing and state management.
-
-### Micro Frontend Mode
-The application can be consumed as a micro frontend in an Angular host application.
-
-#### Integration Steps:
-
-1. **Build for Micro Frontend:**
+### 4. Initialize Database Schema
 ```bash
-npm run build:micro-frontend
+# Push schema to database (creates tables)
+npm run db:push
+
+# Alternative: Generate and run migrations
+npm run db:generate
+npm run db:migrate
 ```
 
-2. **Host Application Integration (Angular):**
-```typescript
-// In your Angular app
-import { loadRemoteModule } from '@angular-architects/module-federation';
+### 5. Seed Database (Optional)
+The application automatically seeds with sample data on first run.
 
-// Load the micro frontend
-const elementCrewAppraisals = await loadRemoteModule({
-  type: 'module',
-  remoteEntry: 'http://localhost:5000/remoteEntry.js',
-  exposedModule: './App'
-});
-
-// Mount the micro frontend
-const { bootstrap } = elementCrewAppraisals;
-const unmount = bootstrap({
-  apiBaseUrl: 'http://your-api-base',
-  authToken: 'your-jwt-token',
-  onAuthRequired: () => {
-    // Handle authentication
-  }
-}).mount(document.getElementById('micro-frontend-container'));
+### 6. Test Database Connection
+```bash
+npm run dev
 ```
 
-3. **Component-Level Integration:**
-```typescript
-// Mount specific components
-const { bootstrap } = elementCrewAppraisals;
-const unmount = bootstrap().mountComponent(
-  'AppraisalForm', 
-  document.getElementById('appraisal-form-container'),
-  { 
-    apiBaseUrl: 'http://your-api-base',
-    authToken: 'your-jwt-token' 
-  }
-);
-```
+Check console for:
+- ✅ "Database connected successfully"
+- ⚠️ "Falling back to in-memory storage" (indicates connection issue)
 
-### Authentication Integration
+## Database Schema Overview
 
-The micro frontend supports token-based authentication:
+### Tables Created
+1. **users** - User authentication
+   - id (auto-increment)
+   - username (unique)
+   - password (hashed)
 
-```typescript
-// Update authentication token
-window.ElementCrewAppraisals.updateConfig({
-  authToken: 'new-jwt-token'
-});
+2. **forms** - Form configurations
+   - id (auto-increment)
+   - name (form name)
+   - versionNo (version number)
+   - versionDate (version date)
+   - rankGroup (JSON array of rank groups)
 
-// Handle authentication expiry
-window.ElementCrewAppraisals.updateConfig({
-  onAuthRequired: () => {
-    // Redirect to login or refresh token
-    window.location.href = '/login';
-  }
-});
-```
+3. **available_ranks** - Maritime rank definitions
+   - id (auto-increment)
+   - name (rank name)
+   - category (Senior Officers, Junior Officers, Ratings)
 
-### CSS Isolation
+4. **rank_groups** - Configurable rank groupings
+   - id (auto-increment)
+   - formId (foreign key to forms)
+   - name (group name)
+   - ranks (JSON array of rank names)
 
-The micro frontend automatically isolates its styles to prevent conflicts with the host application:
+5. **crew_members** - Crew member profiles
+   - id (string, format: YYYY-MM-DD)
+   - firstName, middleName, lastName
+   - rank, nationality, vesselType
+   - dateOfBirth, placeOfBirth
+   - seamanBookNo, passportNo
+   - dateOfJoining, contractDuration
 
-- All styles are scoped to `.micro-frontend-isolated`
-- CSS variables are contained within the micro frontend
-- No global style pollution
-
-## Database Schema Changes
-
-### Key Changes from PostgreSQL:
-- `serial` replaced with `int AUTO_INCREMENT`
-- Array columns converted to JSON strings
-- PostgreSQL-specific functions removed
-- MySQL-compatible data types used
-
-### Migration Considerations:
-- Existing data needs manual migration
-- Array fields (like `ranks`) are now JSON strings
-- All existing API endpoints remain unchanged
-- CRUD operations work identically
+6. **appraisal_results** - Completed appraisals
+   - id (auto-increment)
+   - crewMemberId (foreign key to crew_members)
+   - formId (foreign key to forms)
+   - appraisalType, vesselType, overallRating
+   - partAData, partBData, partCData, partDData, partEData, partFData, partGData (JSON)
+   - createdAt, updatedAt
 
 ## Troubleshooting
 
-### Database Connection Issues:
-1. Verify MySQL is running: `sudo systemctl status mysql`
-2. Check connection string format
-3. Ensure user has proper permissions
-4. Verify firewall settings
+### Connection Issues
+1. **Check MySQL service status:**
+   ```bash
+   sudo service mysql status
+   # or
+   sudo systemctl status mysql
+   ```
 
-### Micro Frontend Issues:
-1. Check console for Module Federation errors
-2. Verify remote entry URL is accessible
-3. Ensure shared dependencies are compatible
-4. Check authentication token format
+2. **Test connection manually:**
+   ```bash
+   mysql -u crew_admin -p crew_appraisals
+   ```
 
-### Performance Considerations:
-- MySQL performance tuning for production
-- Index optimization for large datasets
-- Connection pooling configuration
-- Query optimization
+3. **Common connection errors:**
+   - `ECONNREFUSED`: MySQL service not running
+   - `Access denied`: Wrong username/password
+   - `Unknown database`: Database doesn't exist
+   - `ETIMEDOUT`: Network/firewall issues
 
-## Development vs Production
+### Schema Issues
+1. **Reset database:**
+   ```bash
+   npm run db:drop
+   npm run db:push
+   ```
 
-### Development:
-- Uses in-memory storage as fallback
-- Hot reloading enabled
-- Debug logging active
+2. **Check table structure:**
+   ```sql
+   USE crew_appraisals;
+   SHOW TABLES;
+   DESCRIBE crew_members;
+   ```
 
-### Production:
-- Requires MySQL database
-- Optimized builds
-- Error handling
-- Security headers
+### Performance Optimization
+1. **Add indexes for frequently queried columns:**
+   ```sql
+   ALTER TABLE crew_members ADD INDEX idx_rank (rank);
+   ALTER TABLE appraisal_results ADD INDEX idx_crew_member (crewMemberId);
+   ALTER TABLE appraisal_results ADD INDEX idx_created_at (createdAt);
+   ```
 
-## Support
+2. **Configure MySQL for production:**
+   ```sql
+   -- In my.cnf or my.ini
+   [mysqld]
+   innodb_buffer_pool_size = 1G
+   query_cache_size = 64M
+   max_connections = 200
+   ```
 
-For issues related to:
-- Database migration: Check MySQL logs
-- Micro frontend: Verify Module Federation setup
-- Authentication: Check token format and expiry
-- Performance: Monitor database queries
+## Security Considerations
+
+1. **Use strong passwords for database users**
+2. **Limit database user privileges to necessary tables only**
+3. **Configure firewall to restrict database access**
+4. **Use SSL/TLS for database connections in production**
+5. **Regular database backups**
+
+## Backup Strategy
+```bash
+# Create backup
+mysqldump -u crew_admin -p crew_appraisals > crew_appraisals_backup.sql
+
+# Restore from backup
+mysql -u crew_admin -p crew_appraisals < crew_appraisals_backup.sql
+```
+
+## Integration with Existing Systems
+
+### Using Existing MySQL Database
+1. Update `shared/schema.ts` to match your table structure
+2. Modify `server/database.ts` connection settings
+3. Update API routes in `server/routes.ts` as needed
+
+### Using Different Database
+1. Install appropriate database driver
+2. Update `drizzle.config.ts` with new database dialect
+3. Modify `server/database.ts` implementation
+4. Update connection configuration
+
+The system is designed to be flexible and can be adapted to various database configurations.
