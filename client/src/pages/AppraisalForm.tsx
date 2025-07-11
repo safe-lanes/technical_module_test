@@ -1587,7 +1587,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
                     <CardContent className="p-6">
                       <div className="pb-4 mb-6">
                         <h3 className="text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part D: Behavioural Assessment (Soft Skills)</h3>
-                        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+                        <div style={{ color: '#16569e' }} className="text-sm">Select the most appropriate rating basis assessment of the specific criterion</div>
                         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
                       </div>
 
