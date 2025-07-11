@@ -99,7 +99,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   // Helper function to get rating color based on value
   const getRatingColor = (rating: string): string => {
     const numRating = parseFloat(rating);
-    if (numRating >= 4.0) return "bg-[#22c55e] text-[#286e34]"; // Green
+    if (numRating >= 4.0) return "bg-[#c3f2cb] text-[#286e34]"; // Green
     if (numRating >= 3.0) return "bg-[#ffeaa7] text-[#814c02]"; // Yellow
     return "bg-[#f9ecef] text-[#811f1a]"; // Light Pink
   };
@@ -201,7 +201,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     let textColor = '';
     
     if (numValue >= 4.0) {
-      bgColor = 'bg-[#22c55e]';
+      bgColor = 'bg-[#c3f2cb]';
       textColor = 'text-[#286e34]';
     } else if (numValue >= 3.0) {
       bgColor = 'bg-[#ffeaa7]';

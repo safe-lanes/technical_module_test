@@ -397,7 +397,7 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   // Helper function to get score colors based on rating value
   const getScoreColors = (score: number) => {
     if (score >= 4.0) {
-      return { bgColor: 'bg-[#22c55e]', textColor: 'text-[#286e34]' };
+      return { bgColor: 'bg-[#c3f2cb]', textColor: 'text-[#286e34]' };
     } else if (score >= 3.0) {
       return { bgColor: 'bg-[#ffeaa7]', textColor: 'text-[#814c02]' };
     } else if (score >= 2.0) {
