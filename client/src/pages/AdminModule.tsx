@@ -27,11 +27,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Form, RankGroup, AvailableRank } from "@shared/schema";
 import { FormEditor } from "./FormEditor";
+import { FormEditorFactory } from "@/components/FormEditorFactory";
+import { formTemplates, createFormEditor } from "@/utils/formEditorGenerator";
 import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,6 +58,10 @@ export const AdminModule = (): JSX.Element => {
   const [editingRankGroup, setEditingRankGroup] = useState<string | null>(null);
   const [isAddRankGroupOpen, setIsAddRankGroupOpen] = useState(false);
   const [selectedFormForRankGroup, setSelectedFormForRankGroup] = useState<string | null>(null);
+  const [showCreateFormDialog, setShowCreateFormDialog] = useState(false);
+  const [newFormName, setNewFormName] = useState("");
+  const [createFormType, setCreateFormType] = useState<"template" | "blank">("template");
+  const [selectedTemplate, setSelectedTemplate] = useState("");
   const queryClient = useQueryClient();
 
   // Fetch forms data from API
@@ -86,6 +99,18 @@ export const AdminModule = (): JSX.Element => {
     },
   });
 
+  const createFormMutation = useMutation({
+    mutationFn: async (data: { name: string; versionNo: string; versionDate: string }) => {
+      return await apiRequest("POST", "/api/forms", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/forms"] });
+      setShowCreateFormDialog(false);
+      setNewFormName("");
+      setSelectedTemplate("");
+    },
+  });
+
   const handleEditClick = (form: Form) => {
     setEditingForm(form);
     setEditingRankGroup("Senior Officers"); // Default to Senior Officers for now
@@ -106,6 +131,32 @@ export const AdminModule = (): JSX.Element => {
         return "Bosun, AB, OS, Oiler, Wiper";
       default:
         return "No ranks assigned";
+    }
+  };
+
+  const handleCreateForm = () => {
+    if (!newFormName.trim()) return;
+    
+    const formData = {
+      name: newFormName.trim(),
+      versionNo: "00",
+      versionDate: new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, '-')
+    };
+    
+    createFormMutation.mutate(formData);
+    
+    // If using a template, generate the form editor
+    if (createFormType === "template" && selectedTemplate) {
+      try {
+        createFormEditor(selectedTemplate);
+        console.log(`Form Editor created for: ${selectedTemplate}`);
+      } catch (error) {
+        console.error("Error creating form editor:", error);
+      }
     }
   };
 
@@ -229,12 +280,22 @@ export const AdminModule = (): JSX.Element => {
         <h1 className="font-['Mulish',Helvetica] font-bold text-black text-[22px] ml-[19px] mr-[19px]">
           Forms Configuration
         </h1>
-        <Button
-          variant="outline"
-          className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2 ml-[19px] mr-[19px]"
-        >
-          <span className="text-sm">Back</span>
-        </Button>
+        <div className="flex items-center gap-2 ml-[19px] mr-[19px]">
+          <Button
+            variant="outline"
+            onClick={() => setShowCreateFormDialog(true)}
+            className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="text-sm">Create Form</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="h-10 border-[#e1e8ed] text-[#16569e] flex items-center gap-2"
+          >
+            <span className="text-sm">Back</span>
+          </Button>
+        </div>
       </div>
 
       {/* Loading state */}
@@ -511,7 +572,8 @@ export const AdminModule = (): JSX.Element => {
 
       {/* Form Editor Modal */}
       {editingForm && (
-        <FormEditor
+        <FormEditorFactory
+          formName={editingForm.name}
           form={editingForm}
           rankGroupName={editingRankGroup}
           onClose={handleCloseEditor}
@@ -521,6 +583,88 @@ export const AdminModule = (): JSX.Element => {
 
       {/* Add Rank Group Dialog */}
       <AddRankGroupDialog />
+
+      {/* Create Form Dialog */}
+      <Dialog open={showCreateFormDialog} onOpenChange={setShowCreateFormDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Form</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <FormLabel>Form Name</FormLabel>
+              <Input
+                value={newFormName}
+                onChange={(e) => setNewFormName(e.target.value)}
+                placeholder="Enter form name"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <FormLabel>Creation Type</FormLabel>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="template"
+                    checked={createFormType === "template"}
+                    onChange={(e) => setCreateFormType(e.target.value as "template" | "blank")}
+                  />
+                  <span>Use Template</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="blank"
+                    checked={createFormType === "blank"}
+                    onChange={(e) => setCreateFormType(e.target.value as "template" | "blank")}
+                  />
+                  <span>Blank Form</span>
+                </label>
+              </div>
+            </div>
+            
+            {createFormType === "template" && (
+              <div className="space-y-2">
+                <FormLabel>Select Template</FormLabel>
+                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(formTemplates).map((templateName) => (
+                      <SelectItem key={templateName} value={templateName}>
+                        {templateName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowCreateFormDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleCreateForm}
+              disabled={
+                !newFormName.trim() || 
+                (createFormType === "template" && !selectedTemplate) ||
+                createFormMutation.isPending
+              }
+            >
+              {createFormMutation.isPending ? "Creating..." : "Create Form"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
