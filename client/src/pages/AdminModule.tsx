@@ -292,10 +292,10 @@ export const AdminModule = (): JSX.Element => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0 ml-2"
+                            className="h-7 w-7 p-0 ml-2 rounded-md hover:bg-gray-100 transition-colors"
                             onClick={() => handleAddRankGroup(formName)}
                           >
-                            <Plus className="h-4 w-4 text-gray-500" />
+                            <Plus className="h-4 w-4 text-gray-600 hover:text-gray-800" />
                           </Button>
                         </div>
                       </TableCell>
@@ -309,9 +309,9 @@ export const AdminModule = (): JSX.Element => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0 ml-2"
+                                  className="h-7 w-7 p-0 ml-2 rounded-md hover:bg-gray-100 transition-colors"
                                 >
-                                  <Eye className="h-4 w-4 text-gray-500" />
+                                  <Eye className="h-4 w-4 text-gray-600 hover:text-gray-800" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -328,14 +328,14 @@ export const AdminModule = (): JSX.Element => {
                         {forms[0].versionDate}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex gap-3 justify-center">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-8 w-8 rounded-md hover:bg-gray-100 transition-colors"
                             onClick={() => handleEditClick(forms[0])}
                           >
-                            <EditIcon className="h-[18px] w-[18px] text-gray-500" />
+                            <EditIcon className="h-[20px] w-[20px] text-gray-600 hover:text-gray-800" />
                           </Button>
                         </div>
                       </TableCell>
@@ -352,9 +352,9 @@ export const AdminModule = (): JSX.Element => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 p-0 ml-2"
+                                    className="h-7 w-7 p-0 ml-2 rounded-md hover:bg-gray-100 transition-colors"
                                   >
-                                    <Eye className="h-4 w-4 text-gray-500" />
+                                    <Eye className="h-4 w-4 text-gray-600 hover:text-gray-800" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -371,14 +371,14 @@ export const AdminModule = (): JSX.Element => {
                           {form.versionDate}
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2 justify-center">
+                          <div className="flex gap-3 justify-center">
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8 rounded-md hover:bg-gray-100 transition-colors"
                               onClick={() => handleEditClick(form)}
                             >
-                              <EditIcon className="h-[18px] w-[18px] text-gray-500" />
+                              <EditIcon className="h-[20px] w-[20px] text-gray-600 hover:text-gray-800" />
                             </Button>
                           </div>
                         </TableCell>

@@ -551,28 +551,28 @@ export const ElementCrewAppraisals = (): JSX.Element => {
                           />
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2 justify-center">
+                          <div className="flex gap-3 justify-center">
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8 rounded-md hover:bg-gray-100 transition-colors"
                             >
-                              <EyeIcon className="h-[18px] w-[18px] text-gray-500" />
+                              <EyeIcon className="h-[20px] w-[20px] text-gray-600 hover:text-gray-800" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8 rounded-md hover:bg-gray-100 transition-colors"
                               onClick={() => handleEditClick(crew)}
                             >
-                              <EditIcon className="h-[18px] w-[18px] text-gray-500" />
+                              <EditIcon className="h-[20px] w-[20px] text-gray-600 hover:text-gray-800" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8 rounded-md hover:bg-gray-100 transition-colors"
                             >
-                              <Trash2Icon className="h-[18px] w-[18px] text-gray-500" />
+                              <Trash2Icon className="h-[20px] w-[20px] text-gray-600 hover:text-gray-800" />
                             </Button>
                           </div>
                         </TableCell>
