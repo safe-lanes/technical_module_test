@@ -99,9 +99,9 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   // Helper function to get rating color based on value
   const getRatingColor = (rating: string): string => {
     const numRating = parseFloat(rating);
-    if (numRating >= 4.0) return "bg-[#286e34] text-white"; // Green
-    if (numRating >= 3.0) return "bg-[#814c02] text-white"; // Orange
-    return "bg-[#811f1a] text-white"; // Red
+    if (numRating >= 4.0) return "bg-[#22c55e] text-[#286e34]"; // Green
+    if (numRating >= 3.0) return "bg-[#ffeaa7] text-[#814c02]"; // Yellow
+    return "bg-[#f9ecef] text-[#811f1a]"; // Light Pink
   };
 
   // Combine crew member and appraisal data
@@ -201,17 +201,17 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     let textColor = '';
     
     if (numValue >= 4.0) {
-      bgColor = 'bg-green-500';
-      textColor = 'text-white';
+      bgColor = 'bg-[#22c55e]';
+      textColor = 'text-[#286e34]';
     } else if (numValue >= 3.0) {
-      bgColor = 'bg-yellow-400';
-      textColor = 'text-black';
+      bgColor = 'bg-[#ffeaa7]';
+      textColor = 'text-[#814c02]';
     } else if (numValue >= 2.0) {
-      bgColor = 'bg-red-200';
-      textColor = 'text-red-800';
+      bgColor = 'bg-[#f9ecef]';
+      textColor = 'text-[#811f1a]';
     } else {
-      bgColor = 'bg-red-600';
-      textColor = 'text-white';
+      bgColor = 'bg-[#f9ecef]';
+      textColor = 'text-[#811f1a]';
     }
     
     return (

@@ -397,13 +397,13 @@ export const AppraisalForm: React.FC<AppraisalFormProps> = ({ crewMember, onClos
   // Helper function to get score colors based on rating value
   const getScoreColors = (score: number) => {
     if (score >= 4.0) {
-      return { bgColor: 'bg-green-500', textColor: 'text-white' };
+      return { bgColor: 'bg-[#22c55e]', textColor: 'text-[#286e34]' };
     } else if (score >= 3.0) {
-      return { bgColor: 'bg-yellow-400', textColor: 'text-black' };
+      return { bgColor: 'bg-[#ffeaa7]', textColor: 'text-[#814c02]' };
     } else if (score >= 2.0) {
-      return { bgColor: 'bg-red-200', textColor: 'text-red-800' };
+      return { bgColor: 'bg-[#f9ecef]', textColor: 'text-[#811f1a]' };
     } else {
-      return { bgColor: 'bg-red-600', textColor: 'text-white' };
+      return { bgColor: 'bg-[#f9ecef]', textColor: 'text-[#811f1a]' };
     }
   };
 
