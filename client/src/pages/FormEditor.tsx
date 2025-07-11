@@ -1754,7 +1754,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
     <div className="space-y-4 sm:space-y-6">
       <div className="pb-3 sm:pb-4 mb-4 sm:mb-6">
         <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: '#16569e' }}>Part {getDynamicSectionLetter('C')}: Competence Assessment (Professional Knowledge & Skills)</h3>
-        <div style={{ color: '#16569e' }} className="text-xs sm:text-sm">Description</div>
+        <div style={{ color: '#16569e' }} className="text-xs sm:text-sm">Select the most appropriate rating basis assessment of the specific criterion</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
@@ -1943,7 +1943,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({ form, rankGroupName, onC
             </Button>
           )}
         </div>
-        <div style={{ color: '#16569e' }} className="text-sm">Description</div>
+        <div style={{ color: '#16569e' }} className="text-sm">Select the most appropriate rating basis assessment of the specific criterion</div>
         <div className="w-full h-0.5 mt-2" style={{ backgroundColor: '#16569e' }}></div>
       </div>
       
