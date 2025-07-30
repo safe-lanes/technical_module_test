@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Switch, Route } from "wouter";
 import { ElementCrewAppraisals } from "./pages/ElementCrewAppraisals";
 import { AdminModule } from "./pages/AdminModule";
+import { TechnicalPMSModule } from "./pages/TechnicalPMSModule";
 import NotFound from "./pages/not-found";
 import { useMicroFrontendConfig } from "./micro-frontend/MicroFrontendWrapper";
 
@@ -22,6 +23,7 @@ function App() {
           <Switch>
             <Route path="/" component={ElementCrewAppraisals} />
             <Route path="/admin" component={AdminModule} />
+            <Route path="/technical-pms" component={TechnicalPMSModule} />
             <Route component={NotFound} />
           </Switch>
           <Toaster />
@@ -37,6 +39,7 @@ function App() {
         <Switch>
           <Route path="/" component={ElementCrewAppraisals} />
           <Route path="/admin" component={AdminModule} />
+          <Route path="/technical-pms" component={TechnicalPMSModule} />
           <Route component={NotFound} />
         </Switch>
         <Toaster />

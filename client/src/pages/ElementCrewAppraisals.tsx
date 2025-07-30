@@ -51,7 +51,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   const [selectedCrewMember, setSelectedCrewMember] = useState<CrewAppraisalData | null>(null);
   const [showAppraisalForm, setShowAppraisalForm] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  
+
   // Filter state
   const [filters, setFilters] = useState({
     searchName: "",
@@ -108,7 +108,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   // Combine crew member and appraisal data
   const allCrewData: CrewAppraisalData[] = crewMembers.map((crewMember) => {
     const appraisal = appraisalResults.find(ar => ar.crewMemberId === crewMember.id);
-    
+
     return {
       id: crewMember.id,
       name: {
@@ -142,37 +142,37 @@ export const ElementCrewAppraisals = (): JSX.Element => {
   // Filter crew data based on filter state
   const crewData = allCrewData.filter((crew) => {
     const fullName = `${crew.name.first} ${crew.name.middle} ${crew.name.last}`.toLowerCase();
-    
+
     // Name search filter
     if (filters.searchName && !fullName.includes(filters.searchName.toLowerCase())) {
       return false;
     }
-    
+
     // Rank filter
     if (filters.rank && crew.rank.toLowerCase() !== filters.rank.toLowerCase()) {
       return false;
     }
-    
+
     // Vessel filter
     if (filters.vessel && crew.vessel.toLowerCase() !== filters.vessel.toLowerCase()) {
       return false;
     }
-    
+
     // Vessel type filter
     if (filters.vesselType && crew.vesselType.toLowerCase() !== filters.vesselType.toLowerCase()) {
       return false;
     }
-    
+
     // Nationality filter
     if (filters.nationality && crew.nationality.toLowerCase() !== filters.nationality.toLowerCase()) {
       return false;
     }
-    
+
     // Appraisal type filter
     if (filters.appraisalType && crew.appraisalType.toLowerCase() !== filters.appraisalType.toLowerCase()) {
       return false;
     }
-    
+
     // Rating filter
     if (filters.rating && crew.overallRating.value !== "N/A") {
       const rating = parseFloat(crew.overallRating.value);
@@ -180,7 +180,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
       if (filters.rating === "medium" && (rating < 3.0 || rating >= 4.0)) return false;
       if (filters.rating === "low" && rating >= 3.0) return false;
     }
-    
+
     return true;
   });
 
@@ -200,7 +200,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
     const formattedValue = numValue.toFixed(1);
     let bgColor = '';
     let textColor = '';
-    
+
     if (numValue >= 4.0) {
       bgColor = 'bg-[#c3f2cb]';
       textColor = 'text-[#286e34]';
@@ -214,7 +214,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
       bgColor = 'bg-red-600';
       textColor = 'text-white';
     }
-    
+
     return (
       <Badge className={`rounded-md px-2.5 py-1 font-bold ${bgColor} ${textColor} min-w-[48px] text-center`}>
         {formattedValue}
@@ -310,7 +310,7 @@ export const ElementCrewAppraisals = (): JSX.Element => {
               All
             </div>
           </div>
-          
+
           {/* Dark blue section */}
           <div className="w-full h-[calc(100%-79px)] bg-[#16569e]">
           </div>
