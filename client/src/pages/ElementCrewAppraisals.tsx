@@ -6,7 +6,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { AppraisalForm } from "./AppraisalForm";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CrewMember, AppraisalResult } from "@shared/schema";
+import { ModuleNavigator } from "@/components/ModuleNavigator";
 
 // Interface for combined crew member and appraisal data
 interface CrewAppraisalData {
@@ -48,9 +49,23 @@ interface CrewAppraisalData {
 }
 
 export const ElementCrewAppraisals = (): JSX.Element => {
+  const [location, navigate] = useLocation();
   const [selectedCrewMember, setSelectedCrewMember] = useState<CrewAppraisalData | null>(null);
   const [showAppraisalForm, setShowAppraisalForm] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+
+  const handleModuleChange = (moduleId: string) => {
+    switch (moduleId) {
+      case "crewing":
+        navigate("/");
+        break;
+      case "technical-pms":
+        navigate("/technical-pms");
+        break;
+      default:
+        navigate("/");
+    }
+  };
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -239,6 +254,14 @@ export const ElementCrewAppraisals = (): JSX.Element => {
 
             {/* Navigation Menu */}
             <nav className="flex ml-8">
+              {/* Module Navigator */}
+              <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8] border-r border-gray-300">
+                <ModuleNavigator 
+                  currentModule="crewing" 
+                  onModuleChange={handleModuleChange}
+                />
+              </div>
+
               {/* Crewing Section */}
               <div className="flex flex-col items-center justify-center w-[100px] h-[67px] bg-[#E8E8E8] border-r border-gray-300">
                 <div className="w-6 h-6 mb-1">

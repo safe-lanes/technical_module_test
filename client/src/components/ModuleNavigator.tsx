@@ -44,15 +44,14 @@ export function ModuleNavigator({ currentModule, onModuleChange }: ModuleNavigat
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowModuleDialog(true)}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-      >
-        <Grid3X3 className="h-4 w-4" />
-        <span className="hidden sm:inline">Modules</span>
-      </Button>
+      <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => setShowModuleDialog(true)}>
+        <div className="w-6 h-6 mb-1">
+          <Grid3X3 className="h-6 w-6 text-[#4f5863]" />
+        </div>
+        <div className="text-[#4f5863] text-[10px] font-normal font-['Mulish',Helvetica]">
+          Modules
+        </div>
+      </div>
 
       <Dialog open={showModuleDialog} onOpenChange={setShowModuleDialog}>
         <DialogContent className="sm:max-w-md">
