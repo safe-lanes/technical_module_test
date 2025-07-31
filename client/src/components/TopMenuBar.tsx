@@ -9,6 +9,7 @@ import {
   Settings 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import sailLogoPath from "@assets/SAIL logo Transparent_1753957135582.png";
 
 interface TopMenuBarProps {
   selectedSubModule: string;
@@ -56,6 +57,18 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
   return (
     <div className="bg-white border-b border-gray-200 shadow-sm relative">
       <div className="flex items-stretch h-16 bg-[#fafafa]">
+        {/* SAIL Logo */}
+        <div className="flex items-center px-4">
+          <img 
+            src={sailLogoPath} 
+            alt="SAIL Logo" 
+            className="h-8 w-auto"
+          />
+        </div>
+        
+        {/* Spacer to push module selector to the right */}
+        <div className="w-8"></div>
+        
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isSelected = item.id === selectedSubModule;
