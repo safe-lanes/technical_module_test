@@ -54,7 +54,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="bg-white border-b border-gray-200 shadow-sm relative">
       <div className="flex items-stretch h-16 bg-[#fafafa]">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -92,6 +92,8 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
           );
         })}
       </div>
+      {/* Blue line at bottom border matching SAIL Phase 2 design */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#52baf3]" />
     </div>
   );
 };
