@@ -27,13 +27,6 @@ export function ModuleNavigator({ currentModule, onModuleChange }: ModuleNavigat
       icon: <BarChart3 className="h-5 w-5" />,
       description: "Crew management and appraisals",
       available: true
-    },
-    {
-      id: "technical-pms",
-      name: "Technical (PMS)",
-      icon: <Grid3X3 className="h-5 w-5" />,
-      description: "Planned Maintenance System",
-      available: true
     }
   ];
 
