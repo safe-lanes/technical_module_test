@@ -22,11 +22,18 @@ export function ModuleNavigator({ currentModule, onModuleChange }: ModuleNavigat
 
   const modules: Module[] = [
     {
+      id: "technical-pms",
+      name: "Technical (PMS)",
+      icon: <BarChart3 className="h-5 w-5" />,
+      description: "Planned Maintenance System",
+      available: true
+    },
+    {
       id: "crewing",
       name: "Crewing",
       icon: <BarChart3 className="h-5 w-5" />,
       description: "Crew management and appraisals",
-      available: true
+      available: false
     }
   ];
 

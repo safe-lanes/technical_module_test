@@ -1,8 +1,8 @@
-# Element Crew Appraisals System
+# Seafarer Technical Management System
 
 ## Overview
 
-This is a full-stack web application for managing crew appraisals in the maritime industry. The application is built with a React frontend using TypeScript and modern UI components, backed by an Express.js server with PostgreSQL database integration. The system appears to be designed for tracking and managing crew member performance evaluations across different vessels.
+This is a full-stack Technical Module for maritime Planned Maintenance System (PMS). The application is built with a React frontend using TypeScript and modern UI components, backed by an Express.js server with in-memory storage for development. The system is designed for managing technical equipment maintenance, scheduling, and performance tracking for maritime professionals.
 
 ## System Architecture
 
@@ -31,10 +31,10 @@ The application follows a modern full-stack architecture with clear separation b
 - **Middleware**: Custom logging middleware for API request tracking
 
 ### Database Schema
-The application uses a simple user-based schema with:
-- Users table with id, username, and password fields
-- Drizzle ORM for type-safe database operations
-- Migration support through drizzle-kit
+The application uses a simplified schema focused on Technical Module needs:
+- Users table with id, username, and password fields for authentication
+- In-memory storage for development phase
+- Clean slate for implementing PMS-specific data models
 
 ## Data Flow
 
@@ -44,26 +44,21 @@ The application uses a simple user-based schema with:
 4. **Response Handling**: TanStack Query manages response caching and error states
 5. **UI Updates**: React components re-render based on query state changes
 
-## Crew Appraisals Data Population
+## Technical Module Architecture
 
-### Table Data Source
-- **Primary Source**: Data populated from submitted appraisal forms
-- **One-to-One Relationship**: Each table row corresponds to one completed appraisal form
-- **Auto-populated Fields**:
-  - **Crew ID**: Auto-populated from database based on selected crew member name
-  - **Vessel Type**: Auto-populated from database based on selected vessel
-- **Form-derived Fields**: All other fields populated from form submission data
+### Core Features
+- **PMS Dashboard**: Overview of maintenance tasks, equipment status, and system metrics
+- **Equipment Management**: Track and manage technical equipment across vessels
+- **Maintenance Scheduling**: Plan and schedule preventive and corrective maintenance
+- **Task Management**: Create, assign, and track maintenance tasks
+- **Reporting System**: Generate maintenance reports and performance analytics
+- **Admin Module**: Configure system settings, user roles, and data management
 
-### Filter Functionality
-- **Toggle Behavior**: Filters button shows/hides the filter row
-- **Filter Types Available**:
-  - Name search (text input)
-  - Rank selection
-  - Vessel type selection
-  - Nationality selection
-  - Appraisal type selection
-  - Rating range selection
-- **Filter Actions**: Apply and Clear buttons to manage filter state
+### Module Structure
+- **Technical Dashboard**: Main landing page with system overview and quick actions
+- **Technical Admin Module**: Comprehensive administration interface for system configuration
+- **Module Navigator**: Seamless switching between Technical and Crewing modules
+- **Responsive Design**: Mobile-first approach with adaptive UI components
 
 ## External Dependencies
 
