@@ -78,7 +78,7 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
             onClick={() => onItemSelect?.(item.id)}
             className={cn(
               "w-14 h-14 mb-4 rounded-lg flex flex-col items-center justify-center transition-all duration-200",
-              isSelected ? "bg-[#1d4ed8]" : "hover:bg-[#1d4ed8]",
+              isSelected ? "bg-[#52baf3]" : "hover:bg-[#1d4ed8]",
               "group relative"
             )}
           >
