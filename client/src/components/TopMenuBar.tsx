@@ -68,7 +68,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
                 "flex flex-col items-center justify-center px-6 min-w-[100px] transition-all duration-200 relative",
                 "hover:bg-gray-50",
                 item.isModule && "bg-gray-50 border-r border-gray-200",
-                isSelected && !item.isModule && "bg-[#3b82f6] text-white hover:bg-[#2563eb]",
+                isSelected && !item.isModule && "bg-[#52baf3] text-white hover:bg-[#52baf3]",
                 !isSelected && !item.isModule && "text-gray-600 hover:text-gray-900"
               )}
               disabled={item.isModule}
