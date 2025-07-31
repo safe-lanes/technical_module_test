@@ -55,7 +55,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
 
   return (
     <div className="bg-white border-b border-gray-200 shadow-sm">
-      <div className="flex items-stretch h-16">
+      <div className="flex items-stretch h-16 bg-[#fafafa]">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isSelected = item.id === selectedSubModule;
