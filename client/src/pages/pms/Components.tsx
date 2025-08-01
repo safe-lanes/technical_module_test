@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, ChevronRight, ChevronDown, Edit2 } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit2, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -477,6 +477,29 @@ const SparesSection: React.FC = () => {
   );
 };
 
+const DrawingsAndManualsSection: React.FC = () => {
+  const documents = [
+    { name: "Equipment Drawing", icon: FileText },
+    { name: "Installation Guide", icon: FileText },
+    { name: "Maintenance Manual", icon: FileText },
+    { name: "Trouble shooting Guide", icon: FileText }
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {documents.map((doc, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer rounded-md"
+        >
+          <doc.icon className="h-5 w-5 text-gray-600" />
+          <span className="text-sm text-gray-700">{doc.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -673,6 +696,8 @@ const Components: React.FC = () => {
                             <MaintenanceHistorySection />
                           ) : section.id === "E" ? (
                             <SparesSection />
+                          ) : section.id === "F" ? (
+                            <DrawingsAndManualsSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
