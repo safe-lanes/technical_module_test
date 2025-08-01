@@ -413,6 +413,70 @@ const MaintenanceHistorySection: React.FC = () => {
   );
 };
 
+const SparesSection: React.FC = () => {
+  const spares = [
+    {
+      partCode: "SP-ME-001",
+      partName: "Fuel Injector",
+      critical: "Critical",
+      rob: "2",
+      min: "1",
+      stock: "OK",
+      location: "Store Room A"
+    },
+    {
+      partCode: "SP-ME-002",
+      partName: "Cylinder Head Gasket",
+      critical: "",
+      rob: "2",
+      min: "1",
+      stock: "OK",
+      location: "Store Room B"
+    }
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Part Code</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Part Name</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Critical</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">ROB</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Min</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Stock</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {spares.map((spare, index) => (
+            <tr key={index} className="border-b border-gray-100">
+              <td className="py-3 px-3 text-gray-900">{spare.partCode}</td>
+              <td className="py-3 px-3 text-gray-900">{spare.partName}</td>
+              <td className="py-3 px-3">
+                {spare.critical && (
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
+                    {spare.critical}
+                  </span>
+                )}
+              </td>
+              <td className="py-3 px-3 text-gray-900">{spare.rob}</td>
+              <td className="py-3 px-3 text-gray-900">{spare.min}</td>
+              <td className="py-3 px-3">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {spare.stock}
+                </span>
+              </td>
+              <td className="py-3 px-3 text-gray-900">{spare.location}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -607,6 +671,8 @@ const Components: React.FC = () => {
                             <WorkOrdersSection />
                           ) : section.id === "D" ? (
                             <MaintenanceHistorySection />
+                          ) : section.id === "E" ? (
+                            <SparesSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
