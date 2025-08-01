@@ -305,6 +305,64 @@ const RunningHoursConditionSection: React.FC = () => {
   );
 };
 
+const WorkOrdersSection: React.FC = () => {
+  const workOrders = [
+    {
+      woNo: "WO-2025-03",
+      jobTitle: "Main Engine Overhaul - Replace Main Bearings",
+      assignedTo: "Chief Engineer",
+      dueDate: "02-Jun-2025",
+      status: "Due",
+      dateCompleted: ""
+    },
+    {
+      woNo: "WO-2025-03",
+      jobTitle: "Main Engine Overhaul - Replace Main Bearings",
+      assignedTo: "Chief Engineer",
+      dueDate: "02-Jun-2025",
+      status: "Due (Grace P)",
+      dateCompleted: ""
+    }
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">W.O No.</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Job Title</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Due Date</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {workOrders.map((order, index) => (
+            <tr key={index} className="border-b border-gray-100">
+              <td className="py-3 px-3 text-gray-900">{order.woNo}</td>
+              <td className="py-3 px-3 text-gray-900">{order.jobTitle}</td>
+              <td className="py-3 px-3 text-gray-900">{order.assignedTo}</td>
+              <td className="py-3 px-3 text-gray-900">{order.dueDate}</td>
+              <td className="py-3 px-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  order.status === "Due" 
+                    ? "bg-yellow-100 text-yellow-800" 
+                    : "bg-yellow-100 text-yellow-800"
+                }`}>
+                  {order.status}
+                </span>
+              </td>
+              <td className="py-3 px-3 text-gray-900">{order.dateCompleted}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -495,6 +553,8 @@ const Components: React.FC = () => {
                             <ComponentInformationSection isExpanded={isExpanded} />
                           ) : section.id === "B" ? (
                             <RunningHoursConditionSection />
+                          ) : section.id === "C" ? (
+                            <WorkOrdersSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
