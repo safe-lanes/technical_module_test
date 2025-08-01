@@ -255,27 +255,25 @@ const Components: React.FC = () => {
                 <div className="space-y-2">
                   {formSections.map((section) => (
                     <Collapsible key={section.id}>
-                      <CollapsibleTrigger className="w-full">
-                        <Card className="cursor-pointer hover:bg-gray-100">
-                          <CardHeader className="py-3">
+                      <Card className="rounded-sm border border-gray-200">
+                        <CollapsibleTrigger className="w-full">
+                          <CardHeader className="py-3 cursor-pointer hover:bg-gray-50">
                             <div className="flex items-center justify-between">
-                              <CardTitle className="text-sm font-medium">
+                              <CardTitle className="text-sm font-medium text-[#16569e]">
                                 {section.id}. {section.title}
                               </CardTitle>
                               <ChevronRight className="h-4 w-4" />
                             </div>
                           </CardHeader>
-                        </Card>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <Card className="mt-1">
-                          <CardContent className="pt-4">
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <CardContent className="pt-4 border-t border-gray-100">
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
                             </p>
                           </CardContent>
-                        </Card>
-                      </CollapsibleContent>
+                        </CollapsibleContent>
+                      </Card>
                     </Collapsible>
                   ))}
                 </div>
