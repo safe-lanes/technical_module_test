@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Switch, Route } from "wouter";
 import { TechnicalModule } from "./pages/TechnicalModule";
+import Components from "./pages/pms/Components";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
@@ -13,6 +14,7 @@ function App() {
       <TooltipProvider>
         <Switch>
           <Route path="/" component={TechnicalModule} />
+          <Route path="/pms/components" component={Components} />
           <Route component={NotFound} />
         </Switch>
         <Toaster />

@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { SideMenuBar } from "@/components/SideMenuBar";
+import { useLocation } from "wouter";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
   const [selectedMenuItem, setSelectedMenuItem] = useState("dashboard");
+  const [location, setLocation] = useLocation();
 
   const handleSubModuleChange = (subModule: string) => {
     setSelectedSubModule(subModule);
     setSelectedMenuItem("dashboard"); // Reset to dashboard when changing submodule
+  };
+
+  const handleMenuItemSelect = (item: string) => {
+    setSelectedMenuItem(item);
+    
+    // Navigate to Components page when components is selected
+    if (selectedSubModule === "pms" && item === "components") {
+      setLocation("/pms/components");
+    }
   };
 
   return (
@@ -24,7 +35,7 @@ export const TechnicalModule: React.FC = () => {
         <SideMenuBar 
           subModule={selectedSubModule}
           selectedItem={selectedMenuItem}
-          onItemSelect={setSelectedMenuItem}
+          onItemSelect={handleMenuItemSelect}
         />
         
         {/* Main Content Area */}

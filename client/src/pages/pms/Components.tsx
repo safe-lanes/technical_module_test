@@ -1,0 +1,258 @@
+import React, { useState } from "react";
+import { Search, ChevronRight, ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+interface ComponentNode {
+  id: string;
+  code: string;
+  name: string;
+  children?: ComponentNode[];
+  isExpanded?: boolean;
+}
+
+const dummyComponents: ComponentNode[] = [
+  {
+    id: "1",
+    code: "1",
+    name: "Ship General",
+    children: []
+  },
+  {
+    id: "2", 
+    code: "2",
+    name: "Hull",
+    children: []
+  },
+  {
+    id: "3",
+    code: "3", 
+    name: "Equipment for Cargo",
+    children: []
+  },
+  {
+    id: "4",
+    code: "4",
+    name: "Ship's Equipment",
+    children: []
+  },
+  {
+    id: "5",
+    code: "5",
+    name: "Equipment for Crew & Passengers",
+    children: []
+  },
+  {
+    id: "6",
+    code: "6",
+    name: "Machinery Main Components",
+    isExpanded: true,
+    children: [
+      {
+        id: "6.1",
+        code: "60",
+        name: "Diesel Engines for Propulsion",
+        children: [
+          {
+            id: "6.1.1",
+            code: "601",
+            name: "Diesel Engines",
+            children: [
+              {
+                id: "6.1.1.1",
+                code: "601.001",
+                name: "Main Diesel Engines"
+              },
+              {
+                id: "6.1.1.2",
+                code: "601.002",
+                name: "ME cylinder covers w/ valves"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "7",
+    code: "7",
+    name: "Systems for Machinery Main Components",
+    children: []
+  },
+  {
+    id: "8",
+    code: "8",
+    name: "Ship Common Systems",
+    children: []
+  }
+];
+
+const Components: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
+
+  const toggleNode = (nodeId: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
+    return nodes.map((node) => {
+      const hasChildren = node.children && node.children.length > 0;
+      const isExpanded = expandedNodes.has(node.id);
+      const isSelected = selectedComponent?.id === node.id;
+
+      return (
+        <div key={node.id}>
+          <div
+            className={`flex items-center px-2 py-1 cursor-pointer hover:bg-gray-100 ${
+              isSelected ? "bg-blue-100" : ""
+            }`}
+            style={{ paddingLeft: `${level * 20 + 8}px` }}
+            onClick={() => setSelectedComponent(node)}
+          >
+            {hasChildren && (
+              <button
+                className="mr-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNode(node.id);
+                }}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+            )}
+            {!hasChildren && <span className="mr-5" />}
+            <span className="text-sm">
+              {node.code}. {node.name}
+            </span>
+          </div>
+          {hasChildren && isExpanded && (
+            <div>{renderComponentTree(node.children!, level + 1)}</div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  const formSections = [
+    { id: "A", title: "Component Information" },
+    { id: "B", title: "Running Hours & Condition Monitoring" },
+    { id: "C", title: "Work Orders" },
+    { id: "D", title: "Maintenance History" },
+    { id: "E", title: "Spares" },
+    { id: "F", title: "Drawings & Manuals" },
+    { id: "G", title: "Classification & Regulatory Data" },
+    { id: "H", title: "Requisitions" }
+  ];
+
+  return (
+    <div className="flex h-full">
+      {/* Left Panel - Component Tree */}
+      <div className="w-1/2 border-r bg-white">
+        <div className="p-4 border-b">
+          <h2 className="text-lg font-semibold mb-3">Component Register</h2>
+          <div className="flex gap-2 mb-3">
+            <Input
+              placeholder="Search Components..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1"
+            />
+            <Select defaultValue="all">
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Critical Item" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Items</SelectItem>
+                <SelectItem value="critical">Critical Only</SelectItem>
+                <SelectItem value="non-critical">Non-Critical</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button className="w-full bg-[#52baf3] hover:bg-[#40a8e0] text-white">
+            + Add Edit Component
+          </Button>
+        </div>
+        <div className="p-2 overflow-auto" style={{ height: "calc(100% - 160px)" }}>
+          <div className="bg-[#52baf3] text-white px-2 py-1 font-semibold text-sm">
+            COMPONENTS
+          </div>
+          {renderComponentTree(dummyComponents)}
+        </div>
+      </div>
+
+      {/* Right Panel - Component Details Form */}
+      <div className="w-1/2 bg-gray-50 overflow-auto">
+        {selectedComponent ? (
+          <div className="p-4">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">
+                {selectedComponent.code}. {selectedComponent.name}
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {formSections.map((section) => (
+                <Collapsible key={section.id}>
+                  <CollapsibleTrigger className="w-full">
+                    <Card className="cursor-pointer hover:bg-gray-100">
+                      <CardHeader className="py-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm font-medium">
+                            {section.id}. {section.title}
+                          </CardTitle>
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <Card className="mt-1">
+                      <CardContent className="pt-4">
+                        <p className="text-sm text-gray-500">
+                          {section.title} content will be added here
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </CollapsibleContent>
+                </Collapsible>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            Select a component to view details
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Components;
