@@ -363,6 +363,56 @@ const WorkOrdersSection: React.FC = () => {
   );
 };
 
+const MaintenanceHistorySection: React.FC = () => {
+  const maintenanceHistory = [
+    {
+      title: "Main Engine Overhaul - Replace Main bearings",
+      workOrderNo: "WO-2025-001",
+      assignedTo: "2nd Eng",
+      status: "Completed",
+      dateCompleted: "02-Jun-2025"
+    },
+    {
+      title: "Main Engine - Replace Piston Rings",
+      workOrderNo: "WO-2024-013",
+      assignedTo: "2nd Eng",
+      status: "Completed",
+      dateCompleted: "02-Feb-2025"
+    }
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Work Order No</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {maintenanceHistory.map((record, index) => (
+            <tr key={index} className="border-b border-gray-100">
+              <td className="py-3 px-3 text-gray-900">{record.title}</td>
+              <td className="py-3 px-3 text-gray-900">{record.workOrderNo}</td>
+              <td className="py-3 px-3 text-gray-900">{record.assignedTo}</td>
+              <td className="py-3 px-3">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {record.status}
+                </span>
+              </td>
+              <td className="py-3 px-3 text-gray-900">{record.dateCompleted}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -555,6 +605,8 @@ const Components: React.FC = () => {
                             <RunningHoursConditionSection />
                           ) : section.id === "C" ? (
                             <WorkOrdersSection />
+                          ) : section.id === "D" ? (
+                            <MaintenanceHistorySection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
