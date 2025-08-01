@@ -130,7 +130,7 @@ const ComponentInformationSection: React.FC = () => {
       {/* Always visible first 2 rows */}
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-medium text-blue-600 block mb-1">Maker</label>
+          <label className="text-xs font-medium block mb-1 text-[#8798ad]">Maker</label>
           <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
             {componentData.maker}
           </div>
@@ -154,7 +154,6 @@ const ComponentInformationSection: React.FC = () => {
           </div>
         </div>
       </div>
-
       <div className="grid grid-cols-4 gap-4">
         <div>
           <label className="text-xs font-medium text-blue-600 block mb-1">Component Code</label>
@@ -181,7 +180,6 @@ const ComponentInformationSection: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Expandable section toggle */}
       <button
         onClick={() => setShowMoreDetails(!showMoreDetails)}
@@ -199,7 +197,6 @@ const ComponentInformationSection: React.FC = () => {
           </>
         )}
       </button>
-
       {/* Additional details - only visible when expanded */}
       {showMoreDetails && (
         <div className="space-y-4 pt-4 border-t border-gray-200">
