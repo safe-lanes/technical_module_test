@@ -2,254 +2,49 @@
 
 ## Overview
 
-This is a full-stack Technical Module for maritime Planned Maintenance System (PMS). The application is built with a React frontend using TypeScript and modern UI components, backed by an Express.js server with in-memory storage for development. The system is designed for managing technical equipment maintenance, scheduling, and performance tracking for maritime professionals.
-
-## System Architecture
-
-The application follows a modern full-stack architecture with clear separation between frontend and backend:
-
-- **Frontend**: React 18 with TypeScript, using Vite as the build tool
-- **Backend**: Express.js server with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
-- **UI Framework**: Tailwind CSS with shadcn/ui component library
-- **State Management**: TanStack Query for server state management
-- **Routing**: Wouter for client-side routing
-
-## Key Components
-
-### Frontend Architecture
-- **Component Library**: Extensive use of shadcn/ui components providing a consistent design system
-- **Styling**: Tailwind CSS with CSS variables for theming support
-- **Forms**: React Hook Form with Zod validation
-- **Data Fetching**: TanStack Query for efficient server state management
-- **Icons**: Lucide React for consistent iconography
-
-### Backend Architecture
-- **API Server**: Express.js with TypeScript for type safety
-- **Database Layer**: Drizzle ORM with PostgreSQL dialect
-- **Development Setup**: In-memory storage fallback for development
-- **Middleware**: Custom logging middleware for API request tracking
-
-### Database Schema
-The application uses a simplified schema focused on Technical Module needs:
-- Users table with id, username, and password fields for authentication
-- In-memory storage for development phase
-- Clean slate for implementing PMS-specific data models
-
-## Data Flow
-
-1. **Client Requests**: Frontend makes API calls to `/api/*` endpoints
-2. **Server Processing**: Express server handles requests with custom middleware
-3. **Data Storage**: Storage interface abstracts database operations
-4. **Response Handling**: TanStack Query manages response caching and error states
-5. **UI Updates**: React components re-render based on query state changes
-
-## Technical Module Architecture
-
-### Core Features
-- **PMS Dashboard**: Overview of maintenance tasks, equipment status, and system metrics
-- **Equipment Management**: Track and manage technical equipment across vessels
-- **Maintenance Scheduling**: Plan and schedule preventive and corrective maintenance
-- **Task Management**: Create, assign, and track maintenance tasks
-- **Reporting System**: Generate maintenance reports and performance analytics
-- **Admin Module**: Configure system settings, user roles, and data management
-
-### Module Structure
-- **Technical Dashboard**: Main landing page with system overview and quick actions
-- **Technical Admin Module**: Comprehensive administration interface for system configuration
-- **Module Navigator**: Seamless switching between Technical and Crewing modules
-- **Responsive Design**: Mobile-first approach with adaptive UI components
-
-## External Dependencies
-
-### Frontend Dependencies
-- **@radix-ui/***: Accessible UI primitive components
-- **@tanstack/react-query**: Server state management
-- **wouter**: Lightweight routing solution
-- **tailwindcss**: Utility-first CSS framework
-- **lucide-react**: Icon library
-
-### Backend Dependencies
-- **express**: Web application framework
-- **drizzle-orm**: Type-safe ORM
-- **@neondatabase/serverless**: Neon PostgreSQL driver
-- **connect-pg-simple**: PostgreSQL session store
-
-### Development Dependencies
-- **vite**: Fast build tool and dev server
-- **typescript**: Type checking and compilation
-- **drizzle-kit**: Database migration tool
-
-## Deployment Strategy
-
-The application is configured for modern deployment with:
-
-- **Build Process**: Vite builds the frontend, esbuild bundles the backend
-- **Environment**: Supports both development and production modes
-- **Database**: Configured for PostgreSQL with environment variable connection
-- **Static Assets**: Frontend builds to `dist/public` for serving
-- **Process Management**: Separate dev and production start scripts
-
-The architecture supports deployment to platforms like Replit, with specific configurations for development tooling and runtime error handling in the Replit environment.
-
-## Admin Module
-
-### Architecture
-- **Route**: `/admin` - dedicated admin submodule
-- **Navigation**: Clickable Admin menu item in top navigation bar
-- **Left Sidebar**: Contains multiple admin function icons (Forms currently implemented)
-- **Default View**: Opens Forms configuration by default when accessing admin
-
-### Forms Configuration
-- **Purpose**: Configure various forms used across other sub-modules
-- **Data Model**: Forms table with id, name, versionNo, versionDate fields
-- **UI Components**: Reuses exact same table components as Appraisals module
-- **API Endpoints**: Full CRUD operations at `/api/forms`
-- **Features**:
-  - Table view with Form, Version No, Version Date columns
-  - Edit button opens form configuration editor modal
-  - Loading states and error handling
-  - Pagination display
-  - Consistent styling with Appraisals table
-
-### Form Editor Modal
-- **Purpose**: Customize crew appraisal forms for different configurations
-- **Structure**: Exact copy of crew appraisal form (Parts A-G) from appraisal section
-- **Version Control**: 
-  - Initial version starts at Version 0
-  - Subsequent versions will have version number and date tracking
-- **Parts Include**:
-  - Part A: Seafarer's Information
-  - Part B: Information at Start of Appraisal Period  
-  - Part C: Competence Assessment (Professional Knowledge & Skills)
-  - Part D: Behavioural Assessment (Soft Skills)
-  - Part E: Training Needs & Development
-  - Part F: Summary & Recommendations
-  - Part G: Office Review & Followup
-- **UI Features**:
-  - Left sidebar navigation between form sections
-  - Modal overlay design
-  - Save draft functionality
-  - Form validation with Zod schema
-  - Responsive layout matching original appraisal form
-
-### Configurable Rank Groups
-- **Purpose**: Dynamic configuration of rank groups for different form types
-- **Add Rank Group**: '+' button next to form names opens dialog for creating new rank groups
-- **Rank Selection**: Multi-select interface with all available maritime ranks
-- **Available Ranks**: Predefined ranks including Master, Chief Officer, Engineers, Officers, Bosun, AB, OS, Oiler, Wiper
-- **View Functionality**: Eye icon next to rank group names shows hover tooltip with assigned ranks
-- **Data Structure**: 
-  - Forms table links to rank groups via foreign key
-  - Rank groups store array of assigned rank names
-  - Available ranks categorized by Senior Officers, Junior Officers, Ratings
-- **UI Features**:
-  - Dialog-based rank group creation with form validation
-  - Tooltip hover display of ranks per group
-  - Checkbox multi-select for rank assignment
-  - Real-time rank group management
-
-### Data Flow
-1. **Navigation**: Top menu Admin → Left sidebar Forms (default)
-2. **Data Fetching**: TanStack Query fetches from `/api/forms`
-3. **Backend**: Express routes handle CRUD operations
-4. **Storage**: In-memory storage with sample data initialization
-
-## Database Integration Status
-
-### Current Implementation: MySQL Database (Production-Ready)
-- **Database Type**: MySQL (compatible with Angular 19/NestJS stack)
-- **Connection**: Fully integrated with persistent data storage
-- **Schema**: Complete MySQL schema with auto-increment IDs and proper foreign keys
-- **Data Persistence**: All data persists across application restarts
-- **Seeding**: Automatic database seeding with sample data on first run
-- **Fallback**: Graceful fallback to in-memory storage if MySQL unavailable
-- **Status**: ✅ Production-ready with MySQL integration
-
-### Database Tables Created:
-- `users` - User authentication and management
-- `forms` - Form configurations and version control
-- `available_ranks` - Maritime rank definitions
-- `rank_groups` - Configurable rank groupings per form
-- `crew_members` - Crew member profiles and information
-- `appraisal_results` - Completed appraisal evaluations and ratings
-
-### API Endpoints (All Functional):
-- `/api/crew-members` - Full CRUD operations for crew management
-- `/api/appraisals` - Complete appraisal results management
-- `/api/forms` - Form configuration management
-- `/api/available-ranks` - Rank management system
-- `/api/rank-groups` - Dynamic rank group configuration
-
-### Sample Data Available:
-- 3 crew members with complete profiles
-- 3 corresponding appraisal results with ratings
-- 12 maritime ranks across all categories
-- 1 configured form with rank groups
-- All data sourced from database, no static/mock data
-
-## Standard Form Popup Component
-
-### FormPopup Component
-- **Purpose**: Provides consistent spacing and styling for all form modal popups
-- **Location**: `client/src/components/ui/form-popup.tsx`
-- **Features**:
-  - Equal spacing on all sides (1rem padding via `p-4`)
-  - Consistent modal height calculation: `h-[calc(100vh-2rem)]`
-  - Responsive design for mobile and desktop
-  - Standard close button behavior
-  - Optional title header with close button
-- **Usage**: 
-  ```tsx
-  import { FormPopup } from "@/components/ui/form-popup"
-  
-  <FormPopup title="Form Title" onClose={handleClose}>
-    <FormContent />
-  </FormPopup>
-  ```
-- **Default Styling**: Ensures all future form popups have uniform spacing, eliminating excessive vertical gaps and maintaining visual consistency
-
-### Alternative Components
-- **FormPopupOverlay**: Standalone overlay for custom implementations
-- **FormPopupContent**: Content wrapper with consistent spacing
-- **StandardFormPopup**: Main component (aliased as FormPopup)
-
-## Changelog
-
-```
-Changelog:
-- July 02, 2025. Initial setup
-- July 07, 2025. Added Admin submodule with Forms configuration table
-- July 07, 2025. Added Form Editor modal with exact copy of crew appraisal form (Parts A-G), version control starting at v0
-- July 07, 2025. Fixed Part G table alignment issue - G2 Training Followup table now appears correctly below heading, resolved JSX syntax errors, maintained consolidated G1/G2 structure with blue #16569e headings
-- July 07, 2025. Added "Rank Group" column to Admin Forms table, positioned between Form and Version No columns, displays "All Ranks" value for each form
-- July 07, 2025. Implemented configurable rank groups functionality with '+' button for adding rank groups, view button with hover tooltips showing assigned ranks, dialog-based rank group creation with multi-select rank assignment, and backend API endpoints for rank groups and available ranks management
-- July 08, 2025. Implemented enhanced version control UI with proper state management, single interactive bar in configuration mode, multiple clickable bars in normal mode when draft exists, automatic switching to draft version when saving, and proper "Release Ver"/"Discard Ver" functionality
-- July 08, 2025. Added configurable fields functionality with "Hide Field" button for Personality Index (PI) Category field - button appears only in configuration mode with #52baf3 color, fields and labels are completely hidden when not in config mode, field state persists across mode changes
-- July 08, 2025. Implemented "Hide Section" buttons for Part B main section, B1 subsection, and B2 subsection with #52baf3 styling, grayed-out placeholders for hidden sections in configuration mode, and dynamic section renumbering system where hidden sections completely disappear outside configuration mode and remaining sections renumber sequentially (e.g., when Part B is hidden, Part C becomes Part B)
-- July 08, 2025. Implemented configurable Part C and Part D table functionality with "Add Criterion" buttons, empty tables by default, unlimited row addition, editable Assessment Criteria and Weight fields with blue #52baf3 text in configuration mode, weight validation requiring 100% total for each section, warning dialog with equal distribution option, and delete buttons for criteria in configuration mode
-- July 09, 2025. Enhanced Part F2 recommendations system with default non-deletable recommendations, configurable additional recommendations with blue #52baf3 styling, proper AlertDialog for configuration mode prompts, placeholder text behavior for new recommendations, and editable/non-editable field functionality with Edit button control
-- July 09, 2025. Added comprehensive validation system for blank assessment criteria fields in Parts C and D, blank custom recommendation fields in Part F, preventing save draft or configuration mode exit until all required fields are filled, with clear error dialog showing specific validation issues
-- July 09, 2025. Implemented configurable dropdown functionality for "Appraisal Type" field with blue #52baf3 highlighting in configuration mode, clickable label and dropdown opens dialog for editing dropdown options with add/edit/delete capabilities
-- July 09, 2025. Extended configurable dropdown functionality to "Personality Index (PI) Category" field with same blue styling and dialog-based option management
-- July 09, 2025. Implemented configurable "Effectiveness" Rating dropdown common across Parts B, C, and D tables - blue indication shown only in first row of each table, single configuration affects all tables with shared rating options
-- July 09, 2025. Added configurable dropdown functionality for "Category" and "Status" fields in Part G2 Training Followup table - blue indication shown only in first row, separate configuration dialogs for each field type with add/edit/delete capabilities
-- July 09, 2025. **PRODUCTION DEPLOYMENT**: Complete PostgreSQL database integration with real data persistence, automatic seeding, all API endpoints functional, crew members and appraisals loading from database with full CRUD operations
-- July 09, 2025. **MYSQL MIGRATION**: Successfully converted from PostgreSQL to MySQL for Angular 19/NestJS stack compatibility, maintained all functionality including data persistence, API endpoints, CRUD operations, automatic seeding, and micro frontend capabilities
-- July 09, 2025. **ENHANCED COMMENT FUNCTIONALITY**: Improved comment system with click-to-edit behavior - comments display as uneditable text when not in edit mode, clicking comment text enables editing with textarea, only delete button remains on right side, comments auto-save when focus is lost
-- July 09, 2025. **COMPLETE CONFIRMATION DIALOGS**: Added confirmation dialogs ("Do you want to delete? Yes/No") to all delete functions across the entire application - training records, targets, training needs, competence/behavioral assessments, recommendations, office reviews, training followups, all comment deletions, and all FormEditor configuration options - prevents accidental deletions throughout the system
-- July 09, 2025. **UNIFIED REACT DIALOGS**: Successfully replaced all browser window.confirm() popups with proper React AlertDialog components across both AppraisalForm.tsx and FormEditor.tsx - 12 different delete functions now use consistent "Delete [Item]" / "Are you sure you want to delete..." dialog pattern with Yes/No buttons, improving user experience and maintaining design consistency
-- July 09, 2025. **OPERATIONAL FILTERS**: Implemented fully functional filter system for Crew Appraisals table - added state management for all filter inputs (Search Name, Rank, Vessel Type, Nationality, Appraisal Type, Rating), real-time filtering logic, and Clear button functionality - filters now work immediately as users type or select options, providing dynamic table filtering experience
-- July 09, 2025. **RESPONSIVE FORM EDITOR**: Made Admin Sub-module's Crew Appraisal Form Editor fully responsive and mobile-friendly - enhanced modal dialog structure with responsive sizing (max-w-[95vw] on mobile), mobile-optimized sidebar navigation with collapsible behavior, responsive grid layouts for form sections, horizontal scrolling tables for mobile interaction, mobile-compatible configuration dialogs, and touch-friendly button sizing throughout
-- July 10, 2025. **STANDARDIZED FORM POPUP SPACING**: Created StandardFormPopup component with consistent spacing (p-4 padding, h-[calc(100vh-2rem)] height) for all form modals - fixed excessive vertical spacing in both Admin FormEditor and Crew Appraisal Form popups, ensuring equal spacing on all sides, and established reusable component pattern for future form popup development
-- July 31, 2025. **TECHNICAL MODULE REMOVED**: Removed the integrated Technical (PMS) Module implementation to prepare for Replit Projects architecture - deleted TechnicalPMSModule.tsx, removed technical-pms routes from App.tsx, and updated ModuleNavigator to show only Crewing module - preparing for restructure where Technical Module will be a separate app within a SAIL Project structure
-- July 31, 2025. **TECHNICAL MODULE CLEANUP**: Successfully removed all crew-specific files, database tables, and API routes - kept all shared UI components and infrastructure - created clean Technical Module base ready for PMS development
-- July 31, 2025. **SAIL PHASE 2 UI IMPLEMENTATION**: Created new Technical Module UI based on Common Project SAIL Phase 2 design - implemented top menu bar with Technical, Dashboard, Cert. & Surveys, Defects, PMS, Admin icons - added dynamic left sidebar that changes based on selected top menu item - PMS submodule selected by default with proper blue highlighting - clean professional design matching SAIL Phase 2 specifications
-- July 31, 2025. **UI DESIGN COMPLETION**: Finalized SAIL Phase 2 UI with blue accent line (#52baf3) at bottom of top menu bar, consistent #52baf3 highlighting for selected menu items, SAIL logo placement in top left corner, increased sidebar width for better text padding, and proper color scheme throughout - Technical Module UI now complete and ready for PMS development
-```
+This project is a full-stack Technical Module for a maritime Planned Maintenance System (PMS). It aims to provide a comprehensive solution for managing technical equipment maintenance, scheduling, and performance tracking for maritime professionals. The system will feature a PMS Dashboard, equipment and task management, reporting, and an administration module.
 
 ## User Preferences
 
-```
 Preferred communication style: Simple, everyday language.
-```
+
+## Technical Module Context
+
+The SAIL Technical Module manages three core aspects of cargo ship operations:
+
+1. **Certificate & Surveys Management** - Ship's certification and survey tracking
+2. **Defect Reporting** - Equipment, machinery and systems defect management  
+3. **Planned Maintenance System (PMS)** - Compliance with classification society requirements (DNV, ABS)
+
+### Module Hierarchy
+- **Technical** (Module)
+  - **PMS** (Submodule)
+    - **Components** (Sub Submodule)
+    - **Work Orders** (Sub Submodule) 
+    - **Running Hrs** (Sub Submodule)
+    - **Spares** (Sub Submodule)
+    - **Reports** (Sub Submodule)
+    - **Modify PMS** (Sub Submodule)
+    - **Admin** (Sub Submodule)
+
+## System Architecture
+
+The application uses a modern full-stack architecture with a React frontend (TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Wouter) and an Express.js backend (TypeScript). It integrates with PostgreSQL via Drizzle ORM for database operations, with an in-memory storage fallback for development. The UI/UX prioritizes a consistent design system through shadcn/ui and Tailwind CSS, following a mobile-first responsive design approach. Core features include a Technical Dashboard, Equipment Management, Maintenance Scheduling, Task Management, Reporting, and an Admin Module. The Admin Module supports dynamic configuration of forms, including configurable rank groups and field visibility, using a standard `FormPopup` component for consistent modal presentation.
+
+## External Dependencies
+
+- **Frontend**:
+    - `@radix-ui/*`
+    - `@tanstack/react-query`
+    - `wouter`
+    - `tailwindcss`
+    - `lucide-react`
+- **Backend**:
+    - `express`
+    - `drizzle-orm`
+    - `@neondatabase/serverless`
+    - `connect-pg-simple`
+- **Development**:
+    - `vite`
+    - `typescript`
+    - `drizzle-kit`
