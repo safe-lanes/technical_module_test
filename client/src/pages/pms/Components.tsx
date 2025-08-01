@@ -131,25 +131,25 @@ const ComponentInformationSection: React.FC = () => {
       <div className="grid grid-cols-4 gap-4">
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Maker</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.maker}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Model</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.model}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Serial No</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.serialNo}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Drawing No</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.drawingNo}
           </div>
         </div>
@@ -157,25 +157,25 @@ const ComponentInformationSection: React.FC = () => {
       <div className="grid grid-cols-4 gap-4">
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Component Code</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.componentCode}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Eqpt. Category</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.eqptCategory}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Location</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.location}
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-[#8798ad] block mb-1">Critical</label>
-          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+          <div className="text-sm text-gray-900">
             {componentData.critical}
           </div>
         </div>
@@ -203,25 +203,25 @@ const ComponentInformationSection: React.FC = () => {
           <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Installation Date</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.installationDate}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Commissioned Date</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.commissionedDate}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Rating</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.rating}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Condition Based</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.conditionBased}
               </div>
             </div>
@@ -230,25 +230,25 @@ const ComponentInformationSection: React.FC = () => {
           <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">No of Units</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.noOfUnits}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Eqpt. System / Dept.</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.eqptSystemDept}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Parent Component</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.parentComponent}
               </div>
             </div>
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Dimensions / Size</label>
-              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              <div className="text-sm text-gray-900">
                 {componentData.dimensionsSize}
               </div>
             </div>
@@ -256,7 +256,7 @@ const ComponentInformationSection: React.FC = () => {
 
           <div>
             <label className="text-xs font-medium text-[#8798ad] block mb-1">Notes</label>
-            <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            <div className="text-sm text-gray-900">
               {componentData.notes}
             </div>
           </div>
