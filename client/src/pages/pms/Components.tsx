@@ -546,6 +546,60 @@ const ClassificationRegulatorySection: React.FC = () => {
   );
 };
 
+const RequisitionsSection: React.FC = () => {
+  const requisitions = [
+    {
+      reqId: "RQ-ME-001",
+      reqDate: "15-Jul-2025",
+      title: "Fuel Injector",
+      requestedDate: "15-Sep-2025",
+      status: "Approved"
+    },
+    {
+      reqId: "RQ-ME-002",
+      reqDate: "15-Jul-2025",
+      title: "Cylinder Head Gasket",
+      requestedDate: "15-Sep-2025",
+      status: "Requested"
+    }
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. ID</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req Date</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Requested Date</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {requisitions.map((req, index) => (
+            <tr key={index} className="border-b border-gray-100">
+              <td className="py-3 px-3 text-gray-900">{req.reqId}</td>
+              <td className="py-3 px-3 text-gray-900">{req.reqDate}</td>
+              <td className="py-3 px-3 text-gray-900">{req.title}</td>
+              <td className="py-3 px-3 text-gray-900">{req.requestedDate}</td>
+              <td className="py-3 px-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  req.status === "Approved" 
+                    ? "bg-blue-100 text-blue-800" 
+                    : "bg-yellow-100 text-yellow-800"
+                }`}>
+                  {req.status}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -746,6 +800,8 @@ const Components: React.FC = () => {
                             <DrawingsAndManualsSection />
                           ) : section.id === "G" ? (
                             <ClassificationRegulatorySection />
+                          ) : section.id === "H" ? (
+                            <RequisitionsSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
