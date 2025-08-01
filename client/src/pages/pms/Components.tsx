@@ -500,6 +500,52 @@ const DrawingsAndManualsSection: React.FC = () => {
   );
 };
 
+const ClassificationRegulatorySection: React.FC = () => {
+  return (
+    <div className="space-y-4">
+      {/* First row */}
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Classification Society</label>
+          <div className="text-sm text-gray-900">DNV</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Certificate No.</label>
+          <div className="text-sm text-gray-900">CERT-ME-2025-01</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Last Class Survey</label>
+          <div className="text-sm text-gray-900">15-Mar-2023</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Next Class Survey</label>
+          <div className="text-sm text-gray-900">15-Mar-2025</div>
+        </div>
+      </div>
+
+      {/* Second row */}
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Survey Type</label>
+          <div className="text-sm text-gray-900">Annual</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Class Requirements</label>
+          <div className="text-sm text-gray-900">SOLAS, MARPOL, MLC</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Class Code</label>
+          <div className="text-sm text-gray-900">DNV-ME-001</div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-[#8798ad] block mb-1">Information</label>
+          <div className="text-sm text-gray-900">Details</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -698,6 +744,8 @@ const Components: React.FC = () => {
                             <SparesSection />
                           ) : section.id === "F" ? (
                             <DrawingsAndManualsSection />
+                          ) : section.id === "G" ? (
+                            <ClassificationRegulatorySection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
