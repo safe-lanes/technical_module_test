@@ -173,21 +173,37 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen">
-      {/* Left Panel - Component Tree (30%) */}
-      <div className="w-[30%] border-r bg-white flex flex-col">
-        <div className="p-4 border-b flex-shrink-0">
-          <h2 className="text-lg font-semibold mb-3">Component Register</h2>
-          <div className="flex gap-2 mb-3">
-            <Input
-              placeholder="Search Components..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1"
-            />
+    <div className="h-full bg-gray-100 p-6">
+      {/* Header with SubModule Title */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-semibold text-gray-800">Components</h1>
+          <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">
+            + Add Edit Component
+          </Button>
+        </div>
+        
+        {/* Filters Row */}
+        <div className="flex gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-600">Vessel:</span>
+            <Select defaultValue="all">
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Select vessel" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Vessels</SelectItem>
+                <SelectItem value="vessel1">Vessel 1</SelectItem>
+                <SelectItem value="vessel2">Vessel 2</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-600">Critical Item:</span>
             <Select defaultValue="all">
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Critical Item" />
+                <SelectValue placeholder="All Items" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Items</SelectItem>
@@ -196,62 +212,82 @@ const Components: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <Button className="w-full bg-[#52baf3] hover:bg-[#40a8e0] text-white">
-            + Add Edit Component
-          </Button>
-        </div>
-        <div className="flex-1 overflow-auto p-2">
-          <div className="bg-[#52baf3] text-white px-2 py-1 font-semibold text-sm">
-            COMPONENTS
+          
+          <div className="flex items-center gap-2 flex-1">
+            <Input
+              placeholder="Search Components..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-md"
+            />
           </div>
-          {renderComponentTree(dummyComponents)}
         </div>
       </div>
 
-      {/* Right Panel - Component Details Form (70%) */}
-      <div className="w-[70%] bg-gray-50 flex flex-col">
-        {selectedComponent ? (
-          <>
-            <div className="p-4 border-b bg-white flex-shrink-0">
-              <h3 className="text-lg font-semibold">
-                {selectedComponent.code}. {selectedComponent.name}
-              </h3>
+      {/* Main Content Area */}
+      <div className="flex gap-6 h-[calc(100vh-200px)]">
+        {/* Left Panel - Component Tree (30%) */}
+        <div className="w-[30%]">
+          <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
+            <div className="p-4 border-b flex-shrink-0">
+              <h2 className="text-lg font-semibold mb-3">Component Register</h2>
             </div>
-            <div className="flex-1 overflow-auto p-4">
-              <div className="space-y-2">
-                {formSections.map((section) => (
-                  <Collapsible key={section.id}>
-                    <CollapsibleTrigger className="w-full">
-                      <Card className="cursor-pointer hover:bg-gray-100">
-                        <CardHeader className="py-3">
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm font-medium">
-                              {section.id}. {section.title}
-                            </CardTitle>
-                            <ChevronRight className="h-4 w-4" />
-                          </div>
-                        </CardHeader>
-                      </Card>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <Card className="mt-1">
-                        <CardContent className="pt-4">
-                          <p className="text-sm text-gray-500">
-                            {section.title} content will be added here
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </CollapsibleContent>
-                  </Collapsible>
-                ))}
+            <div className="flex-1 overflow-auto">
+              <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
+                COMPONENTS
+              </div>
+              <div className="p-2">
+                {renderComponentTree(dummyComponents)}
               </div>
             </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a component to view details
           </div>
-        )}
+        </div>
+
+        {/* Right Panel - Component Details Form (70%) */}
+        <div className="w-[70%]">
+          {selectedComponent ? (
+            <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
+              <div className="p-4 border-b flex-shrink-0">
+                <h3 className="text-lg font-semibold">
+                  {selectedComponent.code}. {selectedComponent.name}
+                </h3>
+              </div>
+              <div className="flex-1 overflow-auto p-4">
+                <div className="space-y-2">
+                  {formSections.map((section) => (
+                    <Collapsible key={section.id}>
+                      <CollapsibleTrigger className="w-full">
+                        <Card className="cursor-pointer hover:bg-gray-100">
+                          <CardHeader className="py-3">
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-sm font-medium">
+                                {section.id}. {section.title}
+                              </CardTitle>
+                              <ChevronRight className="h-4 w-4" />
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <Card className="mt-1">
+                          <CardContent className="pt-4">
+                            <p className="text-sm text-gray-500">
+                              {section.title} content will be added here
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm h-full flex items-center justify-center">
+              <p className="text-gray-500">Select a component to view details</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
