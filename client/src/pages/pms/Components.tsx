@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, ChevronRight, ChevronDown } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -249,6 +249,62 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
   );
 };
 
+const RunningHoursConditionSection: React.FC = () => {
+  return (
+    <div className="space-y-6">
+      {/* Running Hours */}
+      <div className="flex items-start gap-8">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-gray-700">Running Hours:</label>
+          <Edit2 className="h-4 w-4 text-gray-500" />
+        </div>
+        <div className="flex gap-12">
+          <div>
+            <label className="text-xs font-medium text-[#8798ad] block mb-1">Current</label>
+            <div className="text-sm font-semibold text-gray-900">12580 hours</div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-[#8798ad] block mb-1">Updated</label>
+            <div className="text-sm font-semibold text-gray-900">12-Jun-2025</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Condition Monitoring Metrics */}
+      <div>
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700 block mb-2">Condition Monitoring Metrics:</label>
+        </div>
+        <div className="grid grid-cols-3 gap-8">
+          {/* Vibration */}
+          <div>
+            <label className="text-xs font-medium text-[#8798ad] block mb-2">Vibration</label>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '40%' }}></div>
+            </div>
+          </div>
+          
+          {/* Temperature */}
+          <div>
+            <label className="text-xs font-medium text-[#8798ad] block mb-2">Temperature</label>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+            </div>
+          </div>
+          
+          {/* Pressure */}
+          <div>
+            <label className="text-xs font-medium text-[#8798ad] block mb-2">Pressure</label>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-red-500 h-2 rounded-full" style={{ width: '80%' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -437,6 +493,8 @@ const Components: React.FC = () => {
                         <CardContent className="pt-4 border-t border-gray-100">
                           {section.id === "A" ? (
                             <ComponentInformationSection isExpanded={isExpanded} />
+                          ) : section.id === "B" ? (
+                            <RunningHoursConditionSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
