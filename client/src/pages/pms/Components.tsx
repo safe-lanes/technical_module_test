@@ -173,7 +173,7 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className="h-full bg-gray-100 p-6">
+    <div className="h-full p-6 bg-[#fafafa]">
       {/* Header with SubModule Title */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -223,7 +223,6 @@ const Components: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Main Content Area */}
       <div className="flex gap-6 h-[calc(100vh-200px)]">
         {/* Left Panel - Component Tree (30%) */}
