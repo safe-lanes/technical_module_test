@@ -101,6 +101,174 @@ const dummyComponents: ComponentNode[] = [
   }
 ];
 
+const ComponentInformationSection: React.FC = () => {
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
+
+  // Sample component data - this would come from the selected component
+  const componentData = {
+    maker: "MAN Energy Solutions",
+    model: "S50MC-C",
+    serialNo: "D12F6748",
+    drawingNo: "S50MC-C-1254",
+    componentCode: "ABC-ME-001",
+    eqptCategory: "Propulsion",
+    location: "Engine room",
+    critical: "No",
+    installationDate: "Info",
+    commissionedDate: "Info",
+    rating: "Info",
+    conditionBased: "Info",
+    noOfUnits: "Info",
+    eqptSystemDept: "Info",
+    parentComponent: "Info",
+    dimensionsSize: "Info",
+    notes: "This equipment is associated with ...."
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Always visible first 2 rows */}
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Maker</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.maker}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Model</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.model}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Serial No</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.serialNo}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Drawing No</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.drawingNo}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Component Code</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.componentCode}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Eqpt. Category</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.eqptCategory}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Location</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.location}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-blue-600 block mb-1">Critical</label>
+          <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+            {componentData.critical}
+          </div>
+        </div>
+      </div>
+
+      {/* Expandable section toggle */}
+      <button
+        onClick={() => setShowMoreDetails(!showMoreDetails)}
+        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+      >
+        {showMoreDetails ? (
+          <>
+            <ChevronDown className="h-4 w-4" />
+            Show Less Details
+          </>
+        ) : (
+          <>
+            <ChevronRight className="h-4 w-4" />
+            Show More Details
+          </>
+        )}
+      </button>
+
+      {/* Additional details - only visible when expanded */}
+      {showMoreDetails && (
+        <div className="space-y-4 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-4 gap-4">
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Installation Date</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.installationDate}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Commissioned Date</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.commissionedDate}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Rating</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.rating}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Condition Based</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.conditionBased}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-4">
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">No of Units</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.noOfUnits}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Eqpt. System / Dept.</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.eqptSystemDept}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Parent Component</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.parentComponent}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-blue-600 block mb-1">Dimensions / Size</label>
+              <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                {componentData.dimensionsSize}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-blue-600 block mb-1">Notes</label>
+            <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+              {componentData.notes}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
@@ -268,9 +436,13 @@ const Components: React.FC = () => {
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <CardContent className="pt-4 border-t border-gray-100">
-                            <p className="text-sm text-gray-500">
-                              {section.title} content will be added here
-                            </p>
+                            {section.id === "A" ? (
+                              <ComponentInformationSection />
+                            ) : (
+                              <p className="text-sm text-gray-500">
+                                {section.title} content will be added here
+                              </p>
+                            )}
                           </CardContent>
                         </CollapsibleContent>
                       </Card>
