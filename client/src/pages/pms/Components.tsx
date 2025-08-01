@@ -247,7 +247,7 @@ const Components: React.FC = () => {
           {selectedComponent ? (
             <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
               <div className="p-4 border-b-2 border-[#52baf3] flex-shrink-0">
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-lg font-semibold text-[#15569e]">
                   {selectedComponent.code}. {selectedComponent.name}
                 </h3>
               </div>
