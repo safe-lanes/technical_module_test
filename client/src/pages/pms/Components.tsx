@@ -101,8 +101,7 @@ const dummyComponents: ComponentNode[] = [
   }
 ];
 
-const ComponentInformationSection: React.FC = () => {
-  const [showMoreDetails, setShowMoreDetails] = useState(false);
+const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
 
   // Sample component data - this would come from the selected component
   const componentData = {
@@ -180,25 +179,9 @@ const ComponentInformationSection: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Expandable section toggle */}
-      <button
-        onClick={() => setShowMoreDetails(!showMoreDetails)}
-        className="flex items-center gap-2 text-sm text-[#8798ad] hover:text-[#6b7a8f] font-medium"
-      >
-        {showMoreDetails ? (
-          <>
-            <ChevronDown className="h-4 w-4" />
-            Show Less Details
-          </>
-        ) : (
-          <>
-            <ChevronRight className="h-4 w-4" />
-            Show More Details
-          </>
-        )}
-      </button>
+
       {/* Additional details - only visible when expanded */}
-      {showMoreDetails && (
+      {isExpanded && (
         <div className="space-y-4 pt-4">
           <div className="grid grid-cols-4 gap-4">
             <div>
@@ -270,6 +253,7 @@ const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -278,6 +262,18 @@ const Components: React.FC = () => {
         newSet.delete(nodeId);
       } else {
         newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
       }
       return newSet;
     });
@@ -418,33 +414,38 @@ const Components: React.FC = () => {
               </div>
               <div className="flex-1 overflow-auto p-4">
                 <div className="space-y-2">
-                  {formSections.map((section) => (
-                    <Collapsible key={section.id}>
-                      <Card className="rounded-sm border border-gray-200">
-                        <CollapsibleTrigger className="w-full">
-                          <CardHeader className="py-3 cursor-pointer hover:bg-gray-50">
-                            <div className="flex items-center justify-between">
-                              <CardTitle className="text-sm font-medium text-[#16569e]">
-                                {section.id}. {section.title}
-                              </CardTitle>
-                              <ChevronRight className="h-4 w-4" />
-                            </div>
-                          </CardHeader>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <CardContent className="pt-4 border-t border-gray-100">
-                            {section.id === "A" ? (
-                              <ComponentInformationSection />
+                  {formSections.map((section) => {
+                    const isExpanded = expandedSections.has(section.id);
+                    
+                    return (
+                      <Card key={section.id} className="rounded-sm border border-gray-200">
+                        <CardHeader 
+                          className="py-3 cursor-pointer hover:bg-gray-50"
+                          onClick={() => toggleSection(section.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm font-medium text-[#16569e]">
+                              {section.id}. {section.title}
+                            </CardTitle>
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4" />
                             ) : (
-                              <p className="text-sm text-gray-500">
-                                {section.title} content will be added here
-                              </p>
+                              <ChevronRight className="h-4 w-4" />
                             )}
-                          </CardContent>
-                        </CollapsibleContent>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-4 border-t border-gray-100">
+                          {section.id === "A" ? (
+                            <ComponentInformationSection isExpanded={isExpanded} />
+                          ) : (
+                            <p className="text-sm text-gray-500">
+                              {section.title} content will be added here
+                            </p>
+                          )}
+                        </CardContent>
                       </Card>
-                    </Collapsible>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
