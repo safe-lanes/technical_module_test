@@ -127,29 +127,32 @@ const Components: React.FC = () => {
       return (
         <div key={node.id}>
           <div
-            className={`flex items-center px-2 py-1 cursor-pointer hover:bg-gray-100 ${
-              isSelected ? "bg-blue-100" : ""
+            className={`flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${
+              isSelected ? "bg-blue-50" : ""
             }`}
-            style={{ paddingLeft: `${level * 20 + 8}px` }}
+            style={{ paddingLeft: `${level * 20 + 12}px` }}
             onClick={() => setSelectedComponent(node)}
           >
-            {hasChildren && (
-              <button
-                className="mr-1"
-                onClick={(e) => {
-                  e.stopPropagation();
+            <button
+              className="mr-2 flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasChildren) {
                   toggleNode(node.id);
-                }}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
+                }
+              }}
+            >
+              {hasChildren ? (
+                isExpanded ? (
+                  <ChevronDown className="h-4 w-4 text-gray-600" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
-            )}
-            {!hasChildren && <span className="mr-5" />}
-            <span className="text-sm">
+                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                )
+              ) : (
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+            <span className="text-sm text-gray-700">
               {node.code}. {node.name}
             </span>
           </div>
@@ -228,14 +231,11 @@ const Components: React.FC = () => {
         {/* Left Panel - Component Tree (30%) */}
         <div className="w-[30%]">
           <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
-            <div className="p-4 border-b flex-shrink-0">
-              <h2 className="text-lg font-semibold mb-3">Component Register</h2>
-            </div>
             <div className="flex-1 overflow-auto">
               <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
                 COMPONENTS
               </div>
-              <div className="p-2">
+              <div>
                 {renderComponentTree(dummyComponents)}
               </div>
             </div>
