@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { SideMenuBar } from "@/components/SideMenuBar";
-import { useLocation } from "wouter";
+import Components from "./pms/Components";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
   const [selectedMenuItem, setSelectedMenuItem] = useState("dashboard");
-  const [location, setLocation] = useLocation();
 
   const handleSubModuleChange = (subModule: string) => {
     setSelectedSubModule(subModule);
@@ -15,11 +14,6 @@ export const TechnicalModule: React.FC = () => {
 
   const handleMenuItemSelect = (item: string) => {
     setSelectedMenuItem(item);
-    
-    // Navigate to Components page when components is selected
-    if (selectedSubModule === "pms" && item === "components") {
-      setLocation("/pms/components");
-    }
   };
 
   return (
@@ -39,15 +33,21 @@ export const TechnicalModule: React.FC = () => {
         />
         
         {/* Main Content Area */}
-        <div className="flex-1 p-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              {selectedSubModule.toUpperCase()} - {selectedMenuItem.replace(/-/g, ' ').toUpperCase()}
-            </h2>
-            <p className="text-gray-600">
-              Content for {selectedSubModule} module, {selectedMenuItem} section will be displayed here.
-            </p>
-          </div>
+        <div className="flex-1">
+          {selectedSubModule === "pms" && selectedMenuItem === "components" ? (
+            <Components />
+          ) : (
+            <div className="p-6">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  {selectedSubModule.toUpperCase()} - {selectedMenuItem.replace(/-/g, ' ').toUpperCase()}
+                </h2>
+                <p className="text-gray-600">
+                  Content for {selectedSubModule} module, {selectedMenuItem} section will be displayed here.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
