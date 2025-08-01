@@ -199,7 +199,7 @@ const ComponentInformationSection: React.FC = () => {
       </button>
       {/* Additional details - only visible when expanded */}
       {showMoreDetails && (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="space-y-4 pt-4">
           <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-medium text-[#8798ad] block mb-1">Installation Date</label>
