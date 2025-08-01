@@ -173,10 +173,10 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-full">
-      {/* Left Panel - Component Tree */}
-      <div className="w-1/2 border-r bg-white">
-        <div className="p-4 border-b">
+    <div className="flex h-screen">
+      {/* Left Panel - Component Tree (30%) */}
+      <div className="w-[30%] border-r bg-white flex flex-col">
+        <div className="p-4 border-b flex-shrink-0">
           <h2 className="text-lg font-semibold mb-3">Component Register</h2>
           <div className="flex gap-2 mb-3">
             <Input
@@ -200,7 +200,7 @@ const Components: React.FC = () => {
             + Add Edit Component
           </Button>
         </div>
-        <div className="p-2 overflow-auto" style={{ height: "calc(100% - 160px)" }}>
+        <div className="flex-1 overflow-auto p-2">
           <div className="bg-[#52baf3] text-white px-2 py-1 font-semibold text-sm">
             COMPONENTS
           </div>
@@ -208,43 +208,45 @@ const Components: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Panel - Component Details Form */}
-      <div className="w-1/2 bg-gray-50 overflow-auto">
+      {/* Right Panel - Component Details Form (70%) */}
+      <div className="w-[70%] bg-gray-50 flex flex-col">
         {selectedComponent ? (
-          <div className="p-4">
-            <div className="mb-4">
+          <>
+            <div className="p-4 border-b bg-white flex-shrink-0">
               <h3 className="text-lg font-semibold">
                 {selectedComponent.code}. {selectedComponent.name}
               </h3>
             </div>
-            <div className="space-y-2">
-              {formSections.map((section) => (
-                <Collapsible key={section.id}>
-                  <CollapsibleTrigger className="w-full">
-                    <Card className="cursor-pointer hover:bg-gray-100">
-                      <CardHeader className="py-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-sm font-medium">
-                            {section.id}. {section.title}
-                          </CardTitle>
-                          <ChevronRight className="h-4 w-4" />
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <Card className="mt-1">
-                      <CardContent className="pt-4">
-                        <p className="text-sm text-gray-500">
-                          {section.title} content will be added here
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </CollapsibleContent>
-                </Collapsible>
-              ))}
+            <div className="flex-1 overflow-auto p-4">
+              <div className="space-y-2">
+                {formSections.map((section) => (
+                  <Collapsible key={section.id}>
+                    <CollapsibleTrigger className="w-full">
+                      <Card className="cursor-pointer hover:bg-gray-100">
+                        <CardHeader className="py-3">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm font-medium">
+                              {section.id}. {section.title}
+                            </CardTitle>
+                            <ChevronRight className="h-4 w-4" />
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <Card className="mt-1">
+                        <CardContent className="pt-4">
+                          <p className="text-sm text-gray-500">
+                            {section.title} content will be added here
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CollapsibleContent>
+                  </Collapsible>
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
             Select a component to view details
