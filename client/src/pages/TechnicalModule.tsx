@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import Components from "./pms/Components";
+import WorkOrders from "./pms/WorkOrders";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
@@ -36,6 +37,8 @@ export const TechnicalModule: React.FC = () => {
         <div className="flex-1">
           {selectedSubModule === "pms" && selectedMenuItem === "components" ? (
             <Components />
+          ) : selectedSubModule === "pms" && selectedMenuItem === "work-orders" ? (
+            <WorkOrders />
           ) : (
             <div className="p-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
