@@ -76,80 +76,80 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Postpone Work Order</DialogTitle>
         </DialogHeader>
         
-        <div className="grid grid-cols-2 gap-4 py-4">
-          {/* Work Order ID */}
-          <div className="space-y-2">
-            <Label htmlFor="workOrderId">Work Order ID</Label>
-            <Input
-              id="workOrderId"
-              value={formData.workOrderId}
-              onChange={(e) => setFormData({ ...formData, workOrderId: e.target.value })}
-              className="bg-gray-50"
-              readOnly
-            />
-          </div>
-
-          {/* Component */}
-          <div className="space-y-2">
-            <Label htmlFor="component">Component</Label>
-            <Input
-              id="component"
-              value={formData.component}
-              onChange={(e) => setFormData({ ...formData, component: e.target.value })}
-              className="bg-gray-50"
-              readOnly
-            />
-          </div>
-
-          {/* Job Title */}
-          <div className="space-y-2">
-            <Label htmlFor="jobTitle">Job Title</Label>
-            <Input
-              id="jobTitle"
-              value={formData.jobTitle}
-              onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-              className="bg-gray-50"
-              readOnly
-            />
-          </div>
-
-          {/* Inform Officer Checkbox */}
-          <div className="space-y-2">
-            <Label></Label>
-            <div className="flex items-center space-x-2 mt-6">
-              <Checkbox
-                id="informOfficer"
-                checked={formData.informOfficer}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, informOfficer: checked as boolean })
-                }
+        <div className="space-y-4 py-4">
+          {/* Row 1: Work Order ID and Component */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="workOrderId">Work Order ID</Label>
+              <Input
+                id="workOrderId"
+                value={formData.workOrderId}
+                onChange={(e) => setFormData({ ...formData, workOrderId: e.target.value })}
+                className="bg-gray-50"
+                readOnly
               />
-              <Label htmlFor="informOfficer" className="text-sm">Inform Officer</Label>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="component">Component</Label>
+              <Input
+                id="component"
+                value={formData.component}
+                onChange={(e) => setFormData({ ...formData, component: e.target.value })}
+                className="bg-gray-50"
+                readOnly
+              />
             </div>
           </div>
 
-          {/* Original Due Date */}
-          <div className="space-y-2">
-            <Label htmlFor="originalDueDate">Original Due Date</Label>
-            <Input
-              id="originalDueDate"
-              value={formData.originalDueDate}
-              onChange={(e) => setFormData({ ...formData, originalDueDate: e.target.value })}
-              className="bg-gray-50"
-              readOnly
-            />
+          {/* Row 2: Job Title and Inform Officer */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="jobTitle">Job Title</Label>
+              <Input
+                id="jobTitle"
+                value={formData.jobTitle}
+                onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                className="bg-gray-50"
+                readOnly
+              />
+            </div>
+            <div className="space-y-2">
+              <Label></Label>
+              <div className="flex items-center space-x-2 mt-6">
+                <Checkbox
+                  id="informOfficer"
+                  checked={formData.informOfficer}
+                  onCheckedChange={(checked) => 
+                    setFormData({ ...formData, informOfficer: checked as boolean })
+                  }
+                />
+                <Label htmlFor="informOfficer" className="text-sm">Inform Officer</Label>
+              </div>
+            </div>
           </div>
 
-          {/* Empty space for alignment */}
-          <div></div>
+          {/* Row 3: Original Due Date */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="originalDueDate">Original Due Date</Label>
+              <Input
+                id="originalDueDate"
+                value={formData.originalDueDate}
+                onChange={(e) => setFormData({ ...formData, originalDueDate: e.target.value })}
+                className="bg-gray-50"
+                readOnly
+              />
+            </div>
+            <div></div>
+          </div>
 
-          {/* Reason for Postponement */}
-          <div className="col-span-2 space-y-2">
+          {/* Row 4: Reason for Postponement */}
+          <div className="space-y-2">
             <Label htmlFor="reasonForPostponement">Reason for Postponement</Label>
             <Textarea
               id="reasonForPostponement"
@@ -160,30 +160,30 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
             />
           </div>
 
-          {/* Authorized By */}
-          <div className="space-y-2">
-            <Label htmlFor="authorizedBy">Authorized By</Label>
-            <Select 
-              value={formData.authorizedBy} 
-              onValueChange={(value) => setFormData({ ...formData, authorizedBy: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select authorizer" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
-                <SelectItem value="2nd-engineer">2nd Engineer</SelectItem>
-                <SelectItem value="3rd-engineer">3rd Engineer</SelectItem>
-                <SelectItem value="captain">Captain</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Row 5: Authorized By */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="authorizedBy">Authorized By</Label>
+              <Select 
+                value={formData.authorizedBy} 
+                onValueChange={(value) => setFormData({ ...formData, authorizedBy: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select authorizer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="chief-engineer">Chief Engineer</SelectItem>
+                  <SelectItem value="2nd-engineer">2nd Engineer</SelectItem>
+                  <SelectItem value="3rd-engineer">3rd Engineer</SelectItem>
+                  <SelectItem value="captain">Captain</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div></div>
           </div>
 
-          {/* Empty space for alignment */}
-          <div></div>
-
-          {/* Approval Remarks */}
-          <div className="col-span-2 space-y-2">
+          {/* Row 6: Approval Remarks */}
+          <div className="space-y-2">
             <Label htmlFor="approvalRemarks">Approval Remarks (Optional)</Label>
             <Textarea
               id="approvalRemarks"
@@ -194,40 +194,41 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
             />
           </div>
 
-          {/* Next Due Date */}
-          <div className="space-y-2">
-            <Label htmlFor="nextDueDate">Next Due Date</Label>
-            <Input
-              id="nextDueDate"
-              type="date"
-              value={formData.nextDueDate}
-              onChange={(e) => setFormData({ ...formData, nextDueDate: e.target.value })}
-            />
+          {/* Row 7: Next Due Date and Duration */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="nextDueDate">Next Due Date</Label>
+              <Input
+                id="nextDueDate"
+                type="date"
+                value={formData.nextDueDate}
+                onChange={(e) => setFormData({ ...formData, nextDueDate: e.target.value })}
+                placeholder="dd-mm-yyyy"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="durationOfPostponement">Duration of Postponement</Label>
+              <Select 
+                value={formData.durationOfPostponement} 
+                onValueChange={(value) => setFormData({ ...formData, durationOfPostponement: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1 Day">1 Day</SelectItem>
+                  <SelectItem value="3 Days">3 Days</SelectItem>
+                  <SelectItem value="5 Days">5 Days</SelectItem>
+                  <SelectItem value="1 Week">1 Week</SelectItem>
+                  <SelectItem value="2 Weeks">2 Weeks</SelectItem>
+                  <SelectItem value="1 Month">1 Month</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Duration of Postponement */}
+          {/* Row 8: Attach Document */}
           <div className="space-y-2">
-            <Label htmlFor="durationOfPostponement">Duration of Postponement</Label>
-            <Select 
-              value={formData.durationOfPostponement} 
-              onValueChange={(value) => setFormData({ ...formData, durationOfPostponement: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1 Day">1 Day</SelectItem>
-                <SelectItem value="3 Days">3 Days</SelectItem>
-                <SelectItem value="5 Days">5 Days</SelectItem>
-                <SelectItem value="1 Week">1 Week</SelectItem>
-                <SelectItem value="2 Weeks">2 Weeks</SelectItem>
-                <SelectItem value="1 Month">1 Month</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Attach Document */}
-          <div className="col-span-2 space-y-2">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="attachDocument"
