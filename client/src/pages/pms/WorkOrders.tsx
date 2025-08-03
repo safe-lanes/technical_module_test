@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Edit, Eye } from "lucide-react";
+import { Search, Plus, PenTool, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -204,24 +204,20 @@ const WorkOrders: React.FC = () => {
       </div>
 
       {/* Status Tabs */}
-      <div className="flex items-center gap-1 p-4 bg-white border-b border-gray-200">
+      <div className="flex items-center gap-1 px-4 py-2 bg-gray-100 border-b border-gray-200">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? "bg-[#52baf3] text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
             }`}
           >
             {tab.label}
-            {tab.count > 0 && (
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                activeTab === tab.id
-                  ? "bg-white text-[#52baf3]"
-                  : "bg-white text-gray-700"
-              }`}>
+            {tab.count > 0 && activeTab !== tab.id && (
+              <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white rounded-full text-xs">
                 {tab.count}
               </span>
             )}
@@ -327,10 +323,10 @@ const WorkOrders: React.FC = () => {
                 <td className="py-3 px-4">
                   <div className="flex items-center justify-center gap-2">
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <Edit className="h-4 w-4 text-gray-600" />
+                      <PenTool className="h-4 w-4 text-gray-600" />
                     </button>
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <Eye className="h-4 w-4 text-gray-600" />
+                      <User className="h-4 w-4 text-gray-600" />
                     </button>
                   </div>
                 </td>
