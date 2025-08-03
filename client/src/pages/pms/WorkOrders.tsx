@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, PenTool, User } from "lucide-react";
+import { Search, Plus, Pen, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -188,41 +188,43 @@ const WorkOrders: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-        <h1 className="text-xl font-semibold text-gray-900">Work Orders (W.O)</h1>
-        <div className="flex gap-2">
-          <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
-            <Plus className="h-4 w-4 mr-1" />
-            Add W.O
-          </Button>
-          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-            <Plus className="h-4 w-4 mr-1" />
-            Unplanned W.O
-          </Button>
+      {/* Header with Status Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between p-4">
+          <h1 className="text-xl font-semibold text-gray-900">Work Orders (W.O)</h1>
+          <div className="flex gap-2">
+            <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+              <Plus className="h-4 w-4 mr-1" />
+              Add W.O
+            </Button>
+            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+              <Plus className="h-4 w-4 mr-1" />
+              Unplanned W.O
+            </Button>
+          </div>
         </div>
-      </div>
-
-      {/* Status Tabs */}
-      <div className="flex items-center gap-1 px-4 py-2 bg-gray-100 border-b border-gray-200">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-              activeTab === tab.id
-                ? "bg-[#52baf3] text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
-            }`}
-          >
-            {tab.label}
-            {tab.count > 0 && activeTab !== tab.id && (
-              <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white rounded-full text-xs">
-                {tab.count}
-              </span>
-            )}
-          </button>
-        ))}
+        
+        {/* Status Tabs */}
+        <div className="flex items-center gap-1 px-4 pb-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "bg-[#52baf3] text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
+              }`}
+            >
+              {tab.label}
+              {tab.count > 0 && activeTab !== tab.id && (
+                <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white rounded-full text-xs">
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Filters */}
@@ -323,10 +325,10 @@ const WorkOrders: React.FC = () => {
                 <td className="py-3 px-4">
                   <div className="flex items-center justify-center gap-2">
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <PenTool className="h-4 w-4 text-gray-600" />
+                      <Pen className="h-4 w-4 text-gray-600" />
                     </button>
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <User className="h-4 w-4 text-gray-600" />
+                      <Clock className="h-4 w-4 text-gray-600" />
                     </button>
                   </div>
                 </td>
