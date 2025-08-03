@@ -128,7 +128,7 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
                     setFormData({ ...formData, informOfficer: checked as boolean })
                   }
                 />
-                <Label htmlFor="informOfficer" className="text-sm">Inform Officer</Label>
+                <Label htmlFor="informOfficer" className="text-sm">Inform Office</Label>
               </div>
             </div>
           </div>
