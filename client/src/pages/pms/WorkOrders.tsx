@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
 
 interface WorkOrder {
   id: string;
@@ -29,6 +30,8 @@ const WorkOrders: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState("");
   const [selectedCriticality, setSelectedCriticality] = useState("");
   const [activeTab, setActiveTab] = useState("All W.O");
+  const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
+  const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
 
   const workOrders: WorkOrder[] = [
     {
@@ -186,6 +189,11 @@ const WorkOrders: React.FC = () => {
     return true;
   });
 
+  const handlePostponeClick = (workOrder: WorkOrder) => {
+    setSelectedWorkOrder(workOrder);
+    setPostponeDialogOpen(true);
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header with Status Tabs */}
@@ -327,7 +335,10 @@ const WorkOrders: React.FC = () => {
                     <button className="p-1 hover:bg-gray-200 rounded">
                       <Pen className="h-4 w-4 text-gray-600" />
                     </button>
-                    <button className="p-1 hover:bg-gray-200 rounded">
+                    <button 
+                      className="p-1 hover:bg-gray-200 rounded"
+                      onClick={() => handlePostponeClick(workOrder)}
+                    >
                       <Clock className="h-4 w-4 text-gray-600" />
                     </button>
                   </div>
@@ -342,6 +353,13 @@ const WorkOrders: React.FC = () => {
       <div className="p-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
         Page 0 of 0
       </div>
+
+      {/* Postpone Work Order Dialog */}
+      <PostponeWorkOrderDialog
+        isOpen={postponeDialogOpen}
+        onClose={() => setPostponeDialogOpen(false)}
+        workOrder={selectedWorkOrder}
+      />
     </div>
   );
 };
