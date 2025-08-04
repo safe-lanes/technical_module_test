@@ -314,182 +314,272 @@ const NewWorkOrderForm: React.FC<NewWorkOrderFormProps> = ({
                   </div>
 
                   <div className="p-6">
-                    {/* B1. Work Execution Details */}
+                    {/* B1. Risk Assessment, Checklists & Records */}
                     <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B1. Work Execution Details</h4>
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B1. Risk Assessment, Checklists & Records</h4>
                       
-                      <div className="grid grid-cols-2 gap-6 mb-4">
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Date Started</Label>
-                          <Input 
-                            type="date"
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                          />
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm text-[#8798ad]">B1.1 Risk Assessment Completed / Reviewed:</Label>
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="riskAssessment" id="risk-yes" className="text-[#52baf3]" />
+                              <label htmlFor="risk-yes" className="text-sm">Yes</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="riskAssessment" id="risk-no" className="text-[#52baf3]" />
+                              <label htmlFor="risk-no" className="text-sm">No</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="riskAssessment" id="risk-na" className="text-[#52baf3]" />
+                              <label htmlFor="risk-na" className="text-sm">N/A</label>
+                            </div>
+                            <Button size="sm" variant="outline" className="ml-4">Upload</Button>
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Date Completed</Label>
-                          <Input 
-                            type="date"
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                          />
+
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm text-[#8798ad]">B1.2 Safety Checklists Completed (As applicable):</Label>
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="safetyChecklist" id="safety-yes" className="text-[#52baf3]" />
+                              <label htmlFor="safety-yes" className="text-sm">Yes</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="safetyChecklist" id="safety-no" className="text-[#52baf3]" />
+                              <label htmlFor="safety-no" className="text-sm">No</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="safetyChecklist" id="safety-na" className="text-[#52baf3]" />
+                              <label htmlFor="safety-na" className="text-sm">N/A</label>
+                            </div>
+                            <Button size="sm" variant="outline" className="ml-4">Upload</Button>
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Time Started</Label>
-                          <Input 
-                            type="time"
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Time Completed</Label>
-                          <Input 
-                            type="time"
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                          />
+
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm text-[#8798ad]">B1.3 Operational Forms Completed (As applicable):</Label>
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="operationalForms" id="op-yes" className="text-[#52baf3]" />
+                              <label htmlFor="op-yes" className="text-sm">Yes</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="operationalForms" id="op-no" className="text-[#52baf3]" />
+                              <label htmlFor="op-no" className="text-sm">No</label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input type="radio" name="operationalForms" id="op-na" className="text-[#52baf3]" />
+                              <label htmlFor="op-na" className="text-sm">N/A</label>
+                            </div>
+                            <Button size="sm" variant="outline" className="ml-4">Upload</Button>
+                          </div>
                         </div>
                       </div>
+                    </div>
 
+                    {/* B2. Details of Work Carried Out */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B2. Details of Work Carried Out</h4>
+                      
                       <div className="space-y-4">
                         <div>
-                          <Label className="text-sm text-[#8798ad]">Work Performed</Label>
+                          <Label className="text-sm text-[#8798ad] font-medium">B2.1 Work Duration:</Label>
+                          
+                          <div className="grid grid-cols-3 gap-6 mt-3">
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Start Date</Label>
+                              <Input 
+                                type="date"
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="dd-mm-yyyy"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Start Time</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="1045"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Assigned To</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="Chief Engineer"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-6 mt-4">
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Completion Date</Label>
+                              <Input 
+                                type="date"
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="dd-mm-yyyy"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Completion Time</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="1200"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Performed by</Label>
+                              <Select>
+                                <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
+                                  <SelectValue placeholder="Chief Engineer" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
+                                  <SelectItem value="2nd Engineer">2nd Engineer</SelectItem>
+                                  <SelectItem value="3rd Engineer">3rd Engineer</SelectItem>
+                                  <SelectItem value="4th Engineer">4th Engineer</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-6 mt-4">
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">No of Persons in the team</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="3"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Total Time Taken (Hours)</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="5"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm text-[#8798ad]">Manhours</Label>
+                              <Input 
+                                className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                                placeholder="15"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
                           <Textarea 
-                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                             rows={4}
-                            placeholder="Describe the work performed in detail"
+                            placeholder="Work carried out"
                           />
                         </div>
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Materials Used</Label>
+
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Job Experience / Notes</Label>
                           <Textarea 
-                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            rows={3}
-                            placeholder="List materials and spare parts used"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={4}
+                            placeholder="Job Experience / Notes"
                           />
                         </div>
                       </div>
                     </div>
 
-                    {/* B2. Risk Assessment & Safety */}
+                    {/* B3. Running Hours */}
                     <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B2. Risk Assessment & Safety</h4>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Risk Assessment Completed</Label>
-                          <Select>
-                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
-                              <SelectValue placeholder="Select Yes/No" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Yes">Yes</SelectItem>
-                              <SelectItem value="No">No</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Safety Measures Implemented</Label>
-                          <Textarea 
-                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            rows={3}
-                            placeholder="Describe safety measures taken during work"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Incidents/Issues Encountered</Label>
-                          <Textarea 
-                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            rows={3}
-                            placeholder="Report any incidents or issues during work execution"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* B3. Quality & Testing */}
-                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Quality & Testing</h4>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Testing/Inspection Performed</Label>
-                          <Select>
-                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
-                              <SelectValue placeholder="Select Yes/No" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Yes">Yes</SelectItem>
-                              <SelectItem value="No">No</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Test Results</Label>
-                          <Textarea 
-                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            rows={3}
-                            placeholder="Describe test results and measurements"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-sm text-[#8798ad]">Work Status</Label>
-                          <Select>
-                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Completed Successfully">Completed Successfully</SelectItem>
-                              <SelectItem value="Completed with Issues">Completed with Issues</SelectItem>
-                              <SelectItem value="Partially Completed">Partially Completed</SelectItem>
-                              <SelectItem value="Failed">Failed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* B4. Sign-off */}
-                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B4. Sign-off</h4>
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Running Hours</h4>
                       
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Performed By</Label>
+                          <Label className="text-sm text-[#8798ad]">Previous reading</Label>
                           <Input 
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            placeholder="Name and Rank"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Date</Label>
-                          <Input 
-                            type="date"
                             className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Verified By</Label>
+                          <Label className="text-sm text-[#8798ad]">Current Reading</Label>
                           <Input 
-                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                            placeholder="Name and Rank"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Date</Label>
-                          <Input 
-                            type="date"
                             className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           />
                         </div>
                       </div>
+                    </div>
 
-                      <div className="mt-4">
-                        <Label className="text-sm text-[#8798ad]">Additional Comments</Label>
-                        <Textarea 
-                          className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
-                          rows={3}
-                          placeholder="Any additional comments or recommendations"
-                        />
+                    {/* B4. Spare Parts Consumed */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-md font-medium" style={{ color: '#16569e' }}>B4. Spare Parts Consumed</h4>
+                        <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                          + Add Spare Part
+                        </Button>
                       </div>
+                      
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left p-3 text-sm font-medium text-[#8798ad]">Part No</th>
+                              <th className="text-left p-3 text-sm font-medium text-[#8798ad]">Description</th>
+                              <th className="text-left p-3 text-sm font-medium text-[#8798ad]">Quantity Consumed</th>
+                              <th className="text-left p-3 text-sm font-medium text-[#8798ad]">Comments (if any)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-gray-100">
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="SP - 001" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="O-Ring Seal" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="2" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" />
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="SP-002" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="Filter Element" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="1" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" />
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-100">
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="SP - 003" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="Bearing" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" placeholder="2" />
+                              </td>
+                              <td className="p-3">
+                                <Input className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]" />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex justify-end mt-6">
+                      <Button className="bg-green-600 hover:bg-green-700 text-white px-8">
+                        Submit
+                      </Button>
                     </div>
                   </div>
                 </div>
