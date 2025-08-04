@@ -14,6 +14,7 @@ import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
 interface WorkOrderFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit?: (workOrderId: string) => void;
   workOrder: {
     id: string;
     workOrderNo: string;
@@ -28,6 +29,7 @@ interface WorkOrderFormProps {
 const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   isOpen,
   onClose,
+  onSubmit,
   workOrder,
 }) => {
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
@@ -70,6 +72,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   const selectSection = (section: 'partA' | 'partB') => {
     setActiveSection(section);
+  };
+
+  const handleSubmit = () => {
+    if (workOrder && onSubmit) {
+      onSubmit(workOrder.id);
+      onClose();
+    }
   };
 
   if (!workOrder) return null;
@@ -715,6 +724,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     <Button 
                       size="lg" 
                       className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium"
+                      onClick={handleSubmit}
                     >
                       Submit
                     </Button>

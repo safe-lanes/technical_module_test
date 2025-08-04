@@ -23,66 +23,54 @@ interface WorkOrder {
   dateCompleted?: string;
 }
 
-const WorkOrders: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedVessel, setSelectedVessel] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("");
-  const [selectedRank, setSelectedRank] = useState("");
-  const [selectedComponent, setSelectedComponent] = useState("");
-  const [selectedCriticality, setSelectedCriticality] = useState("");
-  const [activeTab, setActiveTab] = useState("All W.O");
-  const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
-  const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
-  const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
-
-  const workOrders: WorkOrder[] = [
-    {
-      id: "1",
-      component: "Main Engine",
-      workOrderNo: "WO-2025-03",
-      jobTitle: "Main Engine Overhaul - Replace Main Bearings",
-      assignedTo: "Chief Engineer",
-      dueDate: "02-Jun-2025",
-      status: "Completed",
-      dateCompleted: "02-Jun-2025"
-    },
-    {
-      id: "2",
-      component: "Diesel Generator 1",
-      workOrderNo: "WO-2025-17",
-      jobTitle: "DG1 - Replace Fuel Injectors",
-      assignedTo: "2nd Engineer",
-      dueDate: "05-Jun-2025",
-      status: "Due (Grace P)"
-    },
-    {
-      id: "3",
-      component: "Steering Gear",
-      workOrderNo: "WO-2025-54",
-      jobTitle: "Steering Gear - 3 Monthly XXX",
-      assignedTo: "2nd Engineer",
-      dueDate: "16-Jun-2025",
-      status: "Due"
-    },
-    {
-      id: "4",
-      component: "Main Cooling Seawater Pump",
-      workOrderNo: "WO-2025-19",
-      jobTitle: "MCSP - Replace Mechanical Seal",
-      assignedTo: "3rd Engineer",
-      dueDate: "23-Jun-2025",
-      status: "Due"
-    },
-    {
-      id: "5",
-      component: "Main Air Compressor",
-      workOrderNo: "WO-2025-03",
-      jobTitle: "Main Air Compressor - Work Order XXX",
-      assignedTo: "3rd Engineer",
-      dueDate: "30-Jun-2025",
-      status: "Completed",
-      dateCompleted: "30-Jun-2025"
-    },
+const initialWorkOrders: WorkOrder[] = [
+  {
+    id: "1",
+    component: "Main Engine",
+    workOrderNo: "WO-2025-03",
+    jobTitle: "Main Engine Overhaul - Replace Main Bearings",
+    assignedTo: "Chief Engineer",
+    dueDate: "02-Jun-2025",
+    status: "Completed",
+    dateCompleted: "02-Jun-2025"
+  },
+  {
+    id: "2",
+    component: "Diesel Generator 1",
+    workOrderNo: "WO-2025-17",
+    jobTitle: "DG1 - Replace Fuel Injectors",
+    assignedTo: "2nd Engineer",
+    dueDate: "05-Jun-2025",
+    status: "Due (Grace P)"
+  },
+  {
+    id: "3",
+    component: "Steering Gear",
+    workOrderNo: "WO-2025-54",
+    jobTitle: "Steering Gear - 3 Monthly XXX",
+    assignedTo: "2nd Engineer",
+    dueDate: "16-Jun-2025",
+    status: "Due"
+  },
+  {
+    id: "4",
+    component: "Main Cooling Seawater Pump",
+    workOrderNo: "WO-2025-19",
+    jobTitle: "MCSP - Replace Mechanical Seal",
+    assignedTo: "3rd Engineer",
+    dueDate: "23-Jun-2025",
+    status: "Due"
+  },
+  {
+    id: "5",
+    component: "Main Air Compressor",
+    workOrderNo: "WO-2025-03",
+    jobTitle: "Main Air Compressor - Work Order XXX",
+    assignedTo: "3rd Engineer",
+    dueDate: "30-Jun-2025",
+    status: "Completed",
+    dateCompleted: "30-Jun-2025"
+  },
     {
       id: "6",
       component: "Mooring Winch Forward",
@@ -148,14 +136,38 @@ const WorkOrders: React.FC = () => {
       dueDate: "09-Aug-2025",
       status: "Due"
     }
-  ];
+];
+
+const WorkOrders: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedVessel, setSelectedVessel] = useState("");
+  const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [selectedRank, setSelectedRank] = useState("");
+  const [selectedComponent, setSelectedComponent] = useState("");
+  const [selectedCriticality, setSelectedCriticality] = useState("");
+  const [activeTab, setActiveTab] = useState("All W.O");
+  const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
+  const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
+  const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
+  const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
+
+  const handleWorkOrderSubmit = (workOrderId: string) => {
+    setWorkOrdersList(prev => 
+      prev.map(wo => 
+        wo.id === workOrderId 
+          ? { ...wo, status: "Pending Approval" }
+          : wo
+      )
+    );
+    setActiveTab("Pending Approval");
+  };
 
   const tabs = [
-    { id: "All W.O", label: "All W.O", count: workOrders.length },
-    { id: "Due", label: "Due", count: workOrders.filter(wo => wo.status === "Due").length },
-    { id: "Pending Approval", label: "Pending Approval", count: 0 },
-    { id: "Overdue", label: "Overdue", count: workOrders.filter(wo => wo.status === "Overdue").length },
-    { id: "Completed", label: "Completed", count: workOrders.filter(wo => wo.status === "Completed").length }
+    { id: "All W.O", label: "All W.O", count: workOrdersList.length },
+    { id: "Due", label: "Due", count: workOrdersList.filter(wo => wo.status === "Due").length },
+    { id: "Pending Approval", label: "Pending Approval", count: workOrdersList.filter(wo => wo.status === "Pending Approval").length },
+    { id: "Overdue", label: "Overdue", count: workOrdersList.filter(wo => wo.status === "Overdue").length },
+    { id: "Completed", label: "Completed", count: workOrdersList.filter(wo => wo.status === "Completed").length }
   ];
 
   const getStatusBadgeColor = (status: string) => {
@@ -175,7 +187,7 @@ const WorkOrders: React.FC = () => {
     }
   };
 
-  const filteredWorkOrders = workOrders.filter(wo => {
+  const filteredWorkOrders = workOrdersList.filter(wo => {
     if (activeTab !== "All W.O") {
       if (activeTab === "Due" && wo.status !== "Due") return false;
       if (activeTab === "Overdue" && wo.status !== "Overdue") return false;
@@ -377,6 +389,7 @@ const WorkOrders: React.FC = () => {
       <WorkOrderForm
         isOpen={workOrderFormOpen}
         onClose={() => setWorkOrderFormOpen(false)}
+        onSubmit={handleWorkOrderSubmit}
         workOrder={selectedWorkOrder}
       />
     </div>
