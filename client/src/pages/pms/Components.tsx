@@ -3,6 +3,7 @@ import { Search, ChevronRight, ChevronDown, Edit2, FileText } from "lucide-react
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ComponentRegisterForm from "@/components/ComponentRegisterForm";
 import {
   Select,
   SelectContent,
@@ -605,6 +606,7 @@ const Components: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -693,7 +695,12 @@ const Components: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold text-gray-800">Components</h1>
-          <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">+ Add / Edit Component</Button>
+          <Button 
+            className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
+            onClick={() => setIsComponentFormOpen(true)}
+          >
+            + Add / Edit Component
+          </Button>
         </div>
         
         {/* Filters Row */}
@@ -819,6 +826,16 @@ const Components: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Component Register Form */}
+      <ComponentRegisterForm 
+        isOpen={isComponentFormOpen}
+        onClose={() => setIsComponentFormOpen(false)}
+        onSubmit={(componentData) => {
+          console.log('Component data submitted:', componentData);
+          // Handle component submission here
+        }}
+      />
     </div>
   );
 };
