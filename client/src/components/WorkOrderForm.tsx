@@ -655,6 +655,79 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* B3. Running Hours */}
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Running Hours</h4>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">Previous reading</Label>
+                        <Input type="text" className="w-full" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">Current Reading</Label>
+                        <Input type="text" className="w-full" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* B4. Spare Parts Consumed */}
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-md font-medium" style={{ color: '#16569e' }}>B4. Spare Parts Consumed</h4>
+                      <button className="text-sm text-blue-600 hover:text-blue-800">+ Add Spare Part</button>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded">
+                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-700">
+                          <div>Part No</div>
+                          <div>Description</div>
+                          <div>Quantity Consumed</div>
+                          <div>Comments (if any)</div>
+                        </div>
+                      </div>
+                      <div className="divide-y divide-gray-200">
+                        <div className="px-4 py-3">
+                          <div className="grid grid-cols-4 gap-4 text-sm items-center">
+                            <div className="text-gray-900">SP -001</div>
+                            <div className="text-gray-900">O-Ring Seal</div>
+                            <div>
+                              <Input type="text" className="w-full" defaultValue="2" />
+                            </div>
+                            <div>
+                              <Input type="text" className="w-full" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-4 py-3">
+                          <div className="grid grid-cols-4 gap-4 text-sm items-center">
+                            <div className="text-gray-900">SP-002</div>
+                            <div className="text-gray-900">Filter Element</div>
+                            <div>
+                              <Input type="text" className="w-full" defaultValue="1" />
+                            </div>
+                            <div>
+                              <Input type="text" className="w-full" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-4 py-3">
+                          <div className="grid grid-cols-4 gap-4 text-sm items-center">
+                            <div className="text-gray-900">SP -003</div>
+                            <div className="text-gray-900">Bearing</div>
+                            <div>
+                              <Input type="text" className="w-full" defaultValue="2" />
+                            </div>
+                            <div>
+                              <Input type="text" className="w-full" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
