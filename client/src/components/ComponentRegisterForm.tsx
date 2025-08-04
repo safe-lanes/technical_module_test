@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Plus, Upload, Eye, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Upload, Eye, Trash2, Edit3, X } from "lucide-react";
 
 interface ComponentRegisterFormProps {
   isOpen: boolean;
@@ -208,9 +208,33 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                 {/* A. Component Information */}
                 <div>
                   <h4 className="text-lg font-semibold mb-4 text-[#16569e]">A. Component Information</h4>
-                  <div className="grid grid-cols-3 gap-6">
+                  <div className="grid grid-cols-4 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Serial No</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Maker</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
+                      <Input 
+                        className="border-[#52baf3] border-2 focus:border-[#52baf3]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Model</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
+                      <Input 
+                        className="border-[#52baf3] border-2 focus:border-[#52baf3]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Serial No</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.serialNo}
                         onChange={(e) => handleInputChange('serialNo', e.target.value)}
@@ -218,7 +242,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Drawing No</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Drawing No</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.drawingNo}
                         onChange={(e) => handleInputChange('drawingNo', e.target.value)}
@@ -226,7 +254,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Component Code</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Component Code</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.componentCode}
                         onChange={(e) => handleInputChange('componentCode', e.target.value)}
@@ -234,7 +266,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Equip / System Category</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Eqpt / System Category</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.equipmentCategory}
                         onChange={(e) => handleInputChange('equipmentCategory', e.target.value)}
@@ -242,7 +278,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Location</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Location</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.location}
                         onChange={(e) => handleInputChange('location', e.target.value)}
@@ -250,13 +290,21 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Office</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Critical</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Installation Date</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Installation Date</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.installation}
                         onChange={(e) => handleInputChange('installation', e.target.value)}
@@ -264,15 +312,21 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Component Type</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Commissioned Date</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
-                        value={componentData.componentType}
-                        onChange={(e) => handleInputChange('componentType', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Rating</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Rating</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.rating}
                         onChange={(e) => handleInputChange('rating', e.target.value)}
@@ -280,13 +334,21 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Condition Based</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Condition Based</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">No of Units</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">No of Units</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.noOfUnits}
                         onChange={(e) => handleInputChange('noOfUnits', e.target.value)}
@@ -294,7 +356,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Equip / System Department</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Eqpt / System Department</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.equipmentDepartment}
                         onChange={(e) => handleInputChange('equipmentDepartment', e.target.value)}
@@ -302,7 +368,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Parent Component</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Parent Component</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.parentComponent}
                         onChange={(e) => handleInputChange('parentComponent', e.target.value)}
@@ -310,17 +380,24 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Dimensionless Unit</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Dimensions/Size</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                   </div>
                   <div className="mt-4 space-y-2">
-                    <Label className="text-sm text-[#8798ad]">Facility</Label>
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm text-[#8798ad]">Notes</Label>
+                      <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                      <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                    </div>
                     <Textarea 
-                      value={componentData.facility}
-                      onChange={(e) => handleInputChange('facility', e.target.value)}
+                      placeholder="Notes"
                       className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       rows={2}
                     />
@@ -329,70 +406,57 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
 
                 {/* B. Running Hours & Condition Monitoring Metrics */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-[#16569e]">B. Running Hours & Condition Monitoring Metrics</h4>
-                    <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Metrics
-                    </Button>
-                  </div>
+                  <h4 className="text-lg font-semibold mb-4 text-[#16569e]">B. Running Hours & Condition Monitoring Metrics</h4>
                   <div className="grid grid-cols-2 gap-6 mb-4">
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Running Hours (Unit 1)</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Running Hours</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
-                        value={componentData.runningHoursUnit1}
-                        onChange={(e) => handleInputChange('runningHoursUnit1', e.target.value)}
+                        placeholder="20000"
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Running Hours (Unit 2)</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Date Updated</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
-                        value={componentData.runningHoursUnit2}
-                        onChange={(e) => handleInputChange('runningHoursUnit2', e.target.value)}
+                        placeholder="dd-mm-yyyy"
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <h5 className="font-medium text-gray-900">Condition Monitoring Metrics</h5>
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-medium text-gray-900">Condition Monitoring Metrics</h5>
+                      <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Metric
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Metric</Label>
-                        <Input 
-                          value={componentData.conditionMonitoringMetrics.metric}
-                          onChange={(e) => handleInputChange('conditionMonitoringMetrics.metric', e.target.value)}
-                          className="border-[#52baf3] border-2 focus:border-[#52baf3]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Monitor Thresholds</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm text-[#8798ad]">Metric</Label>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
                         <Input 
                           className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Interval</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm text-[#8798ad]">Alerts/ Thresholds</Label>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
                         <Input 
-                          value={componentData.conditionMonitoringMetrics.interval}
-                          onChange={(e) => handleInputChange('conditionMonitoringMetrics.interval', e.target.value)}
-                          className="border-[#52baf3] border-2 focus:border-[#52baf3]"
-                        />
-                      </div>
-                      <div></div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Temperature</Label>
-                        <Input 
-                          value={componentData.conditionMonitoringMetrics.temperature}
-                          onChange={(e) => handleInputChange('conditionMonitoringMetrics.temperature', e.target.value)}
-                          className="border-[#52baf3] border-2 focus:border-[#52baf3]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Pressure</Label>
-                        <Input 
-                          value={componentData.conditionMonitoringMetrics.pressure}
-                          onChange={(e) => handleInputChange('conditionMonitoringMetrics.pressure', e.target.value)}
                           className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                         />
                       </div>
