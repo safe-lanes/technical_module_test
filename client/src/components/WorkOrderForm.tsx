@@ -578,6 +578,83 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* B2. Details of Work Carried Out */}
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B2. Details of Work Carried Out</h4>
+                    
+                    <div className="mb-6">
+                      <h5 className="text-sm font-medium text-gray-900 mb-4">B2.1 Work Duration:</h5>
+                      
+                      <div className="grid grid-cols-3 gap-6 mb-4">
+                        {/* Row 1 */}
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Start Date</Label>
+                          <Input type="date" className="w-full" placeholder="dd-mm-yyyy" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Start Time</Label>
+                          <Input type="text" className="w-full" defaultValue="1045" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Assigned To</Label>
+                          <Input type="text" className="w-full" defaultValue="Chief Engineer" />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6 mb-4">
+                        {/* Row 2 */}
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Completion Date</Label>
+                          <Input type="date" className="w-full" placeholder="dd-mm-yyyy" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Completion Time</Label>
+                          <Input type="text" className="w-full" defaultValue="1200" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Performed by</Label>
+                          <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                            <option>Chief Engineer</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6 mb-6">
+                        {/* Row 3 */}
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">No of Persons in the team</Label>
+                          <Input type="text" className="w-full" defaultValue="3" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Total Time Taken (Hours)</Label>
+                          <Input type="text" className="w-full" defaultValue="3" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Manhours</Label>
+                          <Input type="text" className="w-full" defaultValue="3.3" />
+                        </div>
+                      </div>
+                      
+                      {/* Work Carried Out */}
+                      <div className="space-y-2 mb-4">
+                        <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
+                        <Textarea 
+                          className="w-full min-h-[80px]" 
+                          placeholder="Work carried out"
+                        />
+                      </div>
+                      
+                      {/* Job Experience / Notes */}
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">Job Experience / Notes</Label>
+                        <Textarea 
+                          className="w-full min-h-[80px]" 
+                          placeholder="Job Experience / Notes"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
