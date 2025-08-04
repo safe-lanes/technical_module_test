@@ -83,7 +83,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[80vw] max-w-none h-[90vh] flex flex-col">
-        <DialogHeader className="pb-4">
+        <DialogHeader className="pb-4 pr-12">
           <div className="flex items-center justify-between">
             <DialogTitle>Work Order Form</DialogTitle>
             <div className="flex items-center gap-2">
@@ -106,15 +106,24 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           {/* Left Sidebar - Navigation */}
           <div className="w-72 bg-gray-50 border-r border-gray-200 p-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-2 p-3 rounded bg-[#ffffff] text-[#1656ae]">
-                <div className="w-6 h-6 bg-white text-[#52baf3] rounded-full flex items-center justify-center text-sm font-semibold">
+              <div 
+                className={`flex items-center gap-2 p-3 rounded cursor-pointer ${
+                  expandedSections.partA ? 'bg-[#ffffff]' : 'hover:bg-gray-100'
+                }`}
+                onClick={() => toggleSection('partA')}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  expandedSections.partA ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
+                }`}>
                   A
                 </div>
-                <span className="font-medium">Work Order Details</span>
+                <span className={`font-medium ${
+                  expandedSections.partA ? 'text-[#16569e]' : 'text-[#8a8a8a]'
+                }`}>Work Order Details</span>
               </div>
               <div 
                 className={`flex items-center gap-2 p-3 rounded cursor-pointer ${
-                  expandedSections.partB ? 'bg-[#ffffff] text-[#1656ae]' : 'text-gray-600 hover:bg-gray-100'
+                  expandedSections.partB ? 'bg-[#ffffff]' : 'hover:bg-gray-100'
                 }`}
                 onClick={() => toggleSection('partB')}
               >
@@ -123,7 +132,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                 }`}>
                   B
                 </div>
-                <span className="font-medium">Work Completion Record</span>
+                <span className={`font-medium ${
+                  expandedSections.partB ? 'text-[#16569e]' : 'text-[#8a8a8a]'
+                }`}>Work Completion Record</span>
               </div>
             </div>
           </div>
