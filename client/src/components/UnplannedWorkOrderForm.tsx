@@ -290,17 +290,6 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       </div>
                     </div>
                   </div>
-
-                  {/* Submit Button */}
-                  <div className="flex justify-end mt-6">
-                    <Button 
-                      size="lg" 
-                      className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium"
-                      onClick={handleSubmit}
-                    >
-                      Submit
-                    </Button>
-                  </div>
                 </div>
               </div>
             )}
