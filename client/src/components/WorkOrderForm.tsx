@@ -81,7 +81,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
+      <DialogContent className="w-[80vw] max-w-none h-[90vh] flex flex-col">
         <DialogHeader className="pb-4">
           <div className="flex items-center justify-between">
             <DialogTitle>Work Order Form</DialogTitle>
