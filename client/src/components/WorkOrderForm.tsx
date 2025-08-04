@@ -79,6 +79,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     setActiveSection(section);
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSubmit = () => {
     if (workOrder && onSubmit) {
       onSubmit(workOrder.id, formData);
@@ -166,11 +173,19 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Job Title</Label>
-                        <div className="text-sm text-gray-900">{formData.jobTitle}</div>
+                        <Input 
+                          value={formData.jobTitle} 
+                          onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                          className="text-sm"
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Component</Label>
-                        <div className="text-sm text-gray-900">{formData.component}</div>
+                        <Input 
+                          value={formData.component} 
+                          onChange={(e) => handleInputChange('component', e.target.value)}
+                          className="text-sm"
+                        />
                       </div>
 
                       {/* Row 2 */}
@@ -180,7 +195,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Assigned to</Label>
-                        <div className="text-sm text-gray-900">{formData.assignedTo}</div>
+                        <Input 
+                          value={formData.assignedTo} 
+                          onChange={(e) => handleInputChange('assignedTo', e.target.value)}
+                          className="text-sm"
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Approver</Label>
@@ -221,9 +240,12 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     {/* Brief Work Description */}
                     <div className="mt-6">
                       <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
-                      <div className="mt-2 p-3 bg-gray-50 rounded border text-sm text-gray-900">
-                        {formData.briefWorkDescription}
-                      </div>
+                      <Textarea 
+                        value={formData.briefWorkDescription} 
+                        onChange={(e) => handleInputChange('briefWorkDescription', e.target.value)}
+                        className="mt-2 text-sm"
+                        rows={3}
+                      />
                     </div>
                   </div>
 
