@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
+import WorkInstructionsDialog from "./WorkInstructionsDialog";
 
 interface WorkOrderFormProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   workOrder,
 }) => {
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
+  const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     workOrder: "",
@@ -102,7 +104,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           <div className="flex items-center justify-between">
             <DialogTitle>Work Order Form</DialogTitle>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsWorkInstructionsOpen(true)}
+              >
                 <FileText className="h-4 w-4 mr-1" />
                 Work Instructions
               </Button>
@@ -762,6 +768,12 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           </div>
         </div>
       </DialogContent>
+      
+      {/* Work Instructions Dialog */}
+      <WorkInstructionsDialog 
+        isOpen={isWorkInstructionsOpen}
+        onClose={() => setIsWorkInstructionsOpen(false)}
+      />
     </Dialog>
   );
 };
