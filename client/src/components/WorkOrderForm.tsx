@@ -452,7 +452,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                 onClick={() => toggleSection('partB')}
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Part B - Work Completion Record</h3>
+                  <h3 className="text-lg font-semibold text-[#16569e]">Part B - Work Completion Record</h3>
                   <p className="text-sm mt-1 text-[#52baf3]">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
                 </div>
                 {expandedSections.partB ? (
