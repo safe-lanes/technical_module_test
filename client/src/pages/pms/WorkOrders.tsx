@@ -12,6 +12,7 @@ import {
 import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
 import WorkOrderForm from "@/components/WorkOrderForm";
 import UnplannedWorkOrderForm from "@/components/UnplannedWorkOrderForm";
+import NewWorkOrderForm from "@/components/NewWorkOrderForm";
 
 interface WorkOrder {
   id: string;
@@ -437,7 +438,7 @@ const WorkOrders: React.FC = () => {
       />
 
       {/* New Work Order Form (Editable) */}
-      <UnplannedWorkOrderForm
+      <NewWorkOrderForm
         isOpen={newWorkOrderFormOpen}
         onClose={() => setNewWorkOrderFormOpen(false)}
       />
