@@ -151,6 +151,7 @@ const WorkOrders: React.FC = () => {
   const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
   const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
   const [unplannedWorkOrderFormOpen, setUnplannedWorkOrderFormOpen] = useState(false);
+  const [newWorkOrderFormOpen, setNewWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
   const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
 
@@ -227,6 +228,20 @@ const WorkOrders: React.FC = () => {
     setWorkOrderFormOpen(true);
   };
 
+  const handleAddWorkOrderClick = () => {
+    const newWorkOrder: WorkOrder = {
+      id: `new-${Date.now()}`,
+      component: "",
+      workOrderNo: "",
+      jobTitle: "",
+      assignedTo: "",
+      dueDate: "",
+      status: "Draft"
+    };
+    setSelectedWorkOrder(newWorkOrder);
+    setNewWorkOrderFormOpen(true);
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header with Status Tabs */}
@@ -234,7 +249,11 @@ const WorkOrders: React.FC = () => {
         <div className="flex items-center justify-between p-4">
           <h1 className="text-xl font-semibold text-gray-900">Work Orders (W.O)</h1>
           <div className="flex gap-2">
-            <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+            <Button 
+              size="sm" 
+              className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
+              onClick={handleAddWorkOrderClick}
+            >
               <Plus className="h-4 w-4 mr-1" />
               Add W.O
             </Button>
@@ -415,6 +434,12 @@ const WorkOrders: React.FC = () => {
       <UnplannedWorkOrderForm
         isOpen={unplannedWorkOrderFormOpen}
         onClose={() => setUnplannedWorkOrderFormOpen(false)}
+      />
+
+      {/* New Work Order Form (Editable) */}
+      <UnplannedWorkOrderForm
+        isOpen={newWorkOrderFormOpen}
+        onClose={() => setNewWorkOrderFormOpen(false)}
       />
     </div>
   );
