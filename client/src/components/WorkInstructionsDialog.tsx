@@ -19,18 +19,10 @@ const WorkInstructionsDialog: React.FC<WorkInstructionsDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between pb-4">
+        <DialogHeader className="pb-4">
           <DialogTitle className="text-lg font-semibold text-[#16569e]">
             Work Instructions
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="h-6 w-6 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         
         <div className="space-y-4">
