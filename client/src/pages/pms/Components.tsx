@@ -693,9 +693,7 @@ const Components: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold text-gray-800">Components</h1>
-          <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">
-            + Add Edit Component
-          </Button>
+          <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">+ Add / Edit Component</Button>
         </div>
         
         {/* Filters Row */}
