@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Search, ChevronRight, ChevronDown, Edit2, FileText } from "lucide-react";
-import ComponentRegisterForm from "@/components/ComponentRegisterForm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -606,8 +605,6 @@ const Components: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
-  const [componentRegisterFormOpen, setComponentRegisterFormOpen] = useState(false);
-  const [componentsList, setComponentsList] = useState<ComponentNode[]>(dummyComponents);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -633,25 +630,7 @@ const Components: React.FC = () => {
     });
   };
 
-  const handleComponentSubmit = (componentData: any) => {
-    // Generate new component code based on last component in selected parent
-    const newComponentCode = `601.003.${String(componentsList.length + 1).padStart(3, '0')}`;
-    
-    const newComponent: ComponentNode = {
-      id: Date.now().toString(),
-      code: newComponentCode,
-      name: componentData.details || "New Component",
-      children: []
-    };
-
-    // Add to the components list (could be added to appropriate parent based on selection)
-    setComponentsList(prev => [...prev, newComponent]);
-    
-    // Set as selected component
-    setSelectedComponent(newComponent);
-  };
-
-  const renderComponentTree = (nodes: ComponentNode[] = componentsList, level: number = 0) => {
+  const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
     return nodes.map((node) => {
       const hasChildren = node.children && node.children.length > 0;
       const isExpanded = expandedNodes.has(node.id);
@@ -714,12 +693,7 @@ const Components: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold text-gray-800">Components</h1>
-          <Button 
-            className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
-            onClick={() => setComponentRegisterFormOpen(true)}
-          >
-            + Add / Edit Component
-          </Button>
+          <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">+ Add / Edit Component</Button>
         </div>
         
         {/* Filters Row */}
@@ -772,7 +746,7 @@ const Components: React.FC = () => {
                 COMPONENTS
               </div>
               <div>
-                {renderComponentTree(componentsList)}
+                {renderComponentTree(dummyComponents)}
               </div>
             </div>
           </div>
@@ -845,13 +819,6 @@ const Components: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Component Register Form */}
-      <ComponentRegisterForm
-        isOpen={componentRegisterFormOpen}
-        onClose={() => setComponentRegisterFormOpen(false)}
-        onSubmit={handleComponentSubmit}
-      />
     </div>
   );
 };
