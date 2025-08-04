@@ -105,7 +105,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           {/* Left Sidebar - Navigation */}
           <div className="w-72 bg-gray-50 border-r border-gray-200 p-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-2 p-3 bg-[#52baf3] text-white rounded">
+              <div className="flex items-center gap-2 p-3 rounded bg-[#ffffff] text-[#1656ae]">
                 <div className="w-6 h-6 bg-white text-[#52baf3] rounded-full flex items-center justify-center text-sm font-semibold">
                   A
                 </div>
