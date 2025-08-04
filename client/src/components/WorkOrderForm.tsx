@@ -23,6 +23,7 @@ interface WorkOrderFormProps {
     assignedTo: string;
     dueDate: string;
     status: string;
+    formData?: any;
   } | null;
 }
 
@@ -52,21 +53,25 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   React.useEffect(() => {
     if (workOrder) {
-      setFormData({
-        workOrder: workOrder.workOrderNo,
-        jobTitle: workOrder.jobTitle,
-        component: workOrder.component,
-        jobType: "Scheduled Maintenance",
-        assignedTo: workOrder.assignedTo,
-        approver: "Chief Engineer",
-        frequency: "Frequency",
-        frequencyValue: "6 Months",
-        status: workOrder.status,
-        jobCategory: "Mechanical",
-        jobPriority: "Medium",
-        classRelated: "Yes",
-        briefWorkDescription: "Replace fuel filters for the main engine as per the manufacturer's guidance XXX",
-      });
+      if (workOrder.formData) {
+        setFormData(workOrder.formData);
+      } else {
+        setFormData({
+          workOrder: workOrder.workOrderNo,
+          jobTitle: workOrder.jobTitle,
+          component: workOrder.component,
+          jobType: "Scheduled Maintenance",
+          assignedTo: workOrder.assignedTo,
+          approver: "Chief Engineer",
+          frequency: "Frequency",
+          frequencyValue: "6 Months",
+          status: workOrder.status,
+          jobCategory: "Mechanical",
+          jobPriority: "Medium",
+          classRelated: "Yes",
+          briefWorkDescription: "Replace fuel filters for the main engine as per the manufacturer's guidance XXX",
+        });
+      }
     }
   }, [workOrder]);
 

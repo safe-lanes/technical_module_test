@@ -21,6 +21,7 @@ interface WorkOrder {
   dueDate: string;
   status: string;
   dateCompleted?: string;
+  formData?: any;
 }
 
 const initialWorkOrders: WorkOrder[] = [
@@ -158,6 +159,7 @@ const WorkOrders: React.FC = () => {
           ? { 
               ...wo, 
               status: "Pending Approval",
+              formData: formData,
               ...(formData && {
                 jobTitle: formData.jobTitle || wo.jobTitle,
                 component: formData.component || wo.component,
