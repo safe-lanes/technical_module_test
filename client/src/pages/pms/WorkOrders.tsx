@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
+import WorkOrderForm from "@/components/WorkOrderForm";
 
 interface WorkOrder {
   id: string;
@@ -31,6 +32,7 @@ const WorkOrders: React.FC = () => {
   const [selectedCriticality, setSelectedCriticality] = useState("");
   const [activeTab, setActiveTab] = useState("All W.O");
   const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
+  const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
 
   const workOrders: WorkOrder[] = [
@@ -194,6 +196,11 @@ const WorkOrders: React.FC = () => {
     setPostponeDialogOpen(true);
   };
 
+  const handleWorkOrderClick = (workOrder: WorkOrder) => {
+    setSelectedWorkOrder(workOrder);
+    setWorkOrderFormOpen(true);
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header with Status Tabs */}
@@ -320,7 +327,12 @@ const WorkOrders: React.FC = () => {
             {filteredWorkOrders.map((workOrder, index) => (
               <tr key={workOrder.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                 <td className="py-3 px-4 text-gray-900">{workOrder.component}</td>
-                <td className="py-3 px-4 text-gray-900">{workOrder.workOrderNo}</td>
+                <td 
+                  className="py-3 px-4 text-blue-600 hover:text-blue-800 cursor-pointer"
+                  onClick={() => handleWorkOrderClick(workOrder)}
+                >
+                  {workOrder.workOrderNo}
+                </td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.jobTitle}</td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.assignedTo}</td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.dueDate}</td>
@@ -358,6 +370,13 @@ const WorkOrders: React.FC = () => {
       <PostponeWorkOrderDialog
         isOpen={postponeDialogOpen}
         onClose={() => setPostponeDialogOpen(false)}
+        workOrder={selectedWorkOrder}
+      />
+
+      {/* Work Order Form */}
+      <WorkOrderForm
+        isOpen={workOrderFormOpen}
+        onClose={() => setWorkOrderFormOpen(false)}
         workOrder={selectedWorkOrder}
       />
     </div>
