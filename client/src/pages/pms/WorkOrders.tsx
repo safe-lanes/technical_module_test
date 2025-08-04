@@ -151,11 +151,19 @@ const WorkOrders: React.FC = () => {
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
   const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
 
-  const handleWorkOrderSubmit = (workOrderId: string) => {
+  const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
     setWorkOrdersList(prev => 
       prev.map(wo => 
         wo.id === workOrderId 
-          ? { ...wo, status: "Pending Approval" }
+          ? { 
+              ...wo, 
+              status: "Pending Approval",
+              ...(formData && {
+                jobTitle: formData.jobTitle || wo.jobTitle,
+                component: formData.component || wo.component,
+                assignedTo: formData.assignedTo || wo.assignedTo
+              })
+            }
           : wo
       )
     );
@@ -246,7 +254,7 @@ const WorkOrders: React.FC = () => {
               }`}
             >
               {tab.label}
-              {tab.count > 0 && activeTab !== tab.id && (
+              {tab.count > 0 && (
                 <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white rounded-full text-xs">
                   {tab.count}
                 </span>

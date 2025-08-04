@@ -14,7 +14,7 @@ import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
 interface WorkOrderFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (workOrderId: string) => void;
+  onSubmit?: (workOrderId: string, formData?: any) => void;
   workOrder: {
     id: string;
     workOrderNo: string;
@@ -76,7 +76,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   const handleSubmit = () => {
     if (workOrder && onSubmit) {
-      onSubmit(workOrder.id);
+      onSubmit(workOrder.id, formData);
       onClose();
     }
   };
