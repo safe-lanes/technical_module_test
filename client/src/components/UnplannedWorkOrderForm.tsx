@@ -138,7 +138,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.workOrder} 
                           onChange={(e) => handleInputChange('workOrder', e.target.value)}
-                          className="text-sm"
+                          className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -146,14 +146,14 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.jobTitle} 
                           onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                          className="text-sm"
+                          className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           placeholder="Main Engine - Replace Fuel Filters"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Component</Label>
                         <Select value={formData.component} onValueChange={(value) => handleInputChange('component', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue placeholder="601.002 Main Engine" />
                           </SelectTrigger>
                           <SelectContent>
@@ -168,7 +168,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Maintenance Type</Label>
                         <Select value={formData.maintenanceType} onValueChange={(value) => handleInputChange('maintenanceType', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -181,7 +181,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Assigned To</Label>
                         <Select value={formData.assignedTo} onValueChange={(value) => handleInputChange('assignedTo', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue placeholder="Rank" />
                           </SelectTrigger>
                           <SelectContent>
@@ -195,7 +195,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Approver</Label>
                         <Select value={formData.approver} onValueChange={(value) => handleInputChange('approver', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue placeholder="Rank" />
                           </SelectTrigger>
                           <SelectContent>
@@ -209,7 +209,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Job Category</Label>
                         <Select value={formData.jobCategory} onValueChange={(value) => handleInputChange('jobCategory', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue placeholder="Mechanical" />
                           </SelectTrigger>
                           <SelectContent>
@@ -223,7 +223,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Class Related</Label>
                         <Select value={formData.classRelated} onValueChange={(value) => handleInputChange('classRelated', value)}>
-                          <SelectTrigger className="text-sm">
+                          <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]">
                             <SelectValue placeholder="Yes" />
                           </SelectTrigger>
                           <SelectContent>
@@ -237,7 +237,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.status} 
                           onChange={(e) => handleInputChange('status', e.target.value)}
-                          className="text-sm"
+                          className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           placeholder="Status"
                         />
                       </div>
@@ -249,7 +249,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                       <Textarea 
                         value={formData.briefWorkDescription} 
                         onChange={(e) => handleInputChange('briefWorkDescription', e.target.value)}
-                        className="mt-2 text-sm"
+                        className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                         rows={3}
                         placeholder="Add Work description"
                       />
@@ -266,7 +266,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.ppeRequirements} 
                           onChange={(e) => handleInputChange('ppeRequirements', e.target.value)}
-                          className="mt-2 text-sm"
+                          className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           placeholder="[Leather Gloves] [Goggles] [Safety Helmet]"
                         />
                       </div>
@@ -275,7 +275,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.permitRequirements} 
                           onChange={(e) => handleInputChange('permitRequirements', e.target.value)}
-                          className="mt-2 text-sm"
+                          className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           placeholder="[Enclosed Space Entry Permit]"
                         />
                       </div>
@@ -284,7 +284,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         <Input 
                           value={formData.otherSafetyRequirements} 
                           onChange={(e) => handleInputChange('otherSafetyRequirements', e.target.value)}
-                          className="mt-2 text-sm"
+                          className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
                           placeholder="Free Text"
                         />
                       </div>
