@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
 import WorkOrderForm from "@/components/WorkOrderForm";
+import UnplannedWorkOrderForm from "@/components/UnplannedWorkOrderForm";
 
 interface WorkOrder {
   id: string;
@@ -149,6 +150,7 @@ const WorkOrders: React.FC = () => {
   const [activeTab, setActiveTab] = useState("All W.O");
   const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
   const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
+  const [unplannedWorkOrderFormOpen, setUnplannedWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
   const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
 
@@ -236,7 +238,11 @@ const WorkOrders: React.FC = () => {
               <Plus className="h-4 w-4 mr-1" />
               Add W.O
             </Button>
-            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+            <Button 
+              size="sm" 
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => setUnplannedWorkOrderFormOpen(true)}
+            >
               <Plus className="h-4 w-4 mr-1" />
               Unplanned W.O
             </Button>
@@ -403,6 +409,12 @@ const WorkOrders: React.FC = () => {
         onClose={() => setWorkOrderFormOpen(false)}
         onSubmit={handleWorkOrderSubmit}
         workOrder={selectedWorkOrder}
+      />
+
+      {/* Unplanned Work Order Form */}
+      <UnplannedWorkOrderForm
+        isOpen={unplannedWorkOrderFormOpen}
+        onClose={() => setUnplannedWorkOrderFormOpen(false)}
       />
     </div>
   );
