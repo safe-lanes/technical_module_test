@@ -476,11 +476,31 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                       <div className="grid grid-cols-6 gap-4 text-sm font-medium text-gray-700">
-                        <div>W.O No.</div>
-                        <div>Job Title</div>
-                        <div>Assigned to</div>
-                        <div>Due Date</div>
-                        <div>Status</div>
+                        <div className="flex items-center gap-2">
+                          <span>W.O No.</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Job Title</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Assigned to</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Due Date</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Status</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
                         <div></div>
                       </div>
                     </div>
@@ -537,11 +557,31 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                       <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-700">
-                        <div>Work Order No</div>
-                        <div>Performed By</div>
-                        <div>Total Time (Hrs)</div>
-                        <div>Completion Date</div>
-                        <div>Status</div>
+                        <div className="flex items-center gap-2">
+                          <span>Work Order No</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Performed By</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Total Time (Hrs)</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Completion Date</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Status</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
                       </div>
                     </div>
                     <div className="px-4 py-3">
@@ -593,11 +633,31 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                       <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-700">
-                        <div>Part Code</div>
-                        <div>Part Name</div>
-                        <div>Min</div>
-                        <div>Critical</div>
-                        <div>Location</div>
+                        <div className="flex items-center gap-2">
+                          <span>Part Code</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Part Name</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Min</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Critical</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Location</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
                       </div>
                     </div>
                     <div className="px-4 py-3">
@@ -648,19 +708,35 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 border border-[#52baf3] rounded">
-                      <span className="text-sm">General Arrangement</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">General Arrangement</span>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Upload className="h-4 w-4 text-[#52baf3]" />
                     </div>
                     <div className="flex items-center justify-between p-2 border border-[#52baf3] rounded">
-                      <span className="text-sm">Maintenance Manual</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">Maintenance Manual</span>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Upload className="h-4 w-4 text-[#52baf3]" />
                     </div>
                     <div className="flex items-center justify-between p-2 border border-[#52baf3] rounded">
-                      <span className="text-sm">Installation Guide</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">Installation Guide</span>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Upload className="h-4 w-4 text-[#52baf3]" />
                     </div>
                     <div className="flex items-center justify-between p-2 border border-[#52baf3] rounded">
-                      <span className="text-sm">Trouble Shooting Guide</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">Trouble Shooting Guide</span>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Upload className="h-4 w-4 text-[#52baf3]" />
                     </div>
                   </div>
@@ -671,7 +747,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   <h4 className="text-lg font-semibold mb-4 text-[#16569e]">G. Classification & Regulatory Data</h4>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Classification Provider</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Classification Provider</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.classificationProvider}
                         onChange={(e) => handleInputChange('classificationData.classificationProvider', e.target.value)}
@@ -679,7 +759,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Certificate No</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Certificate No</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.certificateNo}
                         onChange={(e) => handleInputChange('classificationData.certificateNo', e.target.value)}
@@ -687,7 +771,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Last Data Survey</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Last Data Survey</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.lastDataSurvey}
                         onChange={(e) => handleInputChange('classificationData.lastDataSurvey', e.target.value)}
@@ -695,7 +783,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Next Data Survey</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Next Data Survey</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.nextDataSurvey}
                         onChange={(e) => handleInputChange('classificationData.nextDataSurvey', e.target.value)}
@@ -703,7 +795,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Survey Type</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Survey Type</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.surveyType}
                         onChange={(e) => handleInputChange('classificationData.surveyType', e.target.value)}
@@ -711,7 +807,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Class Requirements</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Class Requirements</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.classRequirements}
                         onChange={(e) => handleInputChange('classificationData.classRequirements', e.target.value)}
@@ -719,7 +819,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Class Code</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Class Code</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.classCode}
                         onChange={(e) => handleInputChange('classificationData.classCode', e.target.value)}
@@ -727,7 +831,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm text-[#8798ad]">Information</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-[#8798ad]">Information</Label>
+                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                      </div>
                       <Input 
                         value={componentData.classificationData.information}
                         onChange={(e) => handleInputChange('classificationData.information', e.target.value)}
