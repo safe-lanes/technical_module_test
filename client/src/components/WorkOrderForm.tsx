@@ -123,7 +123,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           {/* Right Content Area */}
           <div className="flex-1 overflow-auto p-6">
             {/* Part A - Work Order Details */}
-            <div className="bg-white rounded-lg border border-gray-200 mb-4">
+            <div className="bg-white rounded-lg border-2 border-gray-300 mb-4">
               <div 
                 className="flex items-center justify-between p-4 cursor-pointer border-b border-gray-200"
                 onClick={() => toggleSection('partA')}
@@ -141,7 +141,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
               {expandedSections.partA && (
                 <div className="p-6">
-                  <div className="mb-6">
+                  {/* A1. Work Order Information */}
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A1. Work Order Information</h4>
                     
                     <div className="grid grid-cols-3 gap-6">
@@ -214,7 +215,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   </div>
 
                   {/* A2. Required Spare Parts */}
-                  <div className="mb-6">
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-md font-medium" style={{ color: '#16569e' }}>A2. Required Spare Parts</h4>
                       <button className="text-sm text-blue-600 hover:text-blue-800">+ Add Spare Part</button>
@@ -279,7 +280,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   </div>
 
                   {/* A3. Required Tools & Equipment */}
-                  <div className="mb-6">
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-md font-medium" style={{ color: '#16569e' }}>A3. Required Tools & Equipment</h4>
                       <button className="text-sm text-blue-600 hover:text-blue-800">+ Add Tool / Eqpt...</button>
@@ -340,7 +341,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   </div>
 
                   {/* A4. Safety Requirements */}
-                  <div className="mb-6">
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A4. Safety Requirements</h4>
                     
                     <div className="space-y-3">
@@ -371,7 +372,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   </div>
 
                   {/* A5. Work History */}
-                  <div className="mb-6">
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A5. Work History</h4>
                     
                     <div className="border border-gray-200 rounded">
