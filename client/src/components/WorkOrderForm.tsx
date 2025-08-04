@@ -32,6 +32,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 }) => {
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
     partA: true,
+    partB: false,
   });
 
   const [formData, setFormData] = useState({
@@ -111,8 +112,15 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                 </div>
                 <span className="font-medium">Work Order Details</span>
               </div>
-              <div className="flex items-center gap-2 p-3 text-gray-600 rounded hover:bg-gray-100 cursor-pointer">
-                <div className="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+              <div 
+                className={`flex items-center gap-2 p-3 rounded cursor-pointer ${
+                  expandedSections.partB ? 'bg-[#ffffff] text-[#1656ae]' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                onClick={() => toggleSection('partB')}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  expandedSections.partB ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
+                }`}>
                   B
                 </div>
                 <span className="font-medium">Work Completion Record</span>
@@ -429,6 +437,143 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               </button>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Part B - Work Completion Record */}
+            <div className="bg-white rounded-lg border-2 border-gray-300 mb-4">
+              <div 
+                className="flex items-center justify-between p-4 cursor-pointer border-b border-gray-200"
+                onClick={() => toggleSection('partB')}
+              >
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Part B - Work Completion Record</h3>
+                  <p className="text-sm text-gray-600 mt-1">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
+                </div>
+                {expandedSections.partB ? (
+                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-500" />
+                )}
+              </div>
+
+              {expandedSections.partB && (
+                <div className="p-6">
+                  {/* B1. Risk Assessment, Checklists & Records */}
+                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B1. Risk Assessment, Checklists & Records</h4>
+                    
+                    <div className="space-y-4">
+                      {/* B1.1 Risk Assessment Completed / Reviewed */}
+                      <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-6">
+                          <Label className="text-sm text-gray-900">B1.1 Risk Assessment Completed / Reviewed:</Label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-4">
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="riskAssessment" value="yes" defaultChecked className="text-blue-600" />
+                            <span className="text-sm">Yes</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="riskAssessment" value="no" className="text-blue-600" />
+                            <span className="text-sm">No</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="riskAssessment" value="na" className="text-blue-600" />
+                            <span className="text-sm">NA</span>
+                          </label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-2">
+                          <Button variant="outline" size="sm" className="text-xs">Upload</Button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clipRule="evenodd"/>
+                              <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* B1.2 Safety Checklists Completed */}
+                      <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-6">
+                          <Label className="text-sm text-gray-900">B1.2 Safety Checklists Completed (As applicable):</Label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-4">
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="safetyChecklists" value="yes" defaultChecked className="text-blue-600" />
+                            <span className="text-sm">Yes</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="safetyChecklists" value="no" className="text-blue-600" />
+                            <span className="text-sm">No</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="safetyChecklists" value="na" className="text-blue-600" />
+                            <span className="text-sm">NA</span>
+                          </label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-2">
+                          <Button variant="outline" size="sm" className="text-xs">Upload</Button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clipRule="evenodd"/>
+                              <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* B1.3 Operational Forms Completed */}
+                      <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-6">
+                          <Label className="text-sm text-gray-900">B1.3 Operational Forms Completed (As applicable):</Label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-4">
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="operationalForms" value="yes" defaultChecked className="text-blue-600" />
+                            <span className="text-sm">Yes</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="operationalForms" value="no" className="text-blue-600" />
+                            <span className="text-sm">No</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input type="radio" name="operationalForms" value="na" className="text-blue-600" />
+                            <span className="text-sm">NA</span>
+                          </label>
+                        </div>
+                        <div className="col-span-3 flex items-center gap-2">
+                          <Button variant="outline" size="sm" className="text-xs">Upload</Button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clipRule="evenodd"/>
+                              <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z" clipRule="evenodd"/>
+                            </svg>
+                          </button>
                         </div>
                       </div>
                     </div>
