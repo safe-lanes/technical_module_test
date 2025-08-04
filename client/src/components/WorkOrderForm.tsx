@@ -453,7 +453,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
               >
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Part B - Work Completion Record</h3>
-                  <p className="text-sm text-gray-600 mt-1">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
+                  <p className="text-sm mt-1 text-[#52baf3]">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
                 </div>
                 {expandedSections.partB ? (
                   <ChevronDown className="h-5 w-5 text-gray-500" />
