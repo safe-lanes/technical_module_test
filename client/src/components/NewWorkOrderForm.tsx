@@ -81,7 +81,7 @@ const NewWorkOrderForm: React.FC<NewWorkOrderFormProps> = ({
                   onClick={() => setIsWorkInstructionsOpen(true)}
                 >
                   <FileText className="h-4 w-4 mr-1" />
-                  Work Instructions
+                  + Add Work Instructions
                 </Button>
                 <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
                   Save
@@ -314,7 +314,183 @@ const NewWorkOrderForm: React.FC<NewWorkOrderFormProps> = ({
                   </div>
 
                   <div className="p-6">
-                    <p className="text-gray-600 text-center py-8">Work completion record section will be implemented here.</p>
+                    {/* B1. Work Execution Details */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B1. Work Execution Details</h4>
+                      
+                      <div className="grid grid-cols-2 gap-6 mb-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Date Started</Label>
+                          <Input 
+                            type="date"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Date Completed</Label>
+                          <Input 
+                            type="date"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Time Started</Label>
+                          <Input 
+                            type="time"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Time Completed</Label>
+                          <Input 
+                            type="time"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Work Performed</Label>
+                          <Textarea 
+                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={4}
+                            placeholder="Describe the work performed in detail"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Materials Used</Label>
+                          <Textarea 
+                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={3}
+                            placeholder="List materials and spare parts used"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* B2. Risk Assessment & Safety */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B2. Risk Assessment & Safety</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Risk Assessment Completed</Label>
+                          <Select>
+                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
+                              <SelectValue placeholder="Select Yes/No" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Yes">Yes</SelectItem>
+                              <SelectItem value="No">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Safety Measures Implemented</Label>
+                          <Textarea 
+                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={3}
+                            placeholder="Describe safety measures taken during work"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Incidents/Issues Encountered</Label>
+                          <Textarea 
+                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={3}
+                            placeholder="Report any incidents or issues during work execution"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* B3. Quality & Testing */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Quality & Testing</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Testing/Inspection Performed</Label>
+                          <Select>
+                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
+                              <SelectValue placeholder="Select Yes/No" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Yes">Yes</SelectItem>
+                              <SelectItem value="No">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Test Results</Label>
+                          <Textarea 
+                            className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            rows={3}
+                            placeholder="Describe test results and measurements"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-[#8798ad]">Work Status</Label>
+                          <Select>
+                            <SelectTrigger className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3] mt-2">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Completed Successfully">Completed Successfully</SelectItem>
+                              <SelectItem value="Completed with Issues">Completed with Issues</SelectItem>
+                              <SelectItem value="Partially Completed">Partially Completed</SelectItem>
+                              <SelectItem value="Failed">Failed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* B4. Sign-off */}
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B4. Sign-off</h4>
+                      
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Performed By</Label>
+                          <Input 
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            placeholder="Name and Rank"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Date</Label>
+                          <Input 
+                            type="date"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Verified By</Label>
+                          <Input 
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                            placeholder="Name and Rank"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Date</Label>
+                          <Input 
+                            type="date"
+                            className="text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <Label className="text-sm text-[#8798ad]">Additional Comments</Label>
+                        <Textarea 
+                          className="mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]"
+                          rows={3}
+                          placeholder="Any additional comments or recommendations"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
