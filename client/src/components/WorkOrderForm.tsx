@@ -30,10 +30,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   onClose,
   workOrder,
 }) => {
-  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
-    partA: true,
-    partB: false,
-  });
+  const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
 
   const [formData, setFormData] = useState({
     workOrder: "",
@@ -71,11 +68,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     }
   }, [workOrder]);
 
-  const toggleSection = (sectionKey: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey]
-    }));
+  const selectSection = (section: 'partA' | 'partB') => {
+    setActiveSection(section);
   };
 
   if (!workOrder) return null;
@@ -108,33 +102,29 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
             <div className="space-y-2">
               <div 
                 className={`flex items-center gap-2 p-3 rounded cursor-pointer ${
-                  expandedSections.partA ? 'bg-[#ffffff]' : 'hover:bg-gray-100'
+                  activeSection === 'partA' ? 'bg-[#16569e] text-white' : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
                 }`}
-                onClick={() => toggleSection('partA')}
+                onClick={() => selectSection('partA')}
               >
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  expandedSections.partA ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
+                  activeSection === 'partA' ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
                 }`}>
                   A
                 </div>
-                <span className={`font-medium ${
-                  expandedSections.partA ? 'text-[#16569e]' : 'text-[#8a8a8a]'
-                }`}>Work Order Details</span>
+                <span className="font-medium">Work Order Details</span>
               </div>
               <div 
                 className={`flex items-center gap-2 p-3 rounded cursor-pointer ${
-                  expandedSections.partB ? 'bg-[#ffffff]' : 'hover:bg-gray-100'
+                  activeSection === 'partB' ? 'bg-[#16569e] text-white' : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
                 }`}
-                onClick={() => toggleSection('partB')}
+                onClick={() => selectSection('partB')}
               >
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  expandedSections.partB ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
+                  activeSection === 'partB' ? 'bg-white text-[#52baf3]' : 'bg-gray-300 text-white'
                 }`}>
                   B
                 </div>
-                <span className={`font-medium ${
-                  expandedSections.partB ? 'text-[#16569e]' : 'text-[#8a8a8a]'
-                }`}>Work Completion Record</span>
+                <span className="font-medium">Work Completion Record</span>
               </div>
             </div>
           </div>
@@ -142,23 +132,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           {/* Right Content Area */}
           <div className="flex-1 overflow-auto p-6">
             {/* Part A - Work Order Details */}
-            <div className="bg-white rounded-lg border-2 border-gray-300 mb-4">
-              <div 
-                className="flex items-center justify-between p-4 cursor-pointer border-b border-gray-200"
-                onClick={() => toggleSection('partA')}
-              >
-                <div>
+            {activeSection === 'partA' && (
+              <div className="border border-gray-200 rounded-lg mb-6">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900">Part A - Work Order Details</h3>
-                  <p className="text-sm text-gray-600 mt-1">Basic details about the work order</p>
+                  <p className="text-sm text-gray-600">Basic details about the work order</p>
                 </div>
-                {expandedSections.partA ? (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <ChevronRight className="h-5 w-5 text-gray-500" />
-                )}
-              </div>
 
-              {expandedSections.partA && (
                 <div className="p-6">
                   {/* A1. Work Order Information */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
@@ -453,27 +433,17 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Part B - Work Completion Record */}
-            <div className="bg-white rounded-lg border-2 border-gray-300 mb-4">
-              <div 
-                className="flex items-center justify-between p-4 cursor-pointer border-b border-gray-200"
-                onClick={() => toggleSection('partB')}
-              >
-                <div>
+            {activeSection === 'partB' && (
+              <div className="border border-gray-200 rounded-lg mb-6">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-[#16569e]">Part B - Work Completion Record</h3>
-                  <p className="text-sm mt-1 text-[#52baf3]">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
+                  <p className="text-sm text-[#52baf3]">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
                 </div>
-                {expandedSections.partB ? (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <ChevronRight className="h-5 w-5 text-gray-500" />
-                )}
-              </div>
 
-              {expandedSections.partB && (
                 <div className="p-6">
                   {/* B1. Risk Assessment, Checklists & Records */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
@@ -750,8 +720,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </Button>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
