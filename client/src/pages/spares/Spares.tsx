@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2 } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet } from "lucide-react";
 
 interface ComponentNode {
   id: string;
@@ -325,7 +325,7 @@ const Spares: React.FC = () => {
         <div key={node.id}>
           <div
             className={`flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${
-              isSelected ? "bg-blue-50" : ""
+              isSelected ? "bg-[#52baf3] text-white" : ""
             }`}
             style={{ paddingLeft: `${level * 20 + 12}px` }}
             onClick={() => selectComponent(node.id)}
@@ -341,15 +341,15 @@ const Spares: React.FC = () => {
             >
               {hasChildren ? (
                 isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-gray-600" />
+                  <ChevronDown className={`h-4 w-4 ${isSelected ? "text-white" : "text-gray-600"}`} />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                  <ChevronRight className={`h-4 w-4 ${isSelected ? "text-white" : "text-gray-600"}`} />
                 )
               ) : (
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className={`h-4 w-4 ${isSelected ? "text-white" : "text-gray-400"}`} />
               )}
             </button>
-            <span className="text-sm text-gray-700">
+            <span className={`text-sm ${isSelected ? "text-white" : "text-gray-700"}`}>
               {node.code}. {node.name}
             </span>
           </div>
@@ -397,11 +397,12 @@ const Spares: React.FC = () => {
 
         {/* Right Panel - Spares Table */}
         <div className="w-[70%]">
-          {/* Search and Filters */}
+          {/* Search and Filters - Two Row Layout */}
           <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
-            <div className="flex gap-4 items-center flex-wrap">
+            {/* Row 1: Vessel and Search */}
+            <div className="flex gap-4 items-center mb-3">
               <Select>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-40">
                   <SelectValue placeholder="Vessel" />
                 </SelectTrigger>
                 <SelectContent>
@@ -410,16 +411,19 @@ const Spares: React.FC = () => {
                 </SelectContent>
               </Select>
 
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search parts or components"
+                  placeholder="Search parts or components.."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
+            </div>
 
+            {/* Row 2: Criticality, Stock, Export, Clear */}
+            <div className="flex gap-4 items-center">
               <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Criticality" />
@@ -442,6 +446,10 @@ const Spares: React.FC = () => {
                   <SelectItem value="OK">OK</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
 
               <Button variant="outline" onClick={clearFilters}>
                 Clear
@@ -503,6 +511,9 @@ const Spares: React.FC = () => {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Plus className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Clock className="h-4 w-4" />
