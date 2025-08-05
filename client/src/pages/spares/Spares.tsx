@@ -240,8 +240,8 @@ const Spares: React.FC = () => {
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [searchTerm, setSearchTerm] = useState("");
-  const [criticalityFilter, setCriticalityFilter] = useState("All");
-  const [stockFilter, setStockFilter] = useState("All");
+  const [criticalityFilter, setCriticalityFilter] = useState("");
+  const [stockFilter, setStockFilter] = useState("");
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -288,7 +288,7 @@ const Spares: React.FC = () => {
     }
 
     // Filter by criticality
-    if (criticalityFilter !== "All") {
+    if (criticalityFilter && criticalityFilter !== "All") {
       if (criticalityFilter === "Critical") {
         filtered = filtered.filter(spare => spare.critical === "Critical" || spare.critical === "Yes");
       } else if (criticalityFilter === "Non-Critical") {
@@ -297,7 +297,7 @@ const Spares: React.FC = () => {
     }
 
     // Filter by stock status
-    if (stockFilter !== "All") {
+    if (stockFilter && stockFilter !== "All") {
       filtered = filtered.filter(spare => {
         const stockStatus = getStockStatus(spare.rob, spare.min);
         return stockStatus === stockFilter;
@@ -310,8 +310,8 @@ const Spares: React.FC = () => {
   // Clear all filters
   const clearFilters = () => {
     setSearchTerm("");
-    setCriticalityFilter("All");
-    setStockFilter("All");
+    setCriticalityFilter("");
+    setStockFilter("");
     setSelectedComponentId(null);
   };
 
@@ -392,7 +392,7 @@ const Spares: React.FC = () => {
           </SelectContent>
         </Select>
 
-        <div className="relative flex-1">
+        <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             placeholder="Search parts or components.."
