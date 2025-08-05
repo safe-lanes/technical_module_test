@@ -527,7 +527,7 @@ const Spares: React.FC = () => {
       {/* Add Spares Modal */}
       {isAddSpareModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-auto">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-7xl max-h-[95vh] overflow-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Add Spares</h2>
