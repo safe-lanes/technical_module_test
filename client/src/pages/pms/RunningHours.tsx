@@ -30,8 +30,11 @@ const RunningHours = () => {
     dateUpdated: "",
     comments: ""
   });
+  const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: string]: string}>({});
+  const [bulkUpdateErrors, setBulkUpdateErrors] = useState<{[key: string]: string}>({});
 
-  const runningHoursData: RunningHoursData[] = [
+  const [runningHoursData, setRunningHoursData] = useState<RunningHoursData[]>([
     {
       id: "1",
       component: "Radar System",
@@ -122,7 +125,7 @@ const RunningHours = () => {
       nextService: "300 hrs",
       tracking: "yellow"
     }
-  ];
+  ]);
 
   const getTrackingColor = (tracking: string) => {
     switch (tracking) {
@@ -175,12 +178,78 @@ const RunningHours = () => {
     });
   };
 
+  const openBulkUpdate = () => {
+    setBulkUpdateData({});
+    setBulkUpdateErrors({});
+    setIsBulkUpdateOpen(true);
+  };
+
+  const handleBulkUpdateChange = (componentId: string, value: string) => {
+    setBulkUpdateData(prev => ({
+      ...prev,
+      [componentId]: value
+    }));
+    // Clear error when user starts typing
+    if (bulkUpdateErrors[componentId]) {
+      setBulkUpdateErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[componentId];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleBulkSave = () => {
+    const errors: {[key: string]: string} = {};
+    const today = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short', 
+      year: 'numeric'
+    });
+
+    // Update components that have new values
+    const updatedData = runningHoursData.map(component => {
+      const newValue = bulkUpdateData[component.id];
+      if (newValue && newValue.trim() !== "") {
+        // Validate numeric input
+        if (isNaN(Number(newValue.replace(/,/g, '')))) {
+          errors[component.id] = "Please enter a valid number";
+          return component;
+        }
+        
+        // Update the component
+        return {
+          ...component,
+          runningHours: `${Number(newValue).toLocaleString()} hrs`,
+          lastUpdated: today,
+          // Simple logic for next service and tracking - you can modify as needed
+          nextService: "Updated",
+          tracking: 'green' as const
+        };
+      }
+      return component;
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setBulkUpdateErrors(errors);
+      return;
+    }
+
+    setRunningHoursData(updatedData);
+    setIsBulkUpdateOpen(false);
+    setBulkUpdateData({});
+    setBulkUpdateErrors({});
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Running Hours</h1>
-        <Button className="bg-green-600 hover:bg-green-700 text-white ml-[228px] mr-[228px]">
+        <Button 
+          className="bg-green-600 hover:bg-green-700 text-white ml-[228px] mr-[228px]"
+          onClick={openBulkUpdate}
+        >
           <span className="mr-2">+</span>
           Bulk Update RH
         </Button>
@@ -359,6 +428,82 @@ const RunningHours = () => {
             <Button 
               className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white" 
               onClick={handleSaveUpdate}
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Update Dialog */}
+      <Dialog open={isBulkUpdateOpen} onOpenChange={setIsBulkUpdateOpen}>
+        <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-[#52baf3] text-xl">
+                Bulk Update Running Hours
+              </DialogTitle>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsBulkUpdateOpen(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-auto">
+            <div className="bg-white rounded-lg border border-gray-200">
+              {/* Table Header */}
+              <div className="bg-[#52baf3] text-white px-4 py-3">
+                <div className="grid grid-cols-4 gap-4 text-sm font-medium">
+                  <div>Component Name</div>
+                  <div>Previous Running Hours</div>
+                  <div>Present Running Hours</div>
+                  <div>Status</div>
+                </div>
+              </div>
+
+              {/* Table Body */}
+              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                {runningHoursData.map((item) => (
+                  <div key={item.id} className="px-4 py-3">
+                    <div className="grid grid-cols-4 gap-4 text-sm items-center">
+                      <div className="text-gray-900 font-medium">{item.component}</div>
+                      <div className="text-gray-700">{item.runningHours}</div>
+                      <div className="space-y-1">
+                        <Input 
+                          type="number"
+                          value={bulkUpdateData[item.id] || ""}
+                          onChange={(e) => handleBulkUpdateChange(item.id, e.target.value)}
+                          placeholder="Enter new value"
+                          className="w-full"
+                        />
+                        {bulkUpdateErrors[item.id] && (
+                          <div className="text-red-500 text-xs">
+                            {bulkUpdateErrors[item.id]}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-gray-500">
+                        {bulkUpdateData[item.id] && bulkUpdateData[item.id].trim() !== "" ? "Ready to update" : "No change"}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button variant="outline" onClick={() => setIsBulkUpdateOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white" 
+              onClick={handleBulkSave}
             >
               Save
             </Button>
