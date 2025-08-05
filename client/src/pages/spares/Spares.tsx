@@ -527,7 +527,7 @@ const Spares: React.FC = () => {
       {/* Add Spares Modal */}
       {isAddSpareModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-7xl max-h-[95vh] overflow-auto">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-6xl max-h-[95vh] overflow-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Add Spares</h2>
@@ -551,7 +551,7 @@ const Spares: React.FC = () => {
               </div>
 
               {/* Table Headers */}
-              <div className="grid grid-cols-9 gap-4 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+              <div className="grid gap-4 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
                 <div>Part Code</div>
                 <div>Part Name</div>
                 <div>Linked Component</div>
@@ -566,7 +566,7 @@ const Spares: React.FC = () => {
               {/* Form Rows */}
               <div className="border border-t-0 rounded-b">
                 {/* Row 1 */}
-                <div className="grid grid-cols-9 gap-4 p-3 border-b bg-white">
+                <div className="grid gap-4 p-3 border-b bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
                   <Input placeholder="SP-ME-001" className="text-sm" />
                   <Input placeholder="Fuel Injector" className="text-sm" />
                   <Select>
@@ -599,7 +599,7 @@ const Spares: React.FC = () => {
                 </div>
 
                 {/* Row 2 - Empty */}
-                <div className="grid grid-cols-9 gap-4 p-3 border-b bg-white">
+                <div className="grid gap-4 p-3 border-b bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
                   <Input className="text-sm" />
                   <Input className="text-sm" />
                   <Select>
@@ -632,7 +632,7 @@ const Spares: React.FC = () => {
                 </div>
 
                 {/* Row 3 - Empty */}
-                <div className="grid grid-cols-9 gap-4 p-3 bg-white">
+                <div className="grid gap-4 p-3 bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
                   <Input className="text-sm" />
                   <Input className="text-sm" />
                   <Select>
