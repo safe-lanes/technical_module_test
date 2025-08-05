@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Switch, Route } from "wouter";
 import { TechnicalModule } from "./pages/TechnicalModule";
 import WorkOrders from "./pages/pms/WorkOrders";
+import RunningHours from "./pages/pms/RunningHours";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
@@ -15,6 +16,7 @@ function App() {
         <Switch>
           <Route path="/" component={TechnicalModule} />
           <Route path="/pms/work-orders" component={WorkOrders} />
+          <Route path="/pms/running-hours" component={RunningHours} />
           <Route component={NotFound} />
         </Switch>
         <Toaster />

@@ -1,0 +1,253 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, FileSpreadsheet, X } from "lucide-react";
+
+interface RunningHoursData {
+  id: string;
+  component: string;
+  eqptCategory: string;
+  runningHours: string;
+  lastUpdated: string;
+  nextService: string;
+  tracking: 'green' | 'yellow' | 'red';
+}
+
+const RunningHours = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [vesselFilter, setVesselFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [criticalityFilter, setCriticalityFilter] = useState("");
+
+  const runningHoursData: RunningHoursData[] = [
+    {
+      id: "1",
+      component: "Radar System",
+      eqptCategory: "Navigation System",
+      runningHours: "18,560 hrs",
+      lastUpdated: "02-Jun-2025",
+      nextService: "436 hrs",
+      tracking: "yellow"
+    },
+    {
+      id: "2", 
+      component: "Diesel Generator # 1",
+      eqptCategory: "Electrical System",
+      runningHours: "15,670 hrs",
+      lastUpdated: "09-Jun-2025",
+      nextService: "257 hrs",
+      tracking: "green"
+    },
+    {
+      id: "3",
+      component: "Diesel Generator # 2", 
+      eqptCategory: "Electrical System",
+      runningHours: "14,980 hrs",
+      lastUpdated: "16-Jun-2025",
+      nextService: "150 hrs",
+      tracking: "green"
+    },
+    {
+      id: "4",
+      component: "Main Cooling Seawater Pump",
+      eqptCategory: "Cooling System", 
+      runningHours: "12,800 hrs",
+      lastUpdated: "23-Jun-2025",
+      nextService: "200 hrs",
+      tracking: "green"
+    },
+    {
+      id: "5",
+      component: "Main Engine",
+      eqptCategory: "Propulsion System",
+      runningHours: "12,580 hrs", 
+      lastUpdated: "30-Jun-2025",
+      nextService: "0 hrs",
+      tracking: "red"
+    },
+    {
+      id: "6",
+      component: "Propeller System",
+      eqptCategory: "Propulsion System",
+      runningHours: "12,580 hrs",
+      lastUpdated: "02-Jun-2025", 
+      nextService: "257 hrs",
+      tracking: "yellow"
+    },
+    {
+      id: "7",
+      component: "Main Lubrication Oil Pump",
+      eqptCategory: "Lubrication System",
+      runningHours: "12,450 hrs",
+      lastUpdated: "09-Jun-2025",
+      nextService: "436 hrs", 
+      tracking: "green"
+    },
+    {
+      id: "8",
+      component: "Steering Gear",
+      eqptCategory: "Navigation System",
+      runningHours: "11,240 hrs",
+      lastUpdated: "19-Jun-2025",
+      nextService: "> 120 hrs",
+      tracking: "red"
+    },
+    {
+      id: "9", 
+      component: "Main Air Compressor",
+      eqptCategory: "Air System",
+      runningHours: "10,840 hrs",
+      lastUpdated: "25-Jun-2025",
+      nextService: "560 hrs",
+      tracking: "green"
+    },
+    {
+      id: "10",
+      component: "Bow Thruster",
+      eqptCategory: "Propulsion System", 
+      runningHours: "10,450 hrs",
+      lastUpdated: "30-Jun-2025",
+      nextService: "300 hrs",
+      tracking: "yellow"
+    }
+  ];
+
+  const getTrackingColor = (tracking: string) => {
+    switch (tracking) {
+      case 'green': return 'bg-green-500';
+      case 'yellow': return 'bg-yellow-500';
+      case 'red': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setVesselFilter("");
+    setCategoryFilter("");
+    setCriticalityFilter("");
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-gray-900">Running Hours</h1>
+        <Button className="bg-green-600 hover:bg-green-700 text-white">
+          <span className="mr-2">+</span>
+          Bulk Update RH
+        </Button>
+      </div>
+
+      {/* Filters Row */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <Select value={vesselFilter} onValueChange={setVesselFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Vessel" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vessel1">Vessel 1</SelectItem>
+            <SelectItem value="vessel2">Vessel 2</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search Component"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Due/ Overdue" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="due">Due</SelectItem>
+            <SelectItem value="overdue">Overdue</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="navigation">Navigation System</SelectItem>
+            <SelectItem value="electrical">Electrical System</SelectItem>
+            <SelectItem value="propulsion">Propulsion System</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Criticality" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button variant="outline" className="flex items-center gap-2">
+          <FileSpreadsheet className="h-4 w-4" />
+        </Button>
+
+        <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
+          Clear
+        </Button>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Table Header */}
+        <div className="bg-[#52baf3] text-white px-4 py-3">
+          <div className="grid grid-cols-7 gap-4 text-sm font-medium">
+            <div>Component</div>
+            <div>Eqpt. Category</div>
+            <div>Running Hours</div>
+            <div>last Updated</div>
+            <div>Next Service</div>
+            <div>Tracking</div>
+            <div>Update RH</div>
+          </div>
+        </div>
+
+        {/* Table Body */}
+        <div className="divide-y divide-gray-200">
+          {runningHoursData.map((item) => (
+            <div key={item.id} className="px-4 py-3 hover:bg-gray-50">
+              <div className="grid grid-cols-7 gap-4 text-sm items-center">
+                <div className="text-gray-900">{item.component}</div>
+                <div className="text-gray-700">{item.eqptCategory}</div>
+                <div className="text-gray-900 font-medium">{item.runningHours}</div>
+                <div className="text-gray-700">{item.lastUpdated}</div>
+                <div className="text-gray-700">{item.nextService}</div>
+                <div className="flex items-center">
+                  <div className={`h-4 w-24 rounded-full ${getTrackingColor(item.tracking)}`}></div>
+                </div>
+                <div>
+                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                    <span className="text-gray-600">⚙</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end text-sm text-gray-500">
+        Page 6 of 6
+      </div>
+    </div>
+  );
+};
+
+export default RunningHours;
