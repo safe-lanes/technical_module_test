@@ -535,7 +535,7 @@ const Spares: React.FC = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => setIsAddSpareModalOpen(false)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 ml-[90px] mr-[90px]"
               >
                 <X className="h-4 w-4" />
               </Button>
