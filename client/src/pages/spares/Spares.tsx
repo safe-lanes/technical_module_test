@@ -527,7 +527,7 @@ const Spares: React.FC = () => {
       {/* Add Spares Modal */}
       {isAddSpareModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-6xl max-h-[95vh] overflow-auto">
+          <div className="bg-white rounded-lg shadow-lg w-[85%] max-w-5xl max-h-[80vh] overflow-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Add Spares</h2>
@@ -551,33 +551,35 @@ const Spares: React.FC = () => {
               </div>
 
               {/* Table Headers */}
-              <div className="grid gap-4 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
-                <div>Part Code</div>
-                <div>Part Name</div>
-                <div>Linked Component</div>
-                <div>Qty</div>
-                <div>Min Qty</div>
-                <div>Critical</div>
-                <div>Location</div>
-                <div></div>
-                <div></div>
+              <div className="grid grid-cols-9 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+                <div className="col-span-1">Part Code</div>
+                <div className="col-span-2">Part Name</div>
+                <div className="col-span-2">Linked Component</div>
+                <div className="col-span-1">Qty</div>
+                <div className="col-span-1">Min Qty</div>
+                <div className="col-span-1">Critical</div>
+                <div className="col-span-1">Location</div>
               </div>
 
               {/* Form Rows */}
               <div className="border border-t-0 rounded-b">
                 {/* Row 1 */}
-                <div className="grid gap-4 p-3 border-b bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
+                <div className="grid grid-cols-9 gap-3 p-3 border-b bg-white items-center">
                   <Input placeholder="SP-ME-001" className="text-sm" />
-                  <Input placeholder="Fuel Injector" className="text-sm" />
-                  <Select>
-                    <SelectTrigger className="text-sm">
-                      <SelectValue placeholder="Search Component" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="component1">Main Engine #1</SelectItem>
-                      <SelectItem value="component2">Main Engine #2</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="col-span-2">
+                    <Input placeholder="Fuel Injector" className="text-sm" />
+                  </div>
+                  <div className="col-span-2">
+                    <Select>
+                      <SelectTrigger className="text-sm">
+                        <SelectValue placeholder="Search Component" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="component1">Main Engine #1</SelectItem>
+                        <SelectItem value="component2">Main Engine #2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Input placeholder="1" className="text-sm" />
                   <Input placeholder="1" className="text-sm" />
                   <Select>
@@ -589,28 +591,34 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Input placeholder="Store Room A" className="text-sm" />
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Input placeholder="Store Room A" className="text-sm flex-1" />
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Row 2 - Empty */}
-                <div className="grid gap-4 p-3 border-b bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
+                <div className="grid grid-cols-9 gap-3 p-3 border-b bg-white items-center">
                   <Input className="text-sm" />
-                  <Input className="text-sm" />
-                  <Select>
-                    <SelectTrigger className="text-sm">
-                      <SelectValue placeholder="Search Component" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="component1">Main Engine #1</SelectItem>
-                      <SelectItem value="component2">Main Engine #2</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="col-span-2">
+                    <Input className="text-sm" />
+                  </div>
+                  <div className="col-span-2">
+                    <Select>
+                      <SelectTrigger className="text-sm">
+                        <SelectValue placeholder="Search Component" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="component1">Main Engine #1</SelectItem>
+                        <SelectItem value="component2">Main Engine #2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Input className="text-sm" />
                   <Input className="text-sm" />
                   <Select>
@@ -622,28 +630,34 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Input className="text-sm" />
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Input className="text-sm flex-1" />
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Row 3 - Empty */}
-                <div className="grid gap-4 p-3 bg-white" style={{gridTemplateColumns: "150px 200px 250px 80px 80px 100px 180px 40px 40px"}}>
+                <div className="grid grid-cols-9 gap-3 p-3 bg-white items-center">
                   <Input className="text-sm" />
-                  <Input className="text-sm" />
-                  <Select>
-                    <SelectTrigger className="text-sm">
-                      <SelectValue placeholder="Search Component" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="component1">Main Engine #1</SelectItem>
-                      <SelectItem value="component2">Main Engine #2</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="col-span-2">
+                    <Input className="text-sm" />
+                  </div>
+                  <div className="col-span-2">
+                    <Select>
+                      <SelectTrigger className="text-sm">
+                        <SelectValue placeholder="Search Component" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="component1">Main Engine #1</SelectItem>
+                        <SelectItem value="component2">Main Engine #2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Input className="text-sm" />
                   <Input className="text-sm" />
                   <Select>
@@ -655,13 +669,15 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Input className="text-sm" />
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Input className="text-sm flex-1" />
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
