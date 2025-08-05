@@ -380,6 +380,60 @@ const Spares: React.FC = () => {
         </div>
       </div>
 
+      {/* Search and Filters - Single Row Layout */}
+      <div className="flex gap-3 items-center mb-4">
+        <Select>
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Vessel" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vessel1">Vessel 1</SelectItem>
+            <SelectItem value="vessel2">Vessel 2</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search parts or components.."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Criticality" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            <SelectItem value="Critical">Critical</SelectItem>
+            <SelectItem value="Non-Critical">Non-Critical</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={stockFilter} onValueChange={setStockFilter}>
+          <SelectTrigger className="w-28">
+            <SelectValue placeholder="Stock" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            <SelectItem value="Minimum">Minimum</SelectItem>
+            <SelectItem value="Low">Low</SelectItem>
+            <SelectItem value="OK">OK</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button className="bg-green-600 hover:bg-green-700 text-white p-2">
+          <FileSpreadsheet className="h-4 w-4" />
+        </Button>
+
+        <Button variant="outline" onClick={clearFilters}>
+          Clear
+        </Button>
+      </div>
+
       <div className="flex gap-6 h-[calc(100vh-200px)]">
         {/* Left Panel - Component Tree */}
         <div className="w-[30%]">
@@ -397,59 +451,6 @@ const Spares: React.FC = () => {
 
         {/* Right Panel - Spares Table */}
         <div className="w-[70%]">
-          {/* Search and Filters - Single Row Layout */}
-          <div className="flex gap-3 items-center mb-4">
-            <Select>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Vessel" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="vessel1">Vessel 1</SelectItem>
-                <SelectItem value="vessel2">Vessel 2</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search parts or components.."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Criticality" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="Critical">Critical</SelectItem>
-                <SelectItem value="Non-Critical">Non-Critical</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={stockFilter} onValueChange={setStockFilter}>
-              <SelectTrigger className="w-28">
-                <SelectValue placeholder="Stock" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="Minimum">Minimum</SelectItem>
-                <SelectItem value="Low">Low</SelectItem>
-                <SelectItem value="OK">OK</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button className="bg-green-600 hover:bg-green-700 text-white p-2">
-              <FileSpreadsheet className="h-4 w-4" />
-            </Button>
-
-            <Button variant="outline" onClick={clearFilters}>
-              Clear
-            </Button>
-          </div>
 
           {/* Spares Table */}
           <div className="bg-white rounded-lg shadow-sm border">
@@ -505,9 +506,6 @@ const Spares: React.FC = () => {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Plus className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Clock className="h-4 w-4" />
