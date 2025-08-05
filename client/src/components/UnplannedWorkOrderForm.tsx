@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, List } from "lucide-react";
 
 interface UnplannedWorkOrderFormProps {
   isOpen: boolean;
@@ -30,6 +30,10 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
   onSubmit,
 }) => {
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
+  const [isPpeDialogOpen, setIsPpeDialogOpen] = useState(false);
+  const [isPermitDialogOpen, setIsPermitDialogOpen] = useState(false);
+  const [selectedPpeItems, setSelectedPpeItems] = useState<string[]>([]);
+  const [selectedPermitItems, setSelectedPermitItems] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     workOrder: "WOUP-2025-17",
@@ -58,6 +62,56 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
     }));
   };
 
+  const ppeOptions = [
+    "Leather Gloves",
+    "Goggles", 
+    "Safety Helmet",
+    "Text",
+    "Text",
+    "Text",
+    "Text",
+    "Text"
+  ];
+
+  const permitOptions = [
+    "Enclosed Space Entry Permit",
+    "Hot Work Permit",
+    "Work Aloft Permit", 
+    "Cold Work Permit",
+    "Text",
+    "Text",
+    "Text",
+    "Text"
+  ];
+
+  const handlePpeSelection = (item: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPpeItems(prev => [...prev, item]);
+    } else {
+      setSelectedPpeItems(prev => prev.filter(i => i !== item));
+    }
+  };
+
+  const handlePermitSelection = (item: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPermitItems(prev => [...prev, item]);
+    } else {
+      setSelectedPermitItems(prev => prev.filter(i => i !== item));
+    }
+  };
+
+  const savePpeSelection = () => {
+    const selectedText = selectedPpeItems.map(item => `[${item}]`).join(' ');
+    handleInputChange('ppeRequirements', selectedText);
+    setIsPpeDialogOpen(false);
+  };
+
+  const savePermitSelection = () => {
+    const selectedText = selectedPermitItems.map(item => `[${item}]`).join(' ');
+    handleInputChange('permitRequirements', selectedText);
+    setIsPermitDialogOpen(false);
+  };
+
   const handleSubmit = () => {
     if (onSubmit) {
       onSubmit(formData);
@@ -66,6 +120,7 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
   };
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[80vw] max-w-none h-[90vh] flex flex-col">
         <DialogHeader className="pb-4 pr-12">
@@ -262,7 +317,17 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                     
                     <div className="space-y-4">
                       <div>
-                        <Label className="text-sm text-[#8798ad]">PPE Requirements:</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm text-[#8798ad]">PPE Requirements:</Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsPpeDialogOpen(true)}
+                            className="p-1 h-6 w-6"
+                          >
+                            <List className="h-3 w-3" />
+                          </Button>
+                        </div>
                         <Input 
                           value={formData.ppeRequirements} 
                           onChange={(e) => handleInputChange('ppeRequirements', e.target.value)}
@@ -271,7 +336,17 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
                         />
                       </div>
                       <div>
-                        <Label className="text-sm text-[#8798ad]">Permit Requirements:</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm text-[#8798ad]">Permit Requirements:</Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsPermitDialogOpen(true)}
+                            className="p-1 h-6 w-6"
+                          >
+                            <List className="h-3 w-3" />
+                          </Button>
+                        </div>
                         <Input 
                           value={formData.permitRequirements} 
                           onChange={(e) => handleInputChange('permitRequirements', e.target.value)}
@@ -585,6 +660,77 @@ const UnplannedWorkOrderForm: React.FC<UnplannedWorkOrderFormProps> = ({
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* PPE Requirements Dialog */}
+    <Dialog open={isPpeDialogOpen} onOpenChange={setIsPpeDialogOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-[#52baf3] border-b border-[#52baf3] pb-2">
+            PPE Requirements
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 py-4">
+          {ppeOptions.map((item, index) => (
+            <div key={index} className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id={`ppe-${index}`}
+                checked={selectedPpeItems.includes(item)}
+                onChange={(e) => handlePpeSelection(item, e.target.checked)}
+                className="h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]"
+              />
+              <label htmlFor={`ppe-${index}`} className="text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1">
+                {item}
+              </label>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end gap-2 pt-4">
+          <Button variant="outline" onClick={() => setIsPpeDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white" onClick={savePpeSelection}>
+            Save
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Permit Requirements Dialog */}
+    <Dialog open={isPermitDialogOpen} onOpenChange={setIsPermitDialogOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-[#52baf3] border-b border-[#52baf3] pb-2">
+            Permit Requirements
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 py-4">
+          {permitOptions.map((item, index) => (
+            <div key={index} className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id={`permit-${index}`}
+                checked={selectedPermitItems.includes(item)}
+                onChange={(e) => handlePermitSelection(item, e.target.checked)}
+                className="h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]"
+              />
+              <label htmlFor={`permit-${index}`} className="text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1">
+                {item}
+              </label>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end gap-2 pt-4">
+          <Button variant="outline" onClick={() => setIsPermitDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white" onClick={savePermitSelection}>
+            Save
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 
