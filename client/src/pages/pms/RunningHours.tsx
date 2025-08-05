@@ -134,7 +134,7 @@ const RunningHours = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Running Hours</h1>
-        <Button className="bg-green-600 hover:bg-green-700 text-white">
+        <Button className="bg-green-600 hover:bg-green-700 text-white ml-[228px] mr-[228px]">
           <span className="mr-2">+</span>
           Bulk Update RH
         </Button>
