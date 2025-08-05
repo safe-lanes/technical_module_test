@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, FileSpreadsheet, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Search, FileSpreadsheet, X, Calendar } from "lucide-react";
 
 interface RunningHoursData {
   id: string;
@@ -19,6 +22,14 @@ const RunningHours = () => {
   const [vesselFilter, setVesselFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [criticalityFilter, setCriticalityFilter] = useState("");
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [selectedComponent, setSelectedComponent] = useState<RunningHoursData | null>(null);
+  const [updateForm, setUpdateForm] = useState({
+    oldValue: "",
+    newValue: "",
+    dateUpdated: "",
+    comments: ""
+  });
 
   const runningHoursData: RunningHoursData[] = [
     {
@@ -129,6 +140,41 @@ const RunningHours = () => {
     setCriticalityFilter("");
   };
 
+  const openUpdateDialog = (component: RunningHoursData) => {
+    setSelectedComponent(component);
+    setUpdateForm({
+      oldValue: component.runningHours.replace(" hrs", ""),
+      newValue: "",
+      dateUpdated: "",
+      comments: ""
+    });
+    setIsUpdateDialogOpen(true);
+  };
+
+  const handleUpdateFormChange = (field: string, value: string) => {
+    setUpdateForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveUpdate = () => {
+    // Handle save logic here
+    console.log("Saving update:", updateForm);
+    setIsUpdateDialogOpen(false);
+  };
+
+  const handleCancelUpdate = () => {
+    setIsUpdateDialogOpen(false);
+    setSelectedComponent(null);
+    setUpdateForm({
+      oldValue: "",
+      newValue: "",
+      dateUpdated: "",
+      comments: ""
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -232,7 +278,12 @@ const RunningHours = () => {
                   <div className={`h-4 w-24 rounded-full ${getTrackingColor(item.tracking)}`}></div>
                 </div>
                 <div>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => openUpdateDialog(item)}
+                  >
                     <span className="text-gray-600">⚙</span>
                   </Button>
                 </div>
@@ -246,6 +297,74 @@ const RunningHours = () => {
       <div className="flex justify-end text-sm text-gray-500">
         Page 6 of 6
       </div>
+
+      {/* Update Running Hours Dialog */}
+      <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#52baf3] border-b border-[#52baf3] pb-2">
+              Update Running Hours - {selectedComponent?.component}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm text-gray-600">Old Value</Label>
+                <Input 
+                  value={updateForm.oldValue}
+                  readOnly
+                  className="mt-1 bg-gray-100"
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-gray-600">New Value</Label>
+                <Input 
+                  value={updateForm.newValue}
+                  onChange={(e) => handleUpdateFormChange('newValue', e.target.value)}
+                  className="mt-1"
+                  placeholder="20000"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label className="text-sm text-gray-600">Date Updated</Label>
+              <div className="relative mt-1">
+                <Input 
+                  type="date"
+                  value={updateForm.dateUpdated}
+                  onChange={(e) => handleUpdateFormChange('dateUpdated', e.target.value)}
+                  className="pr-10"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm text-gray-600">Comments</Label>
+              <Textarea 
+                value={updateForm.comments}
+                onChange={(e) => handleUpdateFormChange('comments', e.target.value)}
+                className="mt-1 resize-none"
+                rows={3}
+                placeholder="Comments"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={handleCancelUpdate}>
+              Cancel
+            </Button>
+            <Button 
+              className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white" 
+              onClick={handleSaveUpdate}
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
