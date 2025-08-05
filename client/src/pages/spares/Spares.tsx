@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet, X } from "lucide-react";
 
 interface ComponentNode {
   id: string;
@@ -242,6 +242,7 @@ const Spares: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [criticalityFilter, setCriticalityFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
+  const [isAddSpareModalOpen, setIsAddSpareModalOpen] = useState(false);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -374,7 +375,7 @@ const Spares: React.FC = () => {
             <button className="px-4 py-2 bg-gray-200 text-gray-600 rounded-r">History</button>
           </div>
           <div className="flex gap-2">
-            <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">+ Add Spare</Button>
+            <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={() => setIsAddSpareModalOpen(true)}>+ Add Spare</Button>
             <Button className="bg-green-600 hover:bg-green-700 text-white">🔄 Bulk Update Spares</Button>
           </div>
         </div>
@@ -522,6 +523,164 @@ const Spares: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Spares Modal */}
+      {isAddSpareModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">Add Spares</h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsAddSpareModalOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              {/* Add Spare Button */}
+              <div className="flex justify-end mb-4">
+                <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white text-sm">
+                  + Add Spare
+                </Button>
+              </div>
+
+              {/* Table Headers */}
+              <div className="grid grid-cols-9 gap-4 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+                <div>Part Code</div>
+                <div>Part Name</div>
+                <div>Linked Component</div>
+                <div>Qty</div>
+                <div>Min Qty</div>
+                <div>Critical</div>
+                <div>Location</div>
+                <div></div>
+                <div></div>
+              </div>
+
+              {/* Form Rows */}
+              <div className="border border-t-0 rounded-b">
+                {/* Row 1 */}
+                <div className="grid grid-cols-9 gap-4 p-3 border-b bg-white">
+                  <Input placeholder="SP-ME-001" className="text-sm" />
+                  <Input placeholder="Fuel Injector" className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Search Component" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="component1">Main Engine #1</SelectItem>
+                      <SelectItem value="component2">Main Engine #2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input placeholder="1" className="text-sm" />
+                  <Input placeholder="1" className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Y" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Y">Y</SelectItem>
+                      <SelectItem value="N">N</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input placeholder="Store Room A" className="text-sm" />
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Row 2 - Empty */}
+                <div className="grid grid-cols-9 gap-4 p-3 border-b bg-white">
+                  <Input className="text-sm" />
+                  <Input className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Search Component" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="component1">Main Engine #1</SelectItem>
+                      <SelectItem value="component2">Main Engine #2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input className="text-sm" />
+                  <Input className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Y" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Y">Y</SelectItem>
+                      <SelectItem value="N">N</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input className="text-sm" />
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Row 3 - Empty */}
+                <div className="grid grid-cols-9 gap-4 p-3 bg-white">
+                  <Input className="text-sm" />
+                  <Input className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Search Component" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="component1">Main Engine #1</SelectItem>
+                      <SelectItem value="component2">Main Engine #2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input className="text-sm" />
+                  <Input className="text-sm" />
+                  <Select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Y" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Y">Y</SelectItem>
+                      <SelectItem value="N">N</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input className="text-sm" />
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsAddSpareModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
