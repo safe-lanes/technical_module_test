@@ -4,64 +4,70 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2 } from "lucide-react";
 
-// Sample data structure matching the image
-const componentsTree = [
+interface ComponentNode {
+  id: string;
+  code: string;
+  name: string;
+  children?: ComponentNode[];
+  isExpanded?: boolean;
+}
+
+const componentsTree: ComponentNode[] = [
   {
     id: "1",
+    code: "1",
     name: "Ship General",
-    expanded: false,
     children: []
   },
   {
     id: "2", 
+    code: "2",
     name: "Hull",
-    expanded: false,
     children: []
   },
   {
     id: "3",
+    code: "3", 
     name: "Equipment for Cargo",
-    expanded: false,
     children: []
   },
   {
     id: "4",
+    code: "4",
     name: "Ship's Equipment",
-    expanded: false,
     children: []
   },
   {
     id: "5",
+    code: "5",
     name: "Equipment for Crew & Passengers",
-    expanded: false,
     children: []
   },
   {
     id: "6",
+    code: "6",
     name: "Machinery Main Components",
-    expanded: true,
+    isExpanded: true,
     children: [
       {
-        id: "6.0",
+        id: "6.1",
+        code: "60",
         name: "Diesel Engines for Propulsion",
-        expanded: true,
         children: [
           {
-            id: "6.01",
+            id: "6.1.1",
+            code: "601",
             name: "Diesel Engines",
-            expanded: false,
             children: [
               {
-                id: "6.01.001",
-                name: "Main Diesel Engines",
-                expanded: false,
-                children: []
+                id: "6.1.1.1",
+                code: "601.001",
+                name: "Main Diesel Engines"
               },
               {
-                id: "6.01.002",
-                name: "ME cylinder covers w/ valves",
-                expanded: false,
-                children: []
+                id: "6.1.1.2",
+                code: "601.002",
+                name: "ME cylinder covers w/ valves"
               }
             ]
           }
@@ -71,14 +77,14 @@ const componentsTree = [
   },
   {
     id: "7",
+    code: "7",
     name: "Systems for Machinery Main Components",
-    expanded: false,
     children: []
   },
   {
     id: "8",
+    code: "8",
     name: "Ship Common Systems",
-    expanded: false,
     children: []
   }
 ];
@@ -231,27 +237,22 @@ const sparesData = [
 ];
 
 const Spares: React.FC = () => {
-  const [treeState, setTreeState] = useState(componentsTree);
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [searchTerm, setSearchTerm] = useState("");
   const [criticalityFilter, setCriticalityFilter] = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
 
-  // Toggle tree node expansion
-  const toggleTreeNode = (nodeId: string, path: number[] = []) => {
-    const updateNode = (nodes: any[], currentPath: number[]): any[] => {
-      return nodes.map((node, index) => {
-        const newPath = [...currentPath, index];
-        if (node.id === nodeId) {
-          return { ...node, expanded: !node.expanded };
-        }
-        if (node.children) {
-          return { ...node, children: updateNode(node.children, newPath) };
-        }
-        return node;
-      });
-    };
-    setTreeState(updateNode(treeState, []));
+  const toggleNode = (nodeId: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
   };
 
   // Select component from tree
@@ -314,78 +315,88 @@ const Spares: React.FC = () => {
     setSelectedComponentId(null);
   };
 
-  // Render tree nodes recursively
-  const renderTreeNode = (node: any, level: number = 0) => {
-    const hasChildren = node.children && node.children.length > 0;
-    const isSelected = selectedComponentId === node.id;
-    
-    return (
-      <div key={node.id}>
-        <div 
-          className={`flex items-center py-1 px-2 cursor-pointer hover:bg-gray-100 ${isSelected ? 'bg-blue-100' : ''}`}
-          style={{ paddingLeft: `${level * 20 + 8}px` }}
-          onClick={() => selectComponent(node.id)}
-        >
-          {hasChildren && (
+  const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
+    return nodes.map((node) => {
+      const hasChildren = node.children && node.children.length > 0;
+      const isExpanded = expandedNodes.has(node.id);
+      const isSelected = selectedComponentId === node.id;
+
+      return (
+        <div key={node.id}>
+          <div
+            className={`flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${
+              isSelected ? "bg-blue-50" : ""
+            }`}
+            style={{ paddingLeft: `${level * 20 + 12}px` }}
+            onClick={() => selectComponent(node.id)}
+          >
             <button
+              className="mr-2 flex-shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
-                toggleTreeNode(node.id);
+                if (hasChildren) {
+                  toggleNode(node.id);
+                }
               }}
-              className="mr-1 p-0 h-4 w-4 flex items-center justify-center"
             >
-              {node.expanded ? (
-                <ChevronDown className="h-3 w-3" />
+              {hasChildren ? (
+                isExpanded ? (
+                  <ChevronDown className="h-4 w-4 text-gray-600" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                )
               ) : (
-                <ChevronRight className="h-3 w-3" />
+                <ChevronRight className="h-4 w-4 text-gray-400" />
               )}
             </button>
-          )}
-          {!hasChildren && <div className="w-4 mr-1" />}
-          <span className="text-sm">{`${node.id}. ${node.name}`}</span>
-        </div>
-        {hasChildren && node.expanded && (
-          <div>
-            {node.children.map((child: any) => renderTreeNode(child, level + 1))}
+            <span className="text-sm text-gray-700">
+              {node.code}. {node.name}
+            </span>
           </div>
-        )}
-      </div>
-    );
+          {hasChildren && isExpanded && (
+            <div>{renderComponentTree(node.children!, level + 1)}</div>
+          )}
+        </div>
+      );
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="h-full p-6 bg-[#fafafa]">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Spares Inventory</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-semibold text-gray-800">Spares Inventory</h1>
+          <div className="flex gap-2">
+            <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">+ Add Spare</Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white">🔄 Bulk Update Spares</Button>
+          </div>
+        </div>
         
         {/* Navigation Tabs */}
         <div className="flex mb-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-l">Inventory</button>
           <button className="px-4 py-2 bg-gray-200 text-gray-600 rounded-r">History</button>
         </div>
-        
-        {/* Action Buttons */}
-        <div className="flex gap-2 mb-4">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">+ Add Spare</Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">🔄 Bulk Update Spares</Button>
-          <Button variant="outline" className="text-green-600 border-green-600">📊 Clear</Button>
-        </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex gap-6 h-[calc(100vh-200px)]">
         {/* Left Panel - Component Tree */}
-        <div className="w-80 bg-white rounded-lg shadow-sm border">
-          <div className="bg-[#52baf3] text-white px-4 py-3 rounded-t-lg">
-            <h2 className="font-medium">COMPONENTS</h2>
-          </div>
-          <div className="p-2 max-h-96 overflow-y-auto">
-            {treeState.map(node => renderTreeNode(node))}
+        <div className="w-[30%]">
+          <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
+            <div className="flex-1 overflow-auto">
+              <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
+                COMPONENTS
+              </div>
+              <div>
+                {renderComponentTree(componentsTree)}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Panel - Spares Table */}
-        <div className="flex-1">
+        <div className="w-[70%]">
           {/* Search and Filters */}
           <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">
             <div className="flex gap-4 items-center flex-wrap">
