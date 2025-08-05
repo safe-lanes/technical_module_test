@@ -437,21 +437,11 @@ const RunningHours = () => {
 
       {/* Bulk Update Dialog */}
       <Dialog open={isBulkUpdateOpen} onOpenChange={setIsBulkUpdateOpen}>
-        <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="w-[90vw] max-w-none h-[90vh] flex flex-col">
           <DialogHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-[#52baf3] text-xl">
-                Bulk Update Running Hours
-              </DialogTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsBulkUpdateOpen(false)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+            <DialogTitle className="text-[#52baf3] text-xl">
+              Bulk Update Running Hours
+            </DialogTitle>
           </DialogHeader>
           
           <div className="flex-1 overflow-auto">
@@ -467,7 +457,7 @@ const RunningHours = () => {
               </div>
 
               {/* Table Body */}
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+              <div className="divide-y divide-gray-200">
                 {runningHoursData.map((item) => (
                   <div key={item.id} className="px-4 py-3">
                     <div className="grid grid-cols-4 gap-4 text-sm items-center">
