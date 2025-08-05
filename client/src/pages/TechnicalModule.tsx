@@ -4,7 +4,6 @@ import { SideMenuBar } from "@/components/SideMenuBar";
 import Components from "./pms/Components";
 import WorkOrders from "./pms/WorkOrders";
 import RunningHours from "./pms/RunningHours";
-import Spares from "./spares/Spares";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
@@ -43,8 +42,6 @@ export const TechnicalModule: React.FC = () => {
             <WorkOrders />
           ) : selectedSubModule === "pms" && selectedMenuItem === "running-hrs" ? (
             <RunningHours />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "spares" ? (
-            <Spares />
           ) : (
             <div className="p-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
