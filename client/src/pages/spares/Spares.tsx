@@ -527,7 +527,7 @@ const Spares: React.FC = () => {
       {/* Add Spares Modal */}
       {isAddSpareModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-[85%] max-w-5xl max-h-[80vh] overflow-auto">
+          <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-7xl max-h-[90vh] overflow-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Add Spares</h2>
@@ -551,25 +551,27 @@ const Spares: React.FC = () => {
               </div>
 
               {/* Table Headers */}
-              <div className="grid grid-cols-9 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
-                <div className="col-span-1">Part Code</div>
+              <div className="grid grid-cols-12 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+                <div className="col-span-2">Part Code</div>
                 <div className="col-span-2">Part Name</div>
-                <div className="col-span-2">Linked Component</div>
+                <div className="col-span-3">Linked Component</div>
                 <div className="col-span-1">Qty</div>
                 <div className="col-span-1">Min Qty</div>
                 <div className="col-span-1">Critical</div>
-                <div className="col-span-1">Location</div>
+                <div className="col-span-2">Location</div>
               </div>
 
               {/* Form Rows */}
               <div className="border border-t-0 rounded-b">
                 {/* Row 1 */}
-                <div className="grid grid-cols-9 gap-3 p-3 border-b bg-white items-center">
-                  <Input placeholder="SP-ME-001" className="text-sm" />
+                <div className="grid grid-cols-12 gap-3 p-3 border-b bg-white items-center">
+                  <div className="col-span-2">
+                    <Input placeholder="SP-ME-001" className="text-sm" />
+                  </div>
                   <div className="col-span-2">
                     <Input placeholder="Fuel Injector" className="text-sm" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-3">
                     <Select>
                       <SelectTrigger className="text-sm">
                         <SelectValue placeholder="Search Component" />
@@ -591,7 +593,7 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="flex items-center gap-1">
+                  <div className="col-span-2 flex items-center gap-2">
                     <Input placeholder="Store Room A" className="text-sm flex-1" />
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                       <Edit className="h-3 w-3" />
@@ -603,12 +605,14 @@ const Spares: React.FC = () => {
                 </div>
 
                 {/* Row 2 - Empty */}
-                <div className="grid grid-cols-9 gap-3 p-3 border-b bg-white items-center">
-                  <Input className="text-sm" />
+                <div className="grid grid-cols-12 gap-3 p-3 border-b bg-white items-center">
                   <div className="col-span-2">
                     <Input className="text-sm" />
                   </div>
                   <div className="col-span-2">
+                    <Input className="text-sm" />
+                  </div>
+                  <div className="col-span-3">
                     <Select>
                       <SelectTrigger className="text-sm">
                         <SelectValue placeholder="Search Component" />
@@ -630,7 +634,7 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="flex items-center gap-1">
+                  <div className="col-span-2 flex items-center gap-2">
                     <Input className="text-sm flex-1" />
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                       <Edit className="h-3 w-3" />
@@ -642,12 +646,14 @@ const Spares: React.FC = () => {
                 </div>
 
                 {/* Row 3 - Empty */}
-                <div className="grid grid-cols-9 gap-3 p-3 bg-white items-center">
-                  <Input className="text-sm" />
+                <div className="grid grid-cols-12 gap-3 p-3 bg-white items-center">
                   <div className="col-span-2">
                     <Input className="text-sm" />
                   </div>
                   <div className="col-span-2">
+                    <Input className="text-sm" />
+                  </div>
+                  <div className="col-span-3">
                     <Select>
                       <SelectTrigger className="text-sm">
                         <SelectValue placeholder="Search Component" />
@@ -669,7 +675,7 @@ const Spares: React.FC = () => {
                       <SelectItem value="N">N</SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="flex items-center gap-1">
+                  <div className="col-span-2 flex items-center gap-2">
                     <Input className="text-sm flex-1" />
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                       <Edit className="h-3 w-3" />
