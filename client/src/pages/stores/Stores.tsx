@@ -414,6 +414,139 @@ const storeItems: StoreItem[] = [
     stock: "Low",
     location: "Chem Locker",
     category: "chemicals"
+  },
+  // Others data - Maritime Paints
+  {
+    id: 37,
+    itemCode: "PT-DECK-001",
+    itemName: "Non-Skid Deck Paint",
+    storesCategory: "Deck Coating",
+    rob: 5,
+    min: 2,
+    stock: "OK",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 38,
+    itemCode: "PT-HULL-001",
+    itemName: "Anti-Fouling Paint",
+    storesCategory: "Hull Coating",
+    rob: 15,
+    min: 5,
+    stock: "OK",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 39,
+    itemCode: "PT-PRIM-001",
+    itemName: "Zinc Rich Primer",
+    storesCategory: "Primer Coating",
+    rob: 8,
+    min: 3,
+    stock: "OK",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 40,
+    itemCode: "PT-MACH-001",
+    itemName: "Machinery Paint",
+    storesCategory: "Engine Room Coating",
+    rob: 4,
+    min: 2,
+    stock: "",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 41,
+    itemCode: "PT-FIRE-001",
+    itemName: "Fire Retardant Paint",
+    storesCategory: "Safety Coating",
+    rob: 3,
+    min: 1,
+    stock: "",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 42,
+    itemCode: "PT-MARK-001",
+    itemName: "Marking Paint White",
+    storesCategory: "Deck Marking",
+    rob: 2,
+    min: 3,
+    stock: "Low",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 43,
+    itemCode: "PT-MARK-002",
+    itemName: "Marking Paint Yellow",
+    storesCategory: "Deck Marking",
+    rob: 1,
+    min: 2,
+    stock: "Low",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 44,
+    itemCode: "PT-THINN-001",
+    itemName: "Paint Thinner",
+    storesCategory: "Paint Solvent",
+    rob: 6,
+    min: 2,
+    stock: "OK",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 45,
+    itemCode: "PT-BRUSH-001",
+    itemName: "Paint Brushes Set",
+    storesCategory: "Paint Accessories",
+    rob: 3,
+    min: 1,
+    stock: "",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 46,
+    itemCode: "PT-ROLL-001",
+    itemName: "Paint Rollers",
+    storesCategory: "Paint Accessories",
+    rob: 2,
+    min: 1,
+    stock: "",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 47,
+    itemCode: "PT-SAND-001",
+    itemName: "Sandpaper Sheets",
+    storesCategory: "Surface Preparation",
+    rob: 10,
+    min: 5,
+    stock: "OK",
+    location: "Paint Locker",
+    category: "others"
+  },
+  {
+    id: 48,
+    itemCode: "PT-CLEAN-001",
+    itemName: "Paint Cleaner",
+    storesCategory: "Paint Solvent",
+    rob: 2,
+    min: 4,
+    stock: "Low",
+    location: "Paint Locker",
+    category: "others"
   }
 ];
 
