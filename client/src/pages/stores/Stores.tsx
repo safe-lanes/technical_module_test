@@ -281,6 +281,139 @@ const storeItems: StoreItem[] = [
     stock: "Low",
     location: "ECR Tank",
     category: "lubes"
+  },
+  // Chemicals data
+  {
+    id: 25,
+    itemCode: "CHM-ALK-001",
+    itemName: "Alkaline Cleaner",
+    storesCategory: "Engine Bilge Cleaning",
+    rob: 2,
+    min: 1,
+    stock: "OK",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 26,
+    itemCode: "CHM-WTP-001",
+    itemName: "Boiler Water Test",
+    storesCategory: "Boiler Feed Water",
+    rob: 2,
+    min: 1,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 27,
+    itemCode: "CHM-WTP-002",
+    itemName: "RO Antiscalant",
+    storesCategory: "RO Plant",
+    rob: 3,
+    min: 1,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 28,
+    itemCode: "CHM-TEST-001",
+    itemName: "RO Antiscalant",
+    storesCategory: "RO Plant",
+    rob: 4,
+    min: 2,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 29,
+    itemCode: "CHM-WTP-002",
+    itemName: "RO Antiscalant",
+    storesCategory: "RO Plant",
+    rob: 4,
+    min: 2,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 30,
+    itemCode: "CHM-FW-001",
+    itemName: "Fresh Water Biocide",
+    storesCategory: "Domestic Water Tank",
+    rob: 1,
+    min: 2,
+    stock: "Low",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 31,
+    itemCode: "CHM-CWT-001",
+    itemName: "Fresh Water Biocide",
+    storesCategory: "Domestic Water Tank",
+    rob: 2,
+    min: 1,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 32,
+    itemCode: "CHM-SAN-001",
+    itemName: "Sanitizer 70% IPA",
+    storesCategory: "Galley & Food Area",
+    rob: 2,
+    min: 1,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 33,
+    itemCode: "CHM-FW-001",
+    itemName: "Fresh Water Biocide",
+    storesCategory: "Domestic Water Tank",
+    rob: 3,
+    min: 1,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 34,
+    itemCode: "CHM-TANKCL-01",
+    itemName: "Descaling Agent",
+    storesCategory: "Aux Boiler & PHEs",
+    rob: 4,
+    min: 2,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 35,
+    itemCode: "CHM-TANKCL-01",
+    itemName: "Descaling Agent",
+    storesCategory: "Aux Boiler & PHEs",
+    rob: 6,
+    min: 2,
+    stock: "",
+    location: "Chem Locker",
+    category: "chemicals"
+  },
+  {
+    id: 36,
+    itemCode: "CHM-TANKCL-01",
+    itemName: "Descaling Agent",
+    storesCategory: "Aux Boiler & PHEs",
+    rob: 2,
+    min: 10,
+    stock: "Low",
+    location: "Chem Locker",
+    category: "chemicals"
   }
 ];
 
@@ -454,10 +587,21 @@ const Stores: React.FC = () => {
         {/* Table Header */}
         <div className="bg-[#52baf3] text-white p-4">
           <div className="grid grid-cols-12 gap-4 items-center text-sm font-medium">
-            <div className="col-span-2">{activeTab === "lubes" ? "Lube Grade" : "Item Code"}</div>
-            <div className="col-span-2">{activeTab === "lubes" ? "Lube Type" : "Item Name"}</div>
-            <div className="col-span-3">{activeTab === "lubes" ? "Application" : "Stores Category"}</div>
-            <div className="col-span-1">{activeTab === "lubes" ? "ROB (Ltr)" : "ROB"}</div>
+            <div className="col-span-2">
+              {activeTab === "lubes" ? "Lube Grade" : 
+               activeTab === "chemicals" ? "Chem Code" : "Item Code"}
+            </div>
+            <div className="col-span-2">
+              {activeTab === "lubes" ? "Lube Type" : 
+               activeTab === "chemicals" ? "Chemical Name" : "Item Name"}
+            </div>
+            <div className="col-span-3">
+              {activeTab === "lubes" ? "Application" : 
+               activeTab === "chemicals" ? "Application Area" : "Stores Category"}
+            </div>
+            <div className="col-span-1">
+              {activeTab === "lubes" || activeTab === "chemicals" ? "ROB (Ltr)" : "ROB"}
+            </div>
             <div className="col-span-1">Min</div>
             <div className="col-span-1">Stock</div>
             <div className="col-span-2">Location</div>
@@ -557,10 +701,21 @@ const Stores: React.FC = () => {
 
               {/* Table Headers */}
               <div className="grid grid-cols-8 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
-                <div>{activeTab === "lubes" ? "Lube Grade" : "Item Code"}</div>
-                <div>{activeTab === "lubes" ? "Lube Type" : "Item Name"}</div>
-                <div>{activeTab === "lubes" ? "Application" : "Category"}</div>
-                <div>{activeTab === "lubes" ? "ROB (Ltr)" : "ROB"}</div>
+                <div>
+                  {activeTab === "lubes" ? "Lube Grade" : 
+                   activeTab === "chemicals" ? "Chem Code" : "Item Code"}
+                </div>
+                <div>
+                  {activeTab === "lubes" ? "Lube Type" : 
+                   activeTab === "chemicals" ? "Chemical Name" : "Item Name"}
+                </div>
+                <div>
+                  {activeTab === "lubes" ? "Application" : 
+                   activeTab === "chemicals" ? "Application Area" : "Category"}
+                </div>
+                <div>
+                  {activeTab === "lubes" || activeTab === "chemicals" ? "ROB (Ltr)" : "ROB"}
+                </div>
                 <div>Consumed</div>
                 <div>Received</div>
                 <div>New ROB</div>
