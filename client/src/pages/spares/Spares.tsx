@@ -310,6 +310,8 @@ const Spares: React.FC = () => {
   const [criticalityFilter, setCriticalityFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   const [isAddSpareModalOpen, setIsAddSpareModalOpen] = useState(false);
+  const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -381,6 +383,42 @@ const Spares: React.FC = () => {
     setCriticalityFilter("");
     setStockFilter("");
     setSelectedComponentId(null);
+  };
+
+  // Handle bulk update modal
+  const openBulkUpdateModal = () => {
+    if (!selectedComponentId) {
+      alert("Please select a component from the search or component tree first.");
+      return;
+    }
+    setIsBulkUpdateModalOpen(true);
+    // Initialize bulk update data
+    const initialData: {[key: number]: {consumed: number, received: number}} = {};
+    filteredSpares.forEach(spare => {
+      initialData[spare.id] = { consumed: 0, received: 0 };
+    });
+    setBulkUpdateData(initialData);
+  };
+
+  // Handle bulk update input changes
+  const handleBulkUpdateChange = (spareId: number, field: 'consumed' | 'received', value: string) => {
+    const numValue = parseInt(value) || 0;
+    setBulkUpdateData(prev => ({
+      ...prev,
+      [spareId]: {
+        ...prev[spareId],
+        [field]: numValue
+      }
+    }));
+  };
+
+  // Save bulk updates
+  const saveBulkUpdates = () => {
+    // In a real application, this would update the backend
+    // For now, we'll just close the modal
+    console.log("Bulk updates saved:", bulkUpdateData);
+    setIsBulkUpdateModalOpen(false);
+    setBulkUpdateData({});
   };
 
   const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
@@ -455,7 +493,7 @@ const Spares: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={() => setIsAddSpareModalOpen(true)}>+ Add Spare</Button>
-            <Button className="bg-green-600 hover:bg-green-700 text-white">🔄 Bulk Update Spares</Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={openBulkUpdateModal}>🔄 Bulk Update Spares</Button>
           </div>
         </div>
       </div>
@@ -837,6 +875,97 @@ const Spares: React.FC = () => {
               </Button>
               <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">
                 Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Update Spares Modal */}
+      {isBulkUpdateModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-7xl max-h-[90vh] overflow-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">Bulk Update Spares</h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsBulkUpdateModalOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              {/* Table Headers */}
+              <div className="grid grid-cols-7 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+                <div>Part Code</div>
+                <div>Part Name</div>
+                <div>Component</div>
+                <div>ROB</div>
+                <div>Consumed</div>
+                <div>Received</div>
+                <div>New ROB</div>
+              </div>
+
+              {/* Table Body */}
+              <div className="border border-t-0 rounded-b max-h-[400px] overflow-y-auto">
+                {filteredSpares.map((spare) => {
+                  const consumed = bulkUpdateData[spare.id]?.consumed || 0;
+                  const received = bulkUpdateData[spare.id]?.received || 0;
+                  const newRob = spare.rob - consumed + received;
+                  
+                  return (
+                    <div key={spare.id} className="grid grid-cols-7 gap-3 p-3 border-b bg-white items-center">
+                      <div className="text-gray-900 text-sm">{spare.partCode}</div>
+                      <div className="text-gray-900 text-sm">{spare.partName}</div>
+                      <div className="text-gray-700 text-sm">{spare.component}</div>
+                      <div className="text-gray-700 text-sm">{spare.rob}</div>
+                      <div>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          className="text-sm h-8" 
+                          placeholder="0"
+                          value={consumed || ''}
+                          onChange={(e) => handleBulkUpdateChange(spare.id, 'consumed', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          className="text-sm h-8" 
+                          placeholder="0"
+                          value={received || ''}
+                          onChange={(e) => handleBulkUpdateChange(spare.id, 'received', e.target.value)}
+                        />
+                      </div>
+                      <div className={`text-sm font-medium ${newRob < spare.min ? 'text-red-600' : 'text-gray-900'}`}>
+                        {newRob}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsBulkUpdateModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={saveBulkUpdates}
+              >
+                Save Updates
               </Button>
             </div>
           </div>
