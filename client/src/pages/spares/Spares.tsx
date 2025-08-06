@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet, X } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet, X, MessageSquare, Calendar } from "lucide-react";
 
 interface ComponentNode {
   id: string;
@@ -433,6 +433,8 @@ const Spares: React.FC = () => {
   const [isAddSpareModalOpen, setIsAddSpareModalOpen] = useState(false);
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
   const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
+  const [placeReceived, setPlaceReceived] = useState("");
+  const [dateReceived, setDateReceived] = useState("");
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -1021,8 +1023,33 @@ const Spares: React.FC = () => {
 
             {/* Modal Body */}
             <div className="p-6">
+              {/* Place Received and Date Fields */}
+              <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded border">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Place Received</label>
+                  <Input 
+                    placeholder="Enter place received" 
+                    value={placeReceived}
+                    onChange={(e) => setPlaceReceived(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                  <div className="relative">
+                    <Input 
+                      type="date" 
+                      value={dateReceived}
+                      onChange={(e) => setDateReceived(e.target.value)}
+                      className="text-sm pr-10"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
               {/* Table Headers */}
-              <div className="grid grid-cols-7 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+              <div className="grid grid-cols-8 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
                 <div>Part Code</div>
                 <div>Part Name</div>
                 <div>Component</div>
@@ -1030,6 +1057,7 @@ const Spares: React.FC = () => {
                 <div>Consumed</div>
                 <div>Received</div>
                 <div>New ROB</div>
+                <div>Comments</div>
               </div>
 
               {/* Table Body */}
@@ -1040,7 +1068,7 @@ const Spares: React.FC = () => {
                   const newRob = spare.rob - consumed + received;
                   
                   return (
-                    <div key={spare.id} className="grid grid-cols-7 gap-3 p-3 border-b bg-white items-center">
+                    <div key={spare.id} className="grid grid-cols-8 gap-3 p-3 border-b bg-white items-center">
                       <div className="text-gray-900 text-sm">{spare.partCode}</div>
                       <div className="text-gray-900 text-sm">{spare.partName}</div>
                       <div className="text-gray-700 text-sm">{spare.component}</div>
@@ -1067,6 +1095,21 @@ const Spares: React.FC = () => {
                       </div>
                       <div className={`text-sm font-medium ${newRob < spare.min ? 'text-red-600' : 'text-gray-900'}`}>
                         {newRob}
+                      </div>
+                      <div className="flex justify-center">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => {
+                            const comment = prompt(`Add comment for ${spare.partName}:`);
+                            if (comment) {
+                              console.log(`Comment for ${spare.partName}: ${comment}`);
+                            }
+                          }}
+                        >
+                          <MessageSquare className="h-4 w-4 text-gray-500" />
+                        </Button>
                       </div>
                     </div>
                   );
