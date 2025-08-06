@@ -148,6 +148,139 @@ const storeItems: StoreItem[] = [
     stock: "Low",
     location: "Paint Locker",
     category: "stores"
+  },
+  // Lubes data
+  {
+    id: 13,
+    itemCode: "SAE 70 EN",
+    itemName: "Cylinder Oil",
+    storesCategory: "Main Engine",
+    rob: 500,
+    min: 1,
+    stock: "OK",
+    location: "Lube Tank A",
+    category: "lubes"
+  },
+  {
+    id: 14,
+    itemCode: "SAE 30",
+    itemName: "System Oil",
+    storesCategory: "DG #1",
+    rob: 300,
+    min: 1,
+    stock: "",
+    location: "Lube Tank B",
+    category: "lubes"
+  },
+  {
+    id: 15,
+    itemCode: "ISO VG 68",
+    itemName: "Hydraulic Oil",
+    storesCategory: "Steering Gear",
+    rob: 200,
+    min: 1,
+    stock: "",
+    location: "Steering Flat",
+    category: "lubes"
+  },
+  {
+    id: 16,
+    itemCode: "EP 320",
+    itemName: "Gear Oil",
+    storesCategory: "Crane Gearbox",
+    rob: 80,
+    min: 2,
+    stock: "",
+    location: "Deck Lube Store",
+    category: "lubes"
+  },
+  {
+    id: 17,
+    itemCode: "ISO VG 100",
+    itemName: "Compressor Oil",
+    storesCategory: "Air Compressor #2",
+    rob: 60,
+    min: 2,
+    stock: "",
+    location: "ECR Store",
+    category: "lubes"
+  },
+  {
+    id: 18,
+    itemCode: "Synthetic",
+    itemName: "Stabilizer Oil",
+    storesCategory: "Fin Stabilizer",
+    rob: 50,
+    min: 2,
+    stock: "Low",
+    location: "AFT Equipment",
+    category: "lubes"
+  },
+  {
+    id: 19,
+    itemCode: "ISO 220",
+    itemName: "Winch Oil",
+    storesCategory: "Mooring Winch",
+    rob: 70,
+    min: 1,
+    stock: "",
+    location: "Deck Store",
+    category: "lubes"
+  },
+  {
+    id: 20,
+    itemCode: "ISO 32",
+    itemName: "RO Pump Oil",
+    storesCategory: "RO High Pressure Pump",
+    rob: 10,
+    min: 1,
+    stock: "",
+    location: "RO Area Locker",
+    category: "lubes"
+  },
+  {
+    id: 21,
+    itemCode: "VG 46",
+    itemName: "CPP Hydraulic Oil",
+    storesCategory: "Propeller System",
+    rob: 150,
+    min: 1,
+    stock: "",
+    location: "Stern Room",
+    category: "lubes"
+  },
+  {
+    id: 22,
+    itemCode: "SAE 30",
+    itemName: "Emergency DG Oil",
+    storesCategory: "Emergency Generator",
+    rob: 4,
+    min: 2,
+    stock: "",
+    location: "ECR Tank",
+    category: "lubes"
+  },
+  {
+    id: 23,
+    itemCode: "SAE 30",
+    itemName: "Emergency DG Oil",
+    storesCategory: "Emergency Generator",
+    rob: 6,
+    min: 2,
+    stock: "",
+    location: "ECR Tank",
+    category: "lubes"
+  },
+  {
+    id: 24,
+    itemCode: "SAE 30",
+    itemName: "Emergency DG Oil",
+    storesCategory: "Emergency Generator",
+    rob: 2,
+    min: 10,
+    stock: "Low",
+    location: "ECR Tank",
+    category: "lubes"
   }
 ];
 
@@ -209,9 +342,13 @@ const Stores: React.FC = () => {
     <div className="flex-1 p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Stores Inventory</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          {activeTab === "stores" ? "Stores Inventory" : 
+           activeTab === "lubes" ? "Lubes Inventory" :
+           activeTab === "chemicals" ? "Chemicals Inventory" : "Others Inventory"}
+        </h1>
         <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={openBulkUpdateModal}>
-          + Bulk Update Stores
+          + Bulk Update {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
         </Button>
       </div>
 
@@ -317,10 +454,10 @@ const Stores: React.FC = () => {
         {/* Table Header */}
         <div className="bg-[#52baf3] text-white p-4">
           <div className="grid grid-cols-12 gap-4 items-center text-sm font-medium">
-            <div className="col-span-2">Item Code</div>
-            <div className="col-span-2">Item Name</div>
-            <div className="col-span-3">Stores Category</div>
-            <div className="col-span-1">ROB</div>
+            <div className="col-span-2">{activeTab === "lubes" ? "Lube Grade" : "Item Code"}</div>
+            <div className="col-span-2">{activeTab === "lubes" ? "Lube Type" : "Item Name"}</div>
+            <div className="col-span-3">{activeTab === "lubes" ? "Application" : "Stores Category"}</div>
+            <div className="col-span-1">{activeTab === "lubes" ? "ROB (Ltr)" : "ROB"}</div>
             <div className="col-span-1">Min</div>
             <div className="col-span-1">Stock</div>
             <div className="col-span-2">Location</div>
@@ -380,7 +517,7 @@ const Stores: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-7xl max-h-[90vh] overflow-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-xl font-semibold text-gray-800">Bulk Update Stores</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Bulk Update {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -420,10 +557,10 @@ const Stores: React.FC = () => {
 
               {/* Table Headers */}
               <div className="grid grid-cols-8 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
-                <div>Item Code</div>
-                <div>Item Name</div>
-                <div>Category</div>
-                <div>ROB</div>
+                <div>{activeTab === "lubes" ? "Lube Grade" : "Item Code"}</div>
+                <div>{activeTab === "lubes" ? "Lube Type" : "Item Name"}</div>
+                <div>{activeTab === "lubes" ? "Application" : "Category"}</div>
+                <div>{activeTab === "lubes" ? "ROB (Ltr)" : "ROB"}</div>
                 <div>Consumed</div>
                 <div>Received</div>
                 <div>New ROB</div>
