@@ -236,7 +236,74 @@ const sparesData = [
   }
 ];
 
+const historyData = [
+  {
+    id: 1,
+    date: "02-Jun-2025",
+    partName: "Fuel Injector",
+    type: "Consumed",
+    qty: 1,
+    reference: "WO-2025-03",
+    comment: "Used for Main Engine Overhaul"
+  },
+  {
+    id: 2,
+    date: "09-Jun-2025",
+    partName: "Cylinder Head Gasket",
+    type: "Received",
+    qty: 2,
+    reference: "WO-2025-17",
+    comment: "Delivery from Singapore"
+  },
+  {
+    id: 3,
+    date: "16-Jun-2025",
+    partName: "Piston Ring Set",
+    type: "Consumed",
+    qty: 2,
+    reference: "WO-2025-34",
+    comment: "Routine Maintenance"
+  },
+  {
+    id: 4,
+    date: "23-Jun-2025",
+    partName: "Main Bearing",
+    type: "Consumed",
+    qty: 3,
+    reference: "WO-2025-19",
+    comment: "Main Engine Cylinder #3 repair"
+  },
+  {
+    id: 5,
+    date: "30-Jun-2025",
+    partName: "Cooling Pump Seal",
+    type: "Consumed",
+    qty: 4,
+    reference: "WO-2025-03",
+    comment: "Routine Maintenance"
+  },
+  {
+    id: 6,
+    date: "02-Jun-2025",
+    partName: "Fuel Injector",
+    type: "Consumed",
+    qty: 6,
+    reference: "WO-2025-17",
+    comment: "Routine Maintenance"
+  },
+  {
+    id: 7,
+    date: "09-Jun-2025",
+    partName: "Cylinder Head Gasket",
+    type: "Consumed",
+    qty: 2,
+    reference: "WO-2025-34",
+    comment: "Routine Maintenance"
+  }
+];
+
 const Spares: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<"inventory" | "history">("inventory");
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [searchTerm, setSearchTerm] = useState("");
@@ -366,13 +433,25 @@ const Spares: React.FC = () => {
     <div className="h-full p-6 bg-[#fafafa]">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Spares Inventory</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          {activeTab === 'inventory' ? 'Spares Inventory' : 'Spares - History of Transactions'}
+        </h1>
         
         {/* Navigation Tabs with Buttons */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-l">Inventory</button>
-            <button className="px-4 py-2 bg-gray-200 text-gray-600 rounded-r">History</button>
+            <button 
+              className={`px-4 py-2 rounded-l ${activeTab === 'inventory' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+              onClick={() => setActiveTab('inventory')}
+            >
+              Inventory
+            </button>
+            <button 
+              className={`px-4 py-2 rounded-r ${activeTab === 'history' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+              onClick={() => setActiveTab('history')}
+            >
+              History
+            </button>
           </div>
           <div className="flex gap-2">
             <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={() => setIsAddSpareModalOpen(true)}>+ Add Spare</Button>
@@ -435,94 +514,154 @@ const Spares: React.FC = () => {
         </Button>
       </div>
 
-      <div className="flex gap-6 h-[calc(100vh-200px)]">
-        {/* Left Panel - Component Tree */}
-        <div className="w-[30%]">
-          <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
-            <div className="flex-1 overflow-auto">
-              <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
-                COMPONENTS
-              </div>
-              <div>
-                {renderComponentTree(componentsTree)}
+      {activeTab === 'inventory' ? (
+        <div className="flex gap-6 h-[calc(100vh-200px)]">
+          {/* Left Panel - Component Tree */}
+          <div className="w-[30%]">
+            <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
+              <div className="flex-1 overflow-auto">
+                <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
+                  COMPONENTS
+                </div>
+                <div>
+                  {renderComponentTree(componentsTree)}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Panel - Spares Table */}
-        <div className="w-[70%]">
-
-          {/* Spares Table */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            {/* Table Header */}
-            <div className="bg-[#52baf3] text-white px-4 py-3 rounded-t-lg">
-              <div className="grid grid-cols-9 gap-4 text-sm font-medium">
-                <div>Part Code</div>
-                <div>Part Name</div>
-                <div>Component</div>
-                <div>Critical</div>
-                <div>ROB</div>
-                <div>Min</div>
-                <div>Stock</div>
-                <div>Location</div>
-                <div>Actions</div>
+          {/* Right Panel - Spares Table */}
+          <div className="w-[70%]">
+            {/* Spares Table */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              {/* Table Header */}
+              <div className="bg-[#52baf3] text-white px-4 py-3 rounded-t-lg">
+                <div className="grid grid-cols-9 gap-4 text-sm font-medium">
+                  <div>Part Code</div>
+                  <div>Part Name</div>
+                  <div>Component</div>
+                  <div>Critical</div>
+                  <div>ROB</div>
+                  <div>Min</div>
+                  <div>Stock</div>
+                  <div>Location</div>
+                  <div>Actions</div>
+                </div>
               </div>
-            </div>
 
-            {/* Table Body */}
-            <div className="divide-y divide-gray-200">
-              {filteredSpares.map((spare) => {
-                const stockStatus = getStockStatus(spare.rob, spare.min);
-                const isCritical = spare.critical === "Critical" || spare.critical === "Yes";
-                
-                return (
-                  <div key={spare.id} className="px-4 py-3">
-                    <div className="grid grid-cols-9 gap-4 text-sm items-center">
-                      <div className="text-gray-900">{spare.partCode}</div>
-                      <div className="text-gray-900">{spare.partName}</div>
-                      <div className="text-gray-700">{spare.component}</div>
-                      <div>
-                        {isCritical && (
-                          <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
-                            Critical
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-gray-700">{spare.rob}</div>
-                      <div className="text-gray-700">{spare.min}</div>
-                      <div>
-                        {stockStatus === "Low" && (
-                          <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
-                            Low
-                          </span>
-                        )}
-                        {stockStatus === "OK" && (
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                            OK
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-gray-700">{spare.location}</div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Clock className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+              {/* Table Body */}
+              <div className="divide-y divide-gray-200">
+                {filteredSpares.map((spare) => {
+                  const stockStatus = getStockStatus(spare.rob, spare.min);
+                  const isCritical = spare.critical === "Critical" || spare.critical === "Yes";
+                  
+                  return (
+                    <div key={spare.id} className="px-4 py-3">
+                      <div className="grid grid-cols-9 gap-4 text-sm items-center">
+                        <div className="text-gray-900">{spare.partCode}</div>
+                        <div className="text-gray-900">{spare.partName}</div>
+                        <div className="text-gray-700">{spare.component}</div>
+                        <div>
+                          {isCritical && (
+                            <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
+                              Critical
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-gray-700">{spare.rob}</div>
+                        <div className="text-gray-700">{spare.min}</div>
+                        <div>
+                          {stockStatus === "Low" && (
+                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                              Low
+                            </span>
+                          )}
+                          {stockStatus === "OK" && (
+                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                              OK
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-gray-700">{spare.location}</div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Clock className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        // History View
+        <div className="flex gap-6 h-[calc(100vh-200px)]">
+          {/* Left Panel - Component Tree */}
+          <div className="w-[30%]">
+            <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
+              <div className="flex-1 overflow-auto">
+                <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
+                  COMPONENTS
+                </div>
+                <div>
+                  {renderComponentTree(componentsTree)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Panel - History Table */}
+          <div className="w-[70%]">
+            {/* History Table */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              {/* Table Header */}
+              <div className="bg-[#52baf3] text-white px-4 py-3 rounded-t-lg">
+                <div className="grid grid-cols-6 gap-4 text-sm font-medium">
+                  <div>Date</div>
+                  <div>Part Name</div>
+                  <div>Type</div>
+                  <div>Qty</div>
+                  <div>Reference</div>
+                  <div>Comment</div>
+                </div>
+              </div>
+
+              {/* Table Body */}
+              <div className="divide-y divide-gray-200">
+                {historyData.map((entry) => (
+                  <div key={entry.id} className="px-4 py-3">
+                    <div className="grid grid-cols-6 gap-4 text-sm items-center">
+                      <div className="text-gray-900">{entry.date}</div>
+                      <div className="text-gray-900">{entry.partName}</div>
+                      <div>
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          entry.type === 'Consumed' 
+                            ? 'bg-red-100 text-red-800' 
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {entry.type}
+                        </span>
+                      </div>
+                      <div className="text-gray-700">{entry.qty}</div>
+                      <div className="text-gray-700">{entry.reference}</div>
+                      <div className="text-gray-700">{entry.comment}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Spares Modal */}
       {isAddSpareModalOpen && (
