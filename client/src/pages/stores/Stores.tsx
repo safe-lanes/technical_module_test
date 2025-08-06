@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar } from "lucide-react";
+import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar, Plus } from "lucide-react";
 
 interface StoreItem {
   id: number;
@@ -643,7 +643,7 @@ const Stores: React.FC = () => {
                     <Edit className="h-4 w-4 text-gray-500" />
                   </Button>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Clock className="h-4 w-4 text-gray-500" />
+                    <Plus className="h-4 w-4 text-gray-500" />
                   </Button>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                     <Trash2 className="h-4 w-4 text-gray-500" />

@@ -749,7 +749,7 @@ const Spares: React.FC = () => {
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Clock className="h-4 w-4" />
+                            <Plus className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                             <Trash2 className="h-4 w-4" />
