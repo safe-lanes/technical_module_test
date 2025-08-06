@@ -9,7 +9,7 @@ import RunningHours from "./pages/pms/RunningHours";
 import Components from "./pages/pms/Components";
 import Spares from "./pages/spares/Spares";
 import Stores from "./pages/stores/Stores";
-import ModifyPMS from "./pages/modify-pms/ModifyPMS";
+
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient();
@@ -27,7 +27,7 @@ function App() {
               <Route path="/pms/components" component={Components} />
               <Route path="/spares" component={Spares} />
               <Route path="/stores" component={Stores} />
-              <Route path="/modify-pms" component={ModifyPMS} />
+
               <Route component={NotFound} />
             </Switch>
           </div>
