@@ -233,6 +233,127 @@ const sparesData = [
     stock: "Low",
     location: "Store Room B",
     componentId: "6.01.001"
+  },
+  // Sample data for 601.002 ME cylinder covers w/ valves
+  {
+    id: 13,
+    partCode: "SP-CC-001",
+    partName: "Cylinder Cover Assembly",
+    component: "ME cylinder covers w/ valves",
+    critical: "Critical",
+    rob: 2,
+    min: 1,
+    stock: "OK",
+    location: "Store Room A",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 14,
+    partCode: "SP-CC-002",
+    partName: "Inlet Valve",
+    component: "ME cylinder covers w/ valves",
+    critical: "Critical",
+    rob: 4,
+    min: 2,
+    stock: "OK",
+    location: "Store Room A",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 15,
+    partCode: "SP-CC-003",
+    partName: "Exhaust Valve",
+    component: "ME cylinder covers w/ valves",
+    critical: "Critical",
+    rob: 4,
+    min: 2,
+    stock: "OK",
+    location: "Store Room A",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 16,
+    partCode: "SP-CC-004",
+    partName: "Valve Spring",
+    component: "ME cylinder covers w/ valves",
+    critical: "No",
+    rob: 8,
+    min: 4,
+    stock: "OK",
+    location: "Store Room B",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 17,
+    partCode: "SP-CC-005",
+    partName: "Valve Guide",
+    component: "ME cylinder covers w/ valves",
+    critical: "No",
+    rob: 6,
+    min: 2,
+    stock: "OK",
+    location: "Store Room B",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 18,
+    partCode: "SP-CC-006",
+    partName: "Valve Seat Ring",
+    component: "ME cylinder covers w/ valves",
+    critical: "Critical",
+    rob: 3,
+    min: 2,
+    stock: "OK",
+    location: "Store Room A",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 19,
+    partCode: "SP-CC-007",
+    partName: "Cover Gasket Set",
+    component: "ME cylinder covers w/ valves",
+    critical: "No",
+    rob: 1,
+    min: 2,
+    stock: "Low",
+    location: "Store Room C",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 20,
+    partCode: "SP-CC-008",
+    partName: "Valve Spindle",
+    component: "ME cylinder covers w/ valves",
+    critical: "Critical",
+    rob: 2,
+    min: 1,
+    stock: "OK",
+    location: "Store Room A",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 21,
+    partCode: "SP-CC-009",
+    partName: "Cooling Water Nozzle",
+    component: "ME cylinder covers w/ valves",
+    critical: "No",
+    rob: 5,
+    min: 2,
+    stock: "OK",
+    location: "Store Room B",
+    componentId: "6.1.1.2"
+  },
+  {
+    id: 22,
+    partCode: "SP-CC-010",
+    partName: "Cover Bolt Set",
+    component: "ME cylinder covers w/ valves",
+    critical: "No",
+    rob: 3,
+    min: 1,
+    stock: "OK",
+    location: "Store Room C",
+    componentId: "6.1.1.2"
   }
 ];
 
