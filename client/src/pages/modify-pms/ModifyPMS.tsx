@@ -5,17 +5,12 @@ import { Plus, Eye, Check, X, ArrowLeft } from "lucide-react";
 import { changeRequestService } from "@/services/changeRequestService";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
 import { ChangeRequest } from "@/services/changeRequestService";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
 import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import ComponentChangeRequestForm from "@/components/change-request-forms/ComponentChangeRequestForm";
+import SparesChangeRequestForm from "@/components/change-request-forms/SparesChangeRequestForm";
+import StoresChangeRequestForm from "@/components/change-request-forms/StoresChangeRequestForm";
+import WorkOrdersChangeRequestForm from "@/components/change-request-forms/WorkOrdersChangeRequestForm";
 
 
 
@@ -26,155 +21,7 @@ const categories = [
   { id: 4, name: "Stores" }
 ];
 
-const ComponentChangeRequestForm: React.FC = () => {
-  const [formData, setFormData] = useState({
-    maker: "",
-    model: "",
-    serialNo: "",
-    drawingNo: "",
-    componentCode: "",
-    eqptCategory: "",
-    location: "",
-    critical: "",
-    installationDate: "",
-    commissionedDate: "",
-    rating: "",
-    conditionBased: "",
-    noOfUnits: "",
-    eqptSystemDept: "",
-    parentComponent: "",
-    dimensionsSize: "",
-    notes: ""
-  });
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = () => {
-    // Here we would create a change request
-    console.log("Component change request:", formData);
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Maker</Label>
-          <Input
-            value={formData.maker}
-            onChange={(e) => handleInputChange("maker", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter maker"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Model</Label>
-          <Input
-            value={formData.model}
-            onChange={(e) => handleInputChange("model", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter model"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Serial No</Label>
-          <Input
-            value={formData.serialNo}
-            onChange={(e) => handleInputChange("serialNo", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter serial number"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Drawing No</Label>
-          <Input
-            value={formData.drawingNo}
-            onChange={(e) => handleInputChange("drawingNo", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter drawing number"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Component Code</Label>
-          <Input
-            value={formData.componentCode}
-            onChange={(e) => handleInputChange("componentCode", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter component code"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Equipment Category</Label>
-          <Select value={formData.eqptCategory} onValueChange={(value) => handleInputChange("eqptCategory", value)}>
-            <SelectTrigger className="bg-white border-white text-gray-900">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="propulsion">Propulsion</SelectItem>
-              <SelectItem value="auxiliary">Auxiliary</SelectItem>
-              <SelectItem value="safety">Safety</SelectItem>
-              <SelectItem value="navigation">Navigation</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Location</Label>
-          <Input
-            value={formData.location}
-            onChange={(e) => handleInputChange("location", e.target.value)}
-            className="bg-white border-white text-gray-900"
-            placeholder="Enter location"
-          />
-        </div>
-        <div>
-          <Label className="text-white text-sm font-medium mb-2 block">Critical</Label>
-          <Select value={formData.critical} onValueChange={(value) => handleInputChange("critical", value)}>
-            <SelectTrigger className="bg-white border-white text-gray-900">
-              <SelectValue placeholder="Select criticality" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="yes">Yes</SelectItem>
-              <SelectItem value="no">No</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label className="text-white text-sm font-medium mb-2 block">Notes</Label>
-        <Textarea
-          value={formData.notes}
-          onChange={(e) => handleInputChange("notes", e.target.value)}
-          className="bg-white border-white text-gray-900"
-          placeholder="Enter additional notes"
-          rows={3}
-        />
-      </div>
-
-      <div className="flex gap-3 justify-end">
-        <Button
-          variant="outline"
-          className="bg-white text-[#52baf3] border-white hover:bg-gray-100"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          className="bg-white text-[#52baf3] hover:bg-gray-100"
-        >
-          Submit Change Request
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 const ModifyPMS: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -521,48 +368,91 @@ const ModifyPMS: React.FC = () => {
       )}
 
       {/* Form Modal */}
-      <Dialog open={showFormModal} onOpenChange={setShowFormModal}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#52baf3]">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-white text-xl font-semibold">
-                New Change Request - {formCategory}
-              </DialogTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCloseFormModal}
-                className="h-8 w-8 p-0 text-white hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </DialogHeader>
-          
-          <div className="mt-4">
+      {showFormModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="flex items-center justify-center w-full h-full p-4">
             {formCategory === "Components" && (
-              <div className="bg-[#52baf3] rounded-lg p-6">
-                <ComponentChangeRequestForm />
-              </div>
+              <ComponentChangeRequestForm 
+                onClose={handleCloseFormModal}
+                onSubmit={(componentData) => {
+                  console.log("Component change request:", componentData);
+                  // Create change request here
+                  handleCloseFormModal();
+                }}
+                initialData={{
+                  componentId: "601.003.001",
+                  serialNo: "ME001-2024",
+                  drawingNo: "DWG-ME-001",
+                  componentCode: "ME001",
+                  equipmentCategory: "propulsion",
+                  location: "Engine Room",
+                  classificationData: {
+                    classificationProvider: "DNV",
+                    certificateNo: "CERT-ME-2025-01",
+                    lastDataSurvey: "2023-03-15",
+                    nextDataSurvey: "2028-03-15"
+                  }
+                }}
+              />
             )}
             {formCategory === "Work orders" && (
-              <div className="bg-[#52baf3] rounded-lg p-6 text-white">
-                <p>Work Orders form will be implemented here</p>
-              </div>
+              <WorkOrdersChangeRequestForm 
+                onClose={handleCloseFormModal}
+                onSubmit={(workOrderData) => {
+                  console.log("Work Order change request:", workOrderData);
+                  // Create change request here
+                  handleCloseFormModal();
+                }}
+                initialData={{
+                  workOrderNo: "WO-2025-001",
+                  title: "Main Engine Overhaul - Replace Main bearings",
+                  assignedTo: "2nd Eng",
+                  priority: "High",
+                  status: "In Progress"
+                }}
+              />
             )}
             {formCategory === "Spares" && (
-              <div className="bg-[#52baf3] rounded-lg p-6 text-white">
-                <p>Spares form will be implemented here</p>
-              </div>
+              <SparesChangeRequestForm 
+                onClose={handleCloseFormModal}
+                onSubmit={(sparesData) => {
+                  console.log("Spares change request:", sparesData);
+                  // Create change request here
+                  handleCloseFormModal();
+                }}
+                initialData={{
+                  partCode: "SP-ME-001",
+                  partName: "Fuel Injector",
+                  linkedComponent: "component1",
+                  qty: "1",
+                  minQty: "1",
+                  critical: "Y",
+                  location: "Store Room A"
+                }}
+              />
             )}
             {formCategory === "Stores" && (
-              <div className="bg-[#52baf3] rounded-lg p-6 text-white">
-                <p>Stores form will be implemented here</p>
-              </div>
+              <StoresChangeRequestForm 
+                onClose={handleCloseFormModal}
+                onSubmit={(storesData) => {
+                  console.log("Stores change request:", storesData);
+                  // Create change request here
+                  handleCloseFormModal();
+                }}
+                initialData={{
+                  placeReceived: "Singapore",
+                  dateReceived: "2025-01-15",
+                  itemCode: "ST-TOOL-001",
+                  itemName: "Torque Wrench",
+                  storesCategory: "Engine Stores",
+                  rob: "2"
+                }}
+                category="stores"
+              />
             )}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 };
