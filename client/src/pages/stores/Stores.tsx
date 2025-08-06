@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Edit, Clock, Trash2, FileSpreadsheet } from "lucide-react";
+import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar } from "lucide-react";
 
 interface StoreItem {
   id: number;
@@ -157,6 +157,10 @@ const Stores: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   const [vesselFilter, setVesselFilter] = useState("");
+  const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
+  const [placeReceived, setPlaceReceived] = useState("");
+  const [dateReceived, setDateReceived] = useState("");
 
   const filteredItems = useMemo(() => {
     return storeItems.filter(item => {
@@ -176,12 +180,37 @@ const Stores: React.FC = () => {
     return "";
   };
 
+  const handleBulkUpdateChange = (itemId: number, field: 'consumed' | 'received', value: string) => {
+    const numValue = parseInt(value) || 0;
+    setBulkUpdateData(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        [field]: numValue
+      }
+    }));
+  };
+
+  const openBulkUpdateModal = () => {
+    setIsBulkUpdateModalOpen(true);
+    setBulkUpdateData({});
+    setPlaceReceived("");
+    setDateReceived("");
+  };
+
+  const saveBulkUpdates = () => {
+    console.log("Bulk updates saved:", bulkUpdateData);
+    console.log("Place received:", placeReceived);
+    console.log("Date received:", dateReceived);
+    setIsBulkUpdateModalOpen(false);
+  };
+
   return (
     <div className="flex-1 p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Stores Inventory</h1>
-        <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white">
+        <Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={openBulkUpdateModal}>
           + Bulk Update Stores
         </Button>
       </div>
@@ -344,6 +373,138 @@ const Stores: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Bulk Update Stores Modal */}
+      {isBulkUpdateModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[95%] max-w-7xl max-h-[90vh] overflow-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">Bulk Update Stores</h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsBulkUpdateModalOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              {/* Place Received and Date Fields */}
+              <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded border">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Place Received</label>
+                  <Input 
+                    placeholder="Enter place received" 
+                    value={placeReceived}
+                    onChange={(e) => setPlaceReceived(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                  <div className="relative">
+                    <Input 
+                      type="date" 
+                      value={dateReceived}
+                      onChange={(e) => setDateReceived(e.target.value)}
+                      className="text-sm pr-10"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Table Headers */}
+              <div className="grid grid-cols-8 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+                <div>Item Code</div>
+                <div>Item Name</div>
+                <div>Category</div>
+                <div>ROB</div>
+                <div>Consumed</div>
+                <div>Received</div>
+                <div>New ROB</div>
+                <div>Comments</div>
+              </div>
+
+              {/* Table Body */}
+              <div className="border border-t-0 rounded-b max-h-[400px] overflow-y-auto">
+                {filteredItems.map((item) => {
+                  const consumed = bulkUpdateData[item.id]?.consumed || 0;
+                  const received = bulkUpdateData[item.id]?.received || 0;
+                  const newRob = item.rob - consumed + received;
+                  
+                  return (
+                    <div key={item.id} className="grid grid-cols-8 gap-3 p-3 border-b bg-white items-center">
+                      <div className="text-gray-900 text-sm">{item.itemCode}</div>
+                      <div className="text-gray-900 text-sm">{item.itemName}</div>
+                      <div className="text-gray-700 text-sm">{item.storesCategory}</div>
+                      <div className="text-gray-700 text-sm">{item.rob}</div>
+                      <div>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          className="text-sm h-8" 
+                          placeholder="0"
+                          value={consumed || ''}
+                          onChange={(e) => handleBulkUpdateChange(item.id, 'consumed', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          className="text-sm h-8" 
+                          placeholder="0"
+                          value={received || ''}
+                          onChange={(e) => handleBulkUpdateChange(item.id, 'received', e.target.value)}
+                        />
+                      </div>
+                      <div className={`text-sm font-medium ${newRob < item.min ? 'text-red-600' : 'text-gray-900'}`}>
+                        {newRob}
+                      </div>
+                      <div className="flex justify-center">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => {
+                            const comment = prompt(`Add comment for ${item.itemName}:`);
+                            if (comment) {
+                              console.log(`Comment for ${item.itemName}: ${comment}`);
+                            }
+                          }}
+                        >
+                          <MessageSquare className="h-4 w-4 text-gray-500" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsBulkUpdateModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={saveBulkUpdates}
+              >
+                Save Updates
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
