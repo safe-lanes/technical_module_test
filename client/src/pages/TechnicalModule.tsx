@@ -5,6 +5,7 @@ import Components from "./pms/Components";
 import WorkOrders from "./pms/WorkOrders";
 import RunningHours from "./pms/RunningHours";
 import Spares from "./spares/Spares";
+import Stores from "./stores/Stores";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
@@ -45,6 +46,8 @@ export const TechnicalModule: React.FC = () => {
             <RunningHours />
           ) : selectedSubModule === "pms" && selectedMenuItem === "spares" ? (
             <Spares />
+          ) : selectedSubModule === "pms" && selectedMenuItem === "stores" ? (
+            <Stores />
           ) : (
             <div className="p-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
