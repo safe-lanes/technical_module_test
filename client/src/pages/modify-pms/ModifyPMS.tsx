@@ -5,6 +5,7 @@ import { Plus, Eye, Check, X } from "lucide-react";
 import { changeRequestService } from "@/services/changeRequestService";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
 import { ChangeRequest } from "@/services/changeRequestService";
+import { useLocation } from "wouter";
 
 
 
@@ -23,7 +24,8 @@ const ModifyPMS: React.FC = () => {
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [approvalComment, setApprovalComment] = useState("");
 
-  const { currentUser } = useChangeRequest();
+  const { currentUser, enterChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     // Load change requests from service
@@ -41,8 +43,27 @@ const ModifyPMS: React.FC = () => {
       alert("Please select a category first");
       return;
     }
-    // TODO: Navigate to the selected category form in change request mode
-    console.log("Creating new change request for:", selectedCategory);
+
+    // Enable change request mode
+    enterChangeRequestMode(selectedCategory, {});
+
+    // Navigate to the appropriate form based on selected category
+    switch (selectedCategory) {
+      case "Components":
+        setLocation("/pms/components");
+        break;
+      case "Work orders":
+        setLocation("/pms/work-orders");
+        break;
+      case "Spares":
+        setLocation("/spares");
+        break;
+      case "Stores":
+        setLocation("/stores");
+        break;
+      default:
+        console.log("Unknown category:", selectedCategory);
+    }
   };
 
   const handleViewRequest = (request: ChangeRequest) => {
