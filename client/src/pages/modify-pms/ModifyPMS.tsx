@@ -1,43 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, Eye, Check, X } from "lucide-react";
+import { changeRequestService } from "@/services/changeRequestService";
+import { useChangeRequest } from "@/contexts/ChangeRequestContext";
+import { ChangeRequest } from "@/services/changeRequestService";
 
-interface ChangeRequest {
-  id: number;
-  requestTitle: string;
-  requestedBy: string;
-  date: string;
-  status: "Pending Approval" | "Approved" | "Rejected";
-  category: "Components" | "Work orders" | "Spares" | "Stores";
-}
 
-const changeRequests: ChangeRequest[] = [
-  {
-    id: 1,
-    requestTitle: "Modify Main Engine Maintenance Schedule",
-    requestedBy: "Chief Engineer",
-    date: "2025-05-20",
-    status: "Pending Approval",
-    category: "Components"
-  },
-  {
-    id: 2,
-    requestTitle: "Update Steering System Component Details",
-    requestedBy: "2nd Engineer",
-    date: "2025-05-18",
-    status: "Approved",
-    category: "Work orders"
-  },
-  {
-    id: 3,
-    requestTitle: "Request Special Tool for Aux Engine",
-    requestedBy: "3rd Engineer",
-    date: "2025-05-10",
-    status: "Rejected",
-    category: "Spares"
-  }
-];
 
 const categories = [
   { id: 1, name: "Components" },
@@ -49,12 +18,68 @@ const categories = [
 const ModifyPMS: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchStatus, setSearchStatus] = useState("");
+  const [requests, setRequests] = useState<ChangeRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<ChangeRequest | null>(null);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [approvalComment, setApprovalComment] = useState("");
 
-  const filteredRequests = changeRequests.filter(request => {
-    const matchesCategory = !selectedCategory || request.category === selectedCategory;
+  const { currentUser } = useChangeRequest();
+
+  useEffect(() => {
+    // Load change requests from service
+    setRequests(changeRequestService.getAllChangeRequests());
+  }, []);
+
+  const filteredRequests = requests.filter(request => {
+    const matchesCategory = !selectedCategory || request.category === selectedCategory.toLowerCase().replace(' ', '-');
     const matchesSearch = !searchStatus || request.status.toLowerCase().includes(searchStatus.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleNewChangeRequest = () => {
+    if (!selectedCategory) {
+      alert("Please select a category first");
+      return;
+    }
+    // TODO: Navigate to the selected category form in change request mode
+    console.log("Creating new change request for:", selectedCategory);
+  };
+
+  const handleViewRequest = (request: ChangeRequest) => {
+    setSelectedRequest(request);
+    setIsReviewMode(true);
+  };
+
+  const handleApprove = () => {
+    if (!selectedRequest) return;
+    
+    changeRequestService.approveChangeRequest(
+      selectedRequest.id, 
+      currentUser.name, 
+      approvalComment
+    );
+    setRequests(changeRequestService.getAllChangeRequests());
+    setIsReviewMode(false);
+    setSelectedRequest(null);
+    setApprovalComment("");
+  };
+
+  const handleReject = () => {
+    if (!selectedRequest || !approvalComment.trim()) {
+      alert("Please provide a reason for rejection");
+      return;
+    }
+    
+    changeRequestService.rejectChangeRequest(
+      selectedRequest.id, 
+      currentUser.name, 
+      approvalComment
+    );
+    setRequests(changeRequestService.getAllChangeRequests());
+    setIsReviewMode(false);
+    setSelectedRequest(null);
+    setApprovalComment("");
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -85,7 +110,10 @@ const ModifyPMS: React.FC = () => {
               className="w-full"
             />
           </div>
-          <Button className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white ml-4">
+          <Button 
+            className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white ml-4"
+            onClick={handleNewChangeRequest}
+          >
             <Plus className="h-4 w-4 mr-2" />
             New Change Request
           </Button>
@@ -137,22 +165,52 @@ const ModifyPMS: React.FC = () => {
               {filteredRequests.map((request) => (
                 <div key={request.id} className="px-6 py-4 hover:bg-gray-50">
                   <div className="grid grid-cols-5 gap-4 items-center text-sm">
-                    <div className="text-gray-900 font-medium">
+                    <div 
+                      className="text-gray-900 font-medium cursor-pointer hover:text-[#52baf3]"
+                      onClick={() => handleViewRequest(request)}
+                    >
                       {request.requestTitle}
                     </div>
                     <div className="text-gray-700">
                       {request.requestedBy}
                     </div>
                     <div className="text-gray-700">
-                      {request.date}
+                      {request.requestDate}
                     </div>
                     <div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
                         {request.status}
                       </span>
                     </div>
-                    <div className="text-right">
-                      {/* Action buttons can be added here later */}
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleViewRequest(request)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      {currentUser.role === "approver" && request.status === "Pending Approval" && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewRequest(request)}
+                            className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewRequest(request)}
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -161,11 +219,132 @@ const ModifyPMS: React.FC = () => {
 
             {/* Footer */}
             <div className="px-6 py-3 bg-gray-50 text-sm text-gray-500 rounded-b-lg">
-              0 to 0 of 0
+              {filteredRequests.length} of {requests.length} requests
             </div>
           </div>
         </div>
       </div>
+
+      {/* Review Modal */}
+      {isReviewMode && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-4xl max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Change Request Review - {selectedRequest.requestTitle}
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsReviewMode(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Requested By</label>
+                  <p className="text-gray-900">{selectedRequest.requestedBy}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Date</label>
+                  <p className="text-gray-900">{selectedRequest.requestDate}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Category</label>
+                  <p className="text-gray-900 capitalize">{selectedRequest.category.replace('-', ' ')}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Status</label>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedRequest.status)}`}>
+                    {selectedRequest.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Changes Requested</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  {selectedRequest.changedFields.map(field => (
+                    <div key={field} className="mb-3 last:mb-0">
+                      <label className="text-sm font-medium text-gray-600 capitalize">
+                        {field.replace(/([A-Z])/g, ' $1').trim()}
+                      </label>
+                      <div className="flex items-center gap-4 mt-1">
+                        <span className="text-gray-700">
+                          {selectedRequest.originalData[field] || 'N/A'}
+                        </span>
+                        <span className="text-gray-400">→</span>
+                        <span className="text-red-600 font-medium">
+                          {selectedRequest.newData[field] || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {selectedRequest.comments && (
+                <div className="mb-6">
+                  <label className="text-sm font-medium text-gray-600">Request Comments</label>
+                  <p className="text-gray-900 mt-1">{selectedRequest.comments}</p>
+                </div>
+              )}
+
+              {currentUser.role === "approver" && selectedRequest.status === "Pending Approval" && (
+                <div className="mb-6">
+                  <label className="text-sm font-medium text-gray-600 mb-2 block">
+                    Approval Comments
+                  </label>
+                  <textarea
+                    value={approvalComment}
+                    onChange={(e) => setApprovalComment(e.target.value)}
+                    placeholder="Add comments for approval/rejection..."
+                    className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                    rows={3}
+                  />
+                </div>
+              )}
+
+              {selectedRequest.rejectionReason && (
+                <div className="mb-6">
+                  <label className="text-sm font-medium text-gray-600">Rejection Reason</label>
+                  <p className="text-red-600 mt-1">{selectedRequest.rejectionReason}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 justify-end p-6 border-t bg-gray-50">
+              <Button
+                variant="outline"
+                onClick={() => setIsReviewMode(false)}
+              >
+                Close
+              </Button>
+              {currentUser.role === "approver" && selectedRequest.status === "Pending Approval" && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleReject}
+                    className="text-red-600 border-red-600 hover:bg-red-50"
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    onClick={handleApprove}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Approve
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
