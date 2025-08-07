@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Search, ChevronRight, ChevronDown, Edit2, FileText } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ComponentRegisterForm from "@/components/ComponentRegisterForm";
+import { useChangeRequest } from "@/contexts/ChangeRequestContext";
+import { useLocation } from "wouter";
 import {
   Select,
   SelectContent,
@@ -103,6 +105,7 @@ const dummyComponents: ComponentNode[] = [
 ];
 
 const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
+  const { isChangeRequestMode } = useChangeRequest();
 
   // Sample component data - this would come from the selected component
   const componentData = {
@@ -130,25 +133,25 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
       {/* Always visible first 2 rows */}
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Maker</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Maker</label>
           <div className="text-sm text-gray-900">
             {componentData.maker}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Model</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Model</label>
           <div className="text-sm text-gray-900">
             {componentData.model}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Serial No</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Serial No</label>
           <div className="text-sm text-gray-900">
             {componentData.serialNo}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Drawing No</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Drawing No</label>
           <div className="text-sm text-gray-900">
             {componentData.drawingNo}
           </div>
@@ -156,25 +159,25 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
       </div>
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Component Code</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Component Code</label>
           <div className="text-sm text-gray-900">
             {componentData.componentCode}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Eqpt. Category</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Eqpt. Category</label>
           <div className="text-sm text-gray-900">
             {componentData.eqptCategory}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Location</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Location</label>
           <div className="text-sm text-gray-900">
             {componentData.location}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Critical</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Critical</label>
           <div className="text-sm text-gray-900">
             {componentData.critical}
           </div>
@@ -186,25 +189,25 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
         <div className="space-y-4 pt-4">
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Installation Date</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Installation Date</label>
               <div className="text-sm text-gray-900">
                 {componentData.installationDate}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Commissioned Date</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Commissioned Date</label>
               <div className="text-sm text-gray-900">
                 {componentData.commissionedDate}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Rating</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Rating</label>
               <div className="text-sm text-gray-900">
                 {componentData.rating}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Condition Based</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Condition Based</label>
               <div className="text-sm text-gray-900">
                 {componentData.conditionBased}
               </div>
@@ -213,25 +216,25 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
 
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">No of Units</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">No of Units</label>
               <div className="text-sm text-gray-900">
                 {componentData.noOfUnits}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Eqpt. System / Dept.</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Eqpt. System / Dept.</label>
               <div className="text-sm text-gray-900">
                 {componentData.eqptSystemDept}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Parent Component</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Parent Component</label>
               <div className="text-sm text-gray-900">
                 {componentData.parentComponent}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#8798ad] block mb-1">Dimensions / Size</label>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Dimensions / Size</label>
               <div className="text-sm text-gray-900">
                 {componentData.dimensionsSize}
               </div>
@@ -239,7 +242,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-1">Notes</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Notes</label>
             <div className="text-sm text-gray-900">
               {componentData.notes}
             </div>
@@ -251,6 +254,8 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
 };
 
 const RunningHoursConditionSection: React.FC = () => {
+  const { isChangeRequestMode } = useChangeRequest();
+  
   return (
     <div className="space-y-6">
       {/* Running Hours */}
@@ -261,11 +266,11 @@ const RunningHoursConditionSection: React.FC = () => {
         </div>
         <div className="flex gap-12">
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-1">Current</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Current</label>
             <div className="text-sm font-semibold text-gray-900">12580 hours</div>
           </div>
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-1">Updated</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Updated</label>
             <div className="text-sm font-semibold text-gray-900">12-Jun-2025</div>
           </div>
         </div>
@@ -279,7 +284,7 @@ const RunningHoursConditionSection: React.FC = () => {
         <div className="grid grid-cols-3 gap-8">
           {/* Vibration */}
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-2">Vibration</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Vibration</label>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-green-500 h-2 rounded-full" style={{ width: '40%' }}></div>
             </div>
@@ -287,7 +292,7 @@ const RunningHoursConditionSection: React.FC = () => {
           
           {/* Temperature */}
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-2">Temperature</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Temperature</label>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '60%' }}></div>
             </div>
@@ -295,7 +300,7 @@ const RunningHoursConditionSection: React.FC = () => {
           
           {/* Pressure */}
           <div>
-            <label className="text-xs font-medium text-[#8798ad] block mb-2">Pressure</label>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Pressure</label>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-red-500 h-2 rounded-full" style={{ width: '80%' }}></div>
             </div>
@@ -507,19 +512,19 @@ const ClassificationRegulatorySection: React.FC = () => {
       {/* First row */}
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Classification Society</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Classification Society</label>
           <div className="text-sm text-gray-900">DNV</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Certificate No.</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Certificate No.</label>
           <div className="text-sm text-gray-900">CERT-ME-2025-01</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Last Class Survey</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Last Class Survey</label>
           <div className="text-sm text-gray-900">15-Mar-2023</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Next Class Survey</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Next Class Survey</label>
           <div className="text-sm text-gray-900">15-Mar-2025</div>
         </div>
       </div>
@@ -527,19 +532,19 @@ const ClassificationRegulatorySection: React.FC = () => {
       {/* Second row */}
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Survey Type</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Survey Type</label>
           <div className="text-sm text-gray-900">Annual</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Class Requirements</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Class Requirements</label>
           <div className="text-sm text-gray-900">SOLAS, MARPOL, MLC</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Class Code</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Class Code</label>
           <div className="text-sm text-gray-900">DNV-ME-001</div>
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8798ad] block mb-1">Information</label>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Information</label>
           <div className="text-sm text-gray-900">Details</div>
         </div>
       </div>
@@ -607,6 +612,14 @@ const Components: React.FC = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
+  
+  const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
+  const [, setLocation] = useLocation();
+
+  const handleBackToModifyPMS = () => {
+    exitChangeRequestMode();
+    setLocation("/modify-pms");
+  };
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -690,25 +703,41 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className="h-full p-6 bg-[#fafafa]">
+    <div className={`h-full p-6 ${isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
       {/* Header with SubModule Title */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-gray-800">Components</h1>
-          <Button 
-            className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
-            onClick={() => setIsComponentFormOpen(true)}
-          >
-            + Add / Edit Component
-          </Button>
+          <div className="flex items-center gap-4">
+            {isChangeRequestMode && (
+              <Button
+                variant="ghost"
+                onClick={handleBackToModifyPMS}
+                className="text-white hover:bg-white/20"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Modify PMS
+              </Button>
+            )}
+            <h1 className={`text-2xl font-semibold ${isChangeRequestMode ? 'text-white' : 'text-gray-800'}`}>
+              Components {isChangeRequestMode && '- Change Request Mode'}
+            </h1>
+          </div>
+          {!isChangeRequestMode && (
+            <Button 
+              className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
+              onClick={() => setIsComponentFormOpen(true)}
+            >
+              + Add / Edit Component
+            </Button>
+          )}
         </div>
         
         {/* Filters Row */}
         <div className="flex gap-4 mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-600">Vessel:</span>
+            <span className={`text-sm font-medium ${isChangeRequestMode ? 'text-white' : 'text-gray-600'}`}>Vessel:</span>
             <Select defaultValue="all">
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className={`w-[150px] ${isChangeRequestMode ? 'border-white bg-white/10 text-white' : ''}`}>
                 <SelectValue placeholder="Select vessel" />
               </SelectTrigger>
               <SelectContent>
@@ -720,9 +749,9 @@ const Components: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-600">Critical Item:</span>
+            <span className={`text-sm font-medium ${isChangeRequestMode ? 'text-white' : 'text-gray-600'}`}>Critical Item:</span>
             <Select defaultValue="all">
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className={`w-[140px] ${isChangeRequestMode ? 'border-white bg-white/10 text-white' : ''}`}>
                 <SelectValue placeholder="All Items" />
               </SelectTrigger>
               <SelectContent>
@@ -738,7 +767,7 @@ const Components: React.FC = () => {
               placeholder="Search Components..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-md"
+              className={`max-w-md ${isChangeRequestMode ? 'border-white bg-white/10 text-white placeholder:text-white/70' : ''}`}
             />
           </div>
         </div>
