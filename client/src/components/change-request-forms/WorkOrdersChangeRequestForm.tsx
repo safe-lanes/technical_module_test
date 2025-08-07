@@ -74,7 +74,7 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
 
   const getInputStyle = (field: string) => {
     const isChanged = changedFields.has(field);
-    return `${isChanged ? 'text-red-500 border-red-500' : 'text-[#52baf3] border-[#52baf3]'}`;
+    return isChanged ? 'text-red-500 border-red-500' : 'border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]';
   };
 
   const getLabelStyle = () => 'text-[#52baf3] text-sm font-medium mb-2 block';
@@ -95,35 +95,35 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
       </div>
 
       {/* Modal Body */}
-      <div className="p-6 space-y-6">
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Basic Information
-          </h3>
+      <div className="p-6">
+        {/* A1. Work Order Information */}
+        <div className="border border-gray-200 rounded-lg p-4 mb-6">
+          <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A1. Work Order Information</h4>
           
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label className={getLabelStyle()}>Work Order No</Label>
-              <Input
-                value={workOrderData.workOrderNo}
-                onChange={(e) => handleInputChange("workOrderNo", e.target.value)}
-                className={getInputStyle("workOrderNo")}
+          <div className="grid grid-cols-3 gap-6">
+            {/* Row 1 */}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Work Order</Label>
+              <Input 
+                value={workOrderData.workOrderNo} 
+                onChange={(e) => handleInputChange('workOrderNo', e.target.value)}
+                className={`text-sm ${getInputStyle("workOrderNo")}`}
               />
             </div>
-            <div className="col-span-2">
-              <Label className={getLabelStyle()}>Job Title</Label>
-              <Input
-                value={workOrderData.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                className={getInputStyle("title")}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Job Title</Label>
+              <Input 
+                value={workOrderData.title} 
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                className={`text-sm ${getInputStyle("title")}`}
+                placeholder="Main Engine - Replace Fuel Filters"
               />
             </div>
-            <div>
-              <Label className={getLabelStyle()}>Component</Label>
-              <Select value={workOrderData.component} onValueChange={(value) => handleInputChange("component", value)}>
-                <SelectTrigger className={getInputStyle("component")}>
-                  <SelectValue placeholder="Select component" />
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Component</Label>
+              <Select value={workOrderData.component} onValueChange={(value) => handleInputChange('component', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("component")}`}>
+                  <SelectValue placeholder="601.002 Main Engine" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="601.002 Main Engine">601.002 Main Engine</SelectItem>
@@ -132,11 +132,13 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className={getLabelStyle()}>Maintenance Type</Label>
-              <Select value={workOrderData.maintenanceType} onValueChange={(value) => handleInputChange("maintenanceType", value)}>
-                <SelectTrigger className={getInputStyle("maintenanceType")}>
-                  <SelectValue placeholder="Select type" />
+
+            {/* Row 2 */}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Maintenance Type</Label>
+              <Select value={workOrderData.maintenanceType} onValueChange={(value) => handleInputChange('maintenanceType', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("maintenanceType")}`}>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Planned Maintenance">Planned Maintenance</SelectItem>
@@ -145,61 +147,11 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className={getLabelStyle()}>Job Category</Label>
-              <Select value={workOrderData.jobCategory} onValueChange={(value) => handleInputChange("jobCategory", value)}>
-                <SelectTrigger className={getInputStyle("jobCategory")}>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mechanical">Mechanical</SelectItem>
-                  <SelectItem value="Electrical">Electrical</SelectItem>
-                  <SelectItem value="Hydraulic">Hydraulic</SelectItem>
-                  <SelectItem value="Safety">Safety</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Class Related</Label>
-              <Select value={workOrderData.classRelated} onValueChange={(value) => handleInputChange("classRelated", value)}>
-                <SelectTrigger className={getInputStyle("classRelated")}>
-                  <SelectValue placeholder="Yes/No" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Priority</Label>
-              <Select value={workOrderData.priority} onValueChange={(value) => handleInputChange("priority", value)}>
-                <SelectTrigger className={getInputStyle("priority")}>
-                  <SelectValue placeholder="Select priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Critical">Critical</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="Low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        {/* Assignment & Status */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Assignment & Status
-          </h3>
-          
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label className={getLabelStyle()}>Assigned To</Label>
-              <Select value={workOrderData.assignedTo} onValueChange={(value) => handleInputChange("assignedTo", value)}>
-                <SelectTrigger className={getInputStyle("assignedTo")}>
-                  <SelectValue placeholder="Select assignee" />
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Assigned To</Label>
+              <Select value={workOrderData.assignedTo} onValueChange={(value) => handleInputChange('assignedTo', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("assignedTo")}`}>
+                  <SelectValue placeholder="Rank" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
@@ -209,11 +161,11 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className={getLabelStyle()}>Approver</Label>
-              <Select value={workOrderData.approver} onValueChange={(value) => handleInputChange("approver", value)}>
-                <SelectTrigger className={getInputStyle("approver")}>
-                  <SelectValue placeholder="Select approver" />
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Approver</Label>
+              <Select value={workOrderData.approver} onValueChange={(value) => handleInputChange('approver', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("approver")}`}>
+                  <SelectValue placeholder="Rank" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
@@ -221,191 +173,88 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className={getLabelStyle()}>Status</Label>
-              <Select value={workOrderData.status} onValueChange={(value) => handleInputChange("status", value)}>
-                <SelectTrigger className={getInputStyle("status")}>
-                  <SelectValue placeholder="Select status" />
+
+            {/* Row 3 */}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Job Category</Label>
+              <Select value={workOrderData.jobCategory} onValueChange={(value) => handleInputChange('jobCategory', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("jobCategory")}`}>
+                  <SelectValue placeholder="Mechanical" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Due">Due</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="On Hold">On Hold</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        {/* Safety Requirements */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Safety Requirements
-          </h3>
-          
-          <div className="space-y-4">
-            <div>
-              <Label className={getLabelStyle()}>PPE Requirements</Label>
-              <Input
-                value={workOrderData.ppeRequirements}
-                onChange={(e) => handleInputChange("ppeRequirements", e.target.value)}
-                className={getInputStyle("ppeRequirements")}
-                placeholder="[Safety Helmet] [Safety Gloves] [Safety Goggles]"
-              />
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Permit Requirements</Label>
-              <Input
-                value={workOrderData.permitRequirements}
-                onChange={(e) => handleInputChange("permitRequirements", e.target.value)}
-                className={getInputStyle("permitRequirements")}
-                placeholder="[Hot Work Permit] [Enclosed Space Entry Permit]"
-              />
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Other Safety Requirements</Label>
-              <Input
-                value={workOrderData.otherSafetyRequirements}
-                onChange={(e) => handleInputChange("otherSafetyRequirements", e.target.value)}
-                className={getInputStyle("otherSafetyRequirements")}
-                placeholder="Free Text"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Schedule & Hours */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Schedule & Hours
-          </h3>
-          
-          <div className="grid grid-cols-5 gap-4">
-            <div>
-              <Label className={getLabelStyle()}>Start Date</Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  value={workOrderData.startDate}
-                  onChange={(e) => handleInputChange("startDate", e.target.value)}
-                  className={getInputStyle("startDate")}
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52baf3] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Target Date</Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  value={workOrderData.targetDate}
-                  onChange={(e) => handleInputChange("targetDate", e.target.value)}
-                  className={getInputStyle("targetDate")}
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52baf3] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Completion Date</Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  value={workOrderData.completionDate}
-                  onChange={(e) => handleInputChange("completionDate", e.target.value)}
-                  className={getInputStyle("completionDate")}
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#52baf3] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Estimated Hours</Label>
-              <Input
-                type="number"
-                min="0"
-                value={workOrderData.estimatedHours}
-                onChange={(e) => handleInputChange("estimatedHours", e.target.value)}
-                className={getInputStyle("estimatedHours")}
-              />
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Actual Hours</Label>
-              <Input
-                type="number"
-                min="0"
-                value={workOrderData.actualHours}
-                onChange={(e) => handleInputChange("actualHours", e.target.value)}
-                className={getInputStyle("actualHours")}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Location & Component */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Location & Component
-          </h3>
-          
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label className={getLabelStyle()}>Component</Label>
-              <Input
-                value={workOrderData.component}
-                onChange={(e) => handleInputChange("component", e.target.value)}
-                className={getInputStyle("component")}
-              />
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Location</Label>
-              <Input
-                value={workOrderData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                className={getInputStyle("location")}
-              />
-            </div>
-            <div>
-              <Label className={getLabelStyle()}>Department</Label>
-              <Select value={workOrderData.department} onValueChange={(value) => handleInputChange("department", value)}>
-                <SelectTrigger className={getInputStyle("department")}>
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Engine">Engine</SelectItem>
-                  <SelectItem value="Deck">Deck</SelectItem>
+                  <SelectItem value="Mechanical">Mechanical</SelectItem>
                   <SelectItem value="Electrical">Electrical</SelectItem>
+                  <SelectItem value="Hydraulic">Hydraulic</SelectItem>
                   <SelectItem value="Safety">Safety</SelectItem>
-                  <SelectItem value="Navigation">Navigation</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Class Related</Label>
+              <Select value={workOrderData.classRelated} onValueChange={(value) => handleInputChange('classRelated', value)}>
+                <SelectTrigger className={`text-sm ${getInputStyle("classRelated")}`}>
+                  <SelectValue placeholder="Yes" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm text-[#8798ad]">Status</Label>
+              <Input 
+                value={workOrderData.status} 
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                className={`text-sm ${getInputStyle("status")}`}
+                placeholder="Status"
+              />
+            </div>
+          </div>
+
+          {/* Brief Work Description */}
+          <div className="mt-6">
+            <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
+            <Textarea 
+              value={workOrderData.briefWorkDescription} 
+              onChange={(e) => handleInputChange('briefWorkDescription', e.target.value)}
+              className={`mt-2 text-sm ${getInputStyle("briefWorkDescription")}`}
+              rows={3}
+              placeholder="Add Work description"
+            />
           </div>
         </div>
 
-        {/* Description & Notes */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
-            Description & Notes
-          </h3>
+        {/* A2. Safety Requirements */}
+        <div className="border border-gray-200 rounded-lg p-4 mb-6">
+          <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A2. Safety Requirements</h4>
           
           <div className="space-y-4">
             <div>
-              <Label className={getLabelStyle()}>Brief Work Description</Label>
-              <Textarea
-                value={workOrderData.briefWorkDescription}
-                onChange={(e) => handleInputChange("briefWorkDescription", e.target.value)}
-                className={getInputStyle("briefWorkDescription")}
-                rows={3}
+              <Label className="text-sm text-[#8798ad]">PPE Requirements:</Label>
+              <Input 
+                value={workOrderData.ppeRequirements} 
+                onChange={(e) => handleInputChange('ppeRequirements', e.target.value)}
+                className={`mt-2 text-sm ${getInputStyle("ppeRequirements")}`}
+                placeholder="[Leather Gloves] [Goggles] [Safety Helmet]"
               />
             </div>
             <div>
-              <Label className={getLabelStyle()}>Additional Notes</Label>
-              <Textarea
-                value={workOrderData.notes}
-                onChange={(e) => handleInputChange("notes", e.target.value)}
-                className={getInputStyle("notes")}
-                rows={2}
+              <Label className="text-sm text-[#8798ad]">Permit Requirements:</Label>
+              <Input 
+                value={workOrderData.permitRequirements} 
+                onChange={(e) => handleInputChange('permitRequirements', e.target.value)}
+                className={`mt-2 text-sm ${getInputStyle("permitRequirements")}`}
+                placeholder="[Enclosed Space Entry Permit]"
+              />
+            </div>
+            <div>
+              <Label className="text-sm text-[#8798ad]">Other Safety Requirements:</Label>
+              <Input 
+                value={workOrderData.otherSafetyRequirements} 
+                onChange={(e) => handleInputChange('otherSafetyRequirements', e.target.value)}
+                className={`mt-2 text-sm ${getInputStyle("otherSafetyRequirements")}`}
+                placeholder="Free Text"
               />
             </div>
           </div>
