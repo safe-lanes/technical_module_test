@@ -404,11 +404,23 @@ const ModifyPMS: React.FC = () => {
                   handleCloseFormModal();
                 }}
                 initialData={{
-                  workOrderNo: "WO-2025-001",
-                  title: "Main Engine Overhaul - Replace Main bearings",
-                  assignedTo: "2nd Eng",
-                  priority: "High",
-                  status: "In Progress"
+                  workOrderNo: "WO-2025-17",
+                  title: "Steering Gear - 3 Monthly Inspection",
+                  component: "603.001 Steering Gear",
+                  maintenanceType: "Planned Maintenance",
+                  assignedTo: "2nd Engineer",
+                  approver: "Chief Engineer",
+                  jobCategory: "Mechanical",
+                  classRelated: "Yes",
+                  status: "Due",
+                  briefWorkDescription: "Complete scheduled 3-monthly inspection of steering gear system as per manufacturer's recommendations",
+                  ppeRequirements: "Safety Helmet, Safety Gloves, Safety Goggles",
+                  permitRequirements: "Hot Work Permit (if required)",
+                  otherSafetyRequirements: "Ensure proper lockout/tagout procedures are followed",
+                  priority: "Medium",
+                  workType: "Planned Maintenance",
+                  department: "Engine",
+                  location: "Steering Gear Room"
                 }}
               />
             )}

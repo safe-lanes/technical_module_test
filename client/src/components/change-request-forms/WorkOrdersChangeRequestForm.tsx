@@ -20,20 +20,27 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
   const [workOrderData, setWorkOrderData] = useState({
     workOrderNo: initialData.workOrderNo || "WO-2025-001",
     title: initialData.title || "Main Engine Overhaul - Replace Main bearings",
+    component: initialData.component || "Main Engine #1",
+    maintenanceType: initialData.maintenanceType || "Planned Maintenance",
     assignedTo: initialData.assignedTo || "2nd Eng",
-    priority: initialData.priority || "High",
+    approver: initialData.approver || "Chief Engineer",
+    jobCategory: initialData.jobCategory || "Mechanical",
+    classRelated: initialData.classRelated || "No",
     status: initialData.status || "In Progress",
+    briefWorkDescription: initialData.briefWorkDescription || "Complete overhaul of main engine bearings as per maintenance schedule",
+    ppeRequirements: initialData.ppeRequirements || "Safety Helmet, Safety Gloves",
+    permitRequirements: initialData.permitRequirements || "Hot Work Permit",
+    otherSafetyRequirements: initialData.otherSafetyRequirements || "",
+    priority: initialData.priority || "High",
+    workType: initialData.workType || "Planned Maintenance",
+    department: initialData.department || "Engine",
+    location: initialData.location || "Engine Room",
     estimatedHours: initialData.estimatedHours || "24",
     actualHours: initialData.actualHours || "",
     startDate: initialData.startDate || "2025-01-15",
     targetDate: initialData.targetDate || "2025-01-20",
     completionDate: initialData.completionDate || "",
-    description: initialData.description || "Complete overhaul of main engine bearings as per maintenance schedule",
-    notes: initialData.notes || "",
-    component: initialData.component || "Main Engine #1",
-    location: initialData.location || "Engine Room",
-    workType: initialData.workType || "Planned Maintenance",
-    department: initialData.department || "Engine"
+    notes: initialData.notes || ""
   });
 
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -95,7 +102,7 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
             Basic Information
           </h3>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <Label className={getLabelStyle()}>Work Order No</Label>
               <Input
@@ -103,6 +110,66 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 onChange={(e) => handleInputChange("workOrderNo", e.target.value)}
                 className={getInputStyle("workOrderNo")}
               />
+            </div>
+            <div className="col-span-2">
+              <Label className={getLabelStyle()}>Job Title</Label>
+              <Input
+                value={workOrderData.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                className={getInputStyle("title")}
+              />
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Component</Label>
+              <Select value={workOrderData.component} onValueChange={(value) => handleInputChange("component", value)}>
+                <SelectTrigger className={getInputStyle("component")}>
+                  <SelectValue placeholder="Select component" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="601.002 Main Engine">601.002 Main Engine</SelectItem>
+                  <SelectItem value="602.001 Diesel Generator 1">602.001 Diesel Generator 1</SelectItem>
+                  <SelectItem value="603.001 Steering Gear">603.001 Steering Gear</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Maintenance Type</Label>
+              <Select value={workOrderData.maintenanceType} onValueChange={(value) => handleInputChange("maintenanceType", value)}>
+                <SelectTrigger className={getInputStyle("maintenanceType")}>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Planned Maintenance">Planned Maintenance</SelectItem>
+                  <SelectItem value="Preventive Maintenance">Preventive Maintenance</SelectItem>
+                  <SelectItem value="Corrective Maintenance">Corrective Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Job Category</Label>
+              <Select value={workOrderData.jobCategory} onValueChange={(value) => handleInputChange("jobCategory", value)}>
+                <SelectTrigger className={getInputStyle("jobCategory")}>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mechanical">Mechanical</SelectItem>
+                  <SelectItem value="Electrical">Electrical</SelectItem>
+                  <SelectItem value="Hydraulic">Hydraulic</SelectItem>
+                  <SelectItem value="Safety">Safety</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Class Related</Label>
+              <Select value={workOrderData.classRelated} onValueChange={(value) => handleInputChange("classRelated", value)}>
+                <SelectTrigger className={getInputStyle("classRelated")}>
+                  <SelectValue placeholder="Yes/No" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className={getLabelStyle()}>Priority</Label>
@@ -117,14 +184,6 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                   <SelectItem value="Low">Low</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="col-span-2">
-              <Label className={getLabelStyle()}>Title</Label>
-              <Input
-                value={workOrderData.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                className={getInputStyle("title")}
-              />
             </div>
           </div>
         </div>
@@ -143,11 +202,22 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                   <SelectValue placeholder="Select assignee" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Chief Eng">Chief Eng</SelectItem>
-                  <SelectItem value="2nd Eng">2nd Eng</SelectItem>
-                  <SelectItem value="3rd Eng">3rd Eng</SelectItem>
-                  <SelectItem value="Fitter">Fitter</SelectItem>
-                  <SelectItem value="Electrician">Electrician</SelectItem>
+                  <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
+                  <SelectItem value="2nd Engineer">2nd Engineer</SelectItem>
+                  <SelectItem value="3rd Engineer">3rd Engineer</SelectItem>
+                  <SelectItem value="4th Engineer">4th Engineer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Approver</Label>
+              <Select value={workOrderData.approver} onValueChange={(value) => handleInputChange("approver", value)}>
+                <SelectTrigger className={getInputStyle("approver")}>
+                  <SelectValue placeholder="Select approver" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Chief Engineer">Chief Engineer</SelectItem>
+                  <SelectItem value="Captain">Captain</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -158,7 +228,7 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Planned">Planned</SelectItem>
+                  <SelectItem value="Due">Due</SelectItem>
                   <SelectItem value="In Progress">In Progress</SelectItem>
                   <SelectItem value="On Hold">On Hold</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
@@ -166,20 +236,42 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
                 </SelectContent>
               </Select>
             </div>
+          </div>
+        </div>
+
+        {/* Safety Requirements */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-[#52baf3] border-b border-[#52baf3] pb-2">
+            Safety Requirements
+          </h3>
+          
+          <div className="space-y-4">
             <div>
-              <Label className={getLabelStyle()}>Work Type</Label>
-              <Select value={workOrderData.workType} onValueChange={(value) => handleInputChange("workType", value)}>
-                <SelectTrigger className={getInputStyle("workType")}>
-                  <SelectValue placeholder="Select work type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Planned Maintenance">Planned Maintenance</SelectItem>
-                  <SelectItem value="Corrective Maintenance">Corrective Maintenance</SelectItem>
-                  <SelectItem value="Emergency Repair">Emergency Repair</SelectItem>
-                  <SelectItem value="Inspection">Inspection</SelectItem>
-                  <SelectItem value="Modification">Modification</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label className={getLabelStyle()}>PPE Requirements</Label>
+              <Input
+                value={workOrderData.ppeRequirements}
+                onChange={(e) => handleInputChange("ppeRequirements", e.target.value)}
+                className={getInputStyle("ppeRequirements")}
+                placeholder="[Safety Helmet] [Safety Gloves] [Safety Goggles]"
+              />
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Permit Requirements</Label>
+              <Input
+                value={workOrderData.permitRequirements}
+                onChange={(e) => handleInputChange("permitRequirements", e.target.value)}
+                className={getInputStyle("permitRequirements")}
+                placeholder="[Hot Work Permit] [Enclosed Space Entry Permit]"
+              />
+            </div>
+            <div>
+              <Label className={getLabelStyle()}>Other Safety Requirements</Label>
+              <Input
+                value={workOrderData.otherSafetyRequirements}
+                onChange={(e) => handleInputChange("otherSafetyRequirements", e.target.value)}
+                className={getInputStyle("otherSafetyRequirements")}
+                placeholder="Free Text"
+              />
             </div>
           </div>
         </div>
@@ -299,11 +391,11 @@ const WorkOrdersChangeRequestForm: React.FC<WorkOrdersChangeRequestFormProps> = 
           
           <div className="space-y-4">
             <div>
-              <Label className={getLabelStyle()}>Description</Label>
+              <Label className={getLabelStyle()}>Brief Work Description</Label>
               <Textarea
-                value={workOrderData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
-                className={getInputStyle("description")}
+                value={workOrderData.briefWorkDescription}
+                onChange={(e) => handleInputChange("briefWorkDescription", e.target.value)}
+                className={getInputStyle("briefWorkDescription")}
                 rows={3}
               />
             </div>
