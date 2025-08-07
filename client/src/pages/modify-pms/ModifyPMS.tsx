@@ -128,8 +128,8 @@ const ModifyPMS: React.FC = () => {
             </div>
 
             {/* Table Header */}
-            <div className="bg-[#52baf3] text-white">
-              <div className="grid grid-cols-10 gap-4 p-4 text-sm font-medium">
+            <div className="bg-[#52baf3] text-white px-4 py-3">
+              <div className="grid grid-cols-10 gap-4 text-sm font-medium">
                 <div className="col-span-4">Request Title</div>
                 <div className="col-span-3">Requested By</div>
                 <div className="col-span-1">Date</div>
