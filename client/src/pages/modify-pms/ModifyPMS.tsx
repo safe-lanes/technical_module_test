@@ -128,7 +128,7 @@ const ModifyPMS: React.FC = () => {
             </div>
 
             {/* Table Header */}
-            <div className="bg-[#52baf3] text-white px-4 py-3">
+            <div className="bg-[#52baf3] text-white p-4">
               <div className="grid grid-cols-10 gap-4 text-sm font-medium">
                 <div className="col-span-4">Request Title</div>
                 <div className="col-span-3">Requested By</div>
@@ -141,8 +141,8 @@ const ModifyPMS: React.FC = () => {
             <div className="flex-1 overflow-auto">
               <div className="divide-y divide-gray-200">
                 {filteredRequests.map((request) => (
-                  <div key={request.id} className="p-4 hover:bg-gray-50">
-                    <div className="grid grid-cols-10 gap-4 items-center text-sm">
+                  <div key={request.id} className="hover:bg-gray-50">
+                    <div className="p-4 grid grid-cols-10 gap-4 items-center text-sm">
                       <div className="col-span-4 text-gray-900">
                         {request.requestTitle}
                       </div>
