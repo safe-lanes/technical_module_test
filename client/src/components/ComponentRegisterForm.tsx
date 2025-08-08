@@ -16,7 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Plus, Upload, Eye, Trash2, Edit3, X } from "lucide-react";
+import { ArrowLeft, Plus, Upload, Eye, Trash2, Edit3, X, ChevronRight, ChevronDown, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface ComponentNode {
+  id: string;
+  code: string;
+  name: string;
+  children?: ComponentNode[];
+  isExpanded?: boolean;
+}
 
 interface ComponentRegisterFormProps {
   isOpen: boolean;
@@ -25,25 +34,296 @@ interface ComponentRegisterFormProps {
   parentComponent?: { code: string; name: string } | null;
 }
 
+// Use the same component tree data as Components screen
+const dummyComponents: ComponentNode[] = [
+  {
+    id: "1",
+    code: "1",
+    name: "Ship General",
+    children: [
+      {
+        id: "1.1",
+        code: "1.1",
+        name: "Fresh Water System",
+        children: [
+          {
+            id: "1.1.1",
+            code: "1.1.1",
+            name: "Hydrophore Unit",
+            children: [
+              {
+                id: "1.1.1.1",
+                code: "1.1.1.1",
+                name: "Pressure Vessel"
+              },
+              {
+                id: "1.1.1.2",
+                code: "1.1.1.2",
+                name: "Feed Pump"
+              },
+              {
+                id: "1.1.1.3",
+                code: "1.1.1.3",
+                name: "Pressure Switch"
+              }
+            ]
+          },
+          {
+            id: "1.1.2",
+            code: "1.1.2",
+            name: "Potable Water Maker",
+            children: []
+          },
+          {
+            id: "1.1.3",
+            code: "1.1.3",
+            name: "UV Sterilizer",
+            children: []
+          }
+        ]
+      },
+      {
+        id: "1.2",
+        code: "1.2",
+        name: "Sewage Treatment System",
+        children: []
+      },
+      {
+        id: "1.3",
+        code: "1.3",
+        name: "HVAC – Accommodation",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "2", 
+    code: "2",
+    name: "Hull",
+    children: [
+      {
+        id: "2.1",
+        code: "2.1",
+        name: "Ballast Tanks",
+        children: []
+      },
+      {
+        id: "2.2",
+        code: "2.2",
+        name: "Cathodic Protection",
+        children: []
+      },
+      {
+        id: "2.3",
+        code: "2.3",
+        name: "Hull Openings – Hatches",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "3",
+    code: "3", 
+    name: "Equipment for Cargo",
+    children: [
+      {
+        id: "3.1",
+        code: "3.1",
+        name: "Cargo Cranes",
+        children: []
+      },
+      {
+        id: "3.2",
+        code: "3.2",
+        name: "Hatch Cover Hydraulics",
+        children: []
+      },
+      {
+        id: "3.3",
+        code: "3.3",
+        name: "Cargo Hold Ventilation",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "4",
+    code: "4",
+    name: "Ship's Equipment",
+    children: [
+      {
+        id: "4.1",
+        code: "4.1",
+        name: "Mooring System",
+        children: []
+      },
+      {
+        id: "4.2",
+        code: "4.2",
+        name: "Windlass",
+        children: []
+      },
+      {
+        id: "4.3",
+        code: "4.3",
+        name: "Steering Gear",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "5",
+    code: "5",
+    name: "Equipment for Crew & Passengers",
+    children: [
+      {
+        id: "5.1",
+        code: "5.1",
+        name: "Lifeboat System",
+        children: []
+      },
+      {
+        id: "5.2",
+        code: "5.2",
+        name: "Fire Main System",
+        children: []
+      },
+      {
+        id: "5.3",
+        code: "5.3",
+        name: "Emergency Lighting",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "6",
+    code: "6",
+    name: "Machinery Main Components",
+    isExpanded: true,
+    children: [
+      {
+        id: "6.1",
+        code: "6.1",
+        name: "Main Engine",
+        isExpanded: true,
+        children: [
+          {
+            id: "6.1.1",
+            code: "6.1.1",
+            name: "Cylinder Head",
+            isExpanded: true,
+            children: [
+              {
+                id: "6.1.1.1",
+                code: "6.1.1.1",
+                name: "Valve Seats"
+              },
+              {
+                id: "6.1.1.2",
+                code: "6.1.1.2",
+                name: "Injector Sleeve"
+              },
+              {
+                id: "6.1.1.3",
+                code: "6.1.1.3",
+                name: "Rocker Arm"
+              }
+            ]
+          },
+          {
+            id: "6.1.2",
+            code: "6.1.2",
+            name: "Main Bearings",
+            children: []
+          },
+          {
+            id: "6.1.3",
+            code: "6.1.3",
+            name: "Cylinder Liners",
+            children: []
+          }
+        ]
+      },
+      {
+        id: "6.2",
+        code: "6.2",
+        name: "Diesel Generators",
+        children: [
+          {
+            id: "6.2.1",
+            code: "6.2.1",
+            name: "DG #1",
+            children: []
+          },
+          {
+            id: "6.2.2",
+            code: "6.2.2",
+            name: "DG #2",
+            children: []
+          },
+          {
+            id: "6.2.3",
+            code: "6.2.3",
+            name: "DG #3",
+            children: []
+          }
+        ]
+      },
+      {
+        id: "6.3",
+        code: "6.3",
+        name: "Auxiliary Boiler",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "7",
+    code: "7",
+    name: "Systems for Machinery Main Components",
+    children: [
+      {
+        id: "7.1",
+        code: "7.1",
+        name: "Fuel Oil System",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "8",
+    code: "8",
+    name: "Ship Common Systems",
+    children: []
+  }
+];
+
 const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
   parentComponent,
 }) => {
+  const { toast } = useToast();
+  const [selectedNode, setSelectedNode] = useState<ComponentNode | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
+  const [isAddMode, setIsAddMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Auto-generate component code based on parent
-  const generateComponentCode = () => {
-    if (!parentComponent) return "";
-    // This would calculate the next available number at this level
-    // For now, using a placeholder .1 suffix
-    return `${parentComponent.code}.1`;
+  const generateComponentCode = (parent: ComponentNode | null) => {
+    if (!parent) return "";
+    // Calculate next available number at this level
+    const siblingCount = parent.children?.length || 0;
+    return `${parent.code}.${siblingCount + 1}`;
   };
 
   const [componentData, setComponentData] = useState({
     componentId: "601.003.XXX",
     serialNo: "",
     drawingNo: "",
-    componentCode: generateComponentCode(),
+    componentCode: "",
     equipmentCategory: "",
     location: "",
     installation: "",
@@ -77,13 +357,95 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     }
   });
 
-  // Update component code when parent component changes
-  useEffect(() => {
+  // Handle node selection
+  const handleNodeSelect = (node: ComponentNode) => {
+    setSelectedNode(node);
+    setIsAddMode(false);
+    // Load existing component data for edit mode
     setComponentData(prev => ({
       ...prev,
-      componentCode: generateComponentCode()
+      componentCode: node.code
     }));
-  }, [parentComponent]);
+  };
+
+  // Handle Add Sub Component
+  const handleAddSubComponent = () => {
+    if (!selectedNode) {
+      toast({
+        title: "No Parent Selected",
+        description: "Select a parent in the tree to add a child component.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsAddMode(true);
+    const newCode = generateComponentCode(selectedNode);
+    setComponentData(prev => ({
+      ...prev,
+      componentCode: newCode,
+      parentComponent: selectedNode.name
+    }));
+  };
+
+  // Toggle node expansion
+  const toggleNode = (nodeId: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  // Render component tree
+  const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
+    return nodes.map((node) => {
+      const hasChildren = node.children && node.children.length > 0;
+      const isExpanded = expandedNodes.has(node.id);
+      const isSelected = selectedNode?.id === node.id;
+
+      return (
+        <div key={node.id}>
+          <div
+            className={`flex items-center px-3 py-2 cursor-pointer hover:bg-white/10 ${
+              isSelected ? "bg-white/20" : ""
+            }`}
+            style={{ paddingLeft: `${level * 20 + 12}px` }}
+            onClick={() => handleNodeSelect(node)}
+          >
+            <button
+              className="mr-2 flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasChildren) {
+                  toggleNode(node.id);
+                }
+              }}
+            >
+              {hasChildren ? (
+                isExpanded ? (
+                  <ChevronDown className="h-4 w-4 text-white" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-white" />
+                )
+              ) : (
+                <ChevronRight className="h-4 w-4 text-white/50" />
+              )}
+            </button>
+            <span className="text-sm text-white">
+              {node.code} {node.name}
+            </span>
+          </div>
+          {hasChildren && isExpanded && (
+            <div>{renderComponentTree(node.children!, level + 1)}</div>
+          )}
+        </div>
+      );
+    });
+  };
 
   const handleInputChange = (field: string, value: string) => {
     if (field.includes('.')) {
@@ -115,13 +477,21 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
       <DialogContent className="w-[95vw] max-w-none h-[95vh] flex flex-col">
         <DialogHeader className="pb-4 pr-12">
           <div className="flex items-center justify-between">
-            <DialogTitle>Component Register - Add Component</DialogTitle>
+            <DialogTitle>Component Register - {isAddMode ? 'Add Component' : 'Edit Component'}</DialogTitle>
             <div className="flex items-center gap-2">
-              <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+              <Button 
+                size="sm" 
+                className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
+                onClick={handleAddSubComponent}
+              >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Sub Component
               </Button>
-              <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+              <Button 
+                size="sm" 
+                className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
+                onClick={handleSubmit}
+              >
                 Save
               </Button>
               <Button variant="outline" size="sm" onClick={onClose}>
@@ -137,59 +507,16 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
           <div className="w-80 bg-[#52baf3] text-white p-4 overflow-auto">
             <div className="mb-4">
               <h3 className="font-semibold text-white mb-2">COMPONENTS</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>1. Ship General</span>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>2. Hull</span>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>3. Equipment for Cargo</span>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>4. Ship's Accommodation</span>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>5. Equipment for Crew & Passengers</span>
-                </div>
-                <div className="flex items-center gap-2 py-1 bg-white/20 px-2 rounded">
-                  <span>▼</span>
-                  <span>6. Machinery Main Components</span>
-                </div>
-                <div className="ml-6 space-y-1">
-                  <div className="flex items-center gap-2 py-1">
-                    <span>▶</span>
-                    <span>60. Diesel Engines for Propulsion</span>
-                  </div>
-                  <div className="ml-4 space-y-1">
-                    <div className="flex items-center gap-2 py-1">
-                      <span>▶</span>
-                      <span>601. Diesel Engines</span>
-                    </div>
-                    <div className="ml-4">
-                      <div className="bg-[#4aa3d9] px-2 py-1 rounded text-xs">
-                        601.003 Main Diesel Engines
-                      </div>
-                      <div className="ml-4 mt-1">
-                        <div className="text-xs py-1">601.003 ME cylinder covers w/ valves</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>7. Systems for Machinery Main Components</span>
-                </div>
-                <div className="flex items-center gap-2 py-1">
-                  <span>▶</span>
-                  <span>8. Ship Common Systems</span>
-                </div>
+              <div className="mb-3">
+                <Input
+                  placeholder="Search components..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-white/20 border-white/30 text-white placeholder-white/60"
+                />
+              </div>
+              <div className="space-y-0">
+                {renderComponentTree(dummyComponents)}
               </div>
             </div>
           </div>
@@ -856,6 +1183,82 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                         onChange={(e) => handleInputChange('classificationData.information', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                {/* H. Requisitions */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold text-[#16569e]">H. Requisitions</h4>
+                    <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Requisition
+                    </Button>
+                  </div>
+                  <div className="border border-gray-200 rounded">
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                      <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-700">
+                        <div className="flex items-center gap-2">
+                          <span>REQ No.</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Part</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Qty</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Date</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Status</span>
+                          <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
+                          <X className="h-3 w-3 text-red-500 cursor-pointer" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-4 py-3">
+                      <div className="grid grid-cols-5 gap-4 text-sm items-center">
+                        <div>
+                          <Input 
+                            defaultValue="REQ-2025-089"
+                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Input 
+                            defaultValue="Fuel Injection Pump"
+                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Input 
+                            defaultValue="2"
+                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Input 
+                            defaultValue="15-Jan-2025"
+                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Input 
+                            defaultValue="Pending"
+                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
