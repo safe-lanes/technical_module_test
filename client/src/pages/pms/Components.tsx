@@ -120,7 +120,15 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
     critical: "Yes",
     classItem: "Yes",
     location: "Engine Room",
-    commissionedDate: "2020-02-01"
+    commissionedDate: "2020-02-01",
+    installationDate: "2020-01-15",
+    rating: "7,200 kW",
+    conditionBased: "Yes",
+    noOfUnits: "1",
+    eqptSystemDept: "Engine Department",
+    parentComponent: "Main Engine Block",
+    dimensionsSize: "15m x 3m x 4m",
+    notes: "Primary propulsion engine - critical for vessel operations"
   };
 
   return (
@@ -587,31 +595,31 @@ const ClassificationRegulatorySection: React.FC = () => {
   );
 };
 
-const RegulationsSection: React.FC = () => {
-  const regulations = [
+const RequisitionsSection: React.FC = () => {
+  const requisitions = [
     {
-      regId: "REG-ME-001",
-      regDate: "15-Jul-2025",
-      title: "MARPOL Annex VI - NOx Technical Code",
-      requestedDate: "15-Sep-2025",
+      reqId: "RQ-ME-001",
+      reqDate: "15-May-2025",
+      titleDescription: "Main Engine Cylinder Head Gasket - Urgent Replacement",
+      requestedDate: "20-May-2025",
       status: "Approved",
-      remarks: "Certificate valid until 2026"
+      remarks: "High priority - main engine showing compression loss"
     },
     {
-      regId: "REG-ME-002", 
-      regDate: "20-Aug-2025",
-      title: "SOLAS Chapter II-1 - Main Engine Safety",
-      requestedDate: "20-Oct-2025",
-      status: "Pending",
-      remarks: "Awaiting inspection"
+      reqId: "RQ-ME-002",
+      reqDate: "10-May-2025",
+      titleDescription: "Fuel Injection Pump Service Kit",
+      requestedDate: "25-May-2025",
+      status: "Ordered",
+      remarks: "Preventive maintenance - scheduled overhaul"
     },
     {
-      regId: "REG-ME-003",
-      regDate: "01-Sep-2025", 
-      title: "MLC 2006 - Engine Room Working Conditions",
-      requestedDate: "01-Nov-2025",
-      status: "Rejected",
-      remarks: "Additional documentation required"
+      reqId: "RQ-ME-003",
+      reqDate: "08-May-2025",
+      titleDescription: "Turbocharger Bearing Set",
+      requestedDate: "30-May-2025",
+      status: "Open",
+      remarks: "Vibration monitoring shows wear indication"
     }
   ];
 
@@ -620,33 +628,32 @@ const RegulationsSection: React.FC = () => {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Reg. ID</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Reg Date</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. ID</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. Date</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title / Description</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Requested Date</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Remarks</th>
           </tr>
         </thead>
         <tbody>
-          {regulations.map((reg, index) => (
+          {requisitions.map((req, index) => (
             <tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{reg.regId}</td>
-              <td className="py-3 px-3 text-gray-900">{reg.regDate}</td>
-              <td className="py-3 px-3 text-gray-900">{reg.title}</td>
-              <td className="py-3 px-3 text-gray-900">{reg.requestedDate}</td>
+              <td className="py-3 px-3 text-gray-900">{req.reqId}</td>
+              <td className="py-3 px-3 text-gray-900">{req.reqDate}</td>
+              <td className="py-3 px-3 text-gray-900">{req.titleDescription}</td>
+              <td className="py-3 px-3 text-gray-900">{req.requestedDate}</td>
               <td className="py-3 px-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  reg.status === "Approved" 
-                    ? "bg-green-100 text-green-800" 
-                    : reg.status === "Pending"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-red-100 text-red-800"
+                  req.status === "Approved" ? "bg-green-100 text-green-800" :
+                  req.status === "Ordered" ? "bg-blue-100 text-blue-800" :
+                  req.status === "Open" ? "bg-yellow-100 text-yellow-800" :
+                  "bg-gray-100 text-gray-800"
                 }`}>
-                  {reg.status}
+                  {req.status}
                 </span>
               </td>
-              <td className="py-3 px-3 text-gray-900">{reg.remarks}</td>
+              <td className="py-3 px-3 text-gray-900">{req.remarks}</td>
             </tr>
           ))}
         </tbody>
@@ -748,7 +755,7 @@ const Components: React.FC = () => {
     { id: "E", title: "Spares" },
     { id: "F", title: "Drawings & Manuals" },
     { id: "G", title: "Classification & Regulatory Data" },
-    { id: "H", title: "Regulations" }
+    { id: "H", title: "Requisitions" }
   ];
 
   return (
@@ -884,7 +891,7 @@ const Components: React.FC = () => {
                           ) : section.id === "G" ? (
                             <ClassificationRegulatorySection />
                           ) : section.id === "H" ? (
-                            <RegulationsSection />
+                            <RequisitionsSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
