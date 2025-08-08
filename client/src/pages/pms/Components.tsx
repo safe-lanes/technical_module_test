@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ComponentRegisterForm from "@/components/ComponentRegisterForm";
+import WorkOrderForm from "@/components/WorkOrderForm";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
 import { useLocation } from "wouter";
 import {
@@ -539,7 +541,10 @@ const RunningHoursConditionSection: React.FC = () => {
   );
 };
 
-const WorkOrdersSection: React.FC = () => {
+const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string }> = ({ componentCode, componentName }) => {
+  const [isWorkOrderFormOpen, setIsWorkOrderFormOpen] = useState(false);
+  const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
+  
   const workOrders = [
     {
       woNo: "WO-2025-03",
@@ -559,41 +564,88 @@ const WorkOrdersSection: React.FC = () => {
     }
   ];
 
+  const handleAddWorkOrder = () => {
+    setSelectedWorkOrder(null);
+    setIsWorkOrderFormOpen(true);
+  };
+
+  const handleEditWorkOrder = (workOrder: any) => {
+    setSelectedWorkOrder(workOrder);
+    setIsWorkOrderFormOpen(true);
+  };
+
+  const handleWorkOrderSubmit = (formData: any) => {
+    console.log('Work Order submitted:', formData);
+    // Handle saving the work order
+    setIsWorkOrderFormOpen(false);
+  };
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">W.O No.</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Job Title</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Due Date</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {workOrders.map((order, index) => (
-            <tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{order.woNo}</td>
-              <td className="py-3 px-3 text-gray-900">{order.jobTitle}</td>
-              <td className="py-3 px-3 text-gray-900">{order.assignedTo}</td>
-              <td className="py-3 px-3 text-gray-900">{order.dueDate}</td>
-              <td className="py-3 px-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  order.status === "Due" 
-                    ? "bg-yellow-100 text-yellow-800" 
-                    : "bg-yellow-100 text-yellow-800"
-                }`}>
-                  {order.status}
-                </span>
-              </td>
-              <td className="py-3 px-3 text-gray-900">{order.dateCompleted}</td>
+    <>
+      <div className="overflow-x-auto">
+        <div className="flex justify-end mb-3">
+          <Button
+            onClick={handleAddWorkOrder}
+            size="sm"
+            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add WO
+          </Button>
+        </div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">W.O No.</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Job Title</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Due Date</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
+              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {workOrders.map((order, index) => (
+              <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="py-3 px-3 text-gray-900">{order.woNo}</td>
+                <td className="py-3 px-3 text-gray-900">{order.jobTitle}</td>
+                <td className="py-3 px-3 text-gray-900">{order.assignedTo}</td>
+                <td className="py-3 px-3 text-gray-900">{order.dueDate}</td>
+                <td className="py-3 px-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    order.status === "Due" 
+                      ? "bg-yellow-100 text-yellow-800" 
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}>
+                    {order.status}
+                  </span>
+                </td>
+                <td className="py-3 px-3 text-gray-900">{order.dateCompleted}</td>
+                <td className="py-3 px-3">
+                  <button 
+                    onClick={() => handleEditWorkOrder(order)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Work Order Form Dialog */}
+      <WorkOrderForm
+        isOpen={isWorkOrderFormOpen}
+        onClose={() => setIsWorkOrderFormOpen(false)}
+        onSubmit={handleWorkOrderSubmit}
+        component={{ code: componentCode, name: componentName }}
+        workOrderTemplate={selectedWorkOrder}
+        mode="template"
+      />
+    </>
   );
 };
 
@@ -1066,7 +1118,10 @@ const Components: React.FC = () => {
                           ) : section.id === "B" ? (
                             <RunningHoursConditionSection />
                           ) : section.id === "C" ? (
-                            <WorkOrdersSection />
+                            <WorkOrdersSection 
+                              componentCode={selectedComponent?.code || ""} 
+                              componentName={selectedComponent?.name || ""} 
+                            />
                           ) : section.id === "D" ? (
                             <MaintenanceHistorySection />
                           ) : section.id === "E" ? (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,93 +9,308 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
 import WorkInstructionsDialog from "./WorkInstructionsDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface WorkOrderFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (workOrderId: string, formData?: any) => void;
-  workOrder: {
-    id: string;
-    workOrderNo: string;
-    component: string;
-    jobTitle: string;
-    assignedTo: string;
-    dueDate: string;
-    status: string;
-    formData?: any;
-  } | null;
+  onSubmit?: (formData: any) => void;
+  component?: {
+    code: string;
+    name: string;
+  };
+  workOrderTemplate?: any;
+  executionId?: string;
+  mode?: 'template' | 'execution';
 }
 
 const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  workOrder,
+  component,
+  workOrderTemplate,
+  executionId,
+  mode = 'template'
 }) => {
+  const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
   const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    workOrder: "",
-    jobTitle: "",
-    component: "",
-    jobType: "Scheduled Maintenance",
+  // Template data (Part A)
+  const [templateData, setTemplateData] = useState({
+    woTitle: "",
+    component: component?.name || "",
+    componentCode: component?.code || "",
+    woTemplateCode: "",
+    maintenanceBasis: "Calendar",
+    frequencyValue: "",
+    frequencyUnit: "Months",
+    taskType: "Inspection",
     assignedTo: "",
     approver: "",
-    frequency: "Frequency",
-    frequencyValue: "6 Months",
-    status: "",
-    jobCategory: "Mechanical",
     jobPriority: "Medium",
-    classRelated: "Yes",
+    classRelated: "No",
     briefWorkDescription: "",
+    nextDueDate: "",
+    nextDueReading: "",
+    requiredSpareParts: [],
+    requiredTools: [],
+    safetyRequirements: {
+      ppe: "",
+      permits: "",
+      other: ""
+    },
+    workHistory: []
   });
 
-  React.useEffect(() => {
-    if (workOrder) {
-      if (workOrder.formData) {
-        setFormData(workOrder.formData);
-      } else {
-        setFormData({
-          workOrder: workOrder.workOrderNo,
-          jobTitle: workOrder.jobTitle,
-          component: workOrder.component,
-          jobType: "Scheduled Maintenance",
-          assignedTo: workOrder.assignedTo,
-          approver: "Chief Engineer",
-          frequency: "Frequency",
-          frequencyValue: "6 Months",
-          status: workOrder.status,
-          jobCategory: "Mechanical",
-          jobPriority: "Medium",
-          classRelated: "Yes",
-          briefWorkDescription: "Replace fuel filters for the main engine as per the manufacturer's guidance XXX",
-        });
-      }
+  // Execution data (Part B)
+  const [executionData, setExecutionData] = useState({
+    woExecutionId: "",
+    riskAssessment: "No",
+    safetyChecklists: "No",
+    operationalForms: "No",
+    startDateTime: "",
+    completionDateTime: "",
+    assignedTo: "",
+    performedBy: "",
+    noOfPersons: "",
+    totalTimeHours: "",
+    manhours: "",
+    workCarriedOut: "",
+    jobExperienceNotes: "",
+    previousReading: "",
+    currentReading: "",
+    sparePartsConsumed: []
+  });
+
+  // Ranks for dropdowns
+  const ranks = [
+    "Master",
+    "Chief Officer",
+    "2nd Officer",
+    "3rd Officer",
+    "Chief Engineer",
+    "2nd Engineer",
+    "3rd Engineer",
+    "4th Engineer",
+    "Deck Cadet",
+    "Engine Cadet",
+    "Bosun",
+    "Pumpman",
+    "Electrician",
+    "Fitter",
+    "Able Seaman",
+    "Ordinary Seaman",
+    "Oiler",
+    "Wiper",
+    "Cook",
+    "Steward"
+  ];
+
+  // Generate WO Template Code
+  const generateWOTemplateCode = () => {
+    if (!component?.code || !templateData.taskType || !templateData.maintenanceBasis) return "";
+    
+    const taskCodes: Record<string, string> = {
+      "Inspection": "INS",
+      "Overhaul": "OH",
+      "Service": "SRV",
+      "Testing": "TST"
+    };
+    
+    let freqTag = "";
+    if (templateData.maintenanceBasis === "Calendar" && templateData.frequencyValue && templateData.frequencyUnit) {
+      const unitCode = templateData.frequencyUnit[0].toUpperCase();
+      freqTag = `${unitCode}${templateData.frequencyValue}`;
+    } else if (templateData.maintenanceBasis === "Running Hours" && templateData.frequencyValue) {
+      freqTag = `RH${templateData.frequencyValue}`;
     }
-  }, [workOrder]);
+    
+    const taskCode = taskCodes[templateData.taskType] || "";
+    return `WO-${component.code}-${taskCode}${freqTag}`.toUpperCase();
+  };
+
+  // Generate WO Execution ID
+  const generateWOExecutionId = () => {
+    const year = new Date().getFullYear();
+    const templateCode = templateData.woTemplateCode || generateWOTemplateCode();
+    // In real implementation, get sequence from database
+    const sequence = "01";
+    return `${year}-${templateCode}-${sequence}`;
+  };
+
+  // Update template code when relevant fields change
+  useEffect(() => {
+    if (!templateData.woTemplateCode) {
+      const newCode = generateWOTemplateCode();
+      setTemplateData(prev => ({ ...prev, woTemplateCode: newCode }));
+    }
+  }, [templateData.taskType, templateData.maintenanceBasis, templateData.frequencyValue, templateData.frequencyUnit]);
+
+  // Load existing template data
+  useEffect(() => {
+    if (workOrderTemplate) {
+      setTemplateData(prev => ({
+        ...prev,
+        ...workOrderTemplate
+      }));
+    }
+  }, [workOrderTemplate]);
+
+  // Load execution data
+  useEffect(() => {
+    if (executionId && mode === 'execution') {
+      // Load execution data from database
+      // For now, generate a new ID
+      setExecutionData(prev => ({
+        ...prev,
+        woExecutionId: generateWOExecutionId()
+      }));
+    }
+  }, [executionId, mode]);
 
   const selectSection = (section: 'partA' | 'partB') => {
     setActiveSection(section);
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+  const handleTemplateChange = (field: string, value: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleExecutionChange = (field: string, value: string) => {
+    setExecutionData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
   const handleSubmit = () => {
-    if (workOrder && onSubmit) {
-      onSubmit(workOrder.id, formData);
-      onClose();
-    }
-  };
+    if (activeSection === 'partA') {
+      // Validate template data
+      if (!templateData.woTitle) {
+        toast({
+          title: "Validation Error",
+          description: "WO Title is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!templateData.maintenanceBasis) {
+        toast({
+          title: "Validation Error",
+          description: "Maintenance Basis is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!templateData.frequencyValue) {
+        toast({
+          title: "Validation Error",
+          description: "Frequency value is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!templateData.taskType) {
+        toast({
+          title: "Validation Error",
+          description: "Task Type is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!templateData.assignedTo) {
+        toast({
+          title: "Validation Error",
+          description: "Assigned To is required",
+          variant: "destructive"
+        });
+        return;
+      }
 
-  if (!workOrder) return null;
+      // Calculate next due
+      if (templateData.maintenanceBasis === "Calendar") {
+        const today = new Date();
+        const freq = parseInt(templateData.frequencyValue);
+        if (templateData.frequencyUnit === "Days") {
+          today.setDate(today.getDate() + freq);
+        } else if (templateData.frequencyUnit === "Weeks") {
+          today.setDate(today.getDate() + (freq * 7));
+        } else if (templateData.frequencyUnit === "Months") {
+          today.setMonth(today.getMonth() + freq);
+        } else if (templateData.frequencyUnit === "Years") {
+          today.setFullYear(today.getFullYear() + freq);
+        }
+        templateData.nextDueDate = today.toISOString().split('T')[0];
+      }
+
+      if (onSubmit) {
+        onSubmit({ type: 'template', data: templateData });
+      }
+    } else {
+      // Validate execution data
+      if (!executionData.startDateTime) {
+        toast({
+          title: "Validation Error",
+          description: "Start Date/Time is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!executionData.completionDateTime) {
+        toast({
+          title: "Validation Error",
+          description: "Completion Date/Time is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!executionData.assignedTo) {
+        toast({
+          title: "Validation Error",
+          description: "Assigned To is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!executionData.performedBy) {
+        toast({
+          title: "Validation Error",
+          description: "Performed By is required",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (templateData.maintenanceBasis === "Running Hours") {
+        if (!executionData.previousReading || !executionData.currentReading) {
+          toast({
+            title: "Validation Error",
+            description: "Previous and Current readings are required for Running Hours based WOs",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
+      if (onSubmit) {
+        onSubmit({ type: 'execution', data: executionData });
+      }
+    }
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -104,15 +319,21 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           <div className="flex items-center justify-between">
             <DialogTitle>Work Order Form</DialogTitle>
             <div className="flex items-center gap-2">
+              {activeSection === 'partA' && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setIsWorkInstructionsOpen(true)}
+                >
+                  <FileText className="h-4 w-4 mr-1" />
+                  Work Instructions
+                </Button>
+              )}
               <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setIsWorkInstructionsOpen(true)}
+                size="sm" 
+                className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
+                onClick={handleSubmit}
               >
-                <FileText className="h-4 w-4 mr-1" />
-                Work Instructions
-              </Button>
-              <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
                 Save
               </Button>
               <Button variant="outline" size="sm" onClick={onClose}>
@@ -158,88 +379,175 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
           {/* Right Content Area */}
           <div className="flex-1 overflow-auto p-6">
-            {/* Part A - Work Order Details */}
+            {/* Part A - Work Order Details (Template) */}
             {activeSection === 'partA' && (
               <div className="border border-gray-200 rounded-lg mb-6">
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Part A - Work Order Details</h3>
-                  <p className="text-sm text-gray-600">Basic details about the work order</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Part A - Work Order Details (TEMPLATE)</h3>
+                  <p className="text-sm text-gray-600">Create / edit a Work Order Template for the selected component</p>
                 </div>
 
                 <div className="p-6">
+                  {/* Header Section */}
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">WO Title *</Label>
+                        <Input 
+                          value={templateData.woTitle} 
+                          onChange={(e) => handleTemplateChange('woTitle', e.target.value)}
+                          className="text-sm"
+                          placeholder="Enter work order title"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">Component</Label>
+                        <div className="text-sm text-gray-900 p-2 bg-gray-100 rounded">{templateData.component}</div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">Component Code</Label>
+                        <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">{templateData.componentCode}</div>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <Label className="text-sm text-[#8798ad]">WO Template Code</Label>
+                      <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded inline-block">
+                        {generateWOTemplateCode() || "Auto-generated on save"}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* A1. Work Order Information */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A1. Work Order Information</h4>
                     
                     <div className="grid grid-cols-3 gap-6">
-                      {/* Row 1 */}
+                      {/* Row 1 - Maintenance Basis */}
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Work Order</Label>
-                        <div className="text-sm text-gray-900">{formData.workOrder}</div>
+                        <Label className="text-sm text-[#8798ad]">Maintenance Basis *</Label>
+                        <Select value={templateData.maintenanceBasis} onValueChange={(value) => handleTemplateChange('maintenanceBasis', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Calendar">Calendar</SelectItem>
+                            <SelectItem value="Running Hours">Running Hours</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
+                      
+                      {/* Frequency Fields */}
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Job Title</Label>
+                        <Label className="text-sm text-[#8798ad]">
+                          {templateData.maintenanceBasis === "Calendar" ? "Every *" : "Every (Hours) *"}
+                        </Label>
                         <Input 
-                          value={formData.jobTitle} 
-                          onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                          type="number"
+                          value={templateData.frequencyValue} 
+                          onChange={(e) => handleTemplateChange('frequencyValue', e.target.value)}
                           className="text-sm"
+                          placeholder={templateData.maintenanceBasis === "Running Hours" ? "e.g., 1000" : ""}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Component</Label>
-                        <Input 
-                          value={formData.component} 
-                          onChange={(e) => handleInputChange('component', e.target.value)}
-                          className="text-sm"
-                        />
-                      </div>
+                      
+                      {templateData.maintenanceBasis === "Calendar" && (
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Unit *</Label>
+                          <Select value={templateData.frequencyUnit} onValueChange={(value) => handleTemplateChange('frequencyUnit', value)}>
+                            <SelectTrigger className="text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Days">Days</SelectItem>
+                              <SelectItem value="Weeks">Weeks</SelectItem>
+                              <SelectItem value="Months">Months</SelectItem>
+                              <SelectItem value="Years">Years</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       {/* Row 2 */}
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Job Type</Label>
-                        <div className="text-sm text-gray-900">{formData.jobType}</div>
+                        <Label className="text-sm text-[#8798ad]">Task Type *</Label>
+                        <Select value={templateData.taskType} onValueChange={(value) => handleTemplateChange('taskType', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Inspection">Inspection</SelectItem>
+                            <SelectItem value="Overhaul">Overhaul</SelectItem>
+                            <SelectItem value="Service">Service</SelectItem>
+                            <SelectItem value="Testing">Testing</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
+                      
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Assigned to</Label>
-                        <Input 
-                          value={formData.assignedTo} 
-                          onChange={(e) => handleInputChange('assignedTo', e.target.value)}
-                          className="text-sm"
-                        />
+                        <Label className="text-sm text-[#8798ad]">Assigned To *</Label>
+                        <Select value={templateData.assignedTo} onValueChange={(value) => handleTemplateChange('assignedTo', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue placeholder="Select rank" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ranks.map(rank => (
+                              <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
+                      
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Approver</Label>
-                        <div className="text-sm text-gray-900">{formData.approver}</div>
+                        <Select value={templateData.approver} onValueChange={(value) => handleTemplateChange('approver', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue placeholder="Select rank (optional)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ranks.map(rank => (
+                              <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Row 3 */}
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Frequency or Running Hours based</Label>
-                        <div className="text-sm text-gray-900">{formData.frequency}</div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Frequency or Running Hours Value</Label>
-                        <div className="text-sm text-gray-900">{formData.frequencyValue}</div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Status</Label>
-                        <div className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          {formData.status}
-                        </div>
-                      </div>
-
-                      {/* Row 4 */}
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Job category</Label>
-                        <div className="text-sm text-gray-900">{formData.jobCategory}</div>
-                      </div>
-                      <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Job Priority</Label>
-                        <div className="text-sm text-gray-900">{formData.jobPriority}</div>
+                        <Select value={templateData.jobPriority} onValueChange={(value) => handleTemplateChange('jobPriority', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Low">Low</SelectItem>
+                            <SelectItem value="Medium">Medium</SelectItem>
+                            <SelectItem value="High">High</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
+                      
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Class Related</Label>
-                        <div className="text-sm text-gray-900">{formData.classRelated}</div>
+                        <Select value={templateData.classRelated} onValueChange={(value) => handleTemplateChange('classRelated', value)}>
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                            <SelectItem value="No">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm text-[#8798ad]">
+                          {templateData.maintenanceBasis === "Calendar" ? "Next Due Date" : "Next Due Reading"}
+                        </Label>
+                        <div className="text-sm text-gray-900 p-2 bg-gray-100 rounded">
+                          {templateData.maintenanceBasis === "Calendar" 
+                            ? (templateData.nextDueDate || "Calculated on save")
+                            : (templateData.nextDueReading || "Calculated on save")}
+                        </div>
                       </div>
                     </div>
 
@@ -247,10 +555,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     <div className="mt-6">
                       <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
                       <Textarea 
-                        value={formData.briefWorkDescription} 
-                        onChange={(e) => handleInputChange('briefWorkDescription', e.target.value)}
+                        value={templateData.briefWorkDescription} 
+                        onChange={(e) => handleTemplateChange('briefWorkDescription', e.target.value)}
                         className="mt-2 text-sm"
                         rows={3}
+                        placeholder="Enter work description..."
                       />
                     </div>
                   </div>
@@ -412,65 +721,50 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </div>
                   </div>
 
-                  {/* A5. Work History */}
+                  {/* A5. Work History (Executions for this template) */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>A5. Work History</h4>
                     
                     <div className="border border-gray-200 rounded">
                       <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                         <div className="grid grid-cols-7 gap-4 text-sm font-medium text-gray-700">
-                          <div>Work Order No.</div>
+                          <div>WO Execution ID</div>
                           <div>Assigned To</div>
                           <div>Performed By</div>
                           <div>Total Time (Hrs)</div>
-                          <div>Due Date</div>
+                          <div>{templateData.maintenanceBasis === "Calendar" ? "Due Date" : "Due Reading"}</div>
                           <div>Completion Date</div>
                           <div>Status</div>
                         </div>
                       </div>
                       <div className="divide-y divide-gray-200">
-                        <div className="px-4 py-3">
-                          <div className="grid grid-cols-7 gap-4 text-sm items-center">
-                            <div className="text-gray-900">WO-602.01-002</div>
-                            <div className="text-gray-900">Chief Engineer</div>
-                            <div className="text-gray-900">Chief Engineer</div>
-                            <div className="text-gray-900">2</div>
-                            <div className="text-gray-900">14-02-2025</div>
-                            <div className="text-gray-900">12-02-2025</div>
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
-                                Completed
-                              </span>
-                              <button className="text-gray-400 hover:text-gray-600">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-                                </svg>
-                              </button>
+                        {templateData.workHistory && templateData.workHistory.length > 0 ? (
+                          templateData.workHistory.map((execution: any, index: number) => (
+                            <div key={index} className="px-4 py-3 cursor-pointer hover:bg-gray-50" onClick={() => {
+                              // Open Part B with this execution
+                              setExecutionData(execution);
+                              setActiveSection('partB');
+                            }}>
+                              <div className="grid grid-cols-7 gap-4 text-sm items-center">
+                                <div className="text-gray-900">{execution.woExecutionId}</div>
+                                <div className="text-gray-900">{execution.assignedTo}</div>
+                                <div className="text-gray-900">{execution.performedBy}</div>
+                                <div className="text-gray-900">{execution.totalTimeHours}</div>
+                                <div className="text-gray-900">{execution.dueDate || execution.dueReading}</div>
+                                <div className="text-gray-900">{execution.completionDate}</div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                                    {execution.status}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
+                          ))
+                        ) : (
+                          <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                            No work history for this template yet
                           </div>
-                        </div>
-                        <div className="px-4 py-3">
-                          <div className="grid grid-cols-7 gap-4 text-sm items-center">
-                            <div className="text-gray-900">WO-602.01-002</div>
-                            <div className="text-gray-900">Chief Engineer</div>
-                            <div className="text-gray-900"></div>
-                            <div className="text-gray-900"></div>
-                            <div className="text-gray-900">14-01-2025</div>
-                            <div className="text-gray-900"></div>
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                                Postponed
-                              </span>
-                              <button className="text-gray-400 hover:text-gray-600">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -478,15 +772,22 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
               </div>
             )}
 
-            {/* Part B - Work Completion Record */}
+            {/* Part B - Work Completion Record (EXECUTION) */}
             {activeSection === 'partB' && (
               <div className="border border-gray-200 rounded-lg mb-6">
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-[#16569e]">Part B - Work Completion Record</h3>
-                  <p className="text-sm text-[#52baf3]">Enter work completion details here including Risk assessment, checklists, comments etc.</p>
+                  <h3 className="text-lg font-semibold text-[#16569e]">Part B - Work Completion Record (EXECUTION)</h3>
+                  <p className="text-sm text-[#52baf3]">Record a single performance of the template</p>
                 </div>
 
                 <div className="p-6">
+                  {/* WO Execution ID Header */}
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <Label className="text-sm text-[#8798ad]">WO Execution ID</Label>
+                    <div className="text-sm font-medium text-gray-900 p-2 bg-gray-100 rounded inline-block">
+                      {executionData.woExecutionId || generateWOExecutionId()}
+                    </div>
+                  </div>
                   {/* B1. Risk Assessment, Checklists & Records */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B1. Risk Assessment, Checklists & Records</h4>
@@ -571,7 +872,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         </div>
                         <div className="col-span-3 flex items-center gap-4">
                           <label className="flex items-center gap-2">
-                            <input type="radio" name="operationalForms" value="yes" defaultChecked className="text-blue-600" />
+                            <input type="radio" name="operationalForms" value="yes" checked={executionData.operationalForms === "Yes"} onChange={() => handleExecutionChange('operationalForms', 'Yes')} className="text-blue-600" />
                             <span className="text-sm">Yes</span>
                           </label>
                           <label className="flex items-center gap-2">
@@ -612,50 +913,94 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="grid grid-cols-3 gap-6 mb-4">
                         {/* Row 1 */}
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Start Date</Label>
-                          <Input type="date" className="w-full" placeholder="dd-mm-yyyy" />
+                          <Label className="text-sm text-[#8798ad]">Start Date & Time *</Label>
+                          <Input 
+                            type="datetime-local" 
+                            value={executionData.startDateTime}
+                            onChange={(e) => handleExecutionChange('startDateTime', e.target.value)}
+                            className="w-full" 
+                          />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Start Time</Label>
-                          <Input type="text" className="w-full" defaultValue="1045" />
+                          <Label className="text-sm text-[#8798ad]">Completion Date & Time *</Label>
+                          <Input 
+                            type="datetime-local" 
+                            value={executionData.completionDateTime}
+                            onChange={(e) => handleExecutionChange('completionDateTime', e.target.value)}
+                            className="w-full" 
+                          />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Assigned To</Label>
-                          <Input type="text" className="w-full" defaultValue="Chief Engineer" />
+                          <Label className="text-sm text-[#8798ad]">Assigned To *</Label>
+                          <Select value={executionData.assignedTo} onValueChange={(value) => handleExecutionChange('assignedTo', value)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select rank" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ranks.map(rank => (
+                                <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                       
                       <div className="grid grid-cols-3 gap-6 mb-4">
                         {/* Row 2 */}
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Completion Date</Label>
-                          <Input type="date" className="w-full" placeholder="dd-mm-yyyy" />
+                          <Label className="text-sm text-[#8798ad]">Performed by *</Label>
+                          <Select value={executionData.performedBy} onValueChange={(value) => handleExecutionChange('performedBy', value)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select rank" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ranks.map(rank => (
+                                <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Completion Time</Label>
-                          <Input type="text" className="w-full" defaultValue="1200" />
+                          <Label className="text-sm text-[#8798ad]">No of Persons in the team</Label>
+                          <Input 
+                            type="number" 
+                            value={executionData.noOfPersons}
+                            onChange={(e) => {
+                              handleExecutionChange('noOfPersons', e.target.value);
+                              // Calculate manhours
+                              const persons = parseInt(e.target.value) || 0;
+                              const hours = parseFloat(executionData.totalTimeHours) || 0;
+                              handleExecutionChange('manhours', (persons * hours).toString());
+                            }}
+                            className="w-full" 
+                          />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Performed by</Label>
-                          <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
-                            <option>Chief Engineer</option>
-                          </select>
+                          <Label className="text-sm text-[#8798ad]">Total Time Taken (Hours)</Label>
+                          <Input 
+                            type="number" 
+                            value={executionData.totalTimeHours}
+                            onChange={(e) => {
+                              handleExecutionChange('totalTimeHours', e.target.value);
+                              // Calculate manhours
+                              const persons = parseInt(executionData.noOfPersons) || 0;
+                              const hours = parseFloat(e.target.value) || 0;
+                              handleExecutionChange('manhours', (persons * hours).toString());
+                            }}
+                            className="w-full" 
+                          />
                         </div>
                       </div>
                       
                       <div className="grid grid-cols-3 gap-6 mb-6">
                         {/* Row 3 */}
+                        <div></div>
+                        <div></div>
                         <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">No of Persons in the team</Label>
-                          <Input type="text" className="w-full" defaultValue="3" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Total Time Taken (Hours)</Label>
-                          <Input type="text" className="w-full" defaultValue="3" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-[#8798ad]">Manhours</Label>
-                          <Input type="text" className="w-full" defaultValue="3.3" />
+                          <Label className="text-sm text-[#8798ad]">Manhours (Auto)</Label>
+                          <div className="text-sm text-gray-900 p-2 bg-gray-100 rounded">
+                            {executionData.manhours || "0"}
+                          </div>
                         </div>
                       </div>
                       
@@ -663,37 +1008,55 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2 mb-4">
                         <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
                         <Textarea 
+                          value={executionData.workCarriedOut}
+                          onChange={(e) => handleExecutionChange('workCarriedOut', e.target.value)}
                           className="w-full min-h-[80px]" 
-                          placeholder="Work carried out"
+                          placeholder="Describe work carried out..."
                         />
                       </div>
                       
                       {/* Job Experience / Notes */}
                       <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Job Experience / Notes</Label>
+                        <Label className="text-sm text-[#8798ad]">Job Experience / Notes (to be retained for future)</Label>
                         <Textarea 
+                          value={executionData.jobExperienceNotes}
+                          onChange={(e) => handleExecutionChange('jobExperienceNotes', e.target.value)}
                           className="w-full min-h-[80px]" 
-                          placeholder="Job Experience / Notes"
+                          placeholder="Enter job experience notes..."
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* B3. Running Hours */}
-                  <div className="border border-gray-200 rounded-lg p-4 mb-6">
-                    <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Running Hours</h4>
-                    
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Previous reading</Label>
-                        <Input type="text" className="w-full" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-[#8798ad]">Current Reading</Label>
-                        <Input type="text" className="w-full" />
+                  {/* B3. Running Hours (Conditional - only for Running Hours based WOs) */}
+                  {templateData.maintenanceBasis === "Running Hours" && (
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>B3. Running Hours</h4>
+                      
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Previous reading *</Label>
+                          <Input 
+                            type="number" 
+                            value={executionData.previousReading}
+                            onChange={(e) => handleExecutionChange('previousReading', e.target.value)}
+                            placeholder="Enter previous hours reading"
+                            className="w-full" 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-[#8798ad]">Current Reading *</Label>
+                          <Input 
+                            type="number" 
+                            value={executionData.currentReading}
+                            onChange={(e) => handleExecutionChange('currentReading', e.target.value)}
+                            placeholder="Enter current hours reading"
+                            className="w-full" 
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* B4. Spare Parts Consumed */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
