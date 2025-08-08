@@ -1,0 +1,274 @@
+🔧 Component Screen – Functional Breakdown for Developers (Step-by-Step)
+✅ Module Context
+
+    Main Module: Technical
+
+    Submodule: PMS (Planned Maintenance System)
+
+    Sub-submodule: Components
+
+    Screen Name: Component Register / Component View
+
+This screen is the central dashboard for viewing all technical components onboard a vessel and their associated maintenance, spare parts, class certification, and regulatory linkage. It is used by ship staff and office users to view and assess the status of any machinery or system onboard.
+🧱 SCREEN STRUCTURE
+1️⃣ Left Pane: Component Hierarchy Tree
+📌 Purpose:
+
+Displays a collapsible hierarchical structure of all shipboard components.
+📌 Design:
+
+    Hierarchical (Tree View) layout
+
+    Based on department > equipment group > sub-component
+
+    Resembles a file explorer (parent-child nodes)
+
+    Data typically sourced from SFI Codes or customized hierarchy uploads
+
+📌 Functionality:
+
+    Clicking a node on the tree loads that component’s details on the right pane
+
+    Example hierarchy:
+
+            Ship General
+
+            Equipment for Cargo
+
+            Machinery: Main Components
+
+            3.1 Diesel Engines
+
+                3.1.1 Main Engine
+
+                    3.1.1.1 Main Bearings
+
+                    3.1.1.2 Cylinder Liners
+
+📌 Notes for Devs:
+
+    Use dummy data for hierarchy for now.
+
+    Final data will come via Excel upload through Admin Module.
+
+    Node names, codes, and relationships will reflect real ship equipment structure.
+
+2️⃣ Right Pane: Component Details View
+📌 Purpose:
+
+Shows all relevant data of the selected component in clean, collapsible sections.
+📌 Layout:
+
+Sections labeled A to H, each collapsible (> toggle). Display only (read-only screen).
+🔍 SECTION-WISE BREAKDOWN
+🅰️ Section A: Component Information
+🛠️ Purpose:
+
+Core static info about the machinery item or component.
+🧾 Fields:
+
+    Maker – Manufacturer name (e.g., MAN Energy Solutions)
+
+    Model – Model number of the component
+
+    Serial Number – Unique identifier from the manufacturer
+
+    Department – Deck, Engine, Electrical, etc.
+
+    Equipment Category – Group like Pumps, Engines, Compressors
+
+    Component Code – Internal code (e.g., ABC-ME-001)
+
+    Critical – Whether this is a safety- or operation-critical item (Yes/No)
+
+    Class Item – If this item is monitored by classification society (Yes/No)
+
+    Location – Physical storage or mounting location
+
+    Commissioned Date – Date when it was installed or became operational
+
+💡 Developer Notes:
+
+    All fields are text or dropdown values.
+
+    “Critical” and “Class Item” may be color-tagged in future (e.g., red if critical).
+
+    This section will later be editable via “Add/Edit Component” button (not in this screen).
+
+🅱️ Section B: Running Hours & Condition Monitoring
+🛠️ Purpose:
+
+Tracks operational usage and health of component.
+🧾 Fields:
+
+    Running Hours – Current – Total logged hours of operation (numeric)
+
+    Updated On – Date of last update
+
+    Condition Monitoring Metrics –
+
+        Vibration (bar graph)
+
+        Temperature (bar graph)
+
+        Pressure (bar graph)
+
+💡 Developer Notes:
+
+    Running hours are critical to trigger maintenance schedules.
+
+    Condition metrics indicate health; thresholds may be defined later.
+
+    Use colored bars to indicate safe/unsafe range (green/yellow/red).
+
+🅲 Section C: Work Orders
+🛠️ Purpose:
+
+Lists active or recent maintenance tasks for the component.
+🧾 Table Columns:
+
+    WO No. – Work Order Number
+
+    Job Title – Description of the task
+
+    Assigned To – Role or crew responsible
+
+    Due Date – Scheduled date
+
+    Status – Open, In Progress, Overdue, Completed, etc.
+
+    Date Completed – When the task was actually done
+
+💡 Developer Notes:
+
+    Data comes from Work Order module (cross-linked).
+
+    Status may be colored badges (e.g., yellow = due soon, red = overdue).
+
+🅳 Section D: Maintenance History
+🛠️ Purpose:
+
+Shows past maintenance completed on the component.
+🧾 Table Columns:
+
+    Title – Summary of maintenance
+
+    Work Order No – Reference
+
+    Assigned To – Crew rank who performed
+
+    Status – Completed or Cancelled
+
+    Date Completed
+
+💡 Developer Notes:
+
+    These are closed work orders.
+
+    Helps establish audit trail.
+
+🅴 Section E: Spares
+🛠️ Purpose:
+
+Lists parts associated with this component.
+🧾 Table Columns:
+
+    Part Code – Spare part ID
+
+    Part Name – Name of the part
+
+    Critical – Red tag if spare is critical
+
+    ROB – Remaining On Board (stock count)
+
+    Min – Minimum desired stock
+
+    Stock – Status (OK / Low)
+
+    Location – Where the item is stored onboard
+
+💡 Developer Notes:
+
+    Future feature will link spares to auto reorder.
+
+    Data will come from Inventory module.
+
+🅵 Section F: Drawings & Manuals
+🛠️ Purpose:
+
+Attach technical documents.
+📂 Items (File Links or Icons):
+
+    Equipment Drawing
+
+    Maintenance Manual
+
+    Installation Guide
+
+    Trouble Shooting Guide
+
+💡 Developer Notes:
+
+    Each item is clickable and will open PDF viewer (future feature).
+
+    For now, show placeholder icons or dummy filenames.
+
+🅶 Section G: Classification & Regulatory Data
+🛠️ Purpose:
+
+Tracks if the equipment is monitored under class or flag rules.
+🧾 Fields:
+
+    Classification Society – DNV, ABS, LR, etc.
+
+    Certificate No. – If applicable
+
+    Last Class Survey – Last date
+
+    Next Class Survey – Upcoming date
+
+    Survey Type – Annual, Intermediate, Renewal
+
+    Class Requirements – Summary field
+
+    Issued By – Who issued the certificate
+
+💡 Developer Notes:
+
+    This helps ensure compliance with statutory requirements.
+
+    Add calendar icon for dates.
+
+🅷 Section H: Regulations
+🛠️ Purpose:
+
+Tracks specific regulations linked to this equipment (e.g., MARPOL, SOLAS)
+🧾 Table Columns:
+
+    Reg. ID – Unique ID
+
+    Reg. Date – Date regulation was noted
+
+    Title – Regulation Title
+
+    Requested Date – Office request or inspection
+
+    Status – Approved / Pending / Rejected
+
+    Remarks
+
+💡 Developer Notes:
+
+    Used for audit compliance.
+
+    Might be linked to defect reports in future.
+
+✅ Final Remarks for Devs
+
+    This screen is read-only. No editing functionality at this stage.
+
+    Each section is fully collapsible with clean spacing.
+
+    All data is dummy for now — integrate later via API or backend DB.
+
+    Maintain full consistency in card layout, padding, font, and color coding with existing PMS screens.

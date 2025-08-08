@@ -66,23 +66,25 @@ const dummyComponents: ComponentNode[] = [
     children: [
       {
         id: "6.1",
-        code: "60",
-        name: "Diesel Engines for Propulsion",
+        code: "6.1",
+        name: "Diesel Engines",
+        isExpanded: true,
         children: [
           {
             id: "6.1.1",
-            code: "601",
-            name: "Diesel Engines",
+            code: "6.1.1",
+            name: "Main Engine",
+            isExpanded: true,
             children: [
               {
                 id: "6.1.1.1",
-                code: "601.001",
-                name: "Main Diesel Engines"
+                code: "6.1.1.1",
+                name: "Main Bearings"
               },
               {
                 id: "6.1.1.2",
-                code: "601.002",
-                name: "ME cylinder covers w/ valves"
+                code: "6.1.1.2",
+                name: "Cylinder Liners"
               }
             ]
           }
@@ -110,22 +112,15 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
   // Sample component data - this would come from the selected component
   const componentData = {
     maker: "MAN Energy Solutions",
-    model: "S50MC-C",
-    serialNo: "D12F6748",
-    drawingNo: "S50MC-C-1254",
+    model: "6S60MC-C",
+    serialNo: "12345",
+    department: "Engine",
+    equipmentCategory: "Main Engine",
     componentCode: "ABC-ME-001",
-    eqptCategory: "Propulsion",
-    location: "Engine room",
-    critical: "No",
-    installationDate: "Info",
-    commissionedDate: "Info",
-    rating: "Info",
-    conditionBased: "Info",
-    noOfUnits: "Info",
-    eqptSystemDept: "Info",
-    parentComponent: "Info",
-    dimensionsSize: "Info",
-    notes: "This equipment is associated with ...."
+    critical: "Yes",
+    classItem: "Yes",
+    location: "Engine Room",
+    commissionedDate: "2020-02-01"
   };
 
   return (
@@ -151,9 +146,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
           </div>
         </div>
         <div>
-          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Drawing No</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Department</label>
           <div className="text-sm text-gray-900">
-            {componentData.drawingNo}
+            {componentData.department}
           </div>
         </div>
       </div>
@@ -165,21 +160,61 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpa
           </div>
         </div>
         <div>
-          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Eqpt. Category</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Equipment Category</label>
           <div className="text-sm text-gray-900">
-            {componentData.eqptCategory}
+            {componentData.equipmentCategory}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Location</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Critical</label>
+          <div className="text-sm text-gray-900">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              componentData.critical === "Yes" 
+                ? "bg-red-100 text-red-800" 
+                : "bg-gray-100 text-gray-800"
+            }`}>
+              {componentData.critical}
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Class Item</label>
+          <div className="text-sm text-gray-900">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              componentData.classItem === "Yes" 
+                ? "bg-blue-100 text-blue-800" 
+                : "bg-gray-100 text-gray-800"
+            }`}>
+              {componentData.classItem}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Third row */}
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Location</label>
           <div className="text-sm text-gray-900">
             {componentData.location}
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Critical</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Commissioned Date</label>
           <div className="text-sm text-gray-900">
-            {componentData.critical}
+            {componentData.commissionedDate}
+          </div>
+        </div>
+        <div>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>&nbsp;</label>
+          <div className="text-sm text-gray-900">
+            &nbsp;
+          </div>
+        </div>
+        <div>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>&nbsp;</label>
+          <div className="text-sm text-gray-900">
+            &nbsp;
           </div>
         </div>
       </div>
@@ -552,21 +587,31 @@ const ClassificationRegulatorySection: React.FC = () => {
   );
 };
 
-const RequisitionsSection: React.FC = () => {
-  const requisitions = [
+const RegulationsSection: React.FC = () => {
+  const regulations = [
     {
-      reqId: "RQ-ME-001",
-      reqDate: "15-Jul-2025",
-      title: "Fuel Injector",
+      regId: "REG-ME-001",
+      regDate: "15-Jul-2025",
+      title: "MARPOL Annex VI - NOx Technical Code",
       requestedDate: "15-Sep-2025",
-      status: "Approved"
+      status: "Approved",
+      remarks: "Certificate valid until 2026"
     },
     {
-      reqId: "RQ-ME-002",
-      reqDate: "15-Jul-2025",
-      title: "Cylinder Head Gasket",
-      requestedDate: "15-Sep-2025",
-      status: "Requested"
+      regId: "REG-ME-002", 
+      regDate: "20-Aug-2025",
+      title: "SOLAS Chapter II-1 - Main Engine Safety",
+      requestedDate: "20-Oct-2025",
+      status: "Pending",
+      remarks: "Awaiting inspection"
+    },
+    {
+      regId: "REG-ME-003",
+      regDate: "01-Sep-2025", 
+      title: "MLC 2006 - Engine Room Working Conditions",
+      requestedDate: "01-Nov-2025",
+      status: "Rejected",
+      remarks: "Additional documentation required"
     }
   ];
 
@@ -575,29 +620,33 @@ const RequisitionsSection: React.FC = () => {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. ID</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req Date</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Reg. ID</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Reg Date</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Requested Date</th>
             <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
+            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Remarks</th>
           </tr>
         </thead>
         <tbody>
-          {requisitions.map((req, index) => (
+          {regulations.map((reg, index) => (
             <tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{req.reqId}</td>
-              <td className="py-3 px-3 text-gray-900">{req.reqDate}</td>
-              <td className="py-3 px-3 text-gray-900">{req.title}</td>
-              <td className="py-3 px-3 text-gray-900">{req.requestedDate}</td>
+              <td className="py-3 px-3 text-gray-900">{reg.regId}</td>
+              <td className="py-3 px-3 text-gray-900">{reg.regDate}</td>
+              <td className="py-3 px-3 text-gray-900">{reg.title}</td>
+              <td className="py-3 px-3 text-gray-900">{reg.requestedDate}</td>
               <td className="py-3 px-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  req.status === "Approved" 
-                    ? "bg-blue-100 text-blue-800" 
-                    : "bg-yellow-100 text-yellow-800"
+                  reg.status === "Approved" 
+                    ? "bg-green-100 text-green-800" 
+                    : reg.status === "Pending"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-red-100 text-red-800"
                 }`}>
-                  {req.status}
+                  {reg.status}
                 </span>
               </td>
+              <td className="py-3 px-3 text-gray-900">{reg.remarks}</td>
             </tr>
           ))}
         </tbody>
@@ -699,7 +748,7 @@ const Components: React.FC = () => {
     { id: "E", title: "Spares" },
     { id: "F", title: "Drawings & Manuals" },
     { id: "G", title: "Classification & Regulatory Data" },
-    { id: "H", title: "Requisitions" }
+    { id: "H", title: "Regulations" }
   ];
 
   return (
@@ -835,7 +884,7 @@ const Components: React.FC = () => {
                           ) : section.id === "G" ? (
                             <ClassificationRegulatorySection />
                           ) : section.id === "H" ? (
-                            <RequisitionsSection />
+                            <RegulationsSection />
                           ) : (
                             <p className="text-sm text-gray-500">
                               {section.title} content will be added here
