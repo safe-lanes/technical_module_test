@@ -321,6 +321,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
 
   const [componentData, setComponentData] = useState({
     componentId: "601.003.XXX",
+    componentName: "",
     serialNo: "",
     drawingNo: "",
     componentCode: "",
@@ -364,7 +365,9 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     // Load existing component data for edit mode
     setComponentData(prev => ({
       ...prev,
-      componentCode: node.code
+      componentName: node.name,
+      componentCode: node.code,
+      parentComponent: ''
     }));
   };
 
@@ -380,11 +383,34 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     }
     setIsAddMode(true);
     const newCode = generateComponentCode(selectedNode);
-    setComponentData(prev => ({
-      ...prev,
+    // Reset form for new component
+    setComponentData({
+      componentId: "601.003.XXX",
+      componentName: "",
+      serialNo: "",
+      drawingNo: "",
       componentCode: newCode,
-      parentComponent: selectedNode.name
-    }));
+      equipmentCategory: "",
+      location: "",
+      criticality: "",
+      unitOfMeasurement: "",
+      department: "",
+      inService: "",
+      conditionBased: "",
+      noOfUnits: "",
+      equipmentDepartment: "",
+      parentComponent: selectedNode.name,
+      classificationData: {
+        classificationProvider: "",
+        certificateNo: "",
+        lastDataSurvey: "",
+        nextDataSurvey: "",
+        surveyType: "",
+        classRequirements: "",
+        classCode: "",
+        information: ""
+      }
+    });
   };
 
   // Toggle node expansion
@@ -450,13 +476,16 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   const handleInputChange = (field: string, value: string) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
-      setComponentData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: value
-        }
-      }));
+      setComponentData(prev => {
+        const parentValue = prev[parent as keyof typeof prev];
+        return {
+          ...prev,
+          [parent]: {
+            ...(typeof parentValue === 'object' && parentValue !== null ? parentValue as any : {}),
+            [child]: value
+          }
+        };
+      });
     } else {
       setComponentData(prev => ({
         ...prev,
@@ -466,6 +495,29 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   };
 
   const handleSubmit = () => {
+    // Validate Component Name is required
+    if (!componentData.componentName || componentData.componentName.trim() === '') {
+      toast({
+        title: "Validation Error",
+        description: "Component Name is required.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate Component Code matches tree position
+    if (isAddMode && selectedNode) {
+      const expectedCode = generateComponentCode(selectedNode);
+      if (componentData.componentCode !== expectedCode) {
+        toast({
+          title: "Validation Error", 
+          description: "Component Code must match tree position.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     if (onSubmit) {
       onSubmit(componentData);
       onClose();
@@ -526,7 +578,18 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
             <div className="bg-white border border-gray-200 rounded-lg">
               <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">{componentData.componentId}</h3>
+                  <div className="flex-1">
+                    <Input 
+                      value={componentData.componentName || ''}
+                      onChange={(e) => handleInputChange('componentName', e.target.value)}
+                      placeholder="Component Name (required)"
+                      className="text-lg font-semibold mb-1"
+                      required
+                    />
+                    <div className="text-sm text-gray-500">
+                      Component Code: {componentData.componentCode || 'Auto-generated'}
+                    </div>
+                  </div>
                   <div className="flex gap-2">
                     <Select defaultValue="vessel">
                       <SelectTrigger className="w-32">
@@ -819,27 +882,27 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                       <div className="grid grid-cols-6 gap-4 text-sm font-medium text-gray-700">
                         <div className="flex items-center gap-2">
-                          <span>W.O No.</span>
+                          <span>WO Title</span>
                           <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
                           <X className="h-3 w-3 text-red-500 cursor-pointer" />
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>Job Title</span>
+                          <span>Assigned To</span>
                           <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
                           <X className="h-3 w-3 text-red-500 cursor-pointer" />
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>Assigned to</span>
+                          <span>Frequency Type</span>
                           <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
                           <X className="h-3 w-3 text-red-500 cursor-pointer" />
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>Due Date</span>
+                          <span>Frequency Value</span>
                           <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
                           <X className="h-3 w-3 text-red-500 cursor-pointer" />
                         </div>
                         <div className="flex items-center gap-2">
-                          <span>Status</span>
+                          <span>Initial Next Due</span>
                           <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
                           <X className="h-3 w-3 text-red-500 cursor-pointer" />
                         </div>
@@ -847,42 +910,42 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       </div>
                     </div>
                     <div className="divide-y divide-gray-200">
-                      <div className="px-4 py-3">
-                        <div className="grid grid-cols-6 gap-4 text-sm items-center">
-                          <div className="text-gray-900">WO-2025-01</div>
-                          <div className="text-gray-900">Main Engine Overhaul - Replace Main Bearings</div>
-                          <div className="text-gray-900">Chief Engineer</div>
-                          <div className="text-gray-900">02-Jun-2025</div>
-                          <div>
-                            <span className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
-                              Done
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <button className="text-gray-400 hover:text-gray-600">
-                              <Eye className="w-4 h-4" />
-                            </button>
-                          </div>
+                      {isAddMode ? (
+                        <div className="px-4 py-8 text-center text-sm text-gray-500">
+                          No work orders yet. Click "Add W.O" to create one.
                         </div>
-                      </div>
-                      <div className="px-4 py-3">
-                        <div className="grid grid-cols-6 gap-4 text-sm items-center">
-                          <div className="text-gray-900">WO-2025-04</div>
-                          <div className="text-gray-900">Main Engine Overhaul - Replace Main Bearings</div>
-                          <div className="text-gray-900">Chief Engineer</div>
-                          <div className="text-gray-900">02-Jun-2025</div>
-                          <div>
-                            <span className="inline-flex px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
-                              Overdue-by 30
-                            </span>
+                      ) : (
+                        <>
+                          <div className="px-4 py-3">
+                            <div className="grid grid-cols-6 gap-4 text-sm items-center">
+                              <div className="text-gray-900">Main Engine Overhaul - Replace Main Bearings</div>
+                              <div className="text-gray-900">Chief Engineer</div>
+                              <div className="text-gray-900">Running Hours</div>
+                              <div className="text-gray-900">500</div>
+                              <div className="text-gray-900">02-Jun-2025</div>
+                              <div className="flex gap-2">
+                                <button className="text-gray-400 hover:text-gray-600">
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button className="text-gray-400 hover:text-gray-600">
-                              <Eye className="w-4 h-4" />
-                            </button>
+                          <div className="px-4 py-3">
+                            <div className="grid grid-cols-6 gap-4 text-sm items-center">
+                              <div className="text-gray-900">Main Engine Overhaul - Replace Main Bearings</div>
+                              <div className="text-gray-900">Chief Engineer</div>
+                              <div className="text-gray-900">Calendar</div>
+                              <div className="text-gray-900">30</div>
+                              <div className="text-gray-900">02-Jun-2025</div>
+                              <div className="flex gap-2">
+                                <button className="text-gray-400 hover:text-gray-600">
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -926,40 +989,46 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="px-4 py-3">
-                      <div className="grid grid-cols-5 gap-4 text-sm items-center">
-                        <div>
-                          <Input 
-                            defaultValue="WO-2025-01"
-                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
-                          />
-                        </div>
-                        <div>
-                          <Input 
-                            defaultValue="Kane"
-                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
-                          />
-                        </div>
-                        <div>
-                          <Input 
-                            defaultValue="3"
-                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
-                          />
-                        </div>
-                        <div>
-                          <Input 
-                            defaultValue="08-Jan-2025"
-                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
-                          />
-                        </div>
-                        <div>
-                          <Input 
-                            defaultValue="Completed"
-                            className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
-                          />
+                    {isAddMode ? (
+                      <div className="px-4 py-8 text-center text-sm text-gray-500">
+                        No maintenance history yet. Click "Add M History" to create one.
+                      </div>
+                    ) : (
+                      <div className="px-4 py-3">
+                        <div className="grid grid-cols-5 gap-4 text-sm items-center">
+                          <div>
+                            <Input 
+                              defaultValue="WO-2025-01"
+                              className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Input 
+                              defaultValue="Kane"
+                              className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Input 
+                              defaultValue="3"
+                              className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Input 
+                              defaultValue="08-Jan-2025"
+                              className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Input 
+                              defaultValue="Completed"
+                              className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
