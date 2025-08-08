@@ -545,22 +545,52 @@ const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string
   const [isWorkOrderFormOpen, setIsWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
   
+  // Generate template code for existing data
+  const generateTemplateCode = (componentCode: string, taskType: string, basis: string, frequency: number, unit?: string) => {
+    const taskCodes: Record<string, string> = {
+      "Inspection": "INS",
+      "Overhaul": "OH",
+      "Service": "SRV",
+      "Testing": "TST"
+    };
+    
+    let freqTag = "";
+    if (basis === "Calendar" && frequency && unit) {
+      const unitCode = unit[0].toUpperCase();
+      freqTag = `${unitCode}${frequency}`;
+    } else if (basis === "Running Hours" && frequency) {
+      freqTag = `RH${frequency}`;
+    }
+    
+    const taskCode = taskCodes[taskType] || "";
+    return `WO-${componentCode}-${taskCode}${freqTag}`.toUpperCase();
+  };
+  
   const workOrders = [
     {
-      woNo: "WO-2025-03",
+      templateCode: generateTemplateCode(componentCode, "Overhaul", "Calendar", 6, "Months"),
       jobTitle: "Main Engine Overhaul - Replace Main Bearings",
       assignedTo: "Chief Engineer",
       dueDate: "02-Jun-2025",
       status: "Due",
-      dateCompleted: ""
+      dateCompleted: "",
+      // Store template data for editing
+      taskType: "Overhaul",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "6",
+      frequencyUnit: "Months"
     },
     {
-      woNo: "WO-2025-03",
+      templateCode: generateTemplateCode(componentCode, "Overhaul", "Calendar", 6, "Months"),
       jobTitle: "Main Engine Overhaul - Replace Main Bearings",
       assignedTo: "Chief Engineer",
       dueDate: "02-Jun-2025",
       status: "Due (Grace P)",
-      dateCompleted: ""
+      dateCompleted: "",
+      taskType: "Overhaul",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "6",
+      frequencyUnit: "Months"
     }
   ];
 
@@ -569,7 +599,7 @@ const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string
     setIsWorkOrderFormOpen(true);
   };
 
-  const handleEditWorkOrder = (workOrder: any) => {
+  const handleRowClick = (workOrder: any) => {
     setSelectedWorkOrder(workOrder);
     setIsWorkOrderFormOpen(true);
   };
@@ -602,13 +632,16 @@ const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string
               <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Due Date</th>
               <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
               <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Actions</th>
             </tr>
           </thead>
           <tbody>
             {workOrders.map((order, index) => (
-              <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="py-3 px-3 text-gray-900">{order.woNo}</td>
+              <tr 
+                key={index} 
+                className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                onClick={() => handleRowClick(order)}
+              >
+                <td className="py-3 px-3 text-gray-900">{order.templateCode}</td>
                 <td className="py-3 px-3 text-gray-900">{order.jobTitle}</td>
                 <td className="py-3 px-3 text-gray-900">{order.assignedTo}</td>
                 <td className="py-3 px-3 text-gray-900">{order.dueDate}</td>
@@ -622,14 +655,6 @@ const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string
                   </span>
                 </td>
                 <td className="py-3 px-3 text-gray-900">{order.dateCompleted}</td>
-                <td className="py-3 px-3">
-                  <button 
-                    onClick={() => handleEditWorkOrder(order)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    Edit
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>

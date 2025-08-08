@@ -23,14 +23,12 @@ import { useToast } from "@/hooks/use-toast";
 interface WorkOrderFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (formData: any) => void;
+  onSubmit?: (workOrderId: string, formData?: any) => void;
   component?: {
     code: string;
     name: string;
   };
-  workOrderTemplate?: any;
-  executionId?: string;
-  mode?: 'template' | 'execution';
+  workOrder?: any;
 }
 
 const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
@@ -38,19 +36,20 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   onClose,
   onSubmit,
   component,
-  workOrderTemplate,
-  executionId,
-  mode = 'template'
+  workOrder
 }) => {
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
   const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
+  
+  // Check if we're in execution mode (Part B)
+  const executionMode = workOrder?.executionMode === true;
 
   // Template data (Part A)
   const [templateData, setTemplateData] = useState({
     woTitle: "",
-    component: component?.name || "",
-    componentCode: component?.code || "",
+    component: workOrder?.component || component?.name || "",
+    componentCode: workOrder?.componentCode || component?.code || "",
     woTemplateCode: "",
     maintenanceBasis: "Calendar",
     frequencyValue: "",
@@ -119,7 +118,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   // Generate WO Template Code
   const generateWOTemplateCode = () => {
-    if (!component?.code || !templateData.taskType || !templateData.maintenanceBasis) return "";
+    const compCode = templateData.componentCode || component?.code;
+    if (!compCode || !templateData.taskType || !templateData.maintenanceBasis) return "";
     
     const taskCodes: Record<string, string> = {
       "Inspection": "INS",
@@ -137,15 +137,15 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     }
     
     const taskCode = taskCodes[templateData.taskType] || "";
-    return `WO-${component.code}-${taskCode}${freqTag}`.toUpperCase();
+    return `WO-${compCode}-${taskCode}${freqTag}`.toUpperCase();
   };
 
   // Generate WO Execution ID
   const generateWOExecutionId = () => {
     const year = new Date().getFullYear();
-    const templateCode = templateData.woTemplateCode || generateWOTemplateCode();
-    // In real implementation, get sequence from database
-    const sequence = "01";
+    const templateCode = templateData.woTemplateCode || workOrder?.templateCode || generateWOTemplateCode();
+    // In real implementation, get sequence from database based on existing executions
+    const sequence = String(Math.floor(Math.random() * 99) + 1).padStart(2, '0');
     return `${year}-${templateCode}-${sequence}`;
   };
 
@@ -157,27 +157,47 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     }
   }, [templateData.taskType, templateData.maintenanceBasis, templateData.frequencyValue, templateData.frequencyUnit]);
 
-  // Load existing template data
+  // Load existing workOrder data
   useEffect(() => {
-    if (workOrderTemplate) {
+    if (workOrder) {
       setTemplateData(prev => ({
         ...prev,
-        ...workOrderTemplate
+        woTitle: workOrder.jobTitle || "",
+        component: workOrder.component || component?.name || "",
+        componentCode: workOrder.componentCode || component?.code || "",
+        woTemplateCode: workOrder.templateCode || "",
+        maintenanceBasis: workOrder.maintenanceBasis || "Calendar",
+        frequencyValue: workOrder.frequencyValue || "",
+        frequencyUnit: workOrder.frequencyUnit || "Months",
+        taskType: workOrder.taskType || "Inspection",
+        assignedTo: workOrder.assignedTo || "",
+        approver: "",
+        jobPriority: "Medium",
+        classRelated: "No",
+        briefWorkDescription: "",
+        nextDueDate: workOrder.dueDate || "",
+        nextDueReading: "",
+        requiredSpareParts: [],
+        requiredTools: [],
+        safetyRequirements: {
+          ppe: "",
+          permits: "",
+          other: ""
+        },
+        workHistory: []
       }));
+      
+      // If in execution mode, switch to Part B and generate execution ID
+      if (executionMode) {
+        setActiveSection('partB');
+        setExecutionData(prev => ({
+          ...prev,
+          woExecutionId: generateWOExecutionId(),
+          assignedTo: workOrder.assignedTo || ""
+        }));
+      }
     }
-  }, [workOrderTemplate]);
-
-  // Load execution data
-  useEffect(() => {
-    if (executionId && mode === 'execution') {
-      // Load execution data from database
-      // For now, generate a new ID
-      setExecutionData(prev => ({
-        ...prev,
-        woExecutionId: generateWOExecutionId()
-      }));
-    }
-  }, [executionId, mode]);
+  }, [workOrder, executionMode]);
 
   const selectSection = (section: 'partA' | 'partB') => {
     setActiveSection(section);
@@ -241,6 +261,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         return;
       }
 
+      // Ensure templateCode is generated
+      if (!templateData.woTemplateCode) {
+        templateData.woTemplateCode = generateWOTemplateCode();
+      }
+      
       // Calculate next due
       if (templateData.maintenanceBasis === "Calendar") {
         const today = new Date();
@@ -258,7 +283,14 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       }
 
       if (onSubmit) {
-        onSubmit({ type: 'template', data: templateData });
+        const workOrderId = workOrder?.id || `new-${Date.now()}`;
+        onSubmit(workOrderId, { 
+          type: 'template', 
+          data: {
+            ...templateData,
+            templateCode: templateData.woTemplateCode
+          } 
+        });
       }
     } else {
       // Validate execution data
@@ -306,7 +338,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       }
 
       if (onSubmit) {
-        onSubmit({ type: 'execution', data: executionData });
+        const workOrderId = workOrder?.id || `new-${Date.now()}`;
+        onSubmit(workOrderId, { type: 'execution', data: executionData });
       }
     }
     onClose();

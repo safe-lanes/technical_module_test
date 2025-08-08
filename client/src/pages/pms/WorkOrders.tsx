@@ -12,132 +12,230 @@ import {
 import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
 import WorkOrderForm from "@/components/WorkOrderForm";
 import UnplannedWorkOrderForm from "@/components/UnplannedWorkOrderForm";
-import NewWorkOrderForm from "@/components/NewWorkOrderForm";
 
 interface WorkOrder {
   id: string;
   component: string;
+  componentCode?: string;
   workOrderNo: string;
+  templateCode?: string;
   jobTitle: string;
   assignedTo: string;
   dueDate: string;
   status: string;
   dateCompleted?: string;
   formData?: any;
+  taskType?: string;
+  maintenanceBasis?: string;
+  frequencyValue?: string;
+  frequencyUnit?: string;
 }
+
+// Helper function to generate template code
+const generateTemplateCode = (componentCode: string, taskType: string, basis: string, frequency: string, unit?: string) => {
+  const taskCodes: Record<string, string> = {
+    "Inspection": "INS",
+    "Overhaul": "OH",
+    "Service": "SRV",
+    "Testing": "TST"
+  };
+  
+  let freqTag = "";
+  if (basis === "Calendar" && frequency && unit) {
+    const unitCode = unit[0].toUpperCase();
+    freqTag = `${unitCode}${frequency}`;
+  } else if (basis === "Running Hours" && frequency) {
+    freqTag = `RH${frequency}`;
+  }
+  
+  const taskCode = taskCodes[taskType] || "";
+  return `WO-${componentCode}-${taskCode}${freqTag}`.toUpperCase();
+};
 
 const initialWorkOrders: WorkOrder[] = [
   {
     id: "1",
     component: "Main Engine",
+    componentCode: "6.1.1",
+    templateCode: "WO-6.1.1-OHM6",
     workOrderNo: "WO-2025-03",
     jobTitle: "Main Engine Overhaul - Replace Main Bearings",
     assignedTo: "Chief Engineer",
     dueDate: "02-Jun-2025",
     status: "Completed",
-    dateCompleted: "02-Jun-2025"
+    dateCompleted: "02-Jun-2025",
+    taskType: "Overhaul",
+    maintenanceBasis: "Calendar",
+    frequencyValue: "6",
+    frequencyUnit: "Months"
   },
   {
     id: "2",
     component: "Diesel Generator 1",
+    componentCode: "6.2.1",
+    templateCode: "WO-6.2.1-SRVM3",
     workOrderNo: "WO-2025-17",
     jobTitle: "DG1 - Replace Fuel Injectors",
     assignedTo: "2nd Engineer",
     dueDate: "05-Jun-2025",
-    status: "Due (Grace P)"
+    status: "Due (Grace P)",
+    taskType: "Service",
+    maintenanceBasis: "Calendar",
+    frequencyValue: "3",
+    frequencyUnit: "Months"
   },
   {
     id: "3",
     component: "Steering Gear",
+    componentCode: "1.5.1",
+    templateCode: "WO-1.5.1-INSM3",
     workOrderNo: "WO-2025-54",
     jobTitle: "Steering Gear - 3 Monthly XXX",
     assignedTo: "2nd Engineer",
     dueDate: "16-Jun-2025",
-    status: "Due"
+    status: "Due",
+    taskType: "Inspection",
+    maintenanceBasis: "Calendar",
+    frequencyValue: "3",
+    frequencyUnit: "Months"
   },
   {
     id: "4",
     component: "Main Cooling Seawater Pump",
+    componentCode: "7.1.2.1",
+    templateCode: "WO-7.1.2.1-SRVRH2000",
     workOrderNo: "WO-2025-19",
     jobTitle: "MCSP - Replace Mechanical Seal",
     assignedTo: "3rd Engineer",
     dueDate: "23-Jun-2025",
-    status: "Due"
+    status: "Due",
+    taskType: "Service",
+    maintenanceBasis: "Running Hours",
+    frequencyValue: "2000",
+    frequencyUnit: ""
   },
   {
     id: "5",
     component: "Main Air Compressor",
+    componentCode: "7.4.1",
+    templateCode: "WO-7.4.1-OHRH1000",
     workOrderNo: "WO-2025-03",
     jobTitle: "Main Air Compressor - Work Order XXX",
     assignedTo: "3rd Engineer",
     dueDate: "30-Jun-2025",
     status: "Completed",
-    dateCompleted: "30-Jun-2025"
+    dateCompleted: "30-Jun-2025",
+    taskType: "Overhaul",
+    maintenanceBasis: "Running Hours",
+    frequencyValue: "1000",
+    frequencyUnit: ""
   },
     {
       id: "6",
       component: "Mooring Winch Forward",
+      componentCode: "3.3.1",
+      templateCode: "WO-3.3.1-INSM6",
       workOrderNo: "WO-2025-17",
       jobTitle: "Mooring Winch Forward - Work Order XXX",
       assignedTo: "2nd Engineer",
       dueDate: "02-Jun-2025",
-      status: "Overdue"
+      status: "Overdue",
+      taskType: "Inspection",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "6",
+      frequencyUnit: "Months"
     },
     {
       id: "7",
       component: "Bow Thruster",
+      componentCode: "5.2.1",
+      templateCode: "WO-5.2.1-OHY1",
       workOrderNo: "WO-2025-54",
       jobTitle: "Bow Thruster - Work Order XXX",
       assignedTo: "Chief Engineer",
       dueDate: "09-Jun-2025",
-      status: "Postponed"
+      status: "Postponed",
+      taskType: "Overhaul",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "1",
+      frequencyUnit: "Years"
     },
     {
       id: "8",
       component: "Fire Pump",
+      componentCode: "8.1.2",
+      templateCode: "WO-8.1.2-TSTM1",
       workOrderNo: "WO-2025-13",
       jobTitle: "Fire Pump - Work Order XXX",
       assignedTo: "2nd Engineer",
       dueDate: "16-Jun-2025",
       status: "Completed",
-      dateCompleted: "16-Jun-2025"
+      dateCompleted: "16-Jun-2025",
+      taskType: "Testing",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "1",
+      frequencyUnit: "Months"
     },
     {
       id: "9",
       component: "Main Engine",
+      componentCode: "6.1.1",
+      templateCode: "WO-6.1.1-SRVRH3000",
       workOrderNo: "WO-2025-03",
       jobTitle: "Main Engine - Replace Piston Rings (#3 Unit)",
       assignedTo: "Chief Engineer",
       dueDate: "23-Jun-2025",
-      status: "Due"
+      status: "Due",
+      taskType: "Service",
+      maintenanceBasis: "Running Hours",
+      frequencyValue: "3000",
+      frequencyUnit: ""
     },
     {
       id: "10",
       component: "Diesel Generator 1",
+      componentCode: "6.2.1",
+      templateCode: "WO-6.2.1-INSRH500",
       workOrderNo: "WO-2025-17",
       jobTitle: "Diesel Generator 1 - Work Order XXX",
       assignedTo: "2nd Engineer",
       dueDate: "30-Jun-2025",
       status: "Completed",
-      dateCompleted: "30-Jun-2025"
+      dateCompleted: "30-Jun-2025",
+      taskType: "Inspection",
+      maintenanceBasis: "Running Hours",
+      frequencyValue: "500",
+      frequencyUnit: ""
     },
     {
       id: "11",
       component: "Steering Gear",
+      componentCode: "1.5.1",
+      templateCode: "WO-1.5.1-OHY2",
       workOrderNo: "WO-2025-54",
       jobTitle: "Steering Gear - Work Order XXX",
       assignedTo: "2nd Engineer",
       dueDate: "02-Jun-2025",
-      status: "Overdue"
+      status: "Overdue",
+      taskType: "Overhaul",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "2",
+      frequencyUnit: "Years"
     },
     {
       id: "12",
       component: "Main Cooling Seawater Pump",
+      componentCode: "7.1.2.1",
+      templateCode: "WO-7.1.2.1-INSRH1000",
       workOrderNo: "WO-2025-19",
       jobTitle: "Main Cooling Seawater Pump - Work Order XXX",
       assignedTo: "3rd Engineer",
       dueDate: "09-Aug-2025",
-      status: "Due"
+      status: "Due",
+      taskType: "Inspection",
+      maintenanceBasis: "Running Hours",
+      frequencyValue: "1000",
+      frequencyUnit: ""
     }
 ];
 
@@ -152,7 +250,6 @@ const WorkOrders: React.FC = () => {
   const [postponeDialogOpen, setPostponeDialogOpen] = useState(false);
   const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
   const [unplannedWorkOrderFormOpen, setUnplannedWorkOrderFormOpen] = useState(false);
-  const [newWorkOrderFormOpen, setNewWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
   const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
 
@@ -212,7 +309,8 @@ const WorkOrders: React.FC = () => {
     }
     
     if (searchTerm && !wo.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !wo.workOrderNo.toLowerCase().includes(searchTerm.toLowerCase())) {
+        !wo.workOrderNo.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !(wo.templateCode && wo.templateCode.toLowerCase().includes(searchTerm.toLowerCase()))) {
       return false;
     }
     
@@ -233,14 +331,16 @@ const WorkOrders: React.FC = () => {
     const newWorkOrder: WorkOrder = {
       id: `new-${Date.now()}`,
       component: "",
+      componentCode: "",
       workOrderNo: "",
+      templateCode: "",
       jobTitle: "",
       assignedTo: "",
       dueDate: "",
       status: "Draft"
     };
     setSelectedWorkOrder(newWorkOrder);
-    setNewWorkOrderFormOpen(true);
+    setWorkOrderFormOpen(true);
   };
 
   return (
@@ -381,7 +481,7 @@ const WorkOrders: React.FC = () => {
                   className="py-3 px-4 text-blue-600 hover:text-blue-800 cursor-pointer"
                   onClick={() => handleWorkOrderClick(workOrder)}
                 >
-                  {workOrder.workOrderNo}
+                  {workOrder.templateCode || workOrder.workOrderNo}
                 </td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.jobTitle}</td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.assignedTo}</td>
@@ -394,12 +494,18 @@ const WorkOrders: React.FC = () => {
                 <td className="py-3 px-4 text-gray-900">{workOrder.dateCompleted || ""}</td>
                 <td className="py-3 px-4">
                   <div className="flex items-center justify-center gap-2">
-                    <button className="p-1 hover:bg-gray-200 rounded">
+                    <button 
+                      className="p-1 hover:bg-gray-200 rounded"
+                      onClick={() => handleWorkOrderClick(workOrder)}
+                    >
                       <Pen className="h-4 w-4 text-gray-600" />
                     </button>
                     <button 
                       className="p-1 hover:bg-gray-200 rounded"
-                      onClick={() => handlePostponeClick(workOrder)}
+                      onClick={() => {
+                        setSelectedWorkOrder({...workOrder, executionMode: true});
+                        setWorkOrderFormOpen(true);
+                      }}
                     >
                       <Clock className="h-4 w-4 text-gray-600" />
                     </button>
@@ -435,12 +541,6 @@ const WorkOrders: React.FC = () => {
       <UnplannedWorkOrderForm
         isOpen={unplannedWorkOrderFormOpen}
         onClose={() => setUnplannedWorkOrderFormOpen(false)}
-      />
-
-      {/* New Work Order Form (Editable) */}
-      <NewWorkOrderForm
-        isOpen={newWorkOrderFormOpen}
-        onClose={() => setNewWorkOrderFormOpen(false)}
       />
     </div>
   );
