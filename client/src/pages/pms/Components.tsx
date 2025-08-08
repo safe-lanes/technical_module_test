@@ -32,31 +32,161 @@ const dummyComponents: ComponentNode[] = [
     id: "1",
     code: "1",
     name: "Ship General",
-    children: []
+    children: [
+      {
+        id: "1.1",
+        code: "1.1",
+        name: "Fresh Water System",
+        children: [
+          {
+            id: "1.1.1",
+            code: "1.1.1",
+            name: "Hydrophore Unit",
+            children: [
+              {
+                id: "1.1.1.1",
+                code: "1.1.1.1",
+                name: "Pressure Vessel"
+              },
+              {
+                id: "1.1.1.2",
+                code: "1.1.1.2",
+                name: "Feed Pump"
+              },
+              {
+                id: "1.1.1.3",
+                code: "1.1.1.3",
+                name: "Pressure Switch"
+              }
+            ]
+          },
+          {
+            id: "1.1.2",
+            code: "1.1.2",
+            name: "Potable Water Maker",
+            children: []
+          },
+          {
+            id: "1.1.3",
+            code: "1.1.3",
+            name: "UV Sterilizer",
+            children: []
+          }
+        ]
+      },
+      {
+        id: "1.2",
+        code: "1.2",
+        name: "Sewage Treatment System",
+        children: []
+      },
+      {
+        id: "1.3",
+        code: "1.3",
+        name: "HVAC – Accommodation",
+        children: []
+      }
+    ]
   },
   {
     id: "2", 
     code: "2",
     name: "Hull",
-    children: []
+    children: [
+      {
+        id: "2.1",
+        code: "2.1",
+        name: "Ballast Tanks",
+        children: []
+      },
+      {
+        id: "2.2",
+        code: "2.2",
+        name: "Cathodic Protection",
+        children: []
+      },
+      {
+        id: "2.3",
+        code: "2.3",
+        name: "Hull Openings – Hatches",
+        children: []
+      }
+    ]
   },
   {
     id: "3",
     code: "3", 
     name: "Equipment for Cargo",
-    children: []
+    children: [
+      {
+        id: "3.1",
+        code: "3.1",
+        name: "Cargo Cranes",
+        children: []
+      },
+      {
+        id: "3.2",
+        code: "3.2",
+        name: "Hatch Cover Hydraulics",
+        children: []
+      },
+      {
+        id: "3.3",
+        code: "3.3",
+        name: "Cargo Hold Ventilation",
+        children: []
+      }
+    ]
   },
   {
     id: "4",
     code: "4",
     name: "Ship's Equipment",
-    children: []
+    children: [
+      {
+        id: "4.1",
+        code: "4.1",
+        name: "Mooring System",
+        children: []
+      },
+      {
+        id: "4.2",
+        code: "4.2",
+        name: "Windlass",
+        children: []
+      },
+      {
+        id: "4.3",
+        code: "4.3",
+        name: "Steering Gear",
+        children: []
+      }
+    ]
   },
   {
     id: "5",
     code: "5",
     name: "Equipment for Crew & Passengers",
-    children: []
+    children: [
+      {
+        id: "5.1",
+        code: "5.1",
+        name: "Lifeboat System",
+        children: []
+      },
+      {
+        id: "5.2",
+        code: "5.2",
+        name: "Fire Main System",
+        children: []
+      },
+      {
+        id: "5.3",
+        code: "5.3",
+        name: "Emergency Lighting",
+        children: []
+      }
+    ]
   },
   {
     id: "6",
@@ -67,28 +197,76 @@ const dummyComponents: ComponentNode[] = [
       {
         id: "6.1",
         code: "6.1",
-        name: "Diesel Engines",
+        name: "Main Engine",
         isExpanded: true,
         children: [
           {
             id: "6.1.1",
             code: "6.1.1",
-            name: "Main Engine",
+            name: "Cylinder Head",
             isExpanded: true,
             children: [
               {
                 id: "6.1.1.1",
                 code: "6.1.1.1",
-                name: "Main Bearings"
+                name: "Valve Seats"
               },
               {
                 id: "6.1.1.2",
                 code: "6.1.1.2",
-                name: "Cylinder Liners"
+                name: "Injector Sleeve"
+              },
+              {
+                id: "6.1.1.3",
+                code: "6.1.1.3",
+                name: "Rocker Arm"
               }
             ]
+          },
+          {
+            id: "6.1.2",
+            code: "6.1.2",
+            name: "Main Bearings",
+            children: []
+          },
+          {
+            id: "6.1.3",
+            code: "6.1.3",
+            name: "Cylinder Liners",
+            children: []
           }
         ]
+      },
+      {
+        id: "6.2",
+        code: "6.2",
+        name: "Diesel Generators",
+        children: [
+          {
+            id: "6.2.1",
+            code: "6.2.1",
+            name: "DG #1",
+            children: []
+          },
+          {
+            id: "6.2.2",
+            code: "6.2.2",
+            name: "DG #2",
+            children: []
+          },
+          {
+            id: "6.2.3",
+            code: "6.2.3",
+            name: "DG #3",
+            children: []
+          }
+        ]
+      },
+      {
+        id: "6.3",
+        code: "6.3",
+        name: "Auxiliary Boiler",
+        children: []
       }
     ]
   },
@@ -96,7 +274,14 @@ const dummyComponents: ComponentNode[] = [
     id: "7",
     code: "7",
     name: "Systems for Machinery Main Components",
-    children: []
+    children: [
+      {
+        id: "7.1",
+        code: "7.1",
+        name: "Fuel Oil System",
+        children: []
+      }
+    ]
   },
   {
     id: "8",
@@ -106,17 +291,17 @@ const dummyComponents: ComponentNode[] = [
   }
 ];
 
-const ComponentInformationSection: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
+const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
   const { isChangeRequestMode } = useChangeRequest();
 
-  // Sample component data - this would come from the selected component
+  // Component data - uses selected component code or defaults
   const componentData = {
     maker: "MAN Energy Solutions",
     model: "6S60MC-C",
     serialNo: "12345",
     department: "Engine",
     equipmentCategory: "Main Engine",
-    componentCode: "ABC-ME-001",
+    componentCode: selectedComponent?.code || "6.1.1",  // Use selected component's code
     critical: "Yes",
     classItem: "Yes",
     location: "Engine Room",
@@ -736,7 +921,7 @@ const Components: React.FC = () => {
               )}
             </button>
             <span className="text-sm text-gray-700">
-              {node.code}. {node.name}
+              {node.code} {node.name}
             </span>
           </div>
           {hasChildren && isExpanded && (
@@ -850,7 +1035,7 @@ const Components: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
               <div className="p-4 border-b-2 border-[#52baf3] flex-shrink-0">
                 <h3 className="text-lg font-semibold text-[#15569e]">
-                  {selectedComponent.code}. {selectedComponent.name}
+                  {selectedComponent.code} {selectedComponent.name}
                 </h3>
               </div>
               <div className="flex-1 overflow-auto p-4">
@@ -877,7 +1062,7 @@ const Components: React.FC = () => {
                         </CardHeader>
                         <CardContent className="pt-4 border-t border-gray-100">
                           {section.id === "A" ? (
-                            <ComponentInformationSection isExpanded={isExpanded} />
+                            <ComponentInformationSection isExpanded={isExpanded} selectedComponent={selectedComponent} />
                           ) : section.id === "B" ? (
                             <RunningHoursConditionSection />
                           ) : section.id === "C" ? (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,18 +22,28 @@ interface ComponentRegisterFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (componentData: any) => void;
+  parentComponent?: { code: string; name: string } | null;
 }
 
 const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  parentComponent,
 }) => {
+  // Auto-generate component code based on parent
+  const generateComponentCode = () => {
+    if (!parentComponent) return "";
+    // This would calculate the next available number at this level
+    // For now, using a placeholder .1 suffix
+    return `${parentComponent.code}.1`;
+  };
+
   const [componentData, setComponentData] = useState({
     componentId: "601.003.XXX",
     serialNo: "",
     drawingNo: "",
-    componentCode: "",
+    componentCode: generateComponentCode(),
     equipmentCategory: "",
     location: "",
     installation: "",
@@ -66,6 +76,14 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
       information: ""
     }
   });
+
+  // Update component code when parent component changes
+  useEffect(() => {
+    setComponentData(prev => ({
+      ...prev,
+      componentCode: generateComponentCode()
+    }));
+  }, [parentComponent]);
 
   const handleInputChange = (field: string, value: string) => {
     if (field.includes('.')) {
@@ -254,15 +272,12 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Component Code</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <Label className="text-sm text-[#8798ad]">Component Code</Label>
                       <Input 
                         value={componentData.componentCode}
-                        onChange={(e) => handleInputChange('componentCode', e.target.value)}
-                        className="border-[#52baf3] border-2 focus:border-[#52baf3]"
+                        readOnly
+                        className="border-gray-300 bg-gray-50"
+                        title="Component Code is auto-generated based on tree position"
                       />
                     </div>
                     <div className="space-y-2">
