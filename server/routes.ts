@@ -262,19 +262,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Bulk update spares
   app.post("/api/spares/bulk-update", async (req, res) => {
     try {
-      const { updates, userId, remarks } = req.body;
-      const updatedSpares = await storage.bulkUpdateSpares(
-        updates,
-        userId || 'user',
-        remarks
-      );
-      res.json(updatedSpares);
-    } catch (error: any) {
-      if (error.message?.includes('Insufficient stock')) {
-        res.status(400).json({ error: error.message });
-      } else {
-        res.status(500).json({ error: "Failed to perform bulk update" });
+      const { vesselId, tz, rows } = req.body;
+      
+      // Process each row and collect results
+      const results = [];
+      
+      for (const row of rows) {
+        // Skip rows where both consumed and received are 0
+        if (row.consumed === 0 && row.received === 0) {
+          results.push({
+            componentSpareId: row.componentSpareId,
+            success: false,
+            message: null // Skipped
+          });
+          continue;
+        }
+        
+        try {
+          const spare = await storage.getSpare(row.componentSpareId);
+          if (!spare) {
+            results.push({
+              componentSpareId: row.componentSpareId,
+              success: false,
+              message: "Spare not found"
+            });
+            continue;
+          }
+          
+          // Validate insufficient stock
+          if (row.consumed > 0 && spare.rob < row.consumed) {
+            results.push({
+              componentSpareId: row.componentSpareId,
+              success: false,
+              message: "Insufficient stock"
+            });
+            continue;
+          }
+          
+          // Process consume
+          if (row.consumed > 0) {
+            await storage.consumeSpare(
+              row.componentSpareId,
+              row.consumed,
+              row.userId || 'user',
+              row.remarks,
+              undefined,
+              row.dateLocal || new Date().toISOString().split('T')[0],
+              tz || 'UTC'
+            );
+          }
+          
+          // Process receive
+          if (row.received > 0) {
+            await storage.receiveSpare(
+              row.componentSpareId,
+              row.received,
+              row.userId || 'user',
+              row.remarks,
+              undefined,
+              row.receivedPlace,
+              row.receivedDate,
+              tz || 'UTC'
+            );
+          }
+          
+          // Get updated spare
+          const updatedSpare = await storage.getSpare(row.componentSpareId);
+          results.push({
+            componentSpareId: row.componentSpareId,
+            success: true,
+            robAfter: updatedSpare?.rob || 0
+          });
+          
+        } catch (error: any) {
+          results.push({
+            componentSpareId: row.componentSpareId,
+            success: false,
+            message: error.message || "Failed to update"
+          });
+        }
       }
+      
+      res.json(results);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to perform bulk update" });
     }
   });
 

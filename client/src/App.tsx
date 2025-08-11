@@ -25,6 +25,7 @@ function App() {
               <Route path="/pms/work-orders" component={WorkOrders} />
               <Route path="/pms/running-hours" component={RunningHours} />
               <Route path="/pms/components" component={Components} />
+              <Route path="/pms/spares" component={Spares} />
               <Route path="/spares" component={Spares} />
               <Route path="/stores" component={Stores} />
 

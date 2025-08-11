@@ -197,13 +197,55 @@ const Spares: React.FC = () => {
 
   // Bulk update mutation
   const bulkUpdateMutation = useMutation({
-    mutationFn: async (data: { updates: Array<{id: number, consumed?: number, received?: number, receivedDate?: string, receivedPlace?: string}>, remarks?: string }) => {
-      return apiRequest('/api/spares/bulk-update', 'POST', data);
+    mutationFn: async (data: { vesselId: string, tz: string, rows: Array<{
+      componentSpareId: number,
+      consumed: number,
+      received: number,
+      receivedDate?: string,
+      receivedPlace?: string,
+      dateLocal?: string,
+      remarks?: string,
+      userId: string
+    }> }) => {
+      const response = await fetch('/api/spares/bulk-update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to perform bulk update');
+      }
+      
+      return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
+    onSuccess: (results) => {
+      // Update the spares data with new ROB values
+      queryClient.setQueryData(['/api/spares', vesselId], (old: any) => {
+        if (!old) return old;
+        return old.map((spare: any) => {
+          const result = results.find((r: any) => r.componentSpareId === spare.id && r.success);
+          if (result && result.robAfter !== undefined) {
+            return { ...spare, rob: result.robAfter };
+          }
+          return spare;
+        });
+      });
+      
       queryClient.invalidateQueries({ queryKey: ['/api/spares/history'] });
-      toast({ title: "Success", description: "Bulk update completed successfully" });
+      
+      // Count successes, failures, and skipped
+      const succeeded = results.filter((r: any) => r.success).length;
+      const failed = results.filter((r: any) => !r.success && r.message).length;
+      const skipped = results.filter((r: any) => !r.success && !r.message).length;
+      
+      toast({ 
+        title: "Bulk Update Complete", 
+        description: `Updated: ${succeeded}, Skipped: ${skipped}, Failed: ${failed}` 
+      });
       setIsBulkUpdateModalOpen(false);
       setBulkUpdateData({});
     },
@@ -229,13 +271,13 @@ const Spares: React.FC = () => {
 
     // Filter by selected component (including children)
     if (selectedComponentId) {
-      filtered = filtered.filter(spare => isComponentMatch(spare, selectedComponentId));
+      filtered = filtered.filter((spare: Spare) => isComponentMatch(spare, selectedComponentId));
     }
 
     // Filter by search term
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(spare => 
+      filtered = filtered.filter((spare: Spare) => 
         spare.partCode.toLowerCase().includes(search) ||
         spare.partName.toLowerCase().includes(search) ||
         spare.componentName.toLowerCase().includes(search) ||
@@ -247,15 +289,15 @@ const Spares: React.FC = () => {
     // Filter by criticality
     if (criticalityFilter && criticalityFilter !== "All") {
       if (criticalityFilter === "Critical") {
-        filtered = filtered.filter(spare => spare.critical === "Critical" || spare.critical === "Yes");
+        filtered = filtered.filter((spare: Spare) => spare.critical === "Critical" || spare.critical === "Yes");
       } else if (criticalityFilter === "Non-critical") {
-        filtered = filtered.filter(spare => spare.critical !== "Critical" && spare.critical !== "Yes");
+        filtered = filtered.filter((spare: Spare) => spare.critical !== "Critical" && spare.critical !== "Yes");
       }
     }
 
     // Filter by stock status
     if (stockFilter && stockFilter !== "All") {
-      filtered = filtered.filter(spare => spare.stockStatus === stockFilter);
+      filtered = filtered.filter((spare: Spare) => spare.stockStatus === stockFilter);
     }
 
     return filtered;
@@ -375,7 +417,7 @@ const Spares: React.FC = () => {
     setIsBulkUpdateModalOpen(true);
     // Initialize bulk update data
     const initialData: {[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string}} = {};
-    filteredSpares.forEach(spare => {
+    filteredSpares.forEach((spare: Spare) => {
       initialData[spare.id] = { consumed: 0, received: 0 };
     });
     setBulkUpdateData(initialData);
@@ -443,22 +485,48 @@ const Spares: React.FC = () => {
 
   // Save bulk updates
   const saveBulkUpdates = () => {
-    const updates = Object.entries(bulkUpdateData)
+    // Validate all rows first
+    const hasErrors = Object.entries(bulkUpdateData).some(([id, data]) => {
+      const spare = sparesData.find((s: Spare) => s.id === parseInt(id));
+      if (!spare) return false;
+      
+      const newROB = spare.rob - (data.consumed || 0) + (data.received || 0);
+      if (newROB < 0) return true;
+      
+      // Check if received date is required when receiving
+      if (data.received > 0 && !data.receivedDate) return true;
+      
+      return false;
+    });
+    
+    if (hasErrors) {
+      toast({ title: "Validation Error", description: "Please fix validation errors before saving", variant: "destructive" });
+      return;
+    }
+    
+    const rows = Object.entries(bulkUpdateData)
       .filter(([_, data]) => data.consumed > 0 || data.received > 0)
       .map(([id, data]) => ({
-        id: parseInt(id),
-        consumed: data.consumed > 0 ? data.consumed : undefined,
-        received: data.received > 0 ? data.received : undefined,
-        receivedDate: data.receivedDate || undefined,
-        receivedPlace: data.receivedPlace || undefined
+        componentSpareId: parseInt(id),
+        consumed: data.consumed || 0,
+        received: data.received || 0,
+        receivedDate: data.received > 0 ? data.receivedDate : undefined,
+        receivedPlace: data.receivedPlace || undefined,
+        dateLocal: data.consumed > 0 ? new Date().toISOString().split('T')[0] : undefined,
+        remarks: undefined,
+        userId: 'user'
       }));
     
-    if (updates.length === 0) {
+    if (rows.length === 0) {
       toast({ title: "Info", description: "No changes to save", variant: "default" });
       return;
     }
     
-    bulkUpdateMutation.mutate({ updates });
+    bulkUpdateMutation.mutate({ 
+      vesselId,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      rows 
+    });
   };
 
   // Render component tree
@@ -635,7 +703,7 @@ const Spares: React.FC = () => {
                     No spares found. Try adjusting your filters.
                   </div>
                 ) : (
-                  filteredSpares.map((spare) => (
+                  filteredSpares.map((spare: Spare) => (
                     <div key={spare.id} className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
                       <div className="grid grid-cols-10 gap-4 text-sm items-center">
                         <div className="text-gray-900">{spare.partCode}</div>
@@ -950,35 +1018,56 @@ const Spares: React.FC = () => {
                     <th className="px-4 py-2 text-center text-sm font-medium">ROB</th>
                     <th className="px-4 py-2 text-center text-sm font-medium">Consumed</th>
                     <th className="px-4 py-2 text-center text-sm font-medium">Received</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium">New ROB</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredSpares.map((spare) => (
-                    <tr key={spare.id} className="border-t">
-                      <td className="px-4 py-2 text-sm">{spare.partCode}</td>
-                      <td className="px-4 py-2 text-sm">{spare.partName}</td>
-                      <td className="px-4 py-2 text-center text-sm">{spare.rob}</td>
-                      <td className="px-4 py-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max={spare.rob}
-                          value={bulkUpdateData[spare.id]?.consumed || ""}
-                          onChange={(e) => handleBulkUpdateChange(spare.id, 'consumed', e.target.value)}
-                          className="w-20 mx-auto"
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          value={bulkUpdateData[spare.id]?.received || ""}
-                          onChange={(e) => handleBulkUpdateChange(spare.id, 'received', e.target.value)}
-                          className="w-20 mx-auto"
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredSpares.map((spare: Spare) => {
+                    const consumed = bulkUpdateData[spare.id]?.consumed || 0;
+                    const received = bulkUpdateData[spare.id]?.received || 0;
+                    const newROB = spare.rob - consumed + received;
+                    const hasInsufficientStock = newROB < 0;
+                    const needsReceivedDate = received > 0 && !bulkUpdateData[spare.id]?.receivedDate;
+                    const hasError = hasInsufficientStock || needsReceivedDate;
+                    
+                    return (
+                      <tr key={spare.id} className={`border-t ${hasError ? 'bg-red-50' : ''}`}>
+                        <td className="px-4 py-2 text-sm">{spare.partCode}</td>
+                        <td className="px-4 py-2 text-sm">{spare.partName}</td>
+                        <td className="px-4 py-2 text-center text-sm">{spare.rob}</td>
+                        <td className="px-4 py-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max={spare.rob}
+                            value={bulkUpdateData[spare.id]?.consumed || ""}
+                            onChange={(e) => handleBulkUpdateChange(spare.id, 'consumed', e.target.value)}
+                            className={`w-20 mx-auto ${hasInsufficientStock ? 'border-red-500' : ''}`}
+                          />
+                        </td>
+                        <td className="px-4 py-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            value={bulkUpdateData[spare.id]?.received || ""}
+                            onChange={(e) => handleBulkUpdateChange(spare.id, 'received', e.target.value)}
+                            className="w-20 mx-auto"
+                          />
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          <div className={`text-sm font-medium ${hasInsufficientStock ? 'text-red-600' : ''}`}>
+                            {newROB}
+                            {hasInsufficientStock && (
+                              <div className="text-xs text-red-600">Insufficient stock</div>
+                            )}
+                            {needsReceivedDate && (
+                              <div className="text-xs text-red-600">Date required</div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -987,8 +1076,21 @@ const Spares: React.FC = () => {
             <Button variant="outline" onClick={() => setIsBulkUpdateModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={saveBulkUpdates} disabled={bulkUpdateMutation.isPending}>
-              Save Changes
+            <Button 
+              onClick={saveBulkUpdates} 
+              disabled={bulkUpdateMutation.isPending || (() => {
+                // Check for validation errors
+                return Object.entries(bulkUpdateData).some(([id, data]) => {
+                  const spare = filteredSpares.find((s: Spare) => s.id === parseInt(id));
+                  if (!spare) return false;
+                  const newROB = spare.rob - (data.consumed || 0) + (data.received || 0);
+                  if (newROB < 0) return true;
+                  if (data.received > 0 && !data.receivedDate) return true;
+                  return false;
+                });
+              })()}
+            >
+              {bulkUpdateMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
