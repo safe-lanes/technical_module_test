@@ -7,7 +7,7 @@ import { TechnicalModule } from "./pages/TechnicalModule";
 import WorkOrders from "./pages/pms/WorkOrders";
 import RunningHours from "./pages/pms/RunningHours";
 import Components from "./pages/pms/Components";
-import Spares from "./pages/spares/Spares";
+import Spares from "./pages/spares/SparesNew";
 import Stores from "./pages/stores/Stores";
 
 import NotFound from "./pages/not-found";

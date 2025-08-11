@@ -29,7 +29,19 @@ The SAIL Technical Module manages three core aspects of cargo ship operations:
 
 ## System Architecture
 
-The application uses a modern full-stack architecture with a React frontend (TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Wouter) and an Express.js backend (TypeScript). It integrates with PostgreSQL via Drizzle ORM for database operations, with an in-memory storage fallback for development. The UI/UX prioritizes a consistent design system through shadcn/ui and Tailwind CSS, following a mobile-first responsive design approach. Core features include a Technical Dashboard, Equipment Management, Maintenance Scheduling, Task Management, Reporting, and an Admin Module. The Admin Module supports dynamic configuration of forms, including configurable rank groups and field visibility, using a standard `FormPopup` component for consistent modal presentation.
+The application uses a modern full-stack architecture with a React frontend (TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Wouter) and an Express.js backend (TypeScript). It integrates with PostgreSQL via Drizzle ORM for database operations, with an in-memory storage fallback for development. The UI/UX prioritizes a consistent design system through shadcn/ui and Tailwind CSS, following a mobile-first responsive design approach. 
+
+### Completed Modules:
+- **Components Module**: Full CRUD operations with hierarchical component tree management
+- **Running Hours Module**: Equipment tracking with utilization rate calculations and audit history
+- **Spares Module**: Comprehensive inventory management with consumption/receive tracking, bulk updates, and complete transaction history
+
+### Architecture Features:
+- Shared component tree structure used across PMS modules for consistency
+- RESTful API design with proper error handling and validation
+- Real-time stock status calculations (OK/Low/Minimum)
+- Audit trail for all inventory transactions with user tracking
+- Optimistic UI updates with TanStack Query for smooth user experience
 
 ## External Dependencies
 

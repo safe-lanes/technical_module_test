@@ -116,6 +116,143 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Spares API routes
+  
+  // Get all spares for a vessel
+  app.get("/api/spares/:vesselId", async (req, res) => {
+    try {
+      const spares = await storage.getSpares(req.params.vesselId);
+      // Calculate stock status server-side
+      const sparesWithStatus = spares.map(spare => ({
+        ...spare,
+        stockStatus: spare.rob < spare.min ? 'Low' : spare.rob === spare.min ? 'Minimum' : 'OK'
+      }));
+      res.json(sparesWithStatus);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch spares" });
+    }
+  });
+
+  // Get single spare
+  app.get("/api/spares/item/:id", async (req, res) => {
+    try {
+      const spare = await storage.getSpare(parseInt(req.params.id));
+      if (!spare) {
+        return res.status(404).json({ error: "Spare not found" });
+      }
+      res.json(spare);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch spare" });
+    }
+  });
+
+  // Create new spare
+  app.post("/api/spares", async (req, res) => {
+    try {
+      const spare = await storage.createSpare(req.body);
+      res.json(spare);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create spare" });
+    }
+  });
+
+  // Update spare
+  app.put("/api/spares/:id", async (req, res) => {
+    try {
+      const spare = await storage.updateSpare(parseInt(req.params.id), req.body);
+      res.json(spare);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update spare" });
+    }
+  });
+
+  // Delete spare
+  app.delete("/api/spares/:id", async (req, res) => {
+    try {
+      await storage.deleteSpare(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete spare" });
+    }
+  });
+
+  // Consume spare
+  app.post("/api/spares/:id/consume", async (req, res) => {
+    try {
+      const { quantity, userId, remarks, reference } = req.body;
+      const spare = await storage.consumeSpare(
+        parseInt(req.params.id),
+        quantity,
+        userId || 'user',
+        remarks,
+        reference
+      );
+      res.json(spare);
+    } catch (error: any) {
+      if (error.message === 'Insufficient stock') {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Failed to consume spare" });
+      }
+    }
+  });
+
+  // Receive spare
+  app.post("/api/spares/:id/receive", async (req, res) => {
+    try {
+      const { quantity, userId, remarks, reference } = req.body;
+      const spare = await storage.receiveSpare(
+        parseInt(req.params.id),
+        quantity,
+        userId || 'user',
+        remarks,
+        reference
+      );
+      res.json(spare);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to receive spare" });
+    }
+  });
+
+  // Bulk update spares
+  app.post("/api/spares/bulk-update", async (req, res) => {
+    try {
+      const { updates, userId, remarks } = req.body;
+      const updatedSpares = await storage.bulkUpdateSpares(
+        updates,
+        userId || 'user',
+        remarks
+      );
+      res.json(updatedSpares);
+    } catch (error: any) {
+      if (error.message?.includes('Insufficient stock')) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Failed to perform bulk update" });
+      }
+    }
+  });
+
+  // Get spares history
+  app.get("/api/spares/history/:vesselId", async (req, res) => {
+    try {
+      const history = await storage.getSpareHistory(req.params.vesselId);
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch history" });
+    }
+  });
+
+  // Get history for specific spare
+  app.get("/api/spares/history/spare/:spareId", async (req, res) => {
+    try {
+      const history = await storage.getSpareHistoryBySpareId(parseInt(req.params.spareId));
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch spare history" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

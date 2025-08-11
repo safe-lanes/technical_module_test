@@ -62,3 +62,60 @@ export const insertComponentSchema = createInsertSchema(components).omit({});
 
 export type InsertComponent = z.infer<typeof insertComponentSchema>;
 export type Component = typeof components.$inferSelect;
+
+// Spares Table
+export const spares = mysqlTable("spares", {
+  id: int("id").primaryKey().autoincrement(),
+  partCode: text("part_code").notNull(),
+  partName: text("part_name").notNull(),
+  componentId: text("component_id").notNull(),
+  componentCode: text("component_code"),
+  componentName: text("component_name").notNull(),
+  critical: text("critical").notNull(), // 'Critical' | 'Non-Critical' | 'Yes' | 'No'
+  rob: int("rob").notNull().default(0), // Remaining on Board
+  min: int("min").notNull().default(0), // Minimum stock
+  location: text("location"),
+  vesselId: text("vessel_id").notNull().default("V001"),
+  deleted: boolean("deleted").notNull().default(false),
+}, (table) => ({
+  componentIdIdx: index("idx_spare_component").on(table.componentId),
+  vesselIdIdx: index("idx_spare_vessel").on(table.vesselId),
+}));
+
+export const insertSpareSchema = createInsertSchema(spares).omit({
+  id: true,
+  deleted: true,
+});
+
+export type InsertSpare = z.infer<typeof insertSpareSchema>;
+export type Spare = typeof spares.$inferSelect;
+
+// Spares History Table
+export const sparesHistory = mysqlTable("spares_history", {
+  id: int("id").primaryKey().autoincrement(),
+  timestampUTC: timestamp("timestamp_utc").notNull(),
+  vesselId: text("vessel_id").notNull(),
+  spareId: int("spare_id").notNull(),
+  partCode: text("part_code").notNull(),
+  partName: text("part_name").notNull(),
+  componentId: text("component_id").notNull(),
+  componentCode: text("component_code"),
+  componentName: text("component_name").notNull(),
+  eventType: text("event_type").notNull(), // 'CONSUME' | 'RECEIVE' | 'ADJUST' | 'CREATE' | 'EDIT'
+  qtyChange: int("qty_change").notNull(), // positive for receive, negative for consume
+  robAfter: int("rob_after").notNull(),
+  userId: text("user_id").notNull(),
+  remarks: text("remarks"),
+  reference: text("reference"), // Work Order or PO reference
+}, (table) => ({
+  timestampIdx: index("idx_history_timestamp").on(table.timestampUTC),
+  spareIdIdx: index("idx_history_spare").on(table.spareId),
+  eventTypeIdx: index("idx_history_event").on(table.eventType),
+}));
+
+export const insertSpareHistorySchema = createInsertSchema(sparesHistory).omit({
+  id: true,
+});
+
+export type InsertSpareHistory = z.infer<typeof insertSpareHistorySchema>;
+export type SpareHistory = typeof sparesHistory.$inferSelect;

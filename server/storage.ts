@@ -8,7 +8,13 @@ import {
   type InsertComponent,
   runningHoursAudit,
   type RunningHoursAudit,
-  type InsertRunningHoursAudit
+  type InsertRunningHoursAudit,
+  spares,
+  type Spare,
+  type InsertSpare,
+  sparesHistory,
+  type SpareHistory,
+  type InsertSpareHistory
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -26,6 +32,21 @@ export interface IStorage {
   createRunningHoursAudit(audit: InsertRunningHoursAudit): Promise<RunningHoursAudit>;
   getRunningHoursAudits(componentId: string, limit?: number): Promise<RunningHoursAudit[]>;
   getRunningHoursAuditsInDateRange(componentId: string, startDate: Date, endDate: Date): Promise<RunningHoursAudit[]>;
+  
+  // Spares methods
+  getSpares(vesselId: string): Promise<Spare[]>;
+  getSpare(id: number): Promise<Spare | undefined>;
+  createSpare(spare: InsertSpare): Promise<Spare>;
+  updateSpare(id: number, data: Partial<Spare>): Promise<Spare>;
+  deleteSpare(id: number): Promise<void>;
+  consumeSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare>;
+  receiveSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare>;
+  bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number}>, userId: string, remarks?: string): Promise<Spare[]>;
+  
+  // Spares History methods
+  getSpareHistory(vesselId: string): Promise<SpareHistory[]>;
+  getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]>;
+  createSpareHistory(history: InsertSpareHistory): Promise<SpareHistory>;
 }
 
 export class MemStorage implements IStorage {
@@ -34,6 +55,10 @@ export class MemStorage implements IStorage {
   private components: Map<string, Component>;
   private runningHoursAudits: RunningHoursAudit[];
   private currentAuditId: number;
+  private spares: Map<number, Spare>;
+  private currentSpareId: number;
+  private sparesHistory: SpareHistory[];
+  private currentHistoryId: number;
 
   constructor() {
     this.users = new Map();
@@ -41,9 +66,14 @@ export class MemStorage implements IStorage {
     this.components = new Map();
     this.runningHoursAudits = [];
     this.currentAuditId = 1;
+    this.spares = new Map();
+    this.currentSpareId = 1;
+    this.sparesHistory = [];
+    this.currentHistoryId = 1;
     
-    // Initialize sample components
+    // Initialize sample components and spares
     this.initializeComponents();
+    this.initializeSpares();
   }
 
   private initializeComponents() {
@@ -133,6 +163,231 @@ export class MemStorage implements IStorage {
       const auditDate = new Date(a.dateUpdatedLocal);
       return auditDate >= startDate && auditDate <= endDate;
     });
+  }
+
+  private initializeSpares() {
+    const sampleSpares: Spare[] = [
+      { id: 1, partCode: "SP-ME-001", partName: "Fuel Injector", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 2, partCode: "SP-ME-002", partName: "Cylinder Head Gasket", componentId: "6.1.1", componentCode: "6.1.1", componentName: "Cylinder Head", critical: "No", rob: 2, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 3, partCode: "SP-ME-003", partName: "Piston Ring Set", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", critical: "No", rob: 3, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 4, partCode: "SP-ME-004", partName: "Main Bearing", componentId: "6.1.2", componentCode: "6.1.2", componentName: "Main Bearings", critical: "Critical", rob: 4, min: 2, location: "Store Room C", vesselId: "V001", deleted: false },
+      { id: 5, partCode: "SP-COOL-001", partName: "Cooling Pump Seal", componentId: "7.3", componentCode: "7.3", componentName: "Cooling Water System", critical: "Critical", rob: 4, min: 2, location: "Store Room D", vesselId: "V001", deleted: false },
+      { id: 6, partCode: "SP-CC-001", partName: "Cylinder Cover Assembly", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 7, partCode: "SP-CC-002", partName: "Inlet Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 8, partCode: "SP-CC-003", partName: "Exhaust Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 9, partCode: "SP-CC-004", partName: "Valve Spring", componentId: "6.1.1.2", componentCode: "6.1.1.2", componentName: "Injector Sleeve", critical: "No", rob: 8, min: 4, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 10, partCode: "SP-CC-005", partName: "Valve Guide", componentId: "6.1.1.3", componentCode: "6.1.1.3", componentName: "Rocker Arm", critical: "No", rob: 1, min: 2, location: "Store Room B", vesselId: "V001", deleted: false },
+    ];
+    
+    sampleSpares.forEach(spare => this.spares.set(spare.id, spare));
+    this.currentSpareId = 11;
+  }
+
+  // Spares methods
+  async getSpares(vesselId: string): Promise<Spare[]> {
+    return Array.from(this.spares.values())
+      .filter(s => s.vesselId === vesselId && !s.deleted);
+  }
+
+  async getSpare(id: number): Promise<Spare | undefined> {
+    const spare = this.spares.get(id);
+    return spare && !spare.deleted ? spare : undefined;
+  }
+
+  async createSpare(spare: InsertSpare): Promise<Spare> {
+    const id = this.currentSpareId++;
+    const newSpare: Spare = { ...spare, id, deleted: false };
+    this.spares.set(id, newSpare);
+    
+    // Create history entry
+    await this.createSpareHistory({
+      timestampUTC: new Date(),
+      vesselId: spare.vesselId,
+      spareId: id,
+      partCode: spare.partCode,
+      partName: spare.partName,
+      componentId: spare.componentId,
+      componentCode: spare.componentCode || null,
+      componentName: spare.componentName,
+      eventType: 'CREATE',
+      qtyChange: spare.rob,
+      robAfter: spare.rob,
+      userId: 'system',
+      remarks: 'Initial creation',
+      reference: null
+    });
+    
+    return newSpare;
+  }
+
+  async updateSpare(id: number, data: Partial<Spare>): Promise<Spare> {
+    const spare = this.spares.get(id);
+    if (!spare || spare.deleted) {
+      throw new Error(`Spare ${id} not found`);
+    }
+    const updated = { ...spare, ...data };
+    this.spares.set(id, updated);
+    
+    // Create history entry if ROB changed
+    if (data.rob !== undefined && data.rob !== spare.rob) {
+      await this.createSpareHistory({
+        timestampUTC: new Date(),
+        vesselId: spare.vesselId,
+        spareId: id,
+        partCode: spare.partCode,
+        partName: spare.partName,
+        componentId: spare.componentId,
+        componentCode: spare.componentCode || null,
+        componentName: spare.componentName,
+        eventType: 'EDIT',
+        qtyChange: data.rob - spare.rob,
+        robAfter: data.rob,
+        userId: 'system',
+        remarks: 'Updated via edit',
+        reference: null
+      });
+    }
+    
+    return updated;
+  }
+
+  async deleteSpare(id: number): Promise<void> {
+    const spare = this.spares.get(id);
+    if (spare) {
+      spare.deleted = true;
+      this.spares.set(id, spare);
+    }
+  }
+
+  async consumeSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare> {
+    const spare = await this.getSpare(id);
+    if (!spare) {
+      throw new Error(`Spare ${id} not found`);
+    }
+    
+    if (spare.rob < quantity) {
+      throw new Error('Insufficient stock');
+    }
+    
+    spare.rob -= quantity;
+    this.spares.set(id, spare);
+    
+    // Create history entry
+    await this.createSpareHistory({
+      timestampUTC: new Date(),
+      vesselId: spare.vesselId,
+      spareId: id,
+      partCode: spare.partCode,
+      partName: spare.partName,
+      componentId: spare.componentId,
+      componentCode: spare.componentCode || null,
+      componentName: spare.componentName,
+      eventType: 'CONSUME',
+      qtyChange: -quantity,
+      robAfter: spare.rob,
+      userId,
+      remarks: remarks || null,
+      reference: reference || null
+    });
+    
+    return spare;
+  }
+
+  async receiveSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare> {
+    const spare = await this.getSpare(id);
+    if (!spare) {
+      throw new Error(`Spare ${id} not found`);
+    }
+    
+    spare.rob += quantity;
+    this.spares.set(id, spare);
+    
+    // Create history entry
+    await this.createSpareHistory({
+      timestampUTC: new Date(),
+      vesselId: spare.vesselId,
+      spareId: id,
+      partCode: spare.partCode,
+      partName: spare.partName,
+      componentId: spare.componentId,
+      componentCode: spare.componentCode || null,
+      componentName: spare.componentName,
+      eventType: 'RECEIVE',
+      qtyChange: quantity,
+      robAfter: spare.rob,
+      userId,
+      remarks: remarks || null,
+      reference: reference || null
+    });
+    
+    return spare;
+  }
+
+  async bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number}>, userId: string, remarks?: string): Promise<Spare[]> {
+    const updatedSpares: Spare[] = [];
+    
+    for (const update of updates) {
+      const spare = await this.getSpare(update.id);
+      if (!spare) continue;
+      
+      let netChange = 0;
+      if (update.consumed) {
+        if (spare.rob < update.consumed) {
+          throw new Error(`Insufficient stock for ${spare.partCode}`);
+        }
+        netChange -= update.consumed;
+      }
+      if (update.received) {
+        netChange += update.received;
+      }
+      
+      if (netChange !== 0) {
+        spare.rob += netChange;
+        this.spares.set(update.id, spare);
+        
+        // Create history entry
+        await this.createSpareHistory({
+          timestampUTC: new Date(),
+          vesselId: spare.vesselId,
+          spareId: update.id,
+          partCode: spare.partCode,
+          partName: spare.partName,
+          componentId: spare.componentId,
+          componentCode: spare.componentCode || null,
+          componentName: spare.componentName,
+          eventType: 'ADJUST',
+          qtyChange: netChange,
+          robAfter: spare.rob,
+          userId,
+          remarks: remarks || 'Bulk update',
+          reference: null
+        });
+        
+        updatedSpares.push(spare);
+      }
+    }
+    
+    return updatedSpares;
+  }
+
+  // Spares History methods
+  async getSpareHistory(vesselId: string): Promise<SpareHistory[]> {
+    return this.sparesHistory
+      .filter(h => h.vesselId === vesselId)
+      .sort((a, b) => b.timestampUTC.getTime() - a.timestampUTC.getTime());
+  }
+
+  async getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]> {
+    return this.sparesHistory
+      .filter(h => h.spareId === spareId)
+      .sort((a, b) => b.timestampUTC.getTime() - a.timestampUTC.getTime());
+  }
+
+  async createSpareHistory(history: InsertSpareHistory): Promise<SpareHistory> {
+    const id = this.currentHistoryId++;
+    const fullHistory: SpareHistory = { ...history, id };
+    this.sparesHistory.push(fullHistory);
+    return fullHistory;
   }
 }
 

@@ -1,93 +1,16 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet, X, MessageSquare, Calendar } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit, Clock, Trash2, Plus, FileSpreadsheet, X, MessageSquare, Calendar, Minus } from "lucide-react";
+import { ComponentNode, componentTree } from "@/data/componentTree";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
-interface ComponentNode {
-  id: string;
-  code: string;
-  name: string;
-  children?: ComponentNode[];
-  isExpanded?: boolean;
-}
-
-const componentsTree: ComponentNode[] = [
-  {
-    id: "1",
-    code: "1",
-    name: "Ship General",
-    children: []
-  },
-  {
-    id: "2", 
-    code: "2",
-    name: "Hull",
-    children: []
-  },
-  {
-    id: "3",
-    code: "3", 
-    name: "Equipment for Cargo",
-    children: []
-  },
-  {
-    id: "4",
-    code: "4",
-    name: "Ship's Equipment",
-    children: []
-  },
-  {
-    id: "5",
-    code: "5",
-    name: "Equipment for Crew & Passengers",
-    children: []
-  },
-  {
-    id: "6",
-    code: "6",
-    name: "Machinery Main Components",
-    isExpanded: true,
-    children: [
-      {
-        id: "6.1",
-        code: "60",
-        name: "Diesel Engines for Propulsion",
-        children: [
-          {
-            id: "6.1.1",
-            code: "601",
-            name: "Diesel Engines",
-            children: [
-              {
-                id: "6.1.1.1",
-                code: "601.001",
-                name: "Main Diesel Engines"
-              },
-              {
-                id: "6.1.1.2",
-                code: "601.002",
-                name: "ME cylinder covers w/ valves"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "7",
-    code: "7",
-    name: "Systems for Machinery Main Components",
-    children: []
-  },
-  {
-    id: "8",
-    code: "8",
-    name: "Ship Common Systems",
-    children: []
-  }
-];
+// Component tree is now imported from shared data
 
 const sparesData = [
   {
