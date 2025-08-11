@@ -483,7 +483,7 @@ const Spares: React.FC = () => {
             <>
               {/* Inventory Table Header */}
               <div className="px-4 py-3 border-b border-gray-200 bg-[#52baf3]">
-                <div className="grid grid-cols-9 gap-4 text-sm font-semibold text-gray-700">
+                <div className="grid grid-cols-9 gap-4 text-sm font-semibold text-[#ffffff]">
                   <div className="text-[#ffffff]">Part Code</div>
                   <div>Part Name</div>
                   <div>Component</div>
