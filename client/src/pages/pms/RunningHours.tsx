@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileSpreadsheet, X, Calendar } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Search, FileSpreadsheet, X, Calendar, Download } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface RunningHoursData {
   id: string;
   component: string;
+  componentCode?: string;
   eqptCategory: string;
   runningHours: string;
   lastUpdated: string;
-  nextService: string;
-  tracking: 'green' | 'yellow' | 'red';
+  utilizationRate?: number | null;
 }
 
 const RunningHours = () => {
@@ -24,117 +29,141 @@ const RunningHours = () => {
   const [criticalityFilter, setCriticalityFilter] = useState("");
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<RunningHoursData | null>(null);
+  const [updateMode, setUpdateMode] = useState<"setTotal" | "addDelta">("setTotal");
+  const [meterReplaced, setMeterReplaced] = useState(false);
   const [updateForm, setUpdateForm] = useState({
     oldValue: "",
     newValue: "",
     dateUpdated: "",
-    comments: ""
+    comments: "",
+    oldMeterFinal: "",
+    newMeterStart: "0"
   });
   const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
-  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: string]: string}>({});
+  const [bulkUpdateMode, setBulkUpdateMode] = useState<"setTotal" | "addDelta">("setTotal");
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: string]: {
+    value: string;
+    meterReplaced: boolean;
+    oldMeterFinal: string;
+    newMeterStart: string;
+  }}>({});
   const [bulkUpdateErrors, setBulkUpdateErrors] = useState<{[key: string]: string}>({});
+  
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const vesselId = "V001"; // Default vessel ID
+  
+  // Utilization rate cache (15 minutes)
+  const [utilizationCache, setUtilizationCache] = useState<{
+    data: Record<string, number | null>;
+    timestamp: number;
+  } | null>(null);
 
-  const [runningHoursData, setRunningHoursData] = useState<RunningHoursData[]>([
-    {
-      id: "1",
-      component: "Radar System",
-      eqptCategory: "Navigation System",
-      runningHours: "18,560 hrs",
-      lastUpdated: "02-Jun-2025",
-      nextService: "436 hrs",
-      tracking: "yellow"
-    },
-    {
-      id: "2", 
-      component: "Diesel Generator # 1",
-      eqptCategory: "Electrical System",
-      runningHours: "15,670 hrs",
-      lastUpdated: "09-Jun-2025",
-      nextService: "257 hrs",
-      tracking: "green"
-    },
-    {
-      id: "3",
-      component: "Diesel Generator # 2", 
-      eqptCategory: "Electrical System",
-      runningHours: "14,980 hrs",
-      lastUpdated: "16-Jun-2025",
-      nextService: "150 hrs",
-      tracking: "green"
-    },
-    {
-      id: "4",
-      component: "Main Cooling Seawater Pump",
-      eqptCategory: "Cooling System", 
-      runningHours: "12,800 hrs",
-      lastUpdated: "23-Jun-2025",
-      nextService: "200 hrs",
-      tracking: "green"
-    },
-    {
-      id: "5",
-      component: "Main Engine",
-      eqptCategory: "Propulsion System",
-      runningHours: "12,580 hrs", 
-      lastUpdated: "30-Jun-2025",
-      nextService: "0 hrs",
-      tracking: "red"
-    },
-    {
-      id: "6",
-      component: "Propeller System",
-      eqptCategory: "Propulsion System",
-      runningHours: "12,580 hrs",
-      lastUpdated: "02-Jun-2025", 
-      nextService: "257 hrs",
-      tracking: "yellow"
-    },
-    {
-      id: "7",
-      component: "Main Lubrication Oil Pump",
-      eqptCategory: "Lubrication System",
-      runningHours: "12,450 hrs",
-      lastUpdated: "09-Jun-2025",
-      nextService: "436 hrs", 
-      tracking: "green"
-    },
-    {
-      id: "8",
-      component: "Steering Gear",
-      eqptCategory: "Navigation System",
-      runningHours: "11,240 hrs",
-      lastUpdated: "19-Jun-2025",
-      nextService: "> 120 hrs",
-      tracking: "red"
-    },
-    {
-      id: "9", 
-      component: "Main Air Compressor",
-      eqptCategory: "Air System",
-      runningHours: "10,840 hrs",
-      lastUpdated: "25-Jun-2025",
-      nextService: "560 hrs",
-      tracking: "green"
-    },
-    {
-      id: "10",
-      component: "Bow Thruster",
-      eqptCategory: "Propulsion System", 
-      runningHours: "10,450 hrs",
-      lastUpdated: "30-Jun-2025",
-      nextService: "300 hrs",
-      tracking: "yellow"
-    }
-  ]);
+  // Fetch components data
+  const { data: componentsData, isLoading: componentsLoading } = useQuery({
+    queryKey: [`/api/running-hours/components/${vesselId}`],
+    enabled: !!vesselId
+  });
 
-  const getTrackingColor = (tracking: string) => {
-    switch (tracking) {
-      case 'green': return 'bg-green-500';
-      case 'yellow': return 'bg-yellow-500';
-      case 'red': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
+  // Fetch utilization rates
+  const { data: utilizationRates } = useQuery({
+    queryKey: ['utilizationRates', componentsData?.map((c: any) => c.id)],
+    queryFn: async () => {
+      if (!componentsData || componentsData.length === 0) return {};
+      
+      // Check cache first
+      if (utilizationCache && (Date.now() - utilizationCache.timestamp < 15 * 60 * 1000)) {
+        return utilizationCache.data;
+      }
+      
+      const response = await apiRequest('/api/running-hours/utilization-rates', {
+        method: 'POST',
+        body: JSON.stringify({ componentIds: componentsData.map((c: any) => c.id) }),
+      });
+      
+      // Update cache
+      setUtilizationCache({
+        data: response,
+        timestamp: Date.now()
+      });
+      
+      return response;
+    },
+    enabled: !!componentsData && componentsData.length > 0,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+  });
+
+  // Transform components data to RunningHoursData format
+  const runningHoursData: RunningHoursData[] = useMemo(() => {
+    if (!componentsData) return [];
+    
+    return componentsData.map((comp: any) => ({
+      id: comp.id,
+      component: comp.name,
+      componentCode: comp.componentCode,
+      eqptCategory: comp.category,
+      runningHours: `${Number(comp.currentCumulativeRH).toLocaleString()} hrs`,
+      lastUpdated: comp.lastUpdated || "-",
+      utilizationRate: utilizationRates?.[comp.id] || null
+    }));
+  }, [componentsData, utilizationRates]);
+
+  // Mutation for single update
+  const updateRunningHours = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest(`/api/running-hours/update/${data.componentId}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/running-hours/components/${vesselId}`] });
+      queryClient.invalidateQueries({ queryKey: ['utilizationRates'] });
+      // Bust cache
+      setUtilizationCache(null);
+      toast({
+        title: "Success",
+        description: "Running hours updated successfully",
+      });
+      setIsUpdateDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update running hours",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Mutation for bulk update
+  const bulkUpdateRunningHours = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('/api/running-hours/bulk-update', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/running-hours/components/${vesselId}`] });
+      queryClient.invalidateQueries({ queryKey: ['utilizationRates'] });
+      // Bust cache
+      setUtilizationCache(null);
+      toast({
+        title: "Success",
+        description: "Bulk update completed successfully",
+      });
+      setIsBulkUpdateOpen(false);
+      setBulkUpdateData({});
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to perform bulk update",
+        variant: "destructive",
+      });
+    },
+  });
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -143,14 +172,77 @@ const RunningHours = () => {
     setCriticalityFilter("");
   };
 
+  // Export to CSV function
+  const exportToCSV = () => {
+    // Filter data based on current filters
+    const filteredData = runningHoursData.filter(item => {
+      if (searchTerm && !item.component.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      if (categoryFilter && item.eqptCategory !== categoryFilter) {
+        return false;
+      }
+      return true;
+    });
+
+    // Prepare CSV headers
+    const headers = [
+      "Vessel",
+      "Component",
+      "Component Code",
+      "Eqpt. Category",
+      "Running Hours (cumulative)",
+      "Last Updated (local)",
+      "Utilization Rate (hrs/day)",
+      "Notes"
+    ];
+
+    // Prepare CSV rows
+    const rows = filteredData.map(item => [
+      vesselId,
+      item.component,
+      item.componentCode || "",
+      item.eqptCategory,
+      item.runningHours.replace(" hrs", ""),
+      item.lastUpdated,
+      item.utilizationRate !== null ? item.utilizationRate.toString() : "",
+      "" // Notes field (empty for now)
+    ]);
+
+    // Convert to CSV format
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const now = new Date();
+    const filename = `running-hours_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.csv`;
+    
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredData.length} records to ${filename}`,
+    });
+  };
+
   const openUpdateDialog = (component: RunningHoursData) => {
     setSelectedComponent(component);
     setUpdateForm({
-      oldValue: component.runningHours.replace(" hrs", ""),
+      oldValue: component.runningHours.replace(" hrs", "").replace(/,/g, ""),
       newValue: "",
       dateUpdated: "",
-      comments: ""
+      comments: "",
+      oldMeterFinal: "",
+      newMeterStart: "0"
     });
+    setUpdateMode("setTotal");
+    setMeterReplaced(false);
     setIsUpdateDialogOpen(true);
   };
 
@@ -162,9 +254,81 @@ const RunningHours = () => {
   };
 
   const handleSaveUpdate = () => {
-    // Handle save logic here
-    console.log("Saving update:", updateForm);
-    setIsUpdateDialogOpen(false);
+    if (!selectedComponent) return;
+    
+    // Validate date not in future
+    const selectedDate = new Date(updateForm.dateUpdated);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    
+    if (selectedDate > today) {
+      toast({
+        title: "Error",
+        description: "Date cannot be in the future",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Calculate new total
+    const previousValue = parseFloat(updateForm.oldValue);
+    const inputValue = parseFloat(updateForm.newValue);
+    let newTotal: number;
+    
+    if (updateMode === "addDelta") {
+      newTotal = previousValue + inputValue;
+    } else {
+      newTotal = inputValue;
+    }
+    
+    // Validation: new hours must be >= previous unless meter replaced
+    if (!meterReplaced && newTotal < previousValue) {
+      toast({
+        title: "Validation Error",
+        description: "New hours must be ≥ previous hours. Use 'Meter replaced?' if the counter was reset.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Format date in vessel local time
+    const dateLocal = selectedDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) + ' ' + selectedDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    
+    // Prepare audit data
+    const auditData = {
+      vesselId: vesselId,
+      componentId: selectedComponent.id,
+      previousRH: previousValue,
+      newRH: newTotal,
+      cumulativeRH: meterReplaced ? 
+        previousValue + (inputValue - parseFloat(updateForm.newMeterStart || "0")) : 
+        newTotal,
+      dateUpdatedLocal: dateLocal,
+      dateUpdatedTZ: "Asia/Kolkata", // Default timezone
+      enteredAtUTC: new Date(),
+      userId: "current-user", // Placeholder
+      source: "single" as const,
+      notes: updateForm.comments,
+      meterReplaced: meterReplaced,
+      oldMeterFinal: meterReplaced ? parseFloat(updateForm.oldMeterFinal) : null,
+      newMeterStart: meterReplaced ? parseFloat(updateForm.newMeterStart) : null,
+      version: 1
+    };
+    
+    updateRunningHours.mutate({
+      componentId: selectedComponent.id,
+      audit: auditData,
+      cumulativeRH: auditData.cumulativeRH,
+      dateUpdatedLocal: dateLocal
+    });
   };
 
   const handleCancelUpdate = () => {
@@ -174,8 +338,12 @@ const RunningHours = () => {
       oldValue: "",
       newValue: "",
       dateUpdated: "",
-      comments: ""
+      comments: "",
+      oldMeterFinal: "",
+      newMeterStart: "0"
     });
+    setUpdateMode("setTotal");
+    setMeterReplaced(false);
   };
 
   const openBulkUpdate = () => {
@@ -184,13 +352,16 @@ const RunningHours = () => {
     setIsBulkUpdateOpen(true);
   };
 
-  const handleBulkUpdateChange = (componentId: string, value: string) => {
+  const handleBulkUpdateChange = (componentId: string, field: string, value: any) => {
     setBulkUpdateData(prev => ({
       ...prev,
-      [componentId]: value
+      [componentId]: {
+        ...prev[componentId],
+        [field]: value
+      }
     }));
     // Clear error when user starts typing
-    if (bulkUpdateErrors[componentId]) {
+    if (bulkUpdateErrors[componentId] && field === 'value') {
       setBulkUpdateErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[componentId];
@@ -201,44 +372,91 @@ const RunningHours = () => {
 
   const handleBulkSave = () => {
     const errors: {[key: string]: string} = {};
-    const today = new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short', 
-      year: 'numeric'
-    });
-
-    // Update components that have new values
-    const updatedData = runningHoursData.map(component => {
-      const newValue = bulkUpdateData[component.id];
-      if (newValue && newValue.trim() !== "") {
-        // Validate numeric input
-        if (isNaN(Number(newValue.replace(/,/g, '')))) {
-          errors[component.id] = "Please enter a valid number";
-          return component;
-        }
-        
-        // Update the component
-        return {
-          ...component,
-          runningHours: `${Number(newValue).toLocaleString()} hrs`,
-          lastUpdated: today,
-          // Simple logic for next service and tracking - you can modify as needed
-          nextService: "Updated",
-          tracking: 'green' as const
-        };
+    const updates = [];
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    
+    // Process each component with updates
+    for (const component of runningHoursData) {
+      const updateData = bulkUpdateData[component.id];
+      if (!updateData || !updateData.value || updateData.value.trim() === "") continue;
+      
+      // Validate numeric input
+      const inputValue = parseFloat(updateData.value.replace(/,/g, ''));
+      if (isNaN(inputValue)) {
+        errors[component.id] = "Please enter a valid number";
+        continue;
       }
-      return component;
-    });
-
+      
+      const previousValue = parseFloat(component.runningHours.replace(" hrs", "").replace(/,/g, ""));
+      let newTotal: number;
+      
+      if (bulkUpdateMode === "addDelta") {
+        newTotal = previousValue + inputValue;
+      } else {
+        newTotal = inputValue;
+      }
+      
+      // Validation: new hours must be >= previous unless meter replaced
+      if (!updateData.meterReplaced && newTotal < previousValue) {
+        errors[component.id] = "New hours must be ≥ previous hours. Check 'Meter replaced?' if the counter was reset.";
+        continue;
+      }
+      
+      // Format date in vessel local time
+      const dateLocal = today.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }) + ' ' + today.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      
+      // Prepare audit data
+      const auditData = {
+        vesselId: vesselId,
+        componentId: component.id,
+        previousRH: previousValue,
+        newRH: newTotal,
+        cumulativeRH: updateData.meterReplaced ? 
+          previousValue + (inputValue - parseFloat(updateData.newMeterStart || "0")) : 
+          newTotal,
+        dateUpdatedLocal: dateLocal,
+        dateUpdatedTZ: "Asia/Kolkata",
+        enteredAtUTC: new Date(),
+        userId: "current-user",
+        source: "bulk" as const,
+        notes: "",
+        meterReplaced: updateData.meterReplaced || false,
+        oldMeterFinal: updateData.meterReplaced ? parseFloat(updateData.oldMeterFinal) : null,
+        newMeterStart: updateData.meterReplaced ? parseFloat(updateData.newMeterStart) : null,
+        version: 1
+      };
+      
+      updates.push({
+        componentId: component.id,
+        audit: auditData,
+        cumulativeRH: auditData.cumulativeRH,
+        dateUpdatedLocal: dateLocal
+      });
+    }
+    
     if (Object.keys(errors).length > 0) {
       setBulkUpdateErrors(errors);
       return;
     }
-
-    setRunningHoursData(updatedData);
-    setIsBulkUpdateOpen(false);
-    setBulkUpdateData({});
-    setBulkUpdateErrors({});
+    
+    if (updates.length === 0) {
+      toast({
+        title: "No changes",
+        description: "No values were entered for update",
+      });
+      return;
+    }
+    
+    bulkUpdateRunningHours.mutate({ updates });
   };
 
   return (
@@ -309,7 +527,7 @@ const RunningHours = () => {
           </SelectContent>
         </Select>
 
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button variant="outline" className="flex items-center gap-2" onClick={exportToCSV}>
           <FileSpreadsheet className="h-4 w-4" />
         </Button>
 
@@ -327,26 +545,26 @@ const RunningHours = () => {
             <div>Eqpt. Category</div>
             <div>Running Hours</div>
             <div>last Updated</div>
-            <div>Next Service</div>
-            <div>Tracking</div>
-            <div>Update RH</div>
+            <div>Utilization Rate</div>
+            <div className="col-span-2">Update RH</div>
           </div>
         </div>
 
         {/* Table Body */}
         <div className="divide-y divide-gray-200">
-          {runningHoursData.map((item) => (
+          {componentsLoading ? (
+            <div className="px-4 py-8 text-center text-gray-500">Loading...</div>
+          ) : runningHoursData.map((item) => (
             <div key={item.id} className="px-4 py-3 hover:bg-gray-50">
               <div className="grid grid-cols-7 gap-4 text-sm items-center">
                 <div className="text-gray-900">{item.component}</div>
                 <div className="text-gray-700">{item.eqptCategory}</div>
                 <div className="text-gray-900 font-medium">{item.runningHours}</div>
                 <div className="text-gray-700">{item.lastUpdated}</div>
-                <div className="text-gray-700">{item.nextService}</div>
-                <div className="flex items-center">
-                  <div className={`h-4 w-24 rounded-full ${getTrackingColor(item.tracking)}`}></div>
+                <div className="text-gray-700" title="Computed from last 30 days of RH entries">
+                  {item.utilizationRate !== null ? `${item.utilizationRate} hrs/day` : "—"}
                 </div>
-                <div>
+                <div className="col-span-2">
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -376,6 +594,23 @@ const RunningHours = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {/* Mode Toggle */}
+            <div>
+              <Label className="text-sm text-gray-600">Mode</Label>
+              <RadioGroup value={updateMode} onValueChange={(value: any) => setUpdateMode(value)} className="mt-2">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="setTotal" id="setTotal" />
+                    <Label htmlFor="setTotal">Set Total</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="addDelta" id="addDelta" />
+                    <Label htmlFor="addDelta">Add Delta</Label>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm text-gray-600">Old Value</Label>
@@ -386,12 +621,15 @@ const RunningHours = () => {
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-600">New Value</Label>
+                <Label className="text-sm text-gray-600">
+                  {updateMode === "addDelta" ? "Delta Value" : "New Value"}
+                </Label>
                 <Input 
+                  type="number"
                   value={updateForm.newValue}
                   onChange={(e) => handleUpdateFormChange('newValue', e.target.value)}
                   className="mt-1"
-                  placeholder="20000"
+                  placeholder={updateMode === "addDelta" ? "100" : "20000"}
                 />
               </div>
             </div>
@@ -404,10 +642,48 @@ const RunningHours = () => {
                   value={updateForm.dateUpdated}
                   onChange={(e) => handleUpdateFormChange('dateUpdated', e.target.value)}
                   className="pr-10"
+                  max={new Date().toISOString().split('T')[0]}
                 />
                 <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               </div>
             </div>
+
+            {/* Meter Replaced Checkbox */}
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="meterReplaced"
+                checked={meterReplaced}
+                onCheckedChange={(checked) => setMeterReplaced(checked as boolean)}
+              />
+              <Label htmlFor="meterReplaced" className="text-sm">Meter replaced?</Label>
+            </div>
+
+            {/* Meter Replacement Fields */}
+            {meterReplaced && (
+              <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded">
+                <div>
+                  <Label className="text-sm text-gray-600">Old Meter Final *</Label>
+                  <Input 
+                    type="number"
+                    value={updateForm.oldMeterFinal}
+                    onChange={(e) => handleUpdateFormChange('oldMeterFinal', e.target.value)}
+                    className="mt-1"
+                    placeholder="Final reading"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-600">New Meter Start *</Label>
+                  <Input 
+                    type="number"
+                    value={updateForm.newMeterStart}
+                    onChange={(e) => handleUpdateFormChange('newMeterStart', e.target.value)}
+                    className="mt-1"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <Label className="text-sm text-gray-600">Comments</Label>
@@ -416,7 +692,7 @@ const RunningHours = () => {
                 onChange={(e) => handleUpdateFormChange('comments', e.target.value)}
                 className="mt-1 resize-none"
                 rows={3}
-                placeholder="Comments"
+                placeholder={meterReplaced ? "Reason for meter replacement" : "Comments"}
               />
             </div>
           </div>
@@ -438,51 +714,100 @@ const RunningHours = () => {
       {/* Bulk Update Dialog */}
       <Dialog open={isBulkUpdateOpen} onOpenChange={setIsBulkUpdateOpen}>
         <DialogContent className="w-[90vw] max-w-none h-[90vh] flex flex-col">
-          <DialogHeader className="pb-4">
+          <DialogHeader className="pb-4 space-y-3">
             <DialogTitle className="text-[#52baf3] text-xl">
               Bulk Update Running Hours
             </DialogTitle>
+            {/* Mode Toggle for Bulk Update */}
+            <div className="flex items-center space-x-4">
+              <Label className="text-sm text-gray-600">Mode:</Label>
+              <RadioGroup value={bulkUpdateMode} onValueChange={(value: any) => setBulkUpdateMode(value)} className="flex flex-row space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="setTotal" id="bulkSetTotal" />
+                  <Label htmlFor="bulkSetTotal">Set Total</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="addDelta" id="bulkAddDelta" />
+                  <Label htmlFor="bulkAddDelta">Add Delta</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </DialogHeader>
           
           <div className="flex-1 overflow-auto">
             <div className="bg-white rounded-lg border border-gray-200">
               {/* Table Header */}
               <div className="bg-[#52baf3] text-white px-4 py-3">
-                <div className="grid grid-cols-4 gap-4 text-sm font-medium">
+                <div className="grid grid-cols-5 gap-4 text-sm font-medium">
                   <div>Component Name</div>
                   <div>Previous Running Hours</div>
-                  <div>Present Running Hours</div>
+                  <div>{bulkUpdateMode === "addDelta" ? "Delta Hours" : "Present Running Hours"}</div>
+                  <div>Meter Replaced?</div>
                   <div>Status</div>
                 </div>
               </div>
 
               {/* Table Body */}
               <div className="divide-y divide-gray-200">
-                {runningHoursData.map((item) => (
-                  <div key={item.id} className="px-4 py-3">
-                    <div className="grid grid-cols-4 gap-4 text-sm items-center">
-                      <div className="text-gray-900 font-medium">{item.component}</div>
-                      <div className="text-gray-700">{item.runningHours}</div>
-                      <div className="space-y-1">
-                        <Input 
-                          type="number"
-                          value={bulkUpdateData[item.id] || ""}
-                          onChange={(e) => handleBulkUpdateChange(item.id, e.target.value)}
-                          placeholder="Enter new value"
-                          className="w-full"
-                        />
-                        {bulkUpdateErrors[item.id] && (
-                          <div className="text-red-500 text-xs">
-                            {bulkUpdateErrors[item.id]}
+                {runningHoursData.map((item) => {
+                  const updateData = bulkUpdateData[item.id] || { value: "", meterReplaced: false };
+                  return (
+                    <div key={item.id} className="px-4 py-3">
+                      <div className="grid grid-cols-5 gap-4 text-sm items-center">
+                        <div className="text-gray-900 font-medium">{item.component}</div>
+                        <div className="text-gray-700">{item.runningHours}</div>
+                        <div className="space-y-1">
+                          <Input 
+                            type="number"
+                            value={updateData.value || ""}
+                            onChange={(e) => handleBulkUpdateChange(item.id, 'value', e.target.value)}
+                            placeholder={bulkUpdateMode === "addDelta" ? "Enter delta" : "Enter new value"}
+                            className="w-full"
+                          />
+                          {bulkUpdateErrors[item.id] && (
+                            <div className="text-red-500 text-xs">
+                              {bulkUpdateErrors[item.id]}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <Checkbox 
+                            checked={updateData.meterReplaced || false}
+                            onCheckedChange={(checked) => handleBulkUpdateChange(item.id, 'meterReplaced', checked)}
+                          />
+                        </div>
+                        <div className="text-gray-500">
+                          {updateData.value && updateData.value.trim() !== "" ? "Ready to update" : "No change"}
+                        </div>
+                      </div>
+                      {/* Meter replacement fields if checkbox is checked */}
+                      {updateData.meterReplaced && (
+                        <div className="grid grid-cols-2 gap-4 mt-2 pl-10 pr-4">
+                          <div>
+                            <Label className="text-xs text-gray-600">Old Meter Final</Label>
+                            <Input 
+                              type="number"
+                              value={updateData.oldMeterFinal || ""}
+                              onChange={(e) => handleBulkUpdateChange(item.id, 'oldMeterFinal', e.target.value)}
+                              placeholder="Final reading"
+                              className="h-8 text-sm"
+                            />
                           </div>
-                        )}
-                      </div>
-                      <div className="text-gray-500">
-                        {bulkUpdateData[item.id] && bulkUpdateData[item.id].trim() !== "" ? "Ready to update" : "No change"}
-                      </div>
+                          <div>
+                            <Label className="text-xs text-gray-600">New Meter Start</Label>
+                            <Input 
+                              type="number"
+                              value={updateData.newMeterStart || ""}
+                              onChange={(e) => handleBulkUpdateChange(item.id, 'newMeterStart', e.target.value)}
+                              placeholder="0"
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
