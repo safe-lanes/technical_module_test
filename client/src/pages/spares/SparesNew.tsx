@@ -413,7 +413,6 @@ const Spares: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Search and Filters */}
       <div className="flex gap-3 items-center mb-4">
         <Select value={vesselId} onValueChange={setVesselId}>
@@ -466,12 +465,11 @@ const Spares: React.FC = () => {
           Clear
         </Button>
       </div>
-
       {/* Main Content */}
       <div className="flex gap-4 h-[calc(100%-180px)]">
         {/* Left Panel - Component Tree */}
         <div className="w-80 bg-white border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-[#004b87] text-white px-4 py-2 font-semibold">
+          <div className="text-white px-4 py-2 font-semibold bg-[#52baf3]">
             COMPONENT SEARCH
           </div>
           <div className="overflow-y-auto h-[calc(100%-40px)]">
@@ -637,7 +635,6 @@ const Spares: React.FC = () => {
           )}
         </div>
       </div>
-
       {/* Consume Modal */}
       <Dialog open={isConsumeModalOpen} onOpenChange={setIsConsumeModalOpen}>
         <DialogContent>
@@ -700,7 +697,6 @@ const Spares: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {/* Receive Modal */}
       <Dialog open={isReceiveModalOpen} onOpenChange={setIsReceiveModalOpen}>
         <DialogContent>
@@ -762,7 +758,6 @@ const Spares: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {/* Bulk Update Modal */}
       <Dialog open={isBulkUpdateModalOpen} onOpenChange={setIsBulkUpdateModalOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
