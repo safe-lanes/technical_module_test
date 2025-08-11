@@ -53,14 +53,18 @@ const RunningHours = () => {
     timestamp: number;
   } | null>(null);
 
-  // Mock data for immediate display (restoring previous dataset)
+  // Mock data matching exact original screenshot
   const mockData: RunningHoursData[] = [
-    { id: "1", component: "Main Engine", componentCode: "ME001", eqptCategory: "Propulsion System", runningHours: "12,500 hrs", lastUpdated: "01-Dec-2024", utilizationRate: null },
-    { id: "2", component: "Aux Engine 1", componentCode: "AE001", eqptCategory: "Electrical System", runningHours: "8,200 hrs", lastUpdated: "15-Nov-2024", utilizationRate: null },
-    { id: "3", component: "Aux Engine 2", componentCode: "AE002", eqptCategory: "Electrical System", runningHours: "7,800 hrs", lastUpdated: "15-Nov-2024", utilizationRate: null },
-    { id: "4", component: "Boiler", componentCode: "BL001", eqptCategory: "Steam System", runningHours: "5,400 hrs", lastUpdated: "10-Nov-2024", utilizationRate: null },
-    { id: "5", component: "Air Compressor", componentCode: "AC001", eqptCategory: "Pneumatic System", runningHours: "3,200 hrs", lastUpdated: "20-Nov-2024", utilizationRate: null },
-    { id: "6", component: "Steering Gear", componentCode: "SG001", eqptCategory: "Navigation System", runningHours: "12,500 hrs", lastUpdated: "01-Dec-2024", utilizationRate: null },
+    { id: "1", component: "Radar System", componentCode: "RS001", eqptCategory: "Navigation System", runningHours: "18,560 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
+    { id: "2", component: "Diesel Generator 1", componentCode: "DG001", eqptCategory: "Electrical System", runningHours: "15,670 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
+    { id: "3", component: "Diesel Generator 2", componentCode: "DG002", eqptCategory: "Electrical System", runningHours: "14,980 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
+    { id: "4", component: "Main Cooling Seawater Pump", componentCode: "MCSP001", eqptCategory: "Cooling System", runningHours: "12,800 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
+    { id: "5", component: "Main Engine", componentCode: "ME001", eqptCategory: "Propulsion System", runningHours: "12,580 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
+    { id: "6", component: "Propeller System", componentCode: "PS001", eqptCategory: "Propulsion System", runningHours: "12,580 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
+    { id: "7", component: "Main Lubrication Oil Pump", componentCode: "MLOP001", eqptCategory: "Lubrication System", runningHours: "12,450 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
+    { id: "8", component: "Steering Gear", componentCode: "SG001", eqptCategory: "Navigation System", runningHours: "11,240 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
+    { id: "9", component: "Main Air Compressor", componentCode: "MAC001", eqptCategory: "Air System", runningHours: "10,840 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
+    { id: "10", component: "Bow Thruster", componentCode: "BT001", eqptCategory: "Propulsion System", runningHours: "10,450 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
   ];
   
   const [runningHoursData, setRunningHoursData] = useState<RunningHoursData[]>(mockData);
