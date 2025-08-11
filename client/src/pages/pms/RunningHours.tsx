@@ -9,12 +9,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, FileSpreadsheet, Calendar } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { getComponentCategory } from "@/utils/componentUtils";
 
 interface RunningHoursData {
   id: string;
   component: string;
   componentCode?: string;
-  eqptCategory: string;
+  componentCategory: string;
   runningHours: string;
   lastUpdated: string;
   utilizationRate?: number | null;
@@ -53,18 +54,19 @@ const RunningHours = () => {
     timestamp: number;
   } | null>(null);
 
-  // Mock data matching exact original screenshot
+  // Mock data with Component Category derived from tree structure
+  // These component codes map to tree positions for category derivation
   const mockData: RunningHoursData[] = [
-    { id: "1", component: "Radar System", componentCode: "RS001", eqptCategory: "Navigation System", runningHours: "18,560 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
-    { id: "2", component: "Diesel Generator 1", componentCode: "DG001", eqptCategory: "Electrical System", runningHours: "15,670 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
-    { id: "3", component: "Diesel Generator 2", componentCode: "DG002", eqptCategory: "Electrical System", runningHours: "14,980 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
-    { id: "4", component: "Main Cooling Seawater Pump", componentCode: "MCSP001", eqptCategory: "Cooling System", runningHours: "12,800 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
-    { id: "5", component: "Main Engine", componentCode: "ME001", eqptCategory: "Propulsion System", runningHours: "12,580 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
-    { id: "6", component: "Propeller System", componentCode: "PS001", eqptCategory: "Propulsion System", runningHours: "12,580 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
-    { id: "7", component: "Main Lubrication Oil Pump", componentCode: "MLOP001", eqptCategory: "Lubrication System", runningHours: "12,450 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
-    { id: "8", component: "Steering Gear", componentCode: "SG001", eqptCategory: "Navigation System", runningHours: "11,240 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
-    { id: "9", component: "Main Air Compressor", componentCode: "MAC001", eqptCategory: "Air System", runningHours: "10,840 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
-    { id: "10", component: "Bow Thruster", componentCode: "BT001", eqptCategory: "Propulsion System", runningHours: "10,450 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
+    { id: "1", component: "Radar System", componentCode: "4.1.1", componentCategory: getComponentCategory("4.1.1"), runningHours: "18,560 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
+    { id: "2", component: "Diesel Generator 1", componentCode: "7.2.1", componentCategory: getComponentCategory("7.2.1"), runningHours: "15,670 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
+    { id: "3", component: "Diesel Generator 2", componentCode: "7.2.2", componentCategory: getComponentCategory("7.2.2"), runningHours: "14,980 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
+    { id: "4", component: "Main Cooling Seawater Pump", componentCode: "8.3.1", componentCategory: getComponentCategory("8.3.1"), runningHours: "12,800 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
+    { id: "5", component: "Main Engine", componentCode: "6.1.1", componentCategory: getComponentCategory("6.1.1"), runningHours: "12,580 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
+    { id: "6", component: "Propeller System", componentCode: "6.2.1", componentCategory: getComponentCategory("6.2.1"), runningHours: "12,580 hrs", lastUpdated: "02-Jun-2025", utilizationRate: null },
+    { id: "7", component: "Main Lubrication Oil Pump", componentCode: "7.3.1", componentCategory: getComponentCategory("7.3.1"), runningHours: "12,450 hrs", lastUpdated: "09-Jun-2025", utilizationRate: null },
+    { id: "8", component: "Steering Gear", componentCode: "4.3.1", componentCategory: getComponentCategory("4.3.1"), runningHours: "11,240 hrs", lastUpdated: "16-Jun-2025", utilizationRate: null },
+    { id: "9", component: "Main Air Compressor", componentCode: "8.1.1", componentCategory: getComponentCategory("8.1.1"), runningHours: "10,840 hrs", lastUpdated: "23-Jun-2025", utilizationRate: null },
+    { id: "10", component: "Bow Thruster", componentCode: "6.3.1", componentCategory: getComponentCategory("6.3.1"), runningHours: "10,450 hrs", lastUpdated: "30-Jun-2025", utilizationRate: null },
   ];
   
   const [runningHoursData, setRunningHoursData] = useState<RunningHoursData[]>(mockData);
@@ -208,7 +210,7 @@ const RunningHours = () => {
       "Vessel",
       "Component",
       "Component Code",
-      "Eqpt. Category",
+      "Component Category",
       "Running Hours (cumulative)",
       "Last Updated (local)",
       "Utilization Rate (hrs/day)",
@@ -220,7 +222,7 @@ const RunningHours = () => {
       vesselId,
       item.component,
       item.componentCode || "",
-      item.eqptCategory,
+      item.componentCategory,
       item.runningHours.replace(" hrs", ""),
       item.lastUpdated,
       item.utilizationRate !== null ? item.utilizationRate.toString() : "",
@@ -519,7 +521,7 @@ const RunningHours = () => {
         <div className="bg-[#52baf3] text-white px-4 py-3">
           <div className="grid grid-cols-7 gap-4 text-sm font-medium">
             <div>Component</div>
-            <div>Eqpt. Category</div>
+            <div>Component Category</div>
             <div>Running Hours</div>
             <div>last Updated</div>
             <div>Utilization Rate</div>
@@ -546,7 +548,7 @@ const RunningHours = () => {
               <div key={item.id} className="px-4 py-3 hover:bg-gray-50">
               <div className="grid grid-cols-7 gap-4 text-sm items-center">
                 <div className="text-gray-900">{item.component}</div>
-                <div className="text-gray-700">{item.eqptCategory}</div>
+                <div className="text-gray-700">{item.componentCategory}</div>
                 <div className="text-gray-900 font-medium">{item.runningHours}</div>
                 <div className="text-gray-700">{item.lastUpdated}</div>
                 <div className="text-gray-700" title="Computed from last 30 days of RH entries">
