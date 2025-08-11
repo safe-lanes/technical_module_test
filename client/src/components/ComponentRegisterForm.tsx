@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Plus, Upload, Eye, Trash2, Edit3, X, ChevronRight, ChevronDown, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getComponentCategory } from "@/utils/componentUtils";
 
 interface ComponentNode {
   id: string;
@@ -671,15 +672,12 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Eqpt / System Category</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <Label className="text-sm text-[#8798ad]">Component Category</Label>
                       <Input 
-                        value={componentData.equipmentCategory}
-                        onChange={(e) => handleInputChange('equipmentCategory', e.target.value)}
-                        className="border-[#52baf3] border-2 focus:border-[#52baf3]"
+                        value={selectedNode ? getComponentCategory(selectedNode.id) : ''}
+                        readOnly
+                        className="border-gray-300 bg-gray-50"
+                        title="Component Category is derived from the component's tree position"
                       />
                     </div>
                     <div className="space-y-2">

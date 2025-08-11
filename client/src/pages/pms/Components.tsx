@@ -8,6 +8,7 @@ import ComponentRegisterForm from "@/components/ComponentRegisterForm";
 import WorkOrderForm from "@/components/WorkOrderForm";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
 import { useLocation } from "wouter";
+import { getComponentCategory } from "@/utils/componentUtils";
 import {
   Select,
   SelectContent,
@@ -296,13 +297,16 @@ const dummyComponents: ComponentNode[] = [
 const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
   const { isChangeRequestMode } = useChangeRequest();
 
+  // Derive Component Category from the component's tree position
+  const componentCategory = selectedComponent ? getComponentCategory(selectedComponent.id) : '';
+
   // Component data - uses selected component code or defaults
   const componentData = {
     maker: "MAN Energy Solutions",
     model: "6S60MC-C",
     serialNo: "12345",
     department: "Engine",
-    equipmentCategory: "Main Engine",
+    componentCategory: componentCategory, // Derived from tree
     componentCode: selectedComponent?.code || "6.1.1",  // Use selected component's code
     critical: "Yes",
     classItem: "Yes",
@@ -355,9 +359,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
           </div>
         </div>
         <div>
-          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Equipment Category</label>
+          <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Component Category</label>
           <div className="text-sm text-gray-900">
-            {componentData.equipmentCategory}
+            {componentData.componentCategory}
           </div>
         </div>
         <div>
