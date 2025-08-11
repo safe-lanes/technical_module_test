@@ -44,6 +44,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   
   // Check if we're in execution mode (Part B)
   const executionMode = workOrder?.executionMode === true;
+  
+  // Check if form should be read-only (when status is Pending Approval, Approved, or Rejected for non-approvers)
+  const isReadOnly = workOrder?.status === "Pending Approval" || workOrder?.status === "Approved";
 
   // Template data (Part A)
   const [templateData, setTemplateData] = useState({
@@ -339,7 +342,19 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
       if (onSubmit) {
         const workOrderId = workOrder?.id || `new-${Date.now()}`;
-        onSubmit(workOrderId, { type: 'execution', data: executionData });
+        const executionRecord = {
+          ...templateData,
+          ...executionData,
+          woExecutionId: executionData.woExecutionId || generateWOExecutionId(),
+          templateCode: templateData.woTemplateCode || workOrder?.templateCode,
+          submittedDate: new Date().toISOString().split('T')[0]
+        };
+        onSubmit(workOrderId, { type: 'execution', data: executionRecord });
+        
+        toast({
+          title: "Success",
+          description: "Work Order submitted for approval",
+        });
       }
     }
     onClose();

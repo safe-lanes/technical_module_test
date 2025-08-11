@@ -22,17 +22,22 @@ interface PostponeWorkOrderDialogProps {
   isOpen: boolean;
   onClose: () => void;
   workOrder: {
-    workOrderNo: string;
+    id?: string;
+    workOrderNo?: string;
+    templateCode?: string;
     component: string;
     jobTitle: string;
     dueDate: string;
+    assignedTo?: string;
   } | null;
+  onConfirm?: (workOrderId: string, postponeData: any) => void;
 }
 
 const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
   isOpen,
   onClose,
   workOrder,
+  onConfirm,
 }) => {
   const [formData, setFormData] = useState({
     workOrderId: "",
@@ -51,12 +56,12 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
   React.useEffect(() => {
     if (workOrder) {
       setFormData({
-        workOrderId: workOrder.workOrderNo,
+        workOrderId: workOrder.templateCode || workOrder.workOrderNo || "",
         component: workOrder.component,
         jobTitle: workOrder.jobTitle,
         originalDueDate: workOrder.dueDate,
         reasonForPostponement: "",
-        authorizedBy: "",
+        authorizedBy: "Chief Engineer",
         approvalRemarks: "",
         nextDueDate: "",
         durationOfPostponement: "5 Days",
@@ -67,8 +72,16 @@ const PostponeWorkOrderDialog: React.FC<PostponeWorkOrderDialogProps> = ({
   }, [workOrder]);
 
   const handleSubmit = () => {
-    // Handle form submission
-    console.log("Postpone work order:", formData);
+    if (onConfirm && workOrder) {
+      onConfirm(workOrder.id || "", {
+        nextDueDate: formData.nextDueDate,
+        reason: formData.reasonForPostponement,
+        authorizedBy: formData.authorizedBy,
+        duration: formData.durationOfPostponement,
+        approvalRemarks: formData.approvalRemarks,
+        attachDocument: formData.attachDocument
+      });
+    }
     onClose();
   };
 

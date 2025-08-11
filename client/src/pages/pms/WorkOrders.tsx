@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Pen, Clock } from "lucide-react";
+import { Search, Plus, Pen, Timer } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,16 +19,21 @@ interface WorkOrder {
   componentCode?: string;
   workOrderNo: string;
   templateCode?: string;
+  executionId?: string;
   jobTitle: string;
   assignedTo: string;
   dueDate: string;
   status: string;
   dateCompleted?: string;
+  submittedDate?: string;
   formData?: any;
   taskType?: string;
   maintenanceBasis?: string;
   frequencyValue?: string;
   frequencyUnit?: string;
+  approverRemarks?: string;
+  isExecution?: boolean;
+  templateId?: string;
 }
 
 // Helper function to generate template code
@@ -251,39 +256,87 @@ const WorkOrders: React.FC = () => {
   const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
   const [unplannedWorkOrderFormOpen, setUnplannedWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
-  const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(initialWorkOrders);
+  
+  // Backfill templateCode for existing work orders if missing
+  const backfilledWorkOrders = initialWorkOrders.map(wo => {
+    if (!wo.templateCode && wo.componentCode && wo.taskType) {
+      const templateCode = generateTemplateCode(
+        wo.componentCode,
+        wo.taskType,
+        wo.maintenanceBasis || "Calendar",
+        wo.frequencyValue || "",
+        wo.frequencyUnit
+      );
+      return { ...wo, templateCode };
+    }
+    return wo;
+  });
+  
+  const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(backfilledWorkOrders);
 
   const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
-    setWorkOrdersList(prev => 
-      prev.map(wo => 
-        wo.id === workOrderId 
-          ? { 
-              ...wo, 
-              status: "Pending Approval",
-              formData: formData,
-              ...(formData && {
-                jobTitle: formData.jobTitle || wo.jobTitle,
-                component: formData.component || wo.component,
-                assignedTo: formData.assignedTo || wo.assignedTo
-              })
-            }
-          : wo
-      )
-    );
-    setActiveTab("Pending Approval");
+    if (formData?.type === 'execution') {
+      // Generate execution ID
+      const year = new Date().getFullYear();
+      const templateCode = formData.data.templateCode || formData.data.woTemplateCode;
+      
+      // Find existing executions for this template to get the next sequence number
+      const existingExecutions = workOrdersList.filter(wo => 
+        wo.isExecution && wo.templateId === workOrderId && 
+        wo.executionId?.startsWith(`${year}-${templateCode}`)
+      );
+      const sequence = String(existingExecutions.length + 1).padStart(2, '0');
+      const executionId = `${year}-${templateCode}-${sequence}`;
+      
+      // Create new execution record
+      const executionRecord: WorkOrder = {
+        id: `exec-${Date.now()}`,
+        component: formData.data.component,
+        componentCode: formData.data.componentCode,
+        workOrderNo: executionId,
+        templateCode: templateCode,
+        executionId: executionId,
+        jobTitle: formData.data.jobTitle,
+        assignedTo: formData.data.assignedTo,
+        dueDate: formData.data.dueDate || "",
+        status: "Pending Approval",
+        submittedDate: new Date().toISOString().split('T')[0],
+        formData: formData.data,
+        isExecution: true,
+        templateId: workOrderId
+      };
+      
+      setWorkOrdersList(prev => [...prev, executionRecord]);
+      setActiveTab("Pending Approval");
+    } else if (formData?.type === 'template') {
+      // Update template
+      setWorkOrdersList(prev => 
+        prev.map(wo => 
+          wo.id === workOrderId 
+            ? { 
+                ...wo, 
+                ...formData.data,
+                templateCode: formData.data.woTemplateCode || formData.data.templateCode || wo.templateCode
+              }
+            : wo
+        )
+      );
+    }
   };
 
   const tabs = [
-    { id: "All W.O", label: "All W.O", count: workOrdersList.length },
-    { id: "Due", label: "Due", count: workOrdersList.filter(wo => wo.status === "Due").length },
-    { id: "Pending Approval", label: "Pending Approval", count: workOrdersList.filter(wo => wo.status === "Pending Approval").length },
-    { id: "Overdue", label: "Overdue", count: workOrdersList.filter(wo => wo.status === "Overdue").length },
-    { id: "Completed", label: "Completed", count: workOrdersList.filter(wo => wo.status === "Completed").length }
+    { id: "All W.O", label: "All W.O", count: workOrdersList.filter(wo => !wo.isExecution).length },
+    { id: "Due", label: "Due", count: workOrdersList.filter(wo => !wo.isExecution && (wo.status === "Due" || wo.status.includes("Grace"))).length },
+    { id: "Pending Approval", label: "Pending Approval", count: workOrdersList.filter(wo => wo.isExecution && wo.status === "Pending Approval").length },
+    { id: "Overdue", label: "Overdue", count: workOrdersList.filter(wo => !wo.isExecution && wo.status === "Overdue").length },
+    { id: "Completed", label: "Completed", count: workOrdersList.filter(wo => (!wo.isExecution && wo.status === "Completed") || (wo.isExecution && wo.status === "Approved")).length }
   ];
 
   const getStatusBadgeColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
+        return "bg-green-100 text-green-800";
+      case "approved":
         return "bg-green-100 text-green-800";
       case "due":
         return "bg-yellow-100 text-yellow-800";
@@ -295,22 +348,38 @@ const WorkOrders: React.FC = () => {
         return "bg-blue-100 text-blue-800";
       case "pending approval":
         return "bg-purple-100 text-purple-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
+      case "draft":
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
   const filteredWorkOrders = workOrdersList.filter(wo => {
-    if (activeTab !== "All W.O") {
-      if (activeTab === "Due" && wo.status !== "Due") return false;
-      if (activeTab === "Overdue" && wo.status !== "Overdue") return false;
-      if (activeTab === "Completed" && wo.status !== "Completed") return false;
-      if (activeTab === "Pending Approval" && wo.status !== "Pending Approval") return false;
+    if (activeTab === "All W.O") {
+      // Show only templates, not executions
+      if (wo.isExecution) return false;
+    } else if (activeTab === "Due") {
+      if (wo.isExecution) return false;
+      if (wo.status !== "Due" && !wo.status.includes("Grace")) return false;
+    } else if (activeTab === "Overdue") {
+      if (wo.isExecution) return false;
+      if (wo.status !== "Overdue") return false;
+    } else if (activeTab === "Completed") {
+      // Show both completed templates and approved executions
+      if (!wo.isExecution && wo.status !== "Completed") return false;
+      if (wo.isExecution && wo.status !== "Approved") return false;
+    } else if (activeTab === "Pending Approval") {
+      // Show only execution records with Pending Approval status
+      if (!wo.isExecution || wo.status !== "Pending Approval") return false;
     }
     
     if (searchTerm && !wo.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) && 
         !wo.workOrderNo.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !(wo.templateCode && wo.templateCode.toLowerCase().includes(searchTerm.toLowerCase()))) {
+        !(wo.templateCode && wo.templateCode.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        !(wo.executionId && wo.executionId.toLowerCase().includes(searchTerm.toLowerCase()))) {
       return false;
     }
     
@@ -325,6 +394,30 @@ const WorkOrders: React.FC = () => {
   const handleWorkOrderClick = (workOrder: WorkOrder) => {
     setSelectedWorkOrder(workOrder);
     setWorkOrderFormOpen(true);
+  };
+
+  const handlePencilClick = (workOrder: WorkOrder) => {
+    setSelectedWorkOrder(workOrder);
+    setWorkOrderFormOpen(true);
+  };
+
+  const handleTimerClick = (workOrder: WorkOrder) => {
+    setSelectedWorkOrder(workOrder);
+    setPostponeDialogOpen(true);
+  };
+
+  const handlePostponeConfirm = (workOrderId: string, postponeData: any) => {
+    setWorkOrdersList(prev => 
+      prev.map(wo => 
+        wo.id === workOrderId 
+          ? { 
+              ...wo, 
+              status: "Postponed",
+              dueDate: postponeData.nextDueDate || wo.dueDate
+            }
+          : wo
+      )
+    );
   };
 
   const handleAddWorkOrderClick = () => {
@@ -464,50 +557,76 @@ const WorkOrders: React.FC = () => {
           <thead className="bg-[#52baf3] text-white sticky top-0">
             <tr>
               <th className="text-left py-3 px-4 font-medium">Component</th>
-              <th className="text-left py-3 px-4 font-medium">Work Order No</th>
+              <th className="text-left py-3 px-4 font-medium">
+                {activeTab === "Pending Approval" ? "WO Execution ID" : "Work Order No"}
+              </th>
+              {activeTab === "Pending Approval" && (
+                <th className="text-left py-3 px-4 font-medium">WO Template Code</th>
+              )}
               <th className="text-left py-3 px-4 font-medium">Job Title</th>
               <th className="text-left py-3 px-4 font-medium">Assigned to</th>
-              <th className="text-left py-3 px-4 font-medium">Due Date</th>
+              <th className="text-left py-3 px-4 font-medium">
+                {activeTab === "Pending Approval" ? "Submitted Date" : "Due Date"}
+              </th>
               <th className="text-left py-3 px-4 font-medium">Status</th>
-              <th className="text-left py-3 px-4 font-medium">Date Completed</th>
+              {activeTab !== "Pending Approval" && (
+                <th className="text-left py-3 px-4 font-medium">Date Completed</th>
+              )}
               <th className="text-center py-3 px-4 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredWorkOrders.map((workOrder, index) => (
-              <tr key={workOrder.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+              <tr 
+                key={workOrder.id} 
+                className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} cursor-pointer hover:bg-gray-100`}
+                onClick={() => handleWorkOrderClick(workOrder)}
+              >
                 <td className="py-3 px-4 text-gray-900">{workOrder.component}</td>
-                <td 
-                  className="py-3 px-4 text-blue-600 hover:text-blue-800 cursor-pointer"
-                  onClick={() => handleWorkOrderClick(workOrder)}
-                >
-                  {workOrder.templateCode || workOrder.workOrderNo}
+                <td className="py-3 px-4 text-blue-600 hover:text-blue-800">
+                  {activeTab === "Pending Approval" && workOrder.executionId 
+                    ? workOrder.executionId 
+                    : workOrder.templateCode || workOrder.workOrderNo}
                 </td>
+                {activeTab === "Pending Approval" && (
+                  <td className="py-3 px-4 text-gray-900">{workOrder.templateCode}</td>
+                )}
                 <td className="py-3 px-4 text-gray-900">{workOrder.jobTitle}</td>
                 <td className="py-3 px-4 text-gray-900">{workOrder.assignedTo}</td>
-                <td className="py-3 px-4 text-gray-900">{workOrder.dueDate}</td>
+                <td className="py-3 px-4 text-gray-900">
+                  {activeTab === "Pending Approval" && workOrder.submittedDate 
+                    ? workOrder.submittedDate 
+                    : workOrder.dueDate}
+                </td>
                 <td className="py-3 px-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(workOrder.status)}`}>
                     {workOrder.status}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-gray-900">{workOrder.dateCompleted || ""}</td>
+                {activeTab !== "Pending Approval" && (
+                  <td className="py-3 px-4 text-gray-900">{workOrder.dateCompleted || ""}</td>
+                )}
                 <td className="py-3 px-4">
                   <div className="flex items-center justify-center gap-2">
                     <button 
                       className="p-1 hover:bg-gray-200 rounded"
-                      onClick={() => handleWorkOrderClick(workOrder)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePencilClick(workOrder);
+                      }}
+                      title="Edit Template"
                     >
                       <Pen className="h-4 w-4 text-gray-600" />
                     </button>
                     <button 
                       className="p-1 hover:bg-gray-200 rounded"
-                      onClick={() => {
-                        setSelectedWorkOrder({...workOrder, executionMode: true});
-                        setWorkOrderFormOpen(true);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTimerClick(workOrder);
                       }}
+                      title="Postpone Work Order"
                     >
-                      <Clock className="h-4 w-4 text-gray-600" />
+                      <Timer className="h-4 w-4 text-gray-600" />
                     </button>
                   </div>
                 </td>
@@ -527,6 +646,7 @@ const WorkOrders: React.FC = () => {
         isOpen={postponeDialogOpen}
         onClose={() => setPostponeDialogOpen(false)}
         workOrder={selectedWorkOrder}
+        onConfirm={handlePostponeConfirm}
       />
 
       {/* Work Order Form */}
