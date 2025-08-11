@@ -165,18 +165,44 @@ export class MemStorage implements IStorage {
     });
   }
 
+  // Generate Component Spare Code
+  private generateComponentSpareCode(vesselId: string, componentCode: string): string {
+    // Get all existing spares for this component in this vessel
+    const existingSpares = Array.from(this.spares.values())
+      .filter(s => s.vesselId === vesselId && s.componentCode === componentCode && s.componentSpareCode)
+      .map(s => s.componentSpareCode);
+    
+    // Extract existing sequence numbers for this component
+    const prefix = `SP-${componentCode}-`;
+    const existingNumbers = existingSpares
+      .filter(code => code?.startsWith(prefix))
+      .map(code => {
+        const parts = code!.split('-');
+        const nnn = parts[parts.length - 1];
+        return parseInt(nnn, 10);
+      })
+      .filter(n => !isNaN(n));
+    
+    // Find the next available number
+    const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    
+    // Format with zero padding
+    const nnn = String(nextNumber).padStart(3, '0');
+    return `${prefix}${nnn}`;
+  }
+
   private initializeSpares() {
     const sampleSpares: Spare[] = [
-      { id: 1, partCode: "SP-ME-001", partName: "Fuel Injector", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
-      { id: 2, partCode: "SP-ME-002", partName: "Cylinder Head Gasket", componentId: "6.1.1", componentCode: "6.1.1", componentName: "Cylinder Head", critical: "No", rob: 2, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
-      { id: 3, partCode: "SP-ME-003", partName: "Piston Ring Set", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", critical: "No", rob: 3, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
-      { id: 4, partCode: "SP-ME-004", partName: "Main Bearing", componentId: "6.1.2", componentCode: "6.1.2", componentName: "Main Bearings", critical: "Critical", rob: 4, min: 2, location: "Store Room C", vesselId: "V001", deleted: false },
-      { id: 5, partCode: "SP-COOL-001", partName: "Cooling Pump Seal", componentId: "7.3", componentCode: "7.3", componentName: "Cooling Water System", critical: "Critical", rob: 4, min: 2, location: "Store Room D", vesselId: "V001", deleted: false },
-      { id: 6, partCode: "SP-CC-001", partName: "Cylinder Cover Assembly", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
-      { id: 7, partCode: "SP-CC-002", partName: "Inlet Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
-      { id: 8, partCode: "SP-CC-003", partName: "Exhaust Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
-      { id: 9, partCode: "SP-CC-004", partName: "Valve Spring", componentId: "6.1.1.2", componentCode: "6.1.1.2", componentName: "Injector Sleeve", critical: "No", rob: 8, min: 4, location: "Store Room B", vesselId: "V001", deleted: false },
-      { id: 10, partCode: "SP-CC-005", partName: "Valve Guide", componentId: "6.1.1.3", componentCode: "6.1.1.3", componentName: "Rocker Arm", critical: "No", rob: 1, min: 2, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 1, partCode: "SP-ME-001", partName: "Fuel Injector", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", componentSpareCode: "SP-6.1-001", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 2, partCode: "SP-ME-002", partName: "Cylinder Head Gasket", componentId: "6.1.1", componentCode: "6.1.1", componentName: "Cylinder Head", componentSpareCode: "SP-6.1.1-001", critical: "No", rob: 2, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 3, partCode: "SP-ME-003", partName: "Piston Ring Set", componentId: "6.1", componentCode: "6.1", componentName: "Main Engine", componentSpareCode: "SP-6.1-002", critical: "No", rob: 3, min: 1, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 4, partCode: "SP-ME-004", partName: "Main Bearing", componentId: "6.1.2", componentCode: "6.1.2", componentName: "Main Bearings", componentSpareCode: "SP-6.1.2-001", critical: "Critical", rob: 4, min: 2, location: "Store Room C", vesselId: "V001", deleted: false },
+      { id: 5, partCode: "SP-COOL-001", partName: "Cooling Pump Seal", componentId: "7.3", componentCode: "7.3", componentName: "Cooling Water System", componentSpareCode: "SP-7.3-001", critical: "Critical", rob: 4, min: 2, location: "Store Room D", vesselId: "V001", deleted: false },
+      { id: 6, partCode: "SP-CC-001", partName: "Cylinder Cover Assembly", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", componentSpareCode: "SP-6.1.1.1-001", critical: "Critical", rob: 2, min: 1, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 7, partCode: "SP-CC-002", partName: "Inlet Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", componentSpareCode: "SP-6.1.1.1-002", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 8, partCode: "SP-CC-003", partName: "Exhaust Valve", componentId: "6.1.1.1", componentCode: "6.1.1.1", componentName: "Valve Seats", componentSpareCode: "SP-6.1.1.1-003", critical: "Critical", rob: 4, min: 2, location: "Store Room A", vesselId: "V001", deleted: false },
+      { id: 9, partCode: "SP-CC-004", partName: "Valve Spring", componentId: "6.1.1.2", componentCode: "6.1.1.2", componentName: "Injector Sleeve", componentSpareCode: "SP-6.1.1.2-001", critical: "No", rob: 8, min: 4, location: "Store Room B", vesselId: "V001", deleted: false },
+      { id: 10, partCode: "SP-CC-005", partName: "Valve Guide", componentId: "6.1.1.3", componentCode: "6.1.1.3", componentName: "Rocker Arm", componentSpareCode: "SP-6.1.1.3-001", critical: "No", rob: 1, min: 2, location: "Store Room B", vesselId: "V001", deleted: false },
     ];
     
     sampleSpares.forEach(spare => this.spares.set(spare.id, spare));
@@ -196,7 +222,17 @@ export class MemStorage implements IStorage {
 
   async createSpare(spare: InsertSpare): Promise<Spare> {
     const id = this.currentSpareId++;
-    const newSpare: Spare = { ...spare, id, deleted: false };
+    
+    // Generate component spare code if not provided
+    const componentSpareCode = spare.componentSpareCode || 
+      (spare.componentCode ? this.generateComponentSpareCode(spare.vesselId, spare.componentCode) : null);
+    
+    const newSpare: Spare = { 
+      ...spare, 
+      id, 
+      componentSpareCode,
+      deleted: false 
+    };
     this.spares.set(id, newSpare);
     
     // Create history entry
@@ -209,7 +245,8 @@ export class MemStorage implements IStorage {
       componentId: spare.componentId,
       componentCode: spare.componentCode || null,
       componentName: spare.componentName,
-      eventType: 'CREATE',
+      componentSpareCode: componentSpareCode,
+      eventType: 'LINK_CREATED',
       qtyChange: spare.rob,
       robAfter: spare.rob,
       userId: 'system',
@@ -239,6 +276,7 @@ export class MemStorage implements IStorage {
         componentId: spare.componentId,
         componentCode: spare.componentCode || null,
         componentName: spare.componentName,
+        componentSpareCode: spare.componentSpareCode || null,
         eventType: 'EDIT',
         qtyChange: data.rob - spare.rob,
         robAfter: data.rob,
@@ -282,6 +320,7 @@ export class MemStorage implements IStorage {
       componentId: spare.componentId,
       componentCode: spare.componentCode || null,
       componentName: spare.componentName,
+      componentSpareCode: spare.componentSpareCode || null,
       eventType: 'CONSUME',
       qtyChange: -quantity,
       robAfter: spare.rob,
@@ -312,6 +351,7 @@ export class MemStorage implements IStorage {
       componentId: spare.componentId,
       componentCode: spare.componentCode || null,
       componentName: spare.componentName,
+      componentSpareCode: spare.componentSpareCode || null,
       eventType: 'RECEIVE',
       qtyChange: quantity,
       robAfter: spare.rob,
@@ -355,6 +395,7 @@ export class MemStorage implements IStorage {
           componentId: spare.componentId,
           componentCode: spare.componentCode || null,
           componentName: spare.componentName,
+          componentSpareCode: spare.componentSpareCode || null,
           eventType: 'ADJUST',
           qtyChange: netChange,
           robAfter: spare.rob,

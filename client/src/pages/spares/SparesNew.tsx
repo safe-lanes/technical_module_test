@@ -18,6 +18,7 @@ interface Spare {
   componentId: string;
   componentCode?: string;
   componentName: string;
+  componentSpareCode?: string;
   critical: string;
   rob: number;
   min: number;
@@ -36,6 +37,7 @@ interface SpareHistory {
   componentId: string;
   componentCode?: string;
   componentName: string;
+  componentSpareCode?: string;
   eventType: string;
   qtyChange: number;
   robAfter: number;
@@ -64,6 +66,15 @@ const Spares: React.FC = () => {
   const [consumeForm, setConsumeForm] = useState({ quantity: "", date: "", workOrder: "", remarks: "" });
   const [receiveForm, setReceiveForm] = useState({ quantity: "", date: "", supplier: "", remarks: "" });
   const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
+  const [addSpareForm, setAddSpareForm] = useState({
+    partCode: "",
+    partName: "",
+    componentId: "",
+    critical: "No",
+    rob: "",
+    min: "",
+    location: ""
+  });
   
   const { toast } = useToast();
 
@@ -125,6 +136,34 @@ const Spares: React.FC = () => {
       toast({ 
         title: "Error", 
         description: error.message || "Failed to receive spare",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Create spare mutation
+  const createSpareMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('/api/spares', 'POST', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
+      toast({ title: "Success", description: "Spare created successfully" });
+      setIsAddSpareModalOpen(false);
+      setAddSpareForm({
+        partCode: "",
+        partName: "",
+        componentId: "",
+        critical: "No",
+        rob: "",
+        min: "",
+        location: ""
+      });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to create spare",
         variant: "destructive"
       });
     }
@@ -314,6 +353,44 @@ const Spares: React.FC = () => {
     }));
   };
 
+  // Handle add spare submit
+  const handleAddSpareSubmit = () => {
+    if (!addSpareForm.partCode || !addSpareForm.partName || !addSpareForm.componentId) {
+      toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
+    
+    const rob = parseInt(addSpareForm.rob) || 0;
+    const min = parseInt(addSpareForm.min) || 0;
+    
+    // Find the component for getting the name
+    const findComponent = (nodes: ComponentNode[]): ComponentNode | null => {
+      for (const node of nodes) {
+        if (node.id === addSpareForm.componentId) return node;
+        if (node.children) {
+          const found = findComponent(node.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    const component = findComponent(componentTree);
+    
+    createSpareMutation.mutate({
+      partCode: addSpareForm.partCode,
+      partName: addSpareForm.partName,
+      componentId: addSpareForm.componentId,
+      componentCode: component?.code || undefined,
+      componentName: component?.name || "Unknown",
+      critical: addSpareForm.critical,
+      rob,
+      min,
+      location: addSpareForm.location || undefined,
+      vesselId
+    });
+  };
+
   // Save bulk updates
   const saveBulkUpdates = () => {
     const updates = Object.entries(bulkUpdateData)
@@ -483,10 +560,11 @@ const Spares: React.FC = () => {
             <>
               {/* Inventory Table Header */}
               <div className="px-4 py-3 border-b border-gray-200 bg-[#52baf3]">
-                <div className="grid grid-cols-9 gap-4 text-sm font-semibold text-[#ffffff]">
+                <div className="grid grid-cols-10 gap-4 text-sm font-semibold text-[#ffffff]">
                   <div className="text-[#ffffff]">Part Code</div>
                   <div>Part Name</div>
                   <div>Component</div>
+                  <div>Spare Code</div>
                   <div>Critical</div>
                   <div className="text-center">ROB</div>
                   <div className="text-center">Min</div>
@@ -507,10 +585,11 @@ const Spares: React.FC = () => {
                 ) : (
                   filteredSpares.map((spare) => (
                     <div key={spare.id} className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
-                      <div className="grid grid-cols-9 gap-4 text-sm items-center">
+                      <div className="grid grid-cols-10 gap-4 text-sm items-center">
                         <div className="text-gray-900">{spare.partCode}</div>
                         <div className="text-gray-700">{spare.partName}</div>
                         <div className="text-gray-700">{spare.componentName}</div>
+                        <div className="text-blue-600 font-medium">{spare.componentSpareCode || '-'}</div>
                         <div>
                           <span className={`px-2 py-1 rounded text-xs ${
                             spare.critical === 'Critical' || spare.critical === 'Yes' 
@@ -580,11 +659,12 @@ const Spares: React.FC = () => {
             <>
               {/* History Table Header */}
               <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
-                <div className="grid grid-cols-8 gap-4 text-sm font-semibold text-gray-700">
+                <div className="grid grid-cols-9 gap-4 text-sm font-semibold text-gray-700">
                   <div>Date/Time</div>
                   <div>Part Code</div>
                   <div>Part Name</div>
                   <div>Component</div>
+                  <div>Spare Code</div>
                   <div>Event</div>
                   <div className="text-center">Qty Change</div>
                   <div className="text-center">ROB After</div>
@@ -601,13 +681,14 @@ const Spares: React.FC = () => {
                 ) : (
                   historyData.map((history: SpareHistory) => (
                     <div key={history.id} className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
-                      <div className="grid grid-cols-8 gap-4 text-sm items-center">
+                      <div className="grid grid-cols-9 gap-4 text-sm items-center">
                         <div className="text-gray-900">
                           {format(new Date(history.timestampUTC), 'dd-MMM-yyyy HH:mm')}
                         </div>
                         <div className="text-gray-700">{history.partCode}</div>
                         <div className="text-gray-700">{history.partName}</div>
                         <div className="text-gray-700">{history.componentName}</div>
+                        <div className="text-blue-600 font-medium">{history.componentSpareCode || '-'}</div>
                         <div>
                           <span className={`px-2 py-1 rounded text-xs ${
                             history.eventType === 'CONSUME' 
@@ -816,6 +897,140 @@ const Spares: React.FC = () => {
             </Button>
             <Button onClick={saveBulkUpdates} disabled={bulkUpdateMutation.isPending}>
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add Spare Modal */}
+      <Dialog open={isAddSpareModalOpen} onOpenChange={setIsAddSpareModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Spare</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="add-part-code">Part Code *</Label>
+                <Input
+                  id="add-part-code"
+                  value={addSpareForm.partCode}
+                  onChange={(e) => setAddSpareForm({...addSpareForm, partCode: e.target.value})}
+                  placeholder="e.g., SP-ME-001"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="add-part-name">Part Name *</Label>
+                <Input
+                  id="add-part-name"
+                  value={addSpareForm.partName}
+                  onChange={(e) => setAddSpareForm({...addSpareForm, partName: e.target.value})}
+                  placeholder="e.g., Fuel Injector"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="add-component">Linked Component *</Label>
+              <Select value={addSpareForm.componentId} onValueChange={(value) => setAddSpareForm({...addSpareForm, componentId: value})}>
+                <SelectTrigger id="add-component">
+                  <SelectValue placeholder="Select a component" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(() => {
+                    const renderOptions = (nodes: ComponentNode[], level = 0): React.ReactNode[] => {
+                      return nodes.flatMap(node => {
+                        const options: React.ReactNode[] = [
+                          <SelectItem key={node.id} value={node.id}>
+                            {'  '.repeat(level)}{node.name}
+                          </SelectItem>
+                        ];
+                        if (node.children) {
+                          options.push(...renderOptions(node.children, level + 1));
+                        }
+                        return options;
+                      });
+                    };
+                    return renderOptions(componentTree);
+                  })()}
+                </SelectContent>
+              </Select>
+              {addSpareForm.componentId && (() => {
+                const findComponent = (nodes: ComponentNode[]): ComponentNode | null => {
+                  for (const node of nodes) {
+                    if (node.id === addSpareForm.componentId) return node;
+                    if (node.children) {
+                      const found = findComponent(node.children);
+                      if (found) return found;
+                    }
+                  }
+                  return null;
+                };
+                const component = findComponent(componentTree);
+                const spareCode = component ? `SP-${component.code}-XXX` : '';
+                return spareCode ? (
+                  <p className="text-sm text-blue-600 mt-1">
+                    Component Spare Code will be: {spareCode}
+                  </p>
+                ) : null;
+              })()}
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="add-critical">Critical</Label>
+                <Select value={addSpareForm.critical} onValueChange={(value) => setAddSpareForm({...addSpareForm, critical: value})}>
+                  <SelectTrigger id="add-critical">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Yes">Yes</SelectItem>
+                    <SelectItem value="No">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="add-rob">ROB (Remain on Board)</Label>
+                <Input
+                  id="add-rob"
+                  type="number"
+                  min="0"
+                  value={addSpareForm.rob}
+                  onChange={(e) => setAddSpareForm({...addSpareForm, rob: e.target.value})}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="add-min">Minimum Stock</Label>
+                <Input
+                  id="add-min"
+                  type="number"
+                  min="0"
+                  value={addSpareForm.min}
+                  onChange={(e) => setAddSpareForm({...addSpareForm, min: e.target.value})}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="add-location">Location</Label>
+              <Input
+                id="add-location"
+                value={addSpareForm.location}
+                onChange={(e) => setAddSpareForm({...addSpareForm, location: e.target.value})}
+                placeholder="e.g., Store Room A"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddSpareModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddSpareSubmit} disabled={createSpareMutation.isPending}>
+              Create Spare
             </Button>
           </DialogFooter>
         </DialogContent>

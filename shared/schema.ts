@@ -71,6 +71,7 @@ export const spares = mysqlTable("spares", {
   componentId: text("component_id").notNull(),
   componentCode: text("component_code"),
   componentName: text("component_name").notNull(),
+  componentSpareCode: text("component_spare_code"), // Format: SP-<ComponentCode>-<NNN>
   critical: text("critical").notNull(), // 'Critical' | 'Non-Critical' | 'Yes' | 'No'
   rob: int("rob").notNull().default(0), // Remaining on Board
   min: int("min").notNull().default(0), // Minimum stock
@@ -80,6 +81,7 @@ export const spares = mysqlTable("spares", {
 }, (table) => ({
   componentIdIdx: index("idx_spare_component").on(table.componentId),
   vesselIdIdx: index("idx_spare_vessel").on(table.vesselId),
+  componentSpareCodeIdx: index("idx_spare_code").on(table.vesselId, table.componentSpareCode),
 }));
 
 export const insertSpareSchema = createInsertSchema(spares).omit({
@@ -101,7 +103,8 @@ export const sparesHistory = mysqlTable("spares_history", {
   componentId: text("component_id").notNull(),
   componentCode: text("component_code"),
   componentName: text("component_name").notNull(),
-  eventType: text("event_type").notNull(), // 'CONSUME' | 'RECEIVE' | 'ADJUST' | 'CREATE' | 'EDIT'
+  componentSpareCode: text("component_spare_code"), // Component Spare Code at time of event
+  eventType: text("event_type").notNull(), // 'CONSUME' | 'RECEIVE' | 'ADJUST' | 'CREATE' | 'EDIT' | 'LINK_CREATED' | 'CODE_RENUMBERED'
   qtyChange: int("qty_change").notNull(), // positive for receive, negative for consume
   robAfter: int("rob_after").notNull(),
   userId: text("user_id").notNull(),
