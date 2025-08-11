@@ -1,15 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, FileSpreadsheet, X, Calendar, Download } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { Search, FileSpreadsheet, Calendar } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
 interface RunningHoursData {
@@ -24,9 +22,6 @@ interface RunningHoursData {
 
 const RunningHours = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [vesselFilter, setVesselFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [criticalityFilter, setCriticalityFilter] = useState("");
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<RunningHoursData | null>(null);
   const [updateMode, setUpdateMode] = useState<"setTotal" | "addDelta">("setTotal");
@@ -49,7 +44,6 @@ const RunningHours = () => {
   }}>({});
   const [bulkUpdateErrors, setBulkUpdateErrors] = useState<{[key: string]: string}>({});
   
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const vesselId = "V001"; // Default vessel ID
   
@@ -59,66 +53,76 @@ const RunningHours = () => {
     timestamp: number;
   } | null>(null);
 
-  // Fetch components data
-  const { data: componentsData, isLoading: componentsLoading } = useQuery({
-    queryKey: [`/api/running-hours/components/${vesselId}`],
-    enabled: !!vesselId
-  });
+  // Mock data for immediate display (restoring previous dataset)
+  const mockData: RunningHoursData[] = [
+    { id: "1", component: "Main Engine", componentCode: "ME001", eqptCategory: "Propulsion System", runningHours: "12,500 hrs", lastUpdated: "01-Dec-2024", utilizationRate: null },
+    { id: "2", component: "Aux Engine 1", componentCode: "AE001", eqptCategory: "Electrical System", runningHours: "8,200 hrs", lastUpdated: "15-Nov-2024", utilizationRate: null },
+    { id: "3", component: "Aux Engine 2", componentCode: "AE002", eqptCategory: "Electrical System", runningHours: "7,800 hrs", lastUpdated: "15-Nov-2024", utilizationRate: null },
+    { id: "4", component: "Boiler", componentCode: "BL001", eqptCategory: "Steam System", runningHours: "5,400 hrs", lastUpdated: "10-Nov-2024", utilizationRate: null },
+    { id: "5", component: "Air Compressor", componentCode: "AC001", eqptCategory: "Pneumatic System", runningHours: "3,200 hrs", lastUpdated: "20-Nov-2024", utilizationRate: null },
+    { id: "6", component: "Steering Gear", componentCode: "SG001", eqptCategory: "Navigation System", runningHours: "12,500 hrs", lastUpdated: "01-Dec-2024", utilizationRate: null },
+  ];
+  
+  const [runningHoursData, setRunningHoursData] = useState<RunningHoursData[]>(mockData);
 
-  // Fetch utilization rates
-  const { data: utilizationRates } = useQuery({
-    queryKey: ['utilizationRates', componentsData?.map((c: any) => c.id)],
-    queryFn: async () => {
-      if (!componentsData || componentsData.length === 0) return {};
-      
+  // Fetch utilization rates asynchronously (non-blocking)
+  useEffect(() => {
+    const fetchUtilizationRates = async () => {
       // Check cache first
       if (utilizationCache && (Date.now() - utilizationCache.timestamp < 15 * 60 * 1000)) {
-        return utilizationCache.data;
+        // Apply cached rates to data
+        setRunningHoursData(prev => prev.map(item => ({
+          ...item,
+          utilizationRate: utilizationCache.data[item.id] || null
+        })));
+        return;
       }
       
-      const response = await apiRequest('/api/running-hours/utilization-rates', {
-        method: 'POST',
-        body: JSON.stringify({ componentIds: componentsData.map((c: any) => c.id) }),
-      });
-      
-      // Update cache
-      setUtilizationCache({
-        data: response,
-        timestamp: Date.now()
-      });
-      
-      return response;
-    },
-    enabled: !!componentsData && componentsData.length > 0,
-    staleTime: 15 * 60 * 1000, // 15 minutes
-  });
-
-  // Transform components data to RunningHoursData format
-  const runningHoursData: RunningHoursData[] = useMemo(() => {
-    if (!componentsData) return [];
+      try {
+        // Simulate async calculation with timeout
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Mock utilization rates calculation
+        const rates: Record<string, number> = {};
+        runningHoursData.forEach(item => {
+          // Mock calculation: random rate between 0-24 hrs/day
+          rates[item.id] = Math.round((Math.random() * 24) * 10) / 10;
+        });
+        
+        // Update cache
+        setUtilizationCache({
+          data: rates,
+          timestamp: Date.now()
+        });
+        
+        // Apply rates to data
+        setRunningHoursData(prev => prev.map(item => ({
+          ...item,
+          utilizationRate: rates[item.id] || null
+        })));
+      } catch (error) {
+        // Silently fail - utilization rates remain null
+        console.error('Failed to fetch utilization rates:', error);
+      }
+    };
     
-    return componentsData.map((comp: any) => ({
-      id: comp.id,
-      component: comp.name,
-      componentCode: comp.componentCode,
-      eqptCategory: comp.category,
-      runningHours: `${Number(comp.currentCumulativeRH).toLocaleString()} hrs`,
-      lastUpdated: comp.lastUpdated || "-",
-      utilizationRate: utilizationRates?.[comp.id] || null
-    }));
-  }, [componentsData, utilizationRates]);
+    fetchUtilizationRates();
+  }, []); // Run once on mount
 
   // Mutation for single update
   const updateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest(`/api/running-hours/update/${data.componentId}`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/running-hours/components/${vesselId}`] });
-      queryClient.invalidateQueries({ queryKey: ['utilizationRates'] });
+    onSuccess: (_, variables) => {
+      // Update local data
+      setRunningHoursData(prev => prev.map(item => 
+        item.id === variables.componentId 
+          ? { ...item, runningHours: `${variables.audit.cumulativeRH.toLocaleString()} hrs`, lastUpdated: variables.dateUpdatedLocal }
+          : item
+      ));
       // Bust cache
       setUtilizationCache(null);
       toast({
@@ -126,6 +130,7 @@ const RunningHours = () => {
         description: "Running hours updated successfully",
       });
       setIsUpdateDialogOpen(false);
+      handleCancelUpdate();
     },
     onError: (error: any) => {
       toast({
@@ -139,14 +144,28 @@ const RunningHours = () => {
   // Mutation for bulk update
   const bulkUpdateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/running-hours/bulk-update', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/running-hours/components/${vesselId}`] });
-      queryClient.invalidateQueries({ queryKey: ['utilizationRates'] });
+    onSuccess: (_, variables) => {
+      // Update local data for all updated components
+      if (variables.updates) {
+        setRunningHoursData(prev => {
+          const updatedData = [...prev];
+          variables.updates.forEach((update: any) => {
+            const index = updatedData.findIndex(item => item.id === update.componentId);
+            if (index !== -1) {
+              updatedData[index] = {
+                ...updatedData[index],
+                runningHours: `${update.cumulativeRH.toLocaleString()} hrs`,
+                lastUpdated: update.dateUpdatedLocal
+              };
+            }
+          });
+          return updatedData;
+        });
+      }
       // Bust cache
       setUtilizationCache(null);
       toast({
@@ -155,6 +174,7 @@ const RunningHours = () => {
       });
       setIsBulkUpdateOpen(false);
       setBulkUpdateData({});
+      setBulkUpdateErrors({});
     },
     onError: (error: any) => {
       toast({
@@ -167,9 +187,6 @@ const RunningHours = () => {
 
   const clearFilters = () => {
     setSearchTerm("");
-    setVesselFilter("");
-    setCategoryFilter("");
-    setCriticalityFilter("");
   };
 
   // Export to CSV function
@@ -177,9 +194,6 @@ const RunningHours = () => {
     // Filter data based on current filters
     const filteredData = runningHoursData.filter(item => {
       if (searchTerm && !item.component.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return false;
-      }
-      if (categoryFilter && item.eqptCategory !== categoryFilter) {
         return false;
       }
       return true;
@@ -473,18 +487,8 @@ const RunningHours = () => {
         </Button>
       </div>
 
-      {/* Filters Row */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <Select value={vesselFilter} onValueChange={setVesselFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Vessel" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="vessel1">Vessel 1</SelectItem>
-            <SelectItem value="vessel2">Vessel 2</SelectItem>
-          </SelectContent>
-        </Select>
-
+      {/* Search and Export Row */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
@@ -495,40 +499,9 @@ const RunningHours = () => {
           />
         </div>
 
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Due/ Overdue" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="due">Due</SelectItem>
-            <SelectItem value="overdue">Overdue</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="navigation">Navigation System</SelectItem>
-            <SelectItem value="electrical">Electrical System</SelectItem>
-            <SelectItem value="propulsion">Propulsion System</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Criticality" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-
         <Button variant="outline" className="flex items-center gap-2" onClick={exportToCSV}>
           <FileSpreadsheet className="h-4 w-4" />
+          Export
         </Button>
 
         <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
@@ -552,10 +525,21 @@ const RunningHours = () => {
 
         {/* Table Body */}
         <div className="divide-y divide-gray-200">
-          {componentsLoading ? (
-            <div className="px-4 py-8 text-center text-gray-500">Loading...</div>
-          ) : runningHoursData.map((item) => (
-            <div key={item.id} className="px-4 py-3 hover:bg-gray-50">
+          {(() => {
+            const filteredData = runningHoursData.filter(item => 
+              !searchTerm || item.component.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            if (filteredData.length === 0 && searchTerm) {
+              return (
+                <div className="px-4 py-8 text-center text-gray-500">
+                  No results found. <button onClick={clearFilters} className="text-blue-600 underline">Reset</button>
+                </div>
+              );
+            }
+            
+            return filteredData.map((item) => (
+              <div key={item.id} className="px-4 py-3 hover:bg-gray-50">
               <div className="grid grid-cols-7 gap-4 text-sm items-center">
                 <div className="text-gray-900">{item.component}</div>
                 <div className="text-gray-700">{item.eqptCategory}</div>
@@ -576,7 +560,8 @@ const RunningHours = () => {
                 </div>
               </div>
             </div>
-          ))}
+            ));
+          })()}
         </div>
       </div>
 
