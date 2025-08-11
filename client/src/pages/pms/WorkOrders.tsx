@@ -34,6 +34,12 @@ interface WorkOrder {
   approverRemarks?: string;
   isExecution?: boolean;
   templateId?: string;
+  approver?: string;
+  approvalDate?: string;
+  rejectionDate?: string;
+  nextDueDate?: string;
+  nextDueReading?: string;
+  currentReading?: string;
 }
 
 // Helper function to generate template code
@@ -241,6 +247,43 @@ const initialWorkOrders: WorkOrder[] = [
       maintenanceBasis: "Running Hours",
       frequencyValue: "1000",
       frequencyUnit: ""
+    },
+    // Sample execution with Pending Approval status
+    {
+      id: "exec-001",
+      executionId: "2025-WO-1.1.1.1.11-INSM3-01",
+      templateCode: "WO-1.1.1.1.11-INSM3",
+      component: "Fresh Water Pump #1",
+      componentCode: "1.1.1.1.11",
+      workOrderNo: "2025-WO-1.1.1.1.11-INSM3-01",
+      jobTitle: "Pump Inspection Execution",
+      assignedTo: "2nd Engineer",
+      dueDate: "2025-01-15",
+      submittedDate: "2025-01-10",
+      status: "Pending Approval",
+      isExecution: true,
+      taskType: "Inspection",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "3",
+      frequencyUnit: "Months"
+    },
+    {
+      id: "exec-002",
+      executionId: "2025-WO-1.1.1.1.13-SRVW4-01",
+      templateCode: "WO-1.1.1.1.13-SRVW4",
+      component: "Fresh Water Pump #2",
+      componentCode: "1.1.1.1.13",
+      workOrderNo: "2025-WO-1.1.1.1.13-SRVW4-01",
+      jobTitle: "Weekly Service Execution",
+      assignedTo: "3rd Engineer",
+      dueDate: "2025-01-12",
+      submittedDate: "2025-01-08",
+      status: "Pending Approval",
+      isExecution: true,
+      taskType: "Service",
+      maintenanceBasis: "Calendar",
+      frequencyValue: "4",
+      frequencyUnit: "Weeks"
     }
 ];
 
@@ -359,8 +402,8 @@ const WorkOrders: React.FC = () => {
 
   const filteredWorkOrders = workOrdersList.filter(wo => {
     if (activeTab === "All W.O") {
-      // Show only templates, not executions
-      if (wo.isExecution) return false;
+      // Show templates and rejected executions
+      if (wo.isExecution && wo.status !== "Rejected") return false;
     } else if (activeTab === "Due") {
       if (wo.isExecution) return false;
       if (wo.status !== "Due" && !wo.status.includes("Grace")) return false;
@@ -404,6 +447,62 @@ const WorkOrders: React.FC = () => {
   const handleTimerClick = (workOrder: WorkOrder) => {
     setSelectedWorkOrder(workOrder);
     setPostponeDialogOpen(true);
+  };
+
+  const handleApprove = (workOrderId: string, approverRemarks?: string) => {
+    setWorkOrdersList(prev => 
+      prev.map(wo => {
+        if (wo.executionId === workOrderId || wo.id === workOrderId) {
+          // Update execution status to Approved
+          const updatedWO = { 
+            ...wo, 
+            status: "Approved",
+            dateCompleted: new Date().toISOString().split('T')[0],
+            approver: "Current User", // Replace with actual user
+            approverRemarks,
+            approvalDate: new Date().toISOString()
+          };
+
+          // Reset maintenance cycle on the template
+          if (wo.maintenanceBasis === "Calendar") {
+            const completionDate = new Date();
+            const freq = parseInt(wo.frequencyValue || "0");
+            if (wo.frequencyUnit === "Days") {
+              completionDate.setDate(completionDate.getDate() + freq);
+            } else if (wo.frequencyUnit === "Weeks") {
+              completionDate.setDate(completionDate.getDate() + (freq * 7));
+            } else if (wo.frequencyUnit === "Months") {
+              completionDate.setMonth(completionDate.getMonth() + freq);
+            } else if (wo.frequencyUnit === "Years") {
+              completionDate.setFullYear(completionDate.getFullYear() + freq);
+            }
+            updatedWO.nextDueDate = completionDate.toISOString().split('T')[0];
+          } else if (wo.maintenanceBasis === "Running Hours" && wo.currentReading) {
+            updatedWO.nextDueReading = (parseInt(wo.currentReading) + parseInt(wo.frequencyValue || "0")).toString();
+          }
+
+          return updatedWO;
+        }
+        return wo;
+      })
+    );
+  };
+
+  const handleReject = (workOrderId: string, rejectionComments: string) => {
+    setWorkOrdersList(prev => 
+      prev.map(wo => {
+        if (wo.executionId === workOrderId || wo.id === workOrderId) {
+          return { 
+            ...wo, 
+            status: "Rejected",
+            approver: "Current User", // Replace with actual user
+            approverRemarks: rejectionComments,
+            rejectionDate: new Date().toISOString()
+          };
+        }
+        return wo;
+      })
+    );
   };
 
   const handlePostponeConfirm = (workOrderId: string, postponeData: any) => {
@@ -654,7 +753,10 @@ const WorkOrders: React.FC = () => {
         isOpen={workOrderFormOpen}
         onClose={() => setWorkOrderFormOpen(false)}
         onSubmit={handleWorkOrderSubmit}
+        onApprove={handleApprove}
+        onReject={handleReject}
         workOrder={selectedWorkOrder}
+        isApprovalMode={activeTab === "Pending Approval" && selectedWorkOrder?.status === "Pending Approval"}
       />
 
       {/* Unplanned Work Order Form */}

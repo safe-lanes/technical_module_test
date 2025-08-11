@@ -24,29 +24,37 @@ interface WorkOrderFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (workOrderId: string, formData?: any) => void;
+  onApprove?: (workOrderId: string, approverRemarks?: string) => void;
+  onReject?: (workOrderId: string, rejectionComments: string) => void;
   component?: {
     code: string;
     name: string;
   };
   workOrder?: any;
+  isApprovalMode?: boolean;
 }
 
 const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  onApprove,
+  onReject,
   component,
-  workOrder
+  workOrder,
+  isApprovalMode = false
 }) => {
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>('partA');
   const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
+  const [rejectionComments, setRejectionComments] = useState("");
+  const [showRejectionComments, setShowRejectionComments] = useState(false);
   
   // Check if we're in execution mode (Part B)
   const executionMode = workOrder?.executionMode === true;
   
   // Check if form should be read-only (when status is Pending Approval, Approved, or Rejected for non-approvers)
-  const isReadOnly = workOrder?.status === "Pending Approval" || workOrder?.status === "Approved";
+  const isReadOnly = workOrder?.status === "Pending Approval" || workOrder?.status === "Approved" || isApprovalMode;
 
   // Template data (Part A)
   const [templateData, setTemplateData] = useState({
@@ -357,6 +365,43 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         });
       }
     }
+    onClose();
+  };
+
+  const handleApprove = () => {
+    if (window.confirm("Approve this work completion?")) {
+      if (onApprove) {
+        onApprove(workOrder?.executionId || workOrder?.id, "");
+      }
+      
+      toast({
+        title: "Success",
+        description: "Work Order approved."
+      });
+      
+      onClose();
+    }
+  };
+
+  const handleReject = () => {
+    if (!rejectionComments.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter rejection comments.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (onReject) {
+      onReject(workOrder?.executionId || workOrder?.id, rejectionComments);
+    }
+    
+    toast({
+      title: "Success",
+      description: "Work Order rejected."
+    });
+    
     onClose();
   };
 
@@ -1156,15 +1201,50 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </div>
                   </div>
 
-                  {/* Submit Button */}
-                  <div className="flex justify-end mt-6">
-                    <Button 
-                      size="lg" 
-                      className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium"
-                      onClick={handleSubmit}
-                    >
-                      Submit
-                    </Button>
+                  {/* Rejection Comments (only show in approval mode) */}
+                  {isApprovalMode && (
+                    <div className="border border-gray-200 rounded-lg p-4 mb-6">
+                      <h4 className="text-md font-medium mb-4" style={{ color: '#16569e' }}>Rejection Comments</h4>
+                      <Textarea
+                        value={rejectionComments}
+                        onChange={(e) => setRejectionComments(e.target.value)}
+                        placeholder="Enter rejection comments..."
+                        className="w-full min-h-[80px]"
+                        disabled={!isApprovalMode}
+                      />
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end mt-6 gap-4">
+                    {isApprovalMode ? (
+                      <>
+                        <Button 
+                          size="lg" 
+                          className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium"
+                          onClick={handleApprove}
+                        >
+                          Approve
+                        </Button>
+                        <Button 
+                          size="lg" 
+                          variant="destructive"
+                          className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-base font-medium"
+                          onClick={handleReject}
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    ) : (
+                      <Button 
+                        size="lg" 
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium"
+                        onClick={handleSubmit}
+                        disabled={isReadOnly && !isApprovalMode}
+                      >
+                        Submit
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
