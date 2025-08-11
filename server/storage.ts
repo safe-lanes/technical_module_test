@@ -39,9 +39,9 @@ export interface IStorage {
   createSpare(spare: InsertSpare): Promise<Spare>;
   updateSpare(id: number, data: Partial<Spare>): Promise<Spare>;
   deleteSpare(id: number): Promise<void>;
-  consumeSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare>;
-  receiveSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare>;
-  bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number}>, userId: string, remarks?: string): Promise<Spare[]>;
+  consumeSpare(id: number, quantity: number, userId: string, remarks?: string, place?: string, dateLocal?: string, tz?: string): Promise<Spare>;
+  receiveSpare(id: number, quantity: number, userId: string, remarks?: string, supplierPO?: string, place?: string, dateLocal?: string, tz?: string): Promise<Spare>;
+  bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number, receivedDate?: string, receivedPlace?: string}>, userId: string, remarks?: string): Promise<Spare[]>;
   
   // Spares History methods
   getSpareHistory(vesselId: string): Promise<SpareHistory[]>;
@@ -297,7 +297,7 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async consumeSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare> {
+  async consumeSpare(id: number, quantity: number, userId: string, remarks?: string, place?: string, dateLocal?: string, tz?: string): Promise<Spare> {
     const spare = await this.getSpare(id);
     if (!spare) {
       throw new Error(`Spare ${id} not found`);
@@ -326,13 +326,15 @@ export class MemStorage implements IStorage {
       robAfter: spare.rob,
       userId,
       remarks: remarks || null,
-      reference: reference || null
+      reference: place || null,
+      dateLocal: dateLocal || null,
+      tz: tz || null
     });
     
     return spare;
   }
 
-  async receiveSpare(id: number, quantity: number, userId: string, remarks?: string, reference?: string): Promise<Spare> {
+  async receiveSpare(id: number, quantity: number, userId: string, remarks?: string, supplierPO?: string, place?: string, dateLocal?: string, tz?: string): Promise<Spare> {
     const spare = await this.getSpare(id);
     if (!spare) {
       throw new Error(`Spare ${id} not found`);
@@ -357,13 +359,16 @@ export class MemStorage implements IStorage {
       robAfter: spare.rob,
       userId,
       remarks: remarks || null,
-      reference: reference || null
+      reference: supplierPO || null,
+      place: place || null,
+      dateLocal: dateLocal || null,
+      tz: tz || null
     });
     
     return spare;
   }
 
-  async bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number}>, userId: string, remarks?: string): Promise<Spare[]> {
+  async bulkUpdateSpares(updates: Array<{id: number, consumed?: number, received?: number, receivedDate?: string, receivedPlace?: string}>, userId: string, remarks?: string): Promise<Spare[]> {
     const updatedSpares: Spare[] = [];
     
     for (const update of updates) {
@@ -401,7 +406,10 @@ export class MemStorage implements IStorage {
           robAfter: spare.rob,
           userId,
           remarks: remarks || 'Bulk update',
-          reference: null
+          reference: null,
+          dateLocal: update.receivedDate || null,
+          place: update.receivedPlace || null,
+          tz: update.receivedDate ? Intl.DateTimeFormat().resolvedOptions().timeZone : null
         });
         
         updatedSpares.push(spare);

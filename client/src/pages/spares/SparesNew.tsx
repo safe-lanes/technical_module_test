@@ -65,7 +65,7 @@ const Spares: React.FC = () => {
   // Form states
   const [consumeForm, setConsumeForm] = useState({ quantity: "", date: "", workOrder: "", remarks: "" });
   const [receiveForm, setReceiveForm] = useState({ quantity: "", date: "", supplier: "", remarks: "" });
-  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string}}>({});
   const [addSpareForm, setAddSpareForm] = useState({
     partCode: "",
     partName: "",
@@ -101,8 +101,21 @@ const Spares: React.FC = () => {
 
   // Consume spare mutation
   const consumeSpareMutation = useMutation({
-    mutationFn: async ({ id, ...data }: { id: number, quantity: number, remarks?: string, reference?: string }) => {
-      return apiRequest(`/api/spares/${id}/consume`, 'POST', data);
+    mutationFn: async ({ id, ...data }: { id: number, qty: number, dateLocal: string, tz?: string, place?: string, remarks?: string, userId?: string, vesselId: string }) => {
+      const response = await fetch(`/api/spares/${id}/consume`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to consume spare');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
@@ -122,8 +135,21 @@ const Spares: React.FC = () => {
 
   // Receive spare mutation
   const receiveSpareMutation = useMutation({
-    mutationFn: async ({ id, ...data }: { id: number, quantity: number, remarks?: string, reference?: string }) => {
-      return apiRequest(`/api/spares/${id}/receive`, 'POST', data);
+    mutationFn: async ({ id, ...data }: { id: number, qty: number, dateLocal: string, tz?: string, place?: string, supplierPO?: string, remarks?: string, userId?: string, vesselId: string }) => {
+      const response = await fetch(`/api/spares/${id}/receive`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to receive spare');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
@@ -171,7 +197,7 @@ const Spares: React.FC = () => {
 
   // Bulk update mutation
   const bulkUpdateMutation = useMutation({
-    mutationFn: async (data: { updates: Array<{id: number, consumed?: number, received?: number}>, remarks?: string }) => {
+    mutationFn: async (data: { updates: Array<{id: number, consumed?: number, received?: number, receivedDate?: string, receivedPlace?: string}>, remarks?: string }) => {
       return apiRequest('/api/spares/bulk-update', 'POST', data);
     },
     onSuccess: () => {
@@ -287,7 +313,10 @@ const Spares: React.FC = () => {
 
   // Handle consume submit
   const handleConsumeSubmit = () => {
-    if (!selectedSpare || !consumeForm.quantity) return;
+    if (!selectedSpare || !consumeForm.quantity || !consumeForm.date) {
+      toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
     
     const quantity = parseInt(consumeForm.quantity);
     if (quantity <= 0) {
@@ -302,15 +331,22 @@ const Spares: React.FC = () => {
     
     consumeSpareMutation.mutate({
       id: selectedSpare.id,
-      quantity,
+      qty: quantity,
+      dateLocal: consumeForm.date,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      place: consumeForm.workOrder || undefined,
       remarks: consumeForm.remarks || undefined,
-      reference: consumeForm.workOrder || undefined
+      userId: 'user',
+      vesselId
     });
   };
 
   // Handle receive submit
   const handleReceiveSubmit = () => {
-    if (!selectedSpare || !receiveForm.quantity) return;
+    if (!selectedSpare || !receiveForm.quantity || !receiveForm.date) {
+      toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
     
     const quantity = parseInt(receiveForm.quantity);
     if (quantity <= 0) {
@@ -320,9 +356,13 @@ const Spares: React.FC = () => {
     
     receiveSpareMutation.mutate({
       id: selectedSpare.id,
-      quantity,
+      qty: quantity,
+      dateLocal: receiveForm.date,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      supplierPO: receiveForm.supplier || undefined,
       remarks: receiveForm.remarks || undefined,
-      reference: receiveForm.supplier || undefined
+      userId: 'user',
+      vesselId
     });
   };
 
@@ -334,7 +374,7 @@ const Spares: React.FC = () => {
     }
     setIsBulkUpdateModalOpen(true);
     // Initialize bulk update data
-    const initialData: {[key: number]: {consumed: number, received: number}} = {};
+    const initialData: {[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string}} = {};
     filteredSpares.forEach(spare => {
       initialData[spare.id] = { consumed: 0, received: 0 };
     });
@@ -342,15 +382,25 @@ const Spares: React.FC = () => {
   };
 
   // Handle bulk update input changes
-  const handleBulkUpdateChange = (spareId: number, field: 'consumed' | 'received', value: string) => {
-    const numValue = parseInt(value) || 0;
-    setBulkUpdateData(prev => ({
-      ...prev,
-      [spareId]: {
-        ...prev[spareId],
-        [field]: numValue
-      }
-    }));
+  const handleBulkUpdateChange = (spareId: number, field: 'consumed' | 'received' | 'receivedDate' | 'receivedPlace', value: string | number) => {
+    if (field === 'consumed' || field === 'received') {
+      const numValue = parseInt(value as string) || 0;
+      setBulkUpdateData(prev => ({
+        ...prev,
+        [spareId]: {
+          ...prev[spareId],
+          [field]: numValue
+        }
+      }));
+    } else {
+      setBulkUpdateData(prev => ({
+        ...prev,
+        [spareId]: {
+          ...prev[spareId],
+          [field]: value as string
+        }
+      }));
+    }
   };
 
   // Handle add spare submit
@@ -398,7 +448,9 @@ const Spares: React.FC = () => {
       .map(([id, data]) => ({
         id: parseInt(id),
         consumed: data.consumed > 0 ? data.consumed : undefined,
-        received: data.received > 0 ? data.received : undefined
+        received: data.received > 0 ? data.received : undefined,
+        receivedDate: data.receivedDate || undefined,
+        receivedPlace: data.receivedPlace || undefined
       }));
     
     if (updates.length === 0) {
@@ -841,7 +893,7 @@ const Spares: React.FC = () => {
       </Dialog>
       {/* Bulk Update Modal */}
       <Dialog open={isBulkUpdateModalOpen} onOpenChange={setIsBulkUpdateModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Bulk Update Spares</DialogTitle>
           </DialogHeader>
@@ -849,6 +901,46 @@ const Spares: React.FC = () => {
             <div className="text-sm text-gray-500">
               Updating {filteredSpares.length} spare(s)
             </div>
+            
+            {/* Common fields for all spares */}
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div>
+                <Label htmlFor="bulk-received-date">Received Date (Apply to all)</Label>
+                <Input
+                  id="bulk-received-date"
+                  type="date"
+                  onChange={(e) => {
+                    const date = e.target.value;
+                    setBulkUpdateData(prev => {
+                      const updated = { ...prev };
+                      Object.keys(updated).forEach(id => {
+                        updated[Number(id)] = { ...updated[Number(id)], receivedDate: date };
+                      });
+                      return updated;
+                    });
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="bulk-received-place">Received Place (Apply to all)</Label>
+                <Input
+                  id="bulk-received-place"
+                  type="text"
+                  placeholder="e.g., Singapore Port"
+                  onChange={(e) => {
+                    const place = e.target.value;
+                    setBulkUpdateData(prev => {
+                      const updated = { ...prev };
+                      Object.keys(updated).forEach(id => {
+                        updated[Number(id)] = { ...updated[Number(id)], receivedPlace: place };
+                      });
+                      return updated;
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50">

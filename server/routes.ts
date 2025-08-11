@@ -179,15 +179,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Consume spare
   app.post("/api/spares/:id/consume", async (req, res) => {
     try {
-      const { quantity, userId, remarks, reference } = req.body;
+      const { vesselId, qty, dateLocal, tz, place, remarks, userId } = req.body;
+      
+      // Validation
+      if (!qty || qty < 1) {
+        return res.status(400).json({ error: "Quantity must be at least 1" });
+      }
+      
+      // Check if date is not in future
+      const today = new Date();
+      const inputDate = new Date(dateLocal);
+      if (inputDate > today) {
+        return res.status(400).json({ error: "Date cannot be in the future" });
+      }
+      
       const spare = await storage.consumeSpare(
         parseInt(req.params.id),
-        quantity,
+        qty,
         userId || 'user',
         remarks,
-        reference
+        place,
+        dateLocal,
+        tz || 'UTC'
       );
-      res.json(spare);
+      
+      // Calculate stock status for response
+      const spareWithStatus = {
+        ...spare,
+        stockStatus: spare.rob < spare.min ? 'Low' : spare.rob === spare.min ? 'Minimum' : 'OK'
+      };
+      
+      res.json(spareWithStatus);
     } catch (error: any) {
       if (error.message === 'Insufficient stock') {
         res.status(400).json({ error: error.message });
@@ -200,15 +222,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Receive spare
   app.post("/api/spares/:id/receive", async (req, res) => {
     try {
-      const { quantity, userId, remarks, reference } = req.body;
+      const { vesselId, qty, dateLocal, tz, place, supplierPO, remarks, userId } = req.body;
+      
+      // Validation
+      if (!qty || qty < 1) {
+        return res.status(400).json({ error: "Quantity must be at least 1" });
+      }
+      
+      // Check if date is not in future
+      const today = new Date();
+      const inputDate = new Date(dateLocal);
+      if (inputDate > today) {
+        return res.status(400).json({ error: "Date cannot be in the future" });
+      }
+      
       const spare = await storage.receiveSpare(
         parseInt(req.params.id),
-        quantity,
+        qty,
         userId || 'user',
         remarks,
-        reference
+        supplierPO,
+        place,
+        dateLocal,
+        tz || 'UTC'
       );
-      res.json(spare);
+      
+      // Calculate stock status for response
+      const spareWithStatus = {
+        ...spare,
+        stockStatus: spare.rob < spare.min ? 'Low' : spare.rob === spare.min ? 'Minimum' : 'OK'
+      };
+      
+      res.json(spareWithStatus);
     } catch (error) {
       res.status(500).json({ error: "Failed to receive spare" });
     }

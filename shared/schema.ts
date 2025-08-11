@@ -110,6 +110,9 @@ export const sparesHistory = mysqlTable("spares_history", {
   userId: text("user_id").notNull(),
   remarks: text("remarks"),
   reference: text("reference"), // Work Order or PO reference
+  dateLocal: text("date_local"), // Local date of transaction
+  tz: text("tz"), // Timezone
+  place: text("place"), // Port/Location for receive/consume
 }, (table) => ({
   timestampIdx: index("idx_history_timestamp").on(table.timestampUTC),
   spareIdIdx: index("idx_history_spare").on(table.spareId),
