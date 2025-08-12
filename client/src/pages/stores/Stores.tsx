@@ -1,12 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar, Plus, Archive } from "lucide-react";
+import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar, Plus, Archive, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import * as XLSX from "xlsx";
 
 interface StoreItem {
   id: number;
@@ -21,6 +24,21 @@ interface StoreItem {
   category: "stores" | "lubes" | "chemicals" | "others";
   notes?: string;
   isArchived?: boolean;
+}
+
+interface StoresHistoryItem {
+  id: number;
+  dateLocal: string;
+  eventType: string;
+  itemName: string;
+  partCode: string;
+  uom?: string;
+  qtyChange: number;
+  robAfter: number;
+  place?: string;
+  userId: string;
+  remarks?: string;
+  ref?: string;
 }
 
 // UOM options
@@ -594,6 +612,7 @@ const storeItems: StoreItem[] = [
 const Stores: React.FC = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"stores" | "lubes" | "chemicals" | "others">("stores");
+  const [viewMode, setViewMode] = useState<"inventory" | "history">("inventory");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
@@ -603,6 +622,56 @@ const Stores: React.FC = () => {
   const [placeReceived, setPlaceReceived] = useState("");
   const [dateReceived, setDateReceived] = useState("");
   const [items, setItems] = useState<StoreItem[]>(storeItems);
+  
+  // History filters
+  const [historyDateFrom, setHistoryDateFrom] = useState("");
+  const [historyDateTo, setHistoryDateTo] = useState("");
+  const [historySearch, setHistorySearch] = useState("");
+  const [historyEventFilter, setHistoryEventFilter] = useState("all");
+  const [historyItems, setHistoryItems] = useState<StoresHistoryItem[]>([
+    {
+      id: 1001,
+      dateLocal: "12 AUG 2025 09:15",
+      eventType: "RECEIVE",
+      itemName: "Bearing SKF 6205",
+      partCode: "SKF-6205",
+      uom: "Pcs",
+      qtyChange: 5,
+      robAfter: 12,
+      place: "Singapore",
+      userId: "John Smith",
+      remarks: "Regular stock replenishment",
+      ref: "PO-2025-089"
+    },
+    {
+      id: 1002,
+      dateLocal: "11 AUG 2025 14:30",
+      eventType: "CONSUME",
+      itemName: "Hydraulic Oil 68",
+      partCode: "HYD-68",
+      uom: "Ltr",
+      qtyChange: -20,
+      robAfter: 180,
+      place: "",
+      userId: "Mike Johnson",
+      remarks: "Used for hydraulic system maintenance",
+      ref: ""
+    },
+    {
+      id: 1003,
+      dateLocal: "10 AUG 2025 11:45",
+      eventType: "ARCHIVE",
+      itemName: "Obsolete Filter",
+      partCode: "FLT-OLD-001",
+      uom: "Pcs",
+      qtyChange: 0,
+      robAfter: 2,
+      place: "",
+      userId: "Sarah Lee",
+      remarks: "Item archived - obsolete model",
+      ref: ""
+    }
+  ]);
   
   // Edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -626,6 +695,43 @@ const Stores: React.FC = () => {
     supplierPO: "",
     remarks: ""
   });
+
+  // Add to history function
+  const addToHistory = (
+    item: StoreItem,
+    eventType: string,
+    qtyChange: number,
+    robAfter: number,
+    place?: string,
+    ref?: string,
+    remarks?: string
+  ) => {
+    const now = new Date();
+    const dateLocal = now.toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).toUpperCase().replace(',', '');
+    
+    const historyEntry: StoresHistoryItem = {
+      id: Date.now(),
+      dateLocal,
+      eventType,
+      itemName: item.itemName,
+      partCode: item.itemCode,
+      uom: item.uom,
+      qtyChange,
+      robAfter,
+      place: place || '',
+      userId: 'Current User',
+      remarks: remarks || '',
+      ref: ref || ''
+    };
+    
+    setHistoryItems(prev => [historyEntry, ...prev]);
+  };
 
   // Calculate stock status based on ROB and Min
   const calculateStockStatus = (rob: number, min: number): string => {
@@ -662,6 +768,78 @@ const Stores: React.FC = () => {
     if (stock === "N/A") return "bg-gray-100 text-gray-800";
     return "";
   };
+  
+  // Export to Excel functions
+  const exportInventoryToExcel = () => {
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
+    const filename = `stores_${activeTab}_inventory_${timestamp}.xlsx`;
+    
+    const data = filteredItems.map(item => ({
+      'Item Name': item.itemName,
+      'Part Code': item.itemCode,
+      'UOM': item.uom || '-',
+      'ROB': item.rob,
+      'Min': item.min,
+      'Stock': item.stock,
+      'Location': item.location,
+      'Category': item.storesCategory
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
+    XLSX.writeFile(wb, filename);
+    
+    toast({ title: "Export Successful", description: `Exported ${data.length} items to ${filename}` });
+  };
+  
+  const exportHistoryToExcel = () => {
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
+    const filename = `stores_${activeTab}_history_${timestamp}.xlsx`;
+    
+    const data = filteredHistoryItems.map(item => ({
+      'Date': item.dateLocal,
+      'Event': item.eventType,
+      'Item Name': item.itemName,
+      'Part Code': item.partCode,
+      'UOM': item.uom || '-',
+      'Qty Change': item.qtyChange > 0 ? `+${item.qtyChange}` : item.qtyChange.toString(),
+      'ROB After': item.robAfter,
+      'Place': item.place || '-',
+      'User': item.userId,
+      'Remarks/Ref': item.remarks || item.ref || '-'
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'History');
+    XLSX.writeFile(wb, filename);
+    
+    toast({ title: "Export Successful", description: `Exported ${data.length} entries to ${filename}` });
+  };
+  
+  // Filter history items
+  const filteredHistoryItems = useMemo(() => {
+    return historyItems.filter(item => {
+      // Filter by search
+      if (historySearch && !item.itemName.toLowerCase().includes(historySearch.toLowerCase()) &&
+          !item.partCode.toLowerCase().includes(historySearch.toLowerCase())) {
+        return false;
+      }
+      
+      // Filter by event type
+      if (historyEventFilter !== "all" && item.eventType !== historyEventFilter) {
+        return false;
+      }
+      
+      // Filter by date range (would need proper date parsing for production)
+      // For now, we'll skip date filtering as it requires proper date handling
+      
+      return true;
+    });
+  }, [historyItems, historySearch, historyEventFilter, historyDateFrom, historyDateTo]);
 
   const handleBulkUpdateChange = (itemId: number, field: 'consumed' | 'received' | 'receivedDate' | 'receivedPlace' | 'comments', value: string) => {
     if (field === 'consumed' || field === 'received') {
@@ -726,9 +904,34 @@ const Stores: React.FC = () => {
         return item;
       }
       
-      if (received > 0 && !updateData.receivedDate) {
+      if (received > 0 && !dateReceived) {
         failedCount++;
         return item;
+      }
+      
+      // Add history entries
+      if (consumed > 0) {
+        addToHistory(
+          item,
+          'CONSUME',
+          -consumed,
+          newRob,
+          '',
+          '',
+          updateData.comments
+        );
+      }
+      
+      if (received > 0) {
+        addToHistory(
+          item,
+          'RECEIVE',
+          received,
+          newRob,
+          placeReceived,
+          '',
+          updateData.comments
+        );
       }
       
       updatedCount++;
@@ -764,16 +967,36 @@ const Stores: React.FC = () => {
   const saveEditItem = () => {
     if (!editingItem) return;
     
+    const uom = editForm.uom === "Other" ? editForm.customUom : editForm.uom;
+    
     const updatedItems = items.map(item => {
       if (item.id === editingItem.id) {
-        return {
+        const updatedItem = {
           ...item,
           itemName: editForm.itemName,
-          uom: editForm.uom === "Other" ? editForm.customUom : editForm.uom,
+          uom: uom,
           min: editForm.min,
           location: editForm.location,
           notes: editForm.notes
         };
+        
+        // Recalculate stock status
+        const newStock = calculateStockStatus(item.rob, editForm.min);
+        
+        // Add to history if min changed
+        if (item.min !== editForm.min) {
+          addToHistory(
+            updatedItem,
+            'EDIT',
+            0,
+            item.rob,
+            '',
+            '',
+            `Min changed from ${item.min} to ${editForm.min}`
+          );
+        }
+        
+        return { ...updatedItem, stock: newStock };
       }
       return item;
     });
@@ -810,15 +1033,28 @@ const Stores: React.FC = () => {
       return;
     }
     
+    const newRob = receivingItem.rob + quantity;
+    
     const updatedItems = items.map(item => {
       if (item.id === receivingItem.id) {
         return {
           ...item,
-          rob: item.rob + quantity
+          rob: newRob
         };
       }
       return item;
     });
+    
+    // Add to history
+    addToHistory(
+      receivingItem,
+      'RECEIVE',
+      quantity,
+      newRob,
+      receiveForm.place,
+      receiveForm.supplierPO,
+      receiveForm.remarks
+    );
     
     setItems(updatedItems);
     setIsReceiveModalOpen(false);
@@ -835,6 +1071,18 @@ const Stores: React.FC = () => {
       const updatedItems = items.map(i => 
         i.id === item.id ? { ...i, isArchived: true } : i
       );
+      
+      // Add to history
+      addToHistory(
+        item,
+        'ARCHIVE',
+        0,
+        item.rob,
+        '',
+        '',
+        'Item archived'
+      );
+      
       setItems(updatedItems);
       toast({ title: "Success", description: "Item archived" });
     }
@@ -898,7 +1146,26 @@ const Stores: React.FC = () => {
         </button>
       </div>
 
-      {/* Filters */}
+      {/* View Mode Tabs */}
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={viewMode === "inventory" ? "default" : "outline"}
+          onClick={() => setViewMode("inventory")}
+          className="text-sm"
+        >
+          Inventory
+        </Button>
+        <Button
+          variant={viewMode === "history" ? "default" : "outline"}
+          onClick={() => setViewMode("history")}
+          className="text-sm"
+        >
+          History
+        </Button>
+      </div>
+
+      {/* Filters - Show different filters based on view mode */}
+      {viewMode === "inventory" ? (
       <div className="flex gap-4 mb-6">
         <div className="flex-1">
           <Input
@@ -943,15 +1210,85 @@ const Stores: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="ghost" size="sm" className="text-blue-600">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-blue-600"
+          onClick={exportInventoryToExcel}
+        >
           <FileSpreadsheet className="h-4 w-4 mr-1" />
+          Export
         </Button>
-        <Button variant="ghost" size="sm" className="text-gray-600">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-gray-600"
+          onClick={() => {
+            setSearchTerm("");
+            setCategoryFilter("all");
+            setStockFilter("all");
+            setVesselFilter("");
+          }}
+        >
           Clear
         </Button>
       </div>
+      ) : (
+      /* History Filters */
+      <div className="flex gap-4 mb-6">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search history..."
+            value={historySearch}
+            onChange={(e) => setHistorySearch(e.target.value)}
+            className="pl-10 text-sm"
+          />
+        </div>
+        <div>
+          <Select value={historyEventFilter} onValueChange={setHistoryEventFilter}>
+            <SelectTrigger className="w-40 text-sm">
+              <SelectValue placeholder="All Events" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Events</SelectItem>
+              <SelectItem value="RECEIVE">Receive</SelectItem>
+              <SelectItem value="CONSUME">Consume</SelectItem>
+              <SelectItem value="ARCHIVE">Archive</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="date"
+            value={historyDateFrom}
+            onChange={(e) => setHistoryDateFrom(e.target.value)}
+            className="text-sm"
+            placeholder="From"
+          />
+          <span className="text-gray-500">to</span>
+          <Input
+            type="date"
+            value={historyDateTo}
+            onChange={(e) => setHistoryDateTo(e.target.value)}
+            className="text-sm"
+            placeholder="To"
+          />
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-blue-600"
+          onClick={exportHistoryToExcel}
+        >
+          <FileSpreadsheet className="h-4 w-4 mr-1" />
+          Export
+        </Button>
+      </div>
+      )}
 
       {/* Table */}
+      {viewMode === "inventory" ? (
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Table Header */}
         <div className="bg-[#52baf3] text-white p-4">
@@ -1043,6 +1380,64 @@ const Stores: React.FC = () => {
           ))}
         </div>
       </div>
+      ) : (
+      /* History Table */
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-[#52baf3] text-white p-4">
+          <div className="grid grid-cols-12 gap-4 items-center text-sm font-medium">
+            <div className="col-span-2">Date/Time</div>
+            <div className="col-span-1">Event</div>
+            <div className="col-span-2">Item Name</div>
+            <div className="col-span-1">Part Code</div>
+            <div className="col-span-1">UOM</div>
+            <div className="col-span-1">Qty Change</div>
+            <div className="col-span-1">ROB After</div>
+            <div className="col-span-1">Place</div>
+            <div className="col-span-1">User</div>
+            <div className="col-span-1">Remarks</div>
+          </div>
+        </div>
+        
+        <div className="divide-y divide-gray-200">
+          {filteredHistoryItems.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              No history entries found. Actions like Receive, Consume, and Archive will appear here.
+            </div>
+          ) : (
+            filteredHistoryItems.map((item) => (
+              <div key={item.id} className="p-4 hover:bg-gray-50">
+                <div className="grid grid-cols-12 gap-4 items-center text-sm">
+                  <div className="col-span-2 text-gray-700">{item.dateLocal}</div>
+                  <div className="col-span-1">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      item.eventType === 'RECEIVE' ? 'bg-green-100 text-green-800' :
+                      item.eventType === 'CONSUME' ? 'bg-orange-100 text-orange-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {item.eventType}
+                    </span>
+                  </div>
+                  <div className="col-span-2 text-gray-700">{item.itemName}</div>
+                  <div className="col-span-1 text-gray-600">{item.partCode}</div>
+                  <div className="col-span-1 text-gray-600">{item.uom || '-'}</div>
+                  <div className="col-span-1">
+                    <span className={item.qtyChange > 0 ? 'text-green-600' : 'text-orange-600'}>
+                      {item.qtyChange > 0 ? '+' : ''}{item.qtyChange}
+                    </span>
+                  </div>
+                  <div className="col-span-1 text-gray-700">{item.robAfter}</div>
+                  <div className="col-span-1 text-gray-600">{item.place || '-'}</div>
+                  <div className="col-span-1 text-gray-600">{item.userId}</div>
+                  <div className="col-span-1 text-gray-600 truncate" title={item.remarks || item.ref}>
+                    {item.remarks || item.ref || '-'}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+      )}
 
       {/* Edit Item Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>

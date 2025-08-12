@@ -125,3 +125,36 @@ export const insertSpareHistorySchema = createInsertSchema(sparesHistory).omit({
 
 export type InsertSpareHistory = z.infer<typeof insertSpareHistorySchema>;
 export type SpareHistory = typeof sparesHistory.$inferSelect;
+
+// Stores Ledger Table (for Stores module history)
+export const storesLedger = mysqlTable("stores_ledger", {
+  id: int("id").primaryKey().autoincrement(),
+  vesselId: text("vessel_id").notNull(),
+  section: text("section").notNull(), // 'stores' | 'lubes' | 'chemicals' | 'others'
+  itemId: int("item_id").notNull(),
+  partCode: text("part_code").notNull(),
+  itemName: text("item_name").notNull(),
+  uom: text("uom"), // Base unit of measure
+  eventType: text("event_type").notNull(), // 'RECEIVE' | 'CONSUME' | 'ADJUST' | 'TRANSFER_IN' | 'TRANSFER_OUT' | 'ARCHIVE'
+  qtyChangeBase: decimal("qty_change_base", { precision: 10, scale: 2 }).notNull(), // Change in base UOM
+  qtyDisplay: decimal("qty_display", { precision: 10, scale: 2 }).notNull(), // Change in display UOM
+  uomDisplay: text("uom_display"), // Display UOM (could be different from base)
+  robAfterBase: decimal("rob_after_base", { precision: 10, scale: 2 }).notNull(), // ROB after in base UOM
+  dateLocal: text("date_local").notNull(), // DD-MMM-YYYY HH:mm
+  tz: text("tz").notNull(), // Timezone
+  timestampUTC: timestamp("timestamp_utc").notNull(),
+  place: text("place"), // For receive events
+  ref: text("ref"), // PO/WO reference
+  userId: text("user_id").notNull(),
+  remarks: text("remarks"),
+}, (table) => ({
+  vesselSectionDateIdx: index("idx_vessel_section_date").on(table.vesselId, table.section, table.dateLocal),
+  itemDateIdx: index("idx_item_date").on(table.itemId, table.dateLocal),
+}));
+
+export const insertStoresLedgerSchema = createInsertSchema(storesLedger).omit({
+  id: true,
+});
+
+export type InsertStoresLedger = z.infer<typeof insertStoresLedgerSchema>;
+export type StoresLedger = typeof storesLedger.$inferSelect;
