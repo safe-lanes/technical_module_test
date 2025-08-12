@@ -169,6 +169,8 @@ export const changeRequest = mysqlTable("change_request", {
   targetType: text("target_type"), // 'component' | 'work_order' | 'spare' | 'store'
   targetId: text("target_id"),
   snapshotBeforeJson: json("snapshot_before_json"),
+  proposedChangesJson: json("proposed_changes_json"), // Array of change objects
+  movePreviewJson: json("move_preview_json"), // Component move preview (nullable)
   status: text("status").notNull().default("draft"), // 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected'
   requestedByUserId: text("requested_by_user_id").notNull(),
   submittedAt: timestamp("submitted_at"),

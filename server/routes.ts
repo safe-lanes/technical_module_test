@@ -493,6 +493,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Update proposed changes (draft/returned only)
+  app.put("/api/modify-pms/requests/:id/proposed", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { proposedChangesJson, movePreviewJson } = req.body;
+      
+      const updated = await storage.updateChangeRequestProposed(id, proposedChangesJson, movePreviewJson);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to update proposed changes" });
+    }
+  });
+  
   // Submit change request
   app.put("/api/modify-pms/requests/:id/submit", async (req, res) => {
     try {
@@ -507,11 +520,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Can only submit draft or returned requests" });
       }
       
-      // Validate required fields for submission - now including target
+      // Validate required fields for submission - now including target and proposed changes
       if (!existing.title || !existing.category || !existing.vesselId || !existing.reason || 
           !existing.targetType || !existing.targetId || !existing.snapshotBeforeJson) {
         return res.status(400).json({ 
           error: "Title, Category, Vessel, Reason, and Target selection are required for submission" 
+        });
+      }
+      
+      // Check if proposed changes exist and are non-empty
+      if (!existing.proposedChangesJson || 
+          (Array.isArray(existing.proposedChangesJson) && existing.proposedChangesJson.length === 0)) {
+        return res.status(400).json({ 
+          error: "Please propose at least one change before submitting" 
         });
       }
       

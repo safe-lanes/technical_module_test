@@ -40,6 +40,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, RotateCcw, Package, ClipboardList, Archive, Store, ExternalLink } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { TargetPicker } from "@/components/TargetPicker";
+import { ProposeChanges } from "@/components/ProposeChanges";
 
 interface ChangeRequest {
   id: number;
@@ -50,6 +51,8 @@ interface ChangeRequest {
   targetType?: string | null;
   targetId?: string | null;
   snapshotBeforeJson?: any;
+  proposedChangesJson?: any[] | null;
+  movePreviewJson?: any;
   status: 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected';
   requestedByUserId: string;
   submittedAt: Date | null;
@@ -113,7 +116,9 @@ export default function ModifyPMS() {
     reason: '',
     targetType: null as string | null,
     targetId: null as string | null,
-    snapshotBeforeJson: null as any
+    snapshotBeforeJson: null as any,
+    proposedChangesJson: null as any[] | null,
+    movePreviewJson: null as any
   });
 
   // Fetch change requests
@@ -196,7 +201,9 @@ export default function ModifyPMS() {
       reason: '',
       targetType: null,
       targetId: null,
-      snapshotBeforeJson: null
+      snapshotBeforeJson: null,
+      proposedChangesJson: null,
+      movePreviewJson: null
     });
   };
 
@@ -212,7 +219,9 @@ export default function ModifyPMS() {
       reason: request.reason,
       targetType: request.targetType || null,
       targetId: request.targetId || null,
-      snapshotBeforeJson: request.snapshotBeforeJson || null
+      snapshotBeforeJson: request.snapshotBeforeJson || null,
+      proposedChangesJson: request.proposedChangesJson || null,
+      movePreviewJson: request.movePreviewJson || null
     });
     setEditingRequest(request);
   };
@@ -575,6 +584,38 @@ export default function ModifyPMS() {
                 </p>
               </div>
             )}
+            
+            {/* Propose Changes Section - only show when target is selected and in draft/returned status */}
+            {formData.targetType && formData.targetId && formData.snapshotBeforeJson && 
+             (!editingRequest || editingRequest.status === 'draft' || editingRequest.status === 'returned') && (
+              <div className="mt-6">
+                <ProposeChanges
+                  targetType={formData.targetType}
+                  snapshotData={formData.snapshotBeforeJson}
+                  existingProposedChanges={formData.proposedChangesJson || []}
+                  existingMovePreview={formData.movePreviewJson}
+                  onSaveProposed={(changes, movePreview) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      proposedChangesJson: changes,
+                      movePreviewJson: movePreview
+                    }));
+                    // Save proposed changes to backend
+                    if (editingRequest) {
+                      fetch(`/api/modify-pms/requests/${editingRequest.id}/proposed`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          proposedChangesJson: changes,
+                          movePreviewJson: movePreview
+                        })
+                      }).catch(console.error);
+                    }
+                  }}
+                  disabled={editingRequest && editingRequest.status !== 'draft' && editingRequest.status !== 'returned'}
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter>
@@ -594,7 +635,8 @@ export default function ModifyPMS() {
             >
               {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save as Draft'}
             </Button>
-            {editingRequest && formData.title && formData.reason && formData.targetType && formData.targetId && (
+            {editingRequest && formData.title && formData.reason && formData.targetType && formData.targetId && 
+             formData.proposedChangesJson && formData.proposedChangesJson.length > 0 && (
               <Button
                 variant="default"
                 onClick={() => {
@@ -627,8 +669,10 @@ export default function ModifyPMS() {
 
           {viewingRequest && (
             <Tabs defaultValue="details">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="proposed">Proposed Changes</TabsTrigger>
+                <TabsTrigger value="snapshot">Snapshot</TabsTrigger>
                 <TabsTrigger value="comments">Comments</TabsTrigger>
                 <TabsTrigger value="attachments">Attachments</TabsTrigger>
               </TabsList>
@@ -722,6 +766,96 @@ export default function ModifyPMS() {
                     <p>{viewingRequest.reviewedByUserId}</p>
                   </div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="proposed">
+                <div className="space-y-4">
+                  {viewingRequest.proposedChangesJson && viewingRequest.proposedChangesJson.length > 0 ? (
+                    <>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Field</TableHead>
+                            <TableHead>Current</TableHead>
+                            <TableHead>Proposed</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {viewingRequest.proposedChangesJson.map((change: any, idx: number) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-medium">{change.label}</TableCell>
+                              <TableCell>{String(change.before || '-')}</TableCell>
+                              <TableCell className="text-blue-600 font-medium">
+                                {String(change.after || '-')}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                      
+                      {viewingRequest.movePreviewJson && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base">Component Move (Preview)</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-xs text-gray-500">From</Label>
+                                  <p className="text-sm font-mono">{viewingRequest.movePreviewJson.oldPath}</p>
+                                  <p className="text-xs text-gray-500 mt-1">Code: {viewingRequest.movePreviewJson.oldCode}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-xs text-gray-500">To</Label>
+                                  <p className="text-sm font-mono">{viewingRequest.movePreviewJson.newPath}</p>
+                                  <p className="text-xs text-gray-500 mt-1">New Code: {viewingRequest.movePreviewJson.newCodePreview}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-center text-gray-500 py-4">No changes proposed yet</p>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="snapshot">
+                <div className="space-y-4">
+                  {viewingRequest.snapshotBeforeJson ? (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">Target Snapshot</CardTitle>
+                        <CardDescription>
+                          Snapshot taken at the time of target selection
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Field</TableHead>
+                              <TableHead>Value</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {Object.entries(viewingRequest.snapshotBeforeJson.fields || {}).map(([key, value]: [string, any]) => (
+                              <TableRow key={key}>
+                                <TableCell className="font-medium">{key}</TableCell>
+                                <TableCell>{String(value || '-')}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <p className="text-center text-gray-500 py-4">No snapshot available</p>
+                  )}
+                </div>
               </TabsContent>
 
               <TabsContent value="comments">

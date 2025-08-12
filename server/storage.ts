@@ -63,6 +63,7 @@ export interface IStorage {
   createChangeRequest(request: InsertChangeRequest): Promise<ChangeRequest>;
   updateChangeRequest(id: number, data: Partial<ChangeRequest>): Promise<ChangeRequest>;
   updateChangeRequestTarget(id: number, targetType: string | null, targetId: string | null, snapshotBeforeJson: any): Promise<ChangeRequest>;
+  updateChangeRequestProposed(id: number, proposedChangesJson: any, movePreviewJson?: any): Promise<ChangeRequest>;
   deleteChangeRequest(id: number): Promise<void>;
   submitChangeRequest(id: number, userId: string): Promise<ChangeRequest>;
   approveChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest>;
@@ -520,6 +521,8 @@ export class MemStorage implements IStorage {
       targetType: request.targetType || null,
       targetId: request.targetId || null,
       snapshotBeforeJson: request.snapshotBeforeJson || null,
+      proposedChangesJson: request.proposedChangesJson || null,
+      movePreviewJson: request.movePreviewJson || null,
       submittedAt: request.submittedAt || null,
       reviewedByUserId: request.reviewedByUserId || null,
       reviewedAt: request.reviewedAt || null,
@@ -556,6 +559,24 @@ export class MemStorage implements IStorage {
       targetType,
       targetId,
       snapshotBeforeJson,
+      updatedAt: new Date()
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async updateChangeRequestProposed(id: number, proposedChangesJson: any, movePreviewJson?: any): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    
+    if (request.status !== 'draft' && request.status !== 'returned') {
+      throw new Error('Can only update proposed changes for draft or returned requests');
+    }
+    
+    const updated = {
+      ...request,
+      proposedChangesJson,
+      movePreviewJson: movePreviewJson || null,
       updatedAt: new Date()
     };
     this.changeRequests.set(id, updated);
