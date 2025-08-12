@@ -416,7 +416,7 @@ const Spares: React.FC = () => {
     }
     setIsBulkUpdateModalOpen(true);
     // Initialize bulk update data
-    const initialData: {[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string}} = {};
+    const initialData: {[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string, comments?: string}} = {};
     filteredSpares.forEach((spare: Spare) => {
       initialData[spare.id] = { consumed: 0, received: 0 };
     });
@@ -424,7 +424,7 @@ const Spares: React.FC = () => {
   };
 
   // Handle bulk update input changes
-  const handleBulkUpdateChange = (spareId: number, field: 'consumed' | 'received' | 'receivedDate' | 'receivedPlace', value: string | number) => {
+  const handleBulkUpdateChange = (spareId: number, field: 'consumed' | 'received' | 'receivedDate' | 'receivedPlace' | 'comments', value: string | number) => {
     if (field === 'consumed' || field === 'received') {
       const numValue = parseInt(value as string) || 0;
       setBulkUpdateData(prev => ({
@@ -513,7 +513,7 @@ const Spares: React.FC = () => {
         receivedDate: data.received > 0 ? data.receivedDate : undefined,
         receivedPlace: data.receivedPlace || undefined,
         dateLocal: data.consumed > 0 ? new Date().toISOString().split('T')[0] : undefined,
-        remarks: undefined,
+        remarks: data.comments || undefined,
         userId: 'user'
       }));
     
@@ -971,7 +971,7 @@ const Spares: React.FC = () => {
             </div>
             
             {/* Common fields for all spares */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
               <div>
                 <Label htmlFor="bulk-received-date">Received Date (Apply to all)</Label>
                 <Input
@@ -1001,6 +1001,24 @@ const Spares: React.FC = () => {
                       const updated = { ...prev };
                       Object.keys(updated).forEach(id => {
                         updated[Number(id)] = { ...updated[Number(id)], receivedPlace: place };
+                      });
+                      return updated;
+                    });
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="bulk-comments">Comments (Apply to all)</Label>
+                <Input
+                  id="bulk-comments"
+                  type="text"
+                  placeholder="Enter comments"
+                  onChange={(e) => {
+                    const comments = e.target.value;
+                    setBulkUpdateData(prev => {
+                      const updated = { ...prev };
+                      Object.keys(updated).forEach(id => {
+                        updated[Number(id)] = { ...updated[Number(id)], comments: comments };
                       });
                       return updated;
                     });
