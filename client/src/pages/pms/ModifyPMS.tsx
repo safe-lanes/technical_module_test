@@ -118,7 +118,8 @@ export default function ModifyPMS() {
     targetId: null as string | null,
     snapshotBeforeJson: null as any,
     proposedChangesJson: null as any[] | null,
-    movePreviewJson: null as any
+    movePreviewJson: null as any,
+    targetDisplay: null as any
   });
 
   // Fetch change requests
@@ -226,12 +227,18 @@ export default function ModifyPMS() {
     setEditingRequest(request);
   };
 
-  const handleTargetSelect = async (targetType: string, targetId: string, snapshot: any) => {
+  const handleTargetSelect = async (targetType: string, targetId: string, payload: any) => {
+    // The payload now contains the full structure with targetDisplay and snapshotBeforeJson
+    const actualTargetType = payload.targetType || targetType;
+    const actualTargetId = payload.targetId || targetId;
+    const snapshot = payload.snapshotBeforeJson || payload;
+    
     setFormData(prev => ({
       ...prev,
-      targetType,
-      targetId,
-      snapshotBeforeJson: snapshot
+      targetType: actualTargetType,
+      targetId: actualTargetId,
+      snapshotBeforeJson: snapshot,
+      targetDisplay: payload.targetDisplay
     }));
     
     // If editing an existing request, update it immediately
@@ -240,8 +247,8 @@ export default function ModifyPMS() {
         await apiRequest(`/api/modify-pms/requests/${editingRequest.id}/target`, {
           method: 'PUT',
           body: JSON.stringify({
-            targetType,
-            targetId,
+            targetType: actualTargetType,
+            targetId: actualTargetId,
             snapshotBeforeJson: snapshot
           })
         });
@@ -547,6 +554,11 @@ export default function ModifyPMS() {
                         <p className="font-semibold">
                           {formData.snapshotBeforeJson.displayKey} - {formData.snapshotBeforeJson.displayName}
                         </p>
+                        {formData.snapshotBeforeJson.displayPath && (
+                          <p className="text-xs text-gray-500">
+                            {formData.snapshotBeforeJson.displayPath}
+                          </p>
+                        )}
                         <p className="text-sm text-gray-600">
                           Target Type: {formData.targetType?.replace('_', ' ').toUpperCase()}
                         </p>

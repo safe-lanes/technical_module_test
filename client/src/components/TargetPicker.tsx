@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
@@ -8,21 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Search, ChevronRight, ChevronDown, Package, ClipboardList, Archive, Store } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Package, ClipboardList, Archive, Store } from "lucide-react";
+import { ComponentTreeSelector } from "./ComponentTreeSelector";
+import { TableSelector } from "./TableSelector";
+import { buildComponentTree } from "@/utils/componentUtils";
 
 interface TargetPickerProps {
   open: boolean;
@@ -30,22 +22,6 @@ interface TargetPickerProps {
   category: string;
   vesselId: string;
   onTargetSelect: (targetType: string, targetId: string, snapshot: any) => void;
-}
-
-interface ComponentNode {
-  id: string;
-  code: string;
-  name: string;
-  parentId: string | null;
-  maker?: string;
-  model?: string;
-  serialNo?: string;
-  deptCategory?: string;
-  location?: string;
-  commissionedDate?: string;
-  critical?: boolean;
-  classItem?: boolean;
-  children?: ComponentNode[];
 }
 
 export function TargetPicker({
@@ -57,10 +33,9 @@ export function TargetPicker({
 }: TargetPickerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
   // Fetch data based on category
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: [`/api/${getApiEndpoint(category)}`, vesselId],
     queryFn: async () => {
       const endpoint = getApiEndpoint(category);
@@ -81,16 +56,65 @@ export function TargetPicker({
     }
   }
 
-  const handleSelect = () => {
+  const handleUseTarget = () => {
     if (!selectedItem) return;
 
     const targetType = category === 'work_orders' ? 'work_order' : 
                       category === 'stores' ? 'store' : 
                       category.slice(0, -1); // Remove 's' from components/spares
 
+    const targetDisplay = {
+      name: getItemName(selectedItem, category),
+      code: getItemCode(selectedItem, category),
+      path: category === 'components' ? getComponentPath(selectedItem) : undefined
+    };
+
     const snapshot = createSnapshot(selectedItem, category);
-    onTargetSelect(targetType, selectedItem.id || selectedItem.componentId, snapshot);
+    
+    // Pass the full payload structure as expected by the spec
+    const payload = {
+      targetType,
+      targetId: getItemId(selectedItem, category),
+      targetDisplay,
+      snapshotBeforeJson: snapshot
+    };
+    
+    onTargetSelect(targetType, payload.targetId, payload);
     onOpenChange(false);
+  };
+
+  const getItemId = (item: any, cat: string) => {
+    if (cat === 'work_orders') return item.id || item.woNo;
+    if (cat === 'spares') return String(item.id || item.partCode);
+    if (cat === 'stores') return String(item.id || item.itemCode);
+    return item.id || item.componentId;
+  };
+
+  const getItemName = (item: any, cat: string) => {
+    if (cat === 'work_orders') return item.jobTitle;
+    if (cat === 'spares') return item.partName;
+    if (cat === 'stores') return item.itemName;
+    return item.name;
+  };
+
+  const getItemCode = (item: any, cat: string) => {
+    if (cat === 'work_orders') return item.woNo;
+    if (cat === 'spares') return item.partCode;
+    if (cat === 'stores') return item.itemCode;
+    return item.code;
+  };
+
+  const getComponentPath = (component: any): string => {
+    // Build path from component hierarchy
+    const parts: string[] = [];
+    let current = component;
+    
+    while (current) {
+      parts.unshift(current.name);
+      current = current.parent;
+    }
+    
+    return parts.join(' > ');
   };
 
   const createSnapshot = (item: any, cat: string) => {
@@ -98,56 +122,48 @@ export function TargetPicker({
     const snapshot: any = {
       capturedAtUtc: now,
       vesselId: vesselId,
+      displayKey: getItemCode(item, cat),
+      displayName: getItemName(item, cat),
       fields: {}
     };
 
     if (cat === 'components') {
       snapshot.displayPath = getComponentPath(item);
-      snapshot.displayKey = item.code;
-      snapshot.displayName = item.name;
       snapshot.fields = {
-        code: item.code,
-        name: item.name,
         maker: item.maker || '',
         model: item.model || '',
         serialNo: item.serialNo || '',
-        deptCategory: item.deptCategory || '',
+        department: item.deptCategory || '',
+        componentCategory: item.componentCategory || '',
         location: item.location || '',
         commissionedDate: item.commissionedDate || '',
         critical: item.critical || false,
         classItem: item.classItem || false
       };
     } else if (cat === 'work_orders') {
-      snapshot.displayKey = item.woNo;
-      snapshot.displayName = item.jobTitle;
       snapshot.fields = {
-        woNo: item.woNo,
         jobTitle: item.jobTitle,
-        componentCode: item.componentCode || '',
-        componentName: item.componentName || '',
         frequencyType: item.frequencyType || '',
         frequencyValue: item.frequencyValue || '',
+        frequencyUnit: item.frequencyUnit || '',
         assignedTo: item.assignedTo || '',
         priority: item.priority || '',
-        status: item.status || ''
+        status: item.status || '',
+        dueDate: item.dueDate || ''
       };
     } else if (cat === 'spares') {
-      snapshot.displayKey = item.partCode;
-      snapshot.displayName = item.partName;
       snapshot.fields = {
         partCode: item.partCode,
         partName: item.partName,
-        componentCode: item.componentCode || '',
-        componentName: item.componentName || '',
+        linkedComponentName: item.componentName || '',
+        linkedComponentCode: item.componentCode || '',
         uom: item.uom || '',
         min: item.min || 0,
         rob: item.rob || 0,
         location: item.location || '',
-        critical: item.critical || false
+        critical: item.critical === 'Critical' || item.critical === true
       };
     } else if (cat === 'stores') {
-      snapshot.displayKey = item.itemCode;
-      snapshot.displayName = item.itemName;
       snapshot.fields = {
         itemCode: item.itemCode,
         itemName: item.itemName,
@@ -162,167 +178,8 @@ export function TargetPicker({
     return snapshot;
   };
 
-  const getComponentPath = (component: ComponentNode): string => {
-    if (!component.parentId) return component.code;
-    // In a real implementation, we'd traverse up the tree
-    return component.code;
-  };
-
-  const toggleExpand = (nodeId: string) => {
-    const newExpanded = new Set(expandedNodes);
-    if (newExpanded.has(nodeId)) {
-      newExpanded.delete(nodeId);
-    } else {
-      newExpanded.add(nodeId);
-    }
-    setExpandedNodes(newExpanded);
-  };
-
-  const renderComponentTree = (nodes: ComponentNode[], level = 0) => {
-    if (!nodes) return null;
-
-    const filteredNodes = searchQuery
-      ? nodes.filter(node => 
-          node.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          node.code.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : nodes;
-
-    return filteredNodes.map(node => (
-      <div key={node.id || node.code}>
-        <div
-          className={cn(
-            "flex items-center py-2 px-2 hover:bg-gray-100 cursor-pointer rounded",
-            selectedItem?.id === node.id && "bg-blue-50 border-blue-500"
-          )}
-          style={{ paddingLeft: `${level * 20 + 8}px` }}
-          onClick={() => setSelectedItem(node)}
-        >
-          {node.children && node.children.length > 0 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleExpand(node.id || node.code);
-              }}
-              className="mr-1"
-            >
-              {expandedNodes.has(node.id || node.code) ? 
-                <ChevronDown className="h-4 w-4" /> : 
-                <ChevronRight className="h-4 w-4" />
-              }
-            </button>
-          )}
-          <Package className="h-4 w-4 mr-2 text-gray-500" />
-          <span className="font-mono text-sm mr-2">{node.code}</span>
-          <span className="text-sm">{node.name}</span>
-        </div>
-        {node.children && expandedNodes.has(node.id || node.code) && (
-          <div>{renderComponentTree(node.children, level + 1)}</div>
-        )}
-      </div>
-    ));
-  };
-
-  const renderItemTable = () => {
-    if (!data || data.length === 0) return <div className="text-center py-4 text-gray-500">No items found</div>;
-
-    const filteredData = searchQuery
-      ? data.filter((item: any) => {
-          const searchLower = searchQuery.toLowerCase();
-          if (category === 'work_orders') {
-            return item.woNo?.toLowerCase().includes(searchLower) ||
-                   item.jobTitle?.toLowerCase().includes(searchLower);
-          } else if (category === 'spares') {
-            return item.partCode?.toLowerCase().includes(searchLower) ||
-                   item.partName?.toLowerCase().includes(searchLower);
-          } else if (category === 'stores') {
-            return item.itemCode?.toLowerCase().includes(searchLower) ||
-                   item.itemName?.toLowerCase().includes(searchLower);
-          }
-          return false;
-        })
-      : data;
-
-    return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {category === 'work_orders' && (
-              <>
-                <TableHead>WO No</TableHead>
-                <TableHead>Job Title</TableHead>
-                <TableHead>Component</TableHead>
-                <TableHead>Frequency</TableHead>
-                <TableHead>Status</TableHead>
-              </>
-            )}
-            {category === 'spares' && (
-              <>
-                <TableHead>Part Code</TableHead>
-                <TableHead>Part Name</TableHead>
-                <TableHead>Component</TableHead>
-                <TableHead>UOM</TableHead>
-                <TableHead>Min/ROB</TableHead>
-              </>
-            )}
-            {category === 'stores' && (
-              <>
-                <TableHead>Item Code</TableHead>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>UOM</TableHead>
-                <TableHead>Min/ROB</TableHead>
-              </>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredData.map((item: any) => (
-            <TableRow
-              key={item.id || item.woNo || item.partCode || item.itemCode}
-              className={cn(
-                "cursor-pointer",
-                selectedItem === item && "bg-blue-50"
-              )}
-              onClick={() => setSelectedItem(item)}
-            >
-              {category === 'work_orders' && (
-                <>
-                  <TableCell className="font-mono">{item.woNo}</TableCell>
-                  <TableCell>{item.jobTitle}</TableCell>
-                  <TableCell>{item.componentName || '-'}</TableCell>
-                  <TableCell>{item.frequencyType} {item.frequencyValue}</TableCell>
-                  <TableCell>
-                    <Badge variant={item.status === 'active' ? 'default' : 'secondary'}>
-                      {item.status}
-                    </Badge>
-                  </TableCell>
-                </>
-              )}
-              {category === 'spares' && (
-                <>
-                  <TableCell className="font-mono">{item.partCode}</TableCell>
-                  <TableCell>{item.partName}</TableCell>
-                  <TableCell>{item.componentName || '-'}</TableCell>
-                  <TableCell>{item.uom}</TableCell>
-                  <TableCell>{item.min}/{item.rob}</TableCell>
-                </>
-              )}
-              {category === 'stores' && (
-                <>
-                  <TableCell className="font-mono">{item.itemCode}</TableCell>
-                  <TableCell>{item.itemName}</TableCell>
-                  <TableCell>{item.storesCategory || '-'}</TableCell>
-                  <TableCell>{item.uom}</TableCell>
-                  <TableCell>{item.min}/{item.rob}</TableCell>
-                </>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
-  };
+  // Process component data for tree structure
+  const componentTree = category === 'components' && data ? buildComponentTree(data) : [];
 
   const renderPreview = () => {
     if (!selectedItem) return <div className="text-center text-gray-500 py-8">Select an item to preview</div>;
@@ -342,19 +199,18 @@ export function TargetPicker({
         {/* Header */}
         <div className="flex items-center gap-2">
           {getIcon()}
-          <div>
+          <div className="flex-1">
             <h3 className="font-semibold text-lg">
-              {category === 'components' && `${selectedItem.name}`}
-              {category === 'work_orders' && `${selectedItem.jobTitle}`}
-              {category === 'spares' && `${selectedItem.partName}`}
-              {category === 'stores' && `${selectedItem.itemName}`}
+              {getItemName(selectedItem, category)}
             </h3>
-            <p className="text-sm text-gray-600">
-              {category === 'components' && `Code: ${selectedItem.code}`}
-              {category === 'work_orders' && `WO No: ${selectedItem.woNo}`}
-              {category === 'spares' && `Part Code: ${selectedItem.partCode}`}
-              {category === 'stores' && `Item Code: ${selectedItem.itemCode}`}
+            <p className="text-sm text-gray-600 font-mono">
+              {getItemCode(selectedItem, category)}
             </p>
+            {category === 'components' && selectedItem && (
+              <p className="text-xs text-gray-500 mt-1">
+                {getComponentPath(selectedItem)}
+              </p>
+            )}
           </div>
         </div>
 
@@ -364,7 +220,8 @@ export function TargetPicker({
         <div className="space-y-3">
           {category === 'components' && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <h4 className="text-sm font-medium">Component Information</h4>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs text-gray-500">Maker</Label>
                   <p className="text-sm">{selectedItem.maker || '-'}</p>
@@ -378,8 +235,12 @@ export function TargetPicker({
                   <p className="text-sm">{selectedItem.serialNo || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Dept/Category</Label>
+                  <Label className="text-xs text-gray-500">Department</Label>
                   <p className="text-sm">{selectedItem.deptCategory || '-'}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Component Category</Label>
+                  <p className="text-sm">{selectedItem.componentCategory || '-'}</p>
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">Location</Label>
@@ -403,14 +264,31 @@ export function TargetPicker({
 
           {category === 'work_orders' && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-gray-500">Component</Label>
-                  <p className="text-sm">{selectedItem.componentName || '-'}</p>
+                  <Label className="text-xs text-gray-500">WO No</Label>
+                  <p className="text-sm font-mono">{selectedItem.woNo}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Frequency</Label>
-                  <p className="text-sm">{selectedItem.frequencyType} {selectedItem.frequencyValue}</p>
+                  <Label className="text-xs text-gray-500">Job Title</Label>
+                  <p className="text-sm">{selectedItem.jobTitle}</p>
+                </div>
+                <div className="col-span-2">
+                  <Label className="text-xs text-gray-500">Component</Label>
+                  <p className="text-sm">{selectedItem.componentName || '-'}</p>
+                  {selectedItem.componentCode && (
+                    <p className="text-xs text-gray-400">{selectedItem.componentCode}</p>
+                  )}
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Frequency Type</Label>
+                  <p className="text-sm">{selectedItem.frequencyType || '-'}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Frequency Value</Label>
+                  <p className="text-sm">
+                    {selectedItem.frequencyValue} {selectedItem.frequencyUnit}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">Assigned To</Label>
@@ -422,32 +300,47 @@ export function TargetPicker({
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">Status</Label>
-                  <Badge variant={selectedItem.status === 'active' ? 'default' : 'secondary'}>
-                    {selectedItem.status}
-                  </Badge>
+                  <p className="text-sm">{selectedItem.status || 'Active'}</p>
                 </div>
+                {selectedItem.dueDate && (
+                  <div>
+                    <Label className="text-xs text-gray-500">Due Date</Label>
+                    <p className="text-sm">{selectedItem.dueDate}</p>
+                  </div>
+                )}
               </div>
             </>
           )}
 
           {category === 'spares' && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
+                  <Label className="text-xs text-gray-500">Part Code</Label>
+                  <p className="text-sm font-mono">{selectedItem.partCode}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Part Name</Label>
+                  <p className="text-sm">{selectedItem.partName}</p>
+                </div>
+                <div className="col-span-2">
                   <Label className="text-xs text-gray-500">Linked Component</Label>
                   <p className="text-sm">{selectedItem.componentName || '-'}</p>
+                  {selectedItem.componentCode && (
+                    <p className="text-xs text-gray-400">{selectedItem.componentCode}</p>
+                  )}
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">UOM</Label>
                   <p className="text-sm">{selectedItem.uom || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Minimum</Label>
-                  <p className="text-sm">{selectedItem.min || 0}</p>
+                  <Label className="text-xs text-gray-500">Min</Label>
+                  <p className="text-sm">{selectedItem.min}</p>
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">ROB</Label>
-                  <p className="text-sm">{selectedItem.rob || 0}</p>
+                  <p className="text-sm">{selectedItem.rob}</p>
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">Location</Label>
@@ -455,7 +348,9 @@ export function TargetPicker({
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">Critical</Label>
-                  <p className="text-sm">{selectedItem.critical ? 'Yes' : 'No'}</p>
+                  <p className="text-sm">
+                    {selectedItem.critical === 'Critical' || selectedItem.critical === true ? 'Critical' : 'No'}
+                  </p>
                 </div>
               </div>
             </>
@@ -463,7 +358,15 @@ export function TargetPicker({
 
           {category === 'stores' && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs text-gray-500">Item Code</Label>
+                  <p className="text-sm font-mono">{selectedItem.itemCode}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Item Name</Label>
+                  <p className="text-sm">{selectedItem.itemName}</p>
+                </div>
                 <div>
                   <Label className="text-xs text-gray-500">Stores Category</Label>
                   <p className="text-sm">{selectedItem.storesCategory || '-'}</p>
@@ -473,14 +376,14 @@ export function TargetPicker({
                   <p className="text-sm">{selectedItem.uom || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Minimum</Label>
-                  <p className="text-sm">{selectedItem.min || 0}</p>
+                  <Label className="text-xs text-gray-500">Min</Label>
+                  <p className="text-sm">{selectedItem.min}</p>
                 </div>
                 <div>
                   <Label className="text-xs text-gray-500">ROB</Label>
-                  <p className="text-sm">{selectedItem.rob || 0}</p>
+                  <p className="text-sm">{selectedItem.rob}</p>
                 </div>
-                <div>
+                <div className="col-span-2">
                   <Label className="text-xs text-gray-500">Location</Label>
                   <p className="text-sm">{selectedItem.location || '-'}</p>
                 </div>
@@ -494,49 +397,55 @@ export function TargetPicker({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4">
-          <DialogTitle>
-            Select Target {category === 'components' ? 'Component' : 
-                         category === 'work_orders' ? 'Work Order' :
-                         category === 'spares' ? 'Spare' : 'Store Item'}
-          </DialogTitle>
+      <DialogContent className="max-w-7xl h-[85vh] p-0">
+        <DialogHeader className="px-6 py-4 border-b">
+          <DialogTitle>Select Target {category.charAt(0).toUpperCase() + category.slice(1).replace('_', ' ')}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex h-full">
-          {/* Left side - List/Tree */}
-          <div className="flex-1 border-r">
-            <div className="p-4 border-b">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
+        <div className="flex h-[calc(100%-8rem)]">
+          {/* Left Pane - List/Tree (~60%) */}
+          <div className="w-3/5 border-r">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                  <p className="text-gray-500">Loading {category.replace('_', ' ')}...</p>
+                </div>
               </div>
-            </div>
-            <ScrollArea className="h-[calc(100%-120px)]">
-              <div className="p-4">
-                {isLoading ? (
-                  <div className="text-center py-8">Loading...</div>
-                ) : category === 'components' ? (
-                  renderComponentTree(data)
+            ) : error ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center text-red-500">
+                  <p className="mb-2">Failed to load {category.replace('_', ' ')}</p>
+                  <p className="text-sm text-gray-500">Please try again</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {category === 'components' ? (
+                  <ComponentTreeSelector
+                    components={componentTree}
+                    selectedItem={selectedItem}
+                    onSelect={setSelectedItem}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                  />
                 ) : (
-                  renderItemTable()
+                  <TableSelector
+                    category={category as 'work_orders' | 'spares' | 'stores'}
+                    items={data || []}
+                    selectedItem={selectedItem}
+                    onSelect={setSelectedItem}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                  />
                 )}
-              </div>
-            </ScrollArea>
+              </>
+            )}
           </div>
 
-          {/* Right side - Preview */}
-          <div className="w-[400px] bg-gray-50">
-            <ScrollArea className="h-[calc(100%-80px)]">
-              <div className="p-6">
-                {renderPreview()}
-              </div>
-            </ScrollArea>
+          {/* Right Pane - Preview (~40%) */}
+          <div className="w-2/5 p-6 bg-gray-50">
+            {renderPreview()}
           </div>
         </div>
 
@@ -545,7 +454,7 @@ export function TargetPicker({
             Cancel
           </Button>
           <Button 
-            onClick={handleSelect} 
+            onClick={handleUseTarget} 
             disabled={!selectedItem}
           >
             Use this target
