@@ -52,10 +52,21 @@ export const components = mysqlTable("components", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   componentCode: text("component_code"),
+  parentId: text("parent_id"),
   category: text("category").notNull(),
   currentCumulativeRH: decimal("current_cumulative_rh", { precision: 10, scale: 2 }).notNull().default("0"),
   lastUpdated: text("last_updated"),
   vesselId: text("vessel_id").notNull().default("V001"),
+  // Additional fields for Component Information (Section A)
+  maker: text("maker"),
+  model: text("model"),
+  serialNo: text("serial_no"),
+  deptCategory: text("dept_category"),
+  componentCategory: text("component_category"),
+  location: text("location"),
+  commissionedDate: text("commissioned_date"),
+  critical: boolean("critical").default(false),
+  classItem: boolean("class_item").default(false),
 });
 
 export const insertComponentSchema = createInsertSchema(components).omit({});

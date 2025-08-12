@@ -105,16 +105,26 @@ export function TargetPicker({
   };
 
   const getComponentPath = (component: any): string => {
-    // Build path from component hierarchy
-    const parts: string[] = [];
-    let current = component;
+    // Build path from component hierarchy  
+    const buildPath = (node: any, allComponents: any[]): string[] => {
+      const parts: string[] = [`${node.componentCode || node.code} ${node.name}`];
+      
+      if (node.parentId) {
+        const parent = allComponents.find(c => (c.id || c.componentId) === node.parentId);
+        if (parent) {
+          return [...buildPath(parent, allComponents), ...parts];
+        }
+      }
+      
+      return parts;
+    };
     
-    while (current) {
-      parts.unshift(current.name);
-      current = current.parent;
+    if (data && Array.isArray(data)) {
+      const pathParts = buildPath(component, data);
+      return pathParts.join(' > ');
     }
     
-    return parts.join(' > ');
+    return `${component.componentCode || component.code} ${component.name}`;
   };
 
   const createSnapshot = (item: any, cat: string) => {
