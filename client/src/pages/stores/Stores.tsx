@@ -2,19 +2,36 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Search, Edit, Clock, Trash2, FileSpreadsheet, X, MessageSquare, Calendar, Plus, Archive } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface StoreItem {
   id: number;
   itemCode: string;
   itemName: string;
   storesCategory: string;
+  uom?: string;
   rob: number;
   min: number;
   stock: string;
   location: string;
   category: "stores" | "lubes" | "chemicals" | "others";
+  notes?: string;
+  isArchived?: boolean;
 }
+
+// UOM options
+const UOM_OPTIONS = [
+  "pcs", "set", "box", "pkt",
+  "kg", "g",
+  "ltr", "ml",
+  "m", "cm",
+  "roll", "drum", "can", "bottle", "jar", "tube", "pair", "kit",
+  "Other"
+];
 
 const storeItems: StoreItem[] = [
   {
@@ -22,6 +39,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-TOOL-001",
     itemName: "Torque Wrench",
     storesCategory: "Engine Stores",
+    uom: "pcs",
     rob: 2,
     min: 1,
     stock: "OK",
@@ -33,6 +51,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-CONS-001",
     itemName: "Cotton rags",
     storesCategory: "Main Engine / Deck General",
+    uom: "kg",
     rob: 2,
     min: 1,
     stock: "",
@@ -44,6 +63,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-SEAL-001",
     itemName: "O-Ring Set",
     storesCategory: "Pumps & Valves",
+    uom: "set",
     rob: 3,
     min: 1,
     stock: "",
@@ -55,6 +75,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-SAFE-001",
     itemName: "Safety Goggles",
     storesCategory: "PPE / All Sections",
+    uom: "pair",
     rob: 4,
     min: 2,
     stock: "",
@@ -66,6 +87,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-TOOL-002",
     itemName: "Teflon Gasket",
     storesCategory: "General Tools",
+    uom: "pcs",
     rob: 4,
     min: 2,
     stock: "",
@@ -77,6 +99,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SP-ME-001",
     itemName: "GP gasket",
     storesCategory: "General Tools",
+    uom: "pcs",
     rob: 1,
     min: 2,
     stock: "Low",
@@ -88,6 +111,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-CONS-002",
     itemName: "Industrial Wipers",
     storesCategory: "General Tools",
+    uom: "pkt",
     rob: 2,
     min: 1,
     stock: "",
@@ -99,6 +123,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-BOLT-001",
     itemName: "Hex Bolt Kit M6-M20",
     storesCategory: "General Machinery",
+    uom: "kit",
     rob: 2,
     min: 1,
     stock: "",
@@ -110,6 +135,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-GASKET-001",
     itemName: "Gasket Sheet Material",
     storesCategory: "General Machinery",
+    uom: "m",
     rob: 3,
     min: 1,
     stock: "",
@@ -121,6 +147,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SP-COOL-001",
     itemName: "Gasket Sheet Material",
     storesCategory: "General Machinery",
+    uom: "m",
     rob: 4,
     min: 2,
     stock: "",
@@ -132,6 +159,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-SAFE-002",
     itemName: "Safety Shoes",
     storesCategory: "PPE / All Sections",
+    uom: "pair",
     rob: 5,
     min: 2,
     stock: "",
@@ -143,6 +171,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ST-PAINT-001",
     itemName: "Zinc Primer Paint",
     storesCategory: "Deck Maintenance",
+    uom: "ltr",
     rob: 2,
     min: 10,
     stock: "Low",
@@ -155,6 +184,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SAE 70 EN",
     itemName: "Cylinder Oil",
     storesCategory: "Main Engine",
+    uom: "ltr",
     rob: 500,
     min: 1,
     stock: "OK",
@@ -166,6 +196,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SAE 30",
     itemName: "System Oil",
     storesCategory: "DG #1",
+    uom: "ltr",
     rob: 300,
     min: 1,
     stock: "",
@@ -177,6 +208,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ISO VG 68",
     itemName: "Hydraulic Oil",
     storesCategory: "Steering Gear",
+    uom: "ltr",
     rob: 200,
     min: 1,
     stock: "",
@@ -188,6 +220,7 @@ const storeItems: StoreItem[] = [
     itemCode: "EP 320",
     itemName: "Gear Oil",
     storesCategory: "Crane Gearbox",
+    uom: "ltr",
     rob: 80,
     min: 2,
     stock: "",
@@ -199,6 +232,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ISO VG 100",
     itemName: "Compressor Oil",
     storesCategory: "Air Compressor #2",
+    uom: "ltr",
     rob: 60,
     min: 2,
     stock: "",
@@ -210,6 +244,7 @@ const storeItems: StoreItem[] = [
     itemCode: "Synthetic",
     itemName: "Stabilizer Oil",
     storesCategory: "Fin Stabilizer",
+    uom: "ltr",
     rob: 50,
     min: 2,
     stock: "Low",
@@ -221,6 +256,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ISO 220",
     itemName: "Winch Oil",
     storesCategory: "Mooring Winch",
+    uom: "ltr",
     rob: 70,
     min: 1,
     stock: "",
@@ -232,6 +268,7 @@ const storeItems: StoreItem[] = [
     itemCode: "ISO 32",
     itemName: "RO Pump Oil",
     storesCategory: "RO High Pressure Pump",
+    uom: "ltr",
     rob: 10,
     min: 1,
     stock: "",
@@ -243,6 +280,7 @@ const storeItems: StoreItem[] = [
     itemCode: "VG 46",
     itemName: "CPP Hydraulic Oil",
     storesCategory: "Propeller System",
+    uom: "ltr",
     rob: 150,
     min: 1,
     stock: "",
@@ -254,6 +292,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SAE 30",
     itemName: "Emergency DG Oil",
     storesCategory: "Emergency Generator",
+    uom: "ltr",
     rob: 4,
     min: 2,
     stock: "",
@@ -265,6 +304,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SAE 30",
     itemName: "Emergency DG Oil",
     storesCategory: "Emergency Generator",
+    uom: "ltr",
     rob: 6,
     min: 2,
     stock: "",
@@ -276,6 +316,7 @@ const storeItems: StoreItem[] = [
     itemCode: "SAE 30",
     itemName: "Emergency DG Oil",
     storesCategory: "Emergency Generator",
+    uom: "ltr",
     rob: 2,
     min: 10,
     stock: "Low",
@@ -551,18 +592,60 @@ const storeItems: StoreItem[] = [
 ];
 
 const Stores: React.FC = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"stores" | "lubes" | "chemicals" | "others">("stores");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   const [vesselFilter, setVesselFilter] = useState("");
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
-  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number}}>({});
+  const [bulkUpdateData, setBulkUpdateData] = useState<{[key: number]: {consumed: number, received: number, receivedDate?: string, receivedPlace?: string, comments?: string}}>({});
   const [placeReceived, setPlaceReceived] = useState("");
   const [dateReceived, setDateReceived] = useState("");
+  const [items, setItems] = useState<StoreItem[]>(storeItems);
+  
+  // Edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<StoreItem | null>(null);
+  const [editForm, setEditForm] = useState({
+    itemName: "",
+    uom: "",
+    customUom: "",
+    min: 0,
+    location: "",
+    notes: ""
+  });
+  
+  // Receive modal state
+  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false);
+  const [receivingItem, setReceivingItem] = useState<StoreItem | null>(null);
+  const [receiveForm, setReceiveForm] = useState({
+    quantity: "",
+    dateLocal: new Date().toISOString().split('T')[0],
+    place: "",
+    supplierPO: "",
+    remarks: ""
+  });
+
+  // Calculate stock status based on ROB and Min
+  const calculateStockStatus = (rob: number, min: number): string => {
+    if (min === null || min === 0) return "N/A";
+    if (rob >= min) return "OK";
+    return "Low";
+  };
+  
+  // Update stock status for all items
+  const updateItemsStock = (itemList: StoreItem[]): StoreItem[] => {
+    return itemList.map(item => ({
+      ...item,
+      stock: calculateStockStatus(item.rob, item.min)
+    }));
+  };
 
   const filteredItems = useMemo(() => {
-    return storeItems.filter(item => {
+    const updatedItems = updateItemsStock(items);
+    return updatedItems.filter(item => {
+      if (item.isArchived) return false; // Hide archived items
       const matchesTab = item.category === activeTab;
       const matchesSearch = item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.itemCode.toLowerCase().includes(searchTerm.toLowerCase());
@@ -571,37 +654,190 @@ const Stores: React.FC = () => {
       
       return matchesTab && matchesSearch && matchesCategory && matchesStock;
     });
-  }, [activeTab, searchTerm, categoryFilter, stockFilter]);
+  }, [activeTab, searchTerm, categoryFilter, stockFilter, items]);
 
-  const getStockColor = (stock: string, rob: number, min: number) => {
-    if (stock === "Low" || rob < min) return "bg-red-100 text-red-800";
+  const getStockColor = (stock: string) => {
+    if (stock === "Low") return "bg-yellow-100 text-yellow-800";
     if (stock === "OK") return "bg-green-100 text-green-800";
+    if (stock === "N/A") return "bg-gray-100 text-gray-800";
     return "";
   };
 
-  const handleBulkUpdateChange = (itemId: number, field: 'consumed' | 'received', value: string) => {
-    const numValue = parseInt(value) || 0;
-    setBulkUpdateData(prev => ({
-      ...prev,
-      [itemId]: {
-        ...prev[itemId],
-        [field]: numValue
-      }
-    }));
+  const handleBulkUpdateChange = (itemId: number, field: 'consumed' | 'received' | 'receivedDate' | 'receivedPlace' | 'comments', value: string) => {
+    if (field === 'consumed' || field === 'received') {
+      const numValue = parseInt(value) || 0;
+      setBulkUpdateData(prev => ({
+        ...prev,
+        [itemId]: {
+          ...prev[itemId],
+          [field]: numValue
+        }
+      }));
+    } else {
+      setBulkUpdateData(prev => ({
+        ...prev,
+        [itemId]: {
+          ...prev[itemId],
+          [field]: value
+        }
+      }));
+    }
   };
 
   const openBulkUpdateModal = () => {
     setIsBulkUpdateModalOpen(true);
-    setBulkUpdateData({});
+    const initialData: typeof bulkUpdateData = {};
+    filteredItems.forEach(item => {
+      initialData[item.id] = {
+        consumed: 0,
+        received: 0,
+        receivedDate: dateReceived,
+        receivedPlace: placeReceived,
+        comments: ""
+      };
+    });
+    setBulkUpdateData(initialData);
     setPlaceReceived("");
-    setDateReceived("");
+    setDateReceived(new Date().toISOString().split('T')[0]);
   };
 
   const saveBulkUpdates = () => {
-    console.log("Bulk updates saved:", bulkUpdateData);
-    console.log("Place received:", placeReceived);
-    console.log("Date received:", dateReceived);
+    let updatedCount = 0;
+    let skippedCount = 0;
+    let failedCount = 0;
+    
+    const updatedItems = items.map(item => {
+      const updateData = bulkUpdateData[item.id];
+      if (!updateData) return item;
+      
+      const consumed = updateData.consumed || 0;
+      const received = updateData.received || 0;
+      
+      if (consumed === 0 && received === 0) {
+        skippedCount++;
+        return item;
+      }
+      
+      const newRob = item.rob - consumed + received;
+      
+      // Validate
+      if (newRob < 0) {
+        failedCount++;
+        return item;
+      }
+      
+      if (received > 0 && !updateData.receivedDate) {
+        failedCount++;
+        return item;
+      }
+      
+      updatedCount++;
+      return {
+        ...item,
+        rob: newRob
+      };
+    });
+    
+    setItems(updatedItems);
     setIsBulkUpdateModalOpen(false);
+    toast({
+      title: "Bulk Update Complete",
+      description: `Updated: ${updatedCount}, Skipped: ${skippedCount}, Failed: ${failedCount}`,
+    });
+  };
+  
+  // Handle Edit Item
+  const openEditModal = (item: StoreItem) => {
+    setEditingItem(item);
+    const isCustomUom = !UOM_OPTIONS.includes(item.uom || "");
+    setEditForm({
+      itemName: item.itemName,
+      uom: isCustomUom ? "Other" : (item.uom || ""),
+      customUom: isCustomUom ? (item.uom || "") : "",
+      min: item.min,
+      location: item.location,
+      notes: item.notes || ""
+    });
+    setIsEditModalOpen(true);
+  };
+  
+  const saveEditItem = () => {
+    if (!editingItem) return;
+    
+    const updatedItems = items.map(item => {
+      if (item.id === editingItem.id) {
+        return {
+          ...item,
+          itemName: editForm.itemName,
+          uom: editForm.uom === "Other" ? editForm.customUom : editForm.uom,
+          min: editForm.min,
+          location: editForm.location,
+          notes: editForm.notes
+        };
+      }
+      return item;
+    });
+    
+    setItems(updatedItems);
+    setIsEditModalOpen(false);
+    toast({ title: "Success", description: "Item updated successfully" });
+  };
+  
+  // Handle Receive
+  const openReceiveModal = (item: StoreItem) => {
+    setReceivingItem(item);
+    setReceiveForm({
+      quantity: "",
+      dateLocal: new Date().toISOString().split('T')[0],
+      place: "",
+      supplierPO: "",
+      remarks: ""
+    });
+    setIsReceiveModalOpen(true);
+  };
+  
+  const saveReceive = () => {
+    if (!receivingItem) return;
+    
+    const quantity = parseInt(receiveForm.quantity);
+    if (!quantity || quantity < 1) {
+      toast({ title: "Error", description: "Quantity must be at least 1", variant: "destructive" });
+      return;
+    }
+    
+    if (!receiveForm.dateLocal) {
+      toast({ title: "Error", description: "Date is required", variant: "destructive" });
+      return;
+    }
+    
+    const updatedItems = items.map(item => {
+      if (item.id === receivingItem.id) {
+        return {
+          ...item,
+          rob: item.rob + quantity
+        };
+      }
+      return item;
+    });
+    
+    setItems(updatedItems);
+    setIsReceiveModalOpen(false);
+    toast({ title: "Success", description: `Received ${quantity} ${receivingItem.uom || 'units'}` });
+  };
+  
+  // Handle Archive
+  const handleArchive = (item: StoreItem) => {
+    const confirmMessage = item.rob > 0 
+      ? `This item has stock on hand (ROB = ${item.rob}). Archive anyway?`
+      : `Archive ${item.itemName}?`;
+    
+    if (confirm(confirmMessage)) {
+      const updatedItems = items.map(i => 
+        i.id === item.id ? { ...i, isArchived: true } : i
+      );
+      setItems(updatedItems);
+      toast({ title: "Success", description: "Item archived" });
+    }
   };
 
   return (
@@ -728,12 +964,13 @@ const Stores: React.FC = () => {
               {activeTab === "lubes" ? "Lube Type" : 
                activeTab === "chemicals" ? "Chemical Name" : "Item Name"}
             </div>
-            <div className="col-span-3">
+            <div className="col-span-2">
               {activeTab === "lubes" ? "Application" : 
                activeTab === "chemicals" ? "Application Area" : "Stores Category"}
             </div>
+            <div className="col-span-1">UOM</div>
             <div className="col-span-1">
-              {activeTab === "lubes" || activeTab === "chemicals" ? "ROB (Ltr)" : "ROB"}
+              {activeTab === "lubes" || activeTab === "chemicals" ? "ROB" : "ROB"}
             </div>
             <div className="col-span-1">Min</div>
             <div className="col-span-1">Stock</div>
@@ -752,8 +989,11 @@ const Stores: React.FC = () => {
                 <div className="col-span-2 text-gray-700">
                   {item.itemName}
                 </div>
-                <div className="col-span-3 text-gray-600">
+                <div className="col-span-2 text-gray-600">
                   {item.storesCategory}
+                </div>
+                <div className="col-span-1 text-gray-700">
+                  {item.uom || "-"}
                 </div>
                 <div className="col-span-1 text-gray-700">
                   {item.rob}
@@ -762,24 +1002,40 @@ const Stores: React.FC = () => {
                   {item.min}
                 </div>
                 <div className="col-span-1">
-                  {item.stock && (
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStockColor(item.stock, item.rob, item.min)}`}>
-                      {item.stock}
-                    </span>
-                  )}
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStockColor(item.stock)}`}>
+                    {item.stock}
+                  </span>
                 </div>
                 <div className="col-span-1 text-gray-600">
                   {item.location}
                 </div>
                 <div className="col-span-1 flex gap-1">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => openEditModal(item)}
+                    title="Edit Item"
+                  >
                     <Edit className="h-4 w-4 text-gray-500" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => openReceiveModal(item)}
+                    title="Receive"
+                  >
                     <Plus className="h-4 w-4 text-gray-500" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Trash2 className="h-4 w-4 text-gray-500" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => handleArchive(item)}
+                    title="Archive"
+                  >
+                    <Archive className="h-4 w-4 text-gray-400" />
                   </Button>
                 </div>
               </div>
@@ -787,6 +1043,144 @@ const Stores: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Edit Item Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Item</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="itemName">Item Name</Label>
+              <Input
+                id="itemName"
+                value={editForm.itemName}
+                onChange={(e) => setEditForm({...editForm, itemName: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="uom">Unit of Measure</Label>
+              <Select 
+                value={editForm.uom} 
+                onValueChange={(value) => setEditForm({...editForm, uom: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select UOM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {UOM_OPTIONS.map(opt => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {editForm.uom === "Other" && (
+                <Input
+                  placeholder="Enter custom UOM"
+                  value={editForm.customUom}
+                  onChange={(e) => setEditForm({...editForm, customUom: e.target.value})}
+                />
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="min">Minimum Stock</Label>
+              <Input
+                id="min"
+                type="number"
+                min="0"
+                value={editForm.min}
+                onChange={(e) => setEditForm({...editForm, min: parseInt(e.target.value) || 0})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={editForm.location}
+                onChange={(e) => setEditForm({...editForm, location: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                value={editForm.notes}
+                onChange={(e) => setEditForm({...editForm, notes: e.target.value})}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEditItem}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Receive Item Modal */}
+      <Dialog open={isReceiveModalOpen} onOpenChange={setIsReceiveModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Receive {receivingItem?.itemName}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="quantity">
+                Quantity to Receive ({receivingItem?.uom || 'units'})
+              </Label>
+              <Input
+                id="quantity"
+                type="number"
+                min="1"
+                value={receiveForm.quantity}
+                onChange={(e) => setReceiveForm({...receiveForm, quantity: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="dateLocal">Date Received</Label>
+              <Input
+                id="dateLocal"
+                type="date"
+                value={receiveForm.dateLocal}
+                onChange={(e) => setReceiveForm({...receiveForm, dateLocal: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="place">Place/Port</Label>
+              <Input
+                id="place"
+                value={receiveForm.place}
+                onChange={(e) => setReceiveForm({...receiveForm, place: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="supplierPO">Supplier/PO#</Label>
+              <Input
+                id="supplierPO"
+                value={receiveForm.supplierPO}
+                onChange={(e) => setReceiveForm({...receiveForm, supplierPO: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="remarks">Remarks</Label>
+              <Textarea
+                id="remarks"
+                value={receiveForm.remarks}
+                onChange={(e) => setReceiveForm({...receiveForm, remarks: e.target.value})}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsReceiveModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveReceive}>Receive</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Bulk Update Stores Modal */}
       {isBulkUpdateModalOpen && (
@@ -833,7 +1227,7 @@ const Stores: React.FC = () => {
               </div>
 
               {/* Table Headers */}
-              <div className="grid grid-cols-8 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
+              <div className="grid grid-cols-9 gap-3 bg-gray-50 p-3 rounded-t text-sm font-medium text-gray-600 border">
                 <div>
                   {activeTab === "lubes" ? "Lube Grade" : 
                    activeTab === "chemicals" ? "Chem Code" : "Item Code"}
@@ -846,9 +1240,8 @@ const Stores: React.FC = () => {
                   {activeTab === "lubes" ? "Application" : 
                    activeTab === "chemicals" ? "Application Area" : "Category"}
                 </div>
-                <div>
-                  {activeTab === "lubes" || activeTab === "chemicals" ? "ROB (Ltr)" : "ROB"}
-                </div>
+                <div>UOM</div>
+                <div>ROB</div>
                 <div>Consumed</div>
                 <div>Received</div>
                 <div>New ROB</div>
@@ -861,18 +1254,21 @@ const Stores: React.FC = () => {
                   const consumed = bulkUpdateData[item.id]?.consumed || 0;
                   const received = bulkUpdateData[item.id]?.received || 0;
                   const newRob = item.rob - consumed + received;
+                  const hasError = newRob < 0 || (received > 0 && !bulkUpdateData[item.id]?.receivedDate);
                   
                   return (
-                    <div key={item.id} className="grid grid-cols-8 gap-3 p-3 border-b bg-white items-center">
+                    <div key={item.id} className={`grid grid-cols-9 gap-3 p-3 border-b ${hasError ? 'bg-red-50' : 'bg-white'} items-center`}>
                       <div className="text-gray-900 text-sm">{item.itemCode}</div>
                       <div className="text-gray-900 text-sm">{item.itemName}</div>
                       <div className="text-gray-700 text-sm">{item.storesCategory}</div>
+                      <div className="text-gray-700 text-sm">{item.uom || "-"}</div>
                       <div className="text-gray-700 text-sm">{item.rob}</div>
                       <div>
                         <Input 
                           type="number" 
                           min="0" 
-                          className="text-sm h-8" 
+                          max={item.rob}
+                          className={`text-sm h-8 ${newRob < 0 ? 'border-red-500' : ''}`}
                           placeholder="0"
                           value={consumed || ''}
                           onChange={(e) => handleBulkUpdateChange(item.id, 'consumed', e.target.value)}
@@ -888,23 +1284,18 @@ const Stores: React.FC = () => {
                           onChange={(e) => handleBulkUpdateChange(item.id, 'received', e.target.value)}
                         />
                       </div>
-                      <div className={`text-sm font-medium ${newRob < item.min ? 'text-red-600' : 'text-gray-900'}`}>
+                      <div className={`text-sm font-medium ${newRob < 0 ? 'text-red-600' : newRob < item.min ? 'text-yellow-600' : 'text-gray-900'}`}>
                         {newRob}
+                        {newRob < 0 && <div className="text-xs">Insufficient stock</div>}
                       </div>
-                      <div className="flex justify-center">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0"
-                          onClick={() => {
-                            const comment = prompt(`Add comment for ${item.itemName}:`);
-                            if (comment) {
-                              console.log(`Comment for ${item.itemName}: ${comment}`);
-                            }
-                          }}
-                        >
-                          <MessageSquare className="h-4 w-4 text-gray-500" />
-                        </Button>
+                      <div>
+                        <Input
+                          type="text"
+                          className="text-sm h-8"
+                          placeholder="Comments"
+                          value={bulkUpdateData[item.id]?.comments || ''}
+                          onChange={(e) => handleBulkUpdateChange(item.id, 'comments', e.target.value)}
+                        />
                       </div>
                     </div>
                   );
