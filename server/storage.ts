@@ -62,6 +62,7 @@ export interface IStorage {
   getChangeRequest(id: number): Promise<ChangeRequest | undefined>;
   createChangeRequest(request: InsertChangeRequest): Promise<ChangeRequest>;
   updateChangeRequest(id: number, data: Partial<ChangeRequest>): Promise<ChangeRequest>;
+  updateChangeRequestTarget(id: number, targetType: string | null, targetId: string | null, snapshotBeforeJson: any): Promise<ChangeRequest>;
   deleteChangeRequest(id: number): Promise<void>;
   submitChangeRequest(id: number, userId: string): Promise<ChangeRequest>;
   approveChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest>;
@@ -516,6 +517,9 @@ export class MemStorage implements IStorage {
       ...request,
       id,
       status: request.status || 'draft',
+      targetType: request.targetType || null,
+      targetId: request.targetId || null,
+      snapshotBeforeJson: request.snapshotBeforeJson || null,
       submittedAt: request.submittedAt || null,
       reviewedByUserId: request.reviewedByUserId || null,
       reviewedAt: request.reviewedAt || null,
@@ -533,6 +537,25 @@ export class MemStorage implements IStorage {
     const updated = {
       ...request,
       ...data,
+      updatedAt: new Date()
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async updateChangeRequestTarget(id: number, targetType: string | null, targetId: string | null, snapshotBeforeJson: any): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    
+    if (request.status !== 'draft' && request.status !== 'returned') {
+      throw new Error('Can only update target for draft or returned requests');
+    }
+    
+    const updated = {
+      ...request,
+      targetType,
+      targetId,
+      snapshotBeforeJson,
       updatedAt: new Date()
     };
     this.changeRequests.set(id, updated);

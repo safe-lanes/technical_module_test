@@ -37,8 +37,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, RotateCcw, Package, ClipboardList, Archive, Store, ExternalLink } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { TargetPicker } from "@/components/TargetPicker";
 
 interface ChangeRequest {
   id: number;
@@ -46,6 +47,9 @@ interface ChangeRequest {
   category: string;
   title: string;
   reason: string;
+  targetType?: string | null;
+  targetId?: string | null;
+  snapshotBeforeJson?: any;
   status: 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected';
   requestedByUserId: string;
   submittedAt: Date | null;
@@ -98,12 +102,18 @@ export default function ModifyPMS() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingRequest, setEditingRequest] = useState<ChangeRequest | null>(null);
   const [viewingRequest, setViewingRequest] = useState<ChangeRequest | null>(null);
+  const [showTargetPicker, setShowTargetPicker] = useState(false);
+  const [showSnapshotDialog, setShowSnapshotDialog] = useState(false);
+  const [snapshotToView, setSnapshotToView] = useState<any>(null);
   
   // Form state for create/edit
   const [formData, setFormData] = useState({
     title: '',
     category: 'components',
-    reason: ''
+    reason: '',
+    targetType: null as string | null,
+    targetId: null as string | null,
+    snapshotBeforeJson: null as any
   });
 
   // Fetch change requests
@@ -183,7 +193,10 @@ export default function ModifyPMS() {
     setFormData({
       title: '',
       category: 'components',
-      reason: ''
+      reason: '',
+      targetType: null,
+      targetId: null,
+      snapshotBeforeJson: null
     });
   };
 
@@ -196,9 +209,58 @@ export default function ModifyPMS() {
     setFormData({
       title: request.title,
       category: request.category,
-      reason: request.reason
+      reason: request.reason,
+      targetType: request.targetType || null,
+      targetId: request.targetId || null,
+      snapshotBeforeJson: request.snapshotBeforeJson || null
     });
     setEditingRequest(request);
+  };
+
+  const handleTargetSelect = async (targetType: string, targetId: string, snapshot: any) => {
+    setFormData(prev => ({
+      ...prev,
+      targetType,
+      targetId,
+      snapshotBeforeJson: snapshot
+    }));
+    
+    // If editing an existing request, update it immediately
+    if (editingRequest) {
+      try {
+        await apiRequest(`/api/modify-pms/requests/${editingRequest.id}/target`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            targetType,
+            targetId,
+            snapshotBeforeJson: snapshot
+          })
+        });
+        
+        // Refresh the request data
+        queryClient.invalidateQueries({ queryKey: ['/api/modify-pms/requests'] });
+      } catch (error) {
+        console.error('Failed to update target:', error);
+      }
+    }
+    
+    setShowTargetPicker(false);
+  };
+
+  const getTargetIcon = (targetType?: string | null) => {
+    switch (targetType) {
+      case 'component': return <Package className="h-4 w-4" />;
+      case 'work_order': return <ClipboardList className="h-4 w-4" />;
+      case 'spare': return <Archive className="h-4 w-4" />;
+      case 'store': return <Store className="h-4 w-4" />;
+      default: return null;
+    }
+  };
+
+  const getTargetDisplayName = (request: ChangeRequest) => {
+    if (!request.snapshotBeforeJson) return '-';
+    const snapshot = request.snapshotBeforeJson;
+    return `${snapshot.displayKey || ''} - ${snapshot.displayName || ''}`;
   };
 
   const handleView = async (request: ChangeRequest) => {
@@ -320,6 +382,7 @@ export default function ModifyPMS() {
                   <TableHead>ID</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Title</TableHead>
+                  <TableHead>Target</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Requested By</TableHead>
                   <TableHead>Submitted</TableHead>
@@ -332,6 +395,18 @@ export default function ModifyPMS() {
                     <TableCell className="font-mono">CR{String(request.id).padStart(4, '0')}</TableCell>
                     <TableCell className="capitalize">{request.category.replace('_', ' ')}</TableCell>
                     <TableCell className="max-w-xs truncate">{request.title}</TableCell>
+                    <TableCell>
+                      {request.targetType && request.snapshotBeforeJson ? (
+                        <div className="flex items-center gap-1">
+                          {getTargetIcon(request.targetType)}
+                          <span className="text-sm truncate max-w-[150px]">
+                            {getTargetDisplayName(request)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">No target</span>
+                      )}
+                    </TableCell>
                     <TableCell>{getStatusBadge(request.status)}</TableCell>
                     <TableCell>{request.requestedByUserId}</TableCell>
                     <TableCell>
@@ -358,7 +433,7 @@ export default function ModifyPMS() {
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            {request.reason && request.title && (
+                            {request.reason && request.title && request.targetType && request.targetId && (
                               <Button
                                 size="sm"
                                 variant="default"
@@ -452,6 +527,47 @@ export default function ModifyPMS() {
               />
             </div>
 
+            <div>
+              <Label>Target Selection *</Label>
+              <div className="border rounded-lg p-4 bg-gray-50">
+                {formData.targetType && formData.snapshotBeforeJson ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getTargetIcon(formData.targetType)}
+                      <div>
+                        <p className="font-semibold">
+                          {formData.snapshotBeforeJson.displayKey} - {formData.snapshotBeforeJson.displayName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Target Type: {formData.targetType?.replace('_', ' ').toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowTargetPicker(true)}
+                    >
+                      Change Target
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-gray-600 mb-2">No target selected</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowTargetPicker(true)}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Select Target
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {editingRequest?.status === 'returned' && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm font-semibold text-yellow-800">
@@ -478,7 +594,7 @@ export default function ModifyPMS() {
             >
               {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save as Draft'}
             </Button>
-            {editingRequest && formData.title && formData.reason && (
+            {editingRequest && formData.title && formData.reason && formData.targetType && formData.targetId && (
               <Button
                 variant="default"
                 onClick={() => {
@@ -536,6 +652,42 @@ export default function ModifyPMS() {
                 <div>
                   <Label>Reason for Change</Label>
                   <p className="whitespace-pre-wrap">{viewingRequest.reason || 'No reason provided'}</p>
+                </div>
+
+                <div>
+                  <Label>Target</Label>
+                  {viewingRequest.targetType && viewingRequest.snapshotBeforeJson ? (
+                    <Card className="mt-2">
+                      <CardContent className="pt-4">
+                        <div className="flex items-start gap-3">
+                          {getTargetIcon(viewingRequest.targetType)}
+                          <div className="flex-1">
+                            <p className="font-semibold">
+                              {viewingRequest.snapshotBeforeJson.displayKey} - {viewingRequest.snapshotBeforeJson.displayName}
+                            </p>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Type: {viewingRequest.targetType?.replace('_', ' ').toUpperCase()}
+                            </p>
+                            {viewingRequest.snapshotBeforeJson.displayPath && (
+                              <p className="text-sm text-gray-500">
+                                Path: {viewingRequest.snapshotBeforeJson.displayPath}
+                              </p>
+                            )}
+                            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                              {Object.entries(viewingRequest.snapshotBeforeJson.fields || {}).map(([key, value]: [string, any]) => (
+                                <div key={key}>
+                                  <span className="text-gray-500">{key}: </span>
+                                  <span className="font-medium">{String(value) || '-'}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <p className="text-gray-500">No target selected</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -624,6 +776,17 @@ export default function ModifyPMS() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Target Picker Dialog */}
+      {showTargetPicker && (
+        <TargetPicker
+          open={showTargetPicker}
+          onOpenChange={setShowTargetPicker}
+          category={formData.category}
+          vesselId={selectedVessel}
+          onTargetSelect={handleTargetSelect}
+        />
+      )}
     </div>
   );
 }

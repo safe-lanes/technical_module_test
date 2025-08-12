@@ -35,6 +35,9 @@ The application uses a modern full-stack architecture with a React frontend (Typ
 - **Components Module**: Full CRUD operations with hierarchical component tree management
 - **Running Hours Module**: Equipment tracking with utilization rate calculations and audit history
 - **Spares Module**: Comprehensive inventory management with consumption/receive tracking, bulk updates, and complete transaction history
+- **Stores Module**: Complete inventory management with transaction history and Excel export
+- **Modify PMS - Change Requests Module (Phase 1.0)**: Complete request workflow (draft → submitted → approved/rejected/returned), filtering, CRUD operations
+- **Modify PMS - Change Requests Module (Phase 1.1)**: Target Picker overlay functionality for selecting specific PMS items (Component/Work Order/Spare/Store) with snapshot capture
 
 ### Architecture Features:
 - Shared component tree structure used across PMS modules for consistency

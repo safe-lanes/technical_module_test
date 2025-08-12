@@ -166,6 +166,9 @@ export const changeRequest = mysqlTable("change_request", {
   category: text("category").notNull(), // 'components' | 'work_orders' | 'spares' | 'stores'
   title: text("title").notNull(), // max 120 chars enforced in application
   reason: text("reason").notNull(),
+  targetType: text("target_type"), // 'component' | 'work_order' | 'spare' | 'store'
+  targetId: text("target_id"),
+  snapshotBeforeJson: json("snapshot_before_json"),
   status: text("status").notNull().default("draft"), // 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected'
   requestedByUserId: text("requested_by_user_id").notNull(),
   submittedAt: timestamp("submitted_at"),

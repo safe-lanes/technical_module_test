@@ -5,6 +5,26 @@ import { insertRunningHoursAuditSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Components API routes (for Target Picker)
+  app.get("/api/components/:vesselId", async (req, res) => {
+    try {
+      const components = await storage.getComponents(req.params.vesselId);
+      res.json(components);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch components" });
+    }
+  });
+  
+  // Work Orders API routes (for Target Picker - placeholder)
+  app.get("/api/work-orders", async (req, res) => {
+    try {
+      // Return empty array for now - will be implemented when Work Orders module is built
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch work orders" });
+    }
+  });
+  
   // Running Hours API routes
   
   // Get components for a vessel
@@ -460,6 +480,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Update change request target (draft/returned only)
+  app.put("/api/modify-pms/requests/:id/target", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { targetType, targetId, snapshotBeforeJson } = req.body;
+      
+      const updated = await storage.updateChangeRequestTarget(id, targetType, targetId, snapshotBeforeJson);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to update target" });
+    }
+  });
+  
   // Submit change request
   app.put("/api/modify-pms/requests/:id/submit", async (req, res) => {
     try {
@@ -474,10 +507,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Can only submit draft or returned requests" });
       }
       
-      // Validate required fields for submission
-      if (!existing.title || !existing.category || !existing.vesselId || !existing.reason) {
+      // Validate required fields for submission - now including target
+      if (!existing.title || !existing.category || !existing.vesselId || !existing.reason || 
+          !existing.targetType || !existing.targetId || !existing.snapshotBeforeJson) {
         return res.status(400).json({ 
-          error: "Title, Category, Vessel, and Reason are required for submission" 
+          error: "Title, Category, Vessel, Reason, and Target selection are required for submission" 
         });
       }
       
