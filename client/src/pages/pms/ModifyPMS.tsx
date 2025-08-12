@@ -41,6 +41,8 @@ import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, Rot
 import { apiRequest } from "@/lib/queryClient";
 import { TargetPicker } from "@/components/TargetPicker";
 import { ProposeChanges } from "@/components/ProposeChanges";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 interface ChangeRequest {
   id: number;
@@ -98,6 +100,7 @@ const statusIcons = {
 };
 
 export default function ModifyPMS() {
+  const [, navigate] = useLocation();
   const [selectedVessel] = useState('MV Test Vessel');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -121,6 +124,8 @@ export default function ModifyPMS() {
     movePreviewJson: null as any,
     targetDisplay: null as any
   });
+  
+
 
   // Fetch change requests
   const { data: requests = [], isLoading } = useQuery({
@@ -204,9 +209,38 @@ export default function ModifyPMS() {
       targetId: null,
       snapshotBeforeJson: null,
       proposedChangesJson: null,
-      movePreviewJson: null
+      movePreviewJson: null,
+      targetDisplay: null
     });
   };
+  
+  // Check if returning from target selection
+  useEffect(() => {
+    const returnWithTarget = sessionStorage.getItem('modifyPMS_returnWithTarget');
+    const formDataStr = sessionStorage.getItem('modifyPMS_formData');
+    const editingId = sessionStorage.getItem('modifyPMS_editingId');
+    
+    if (returnWithTarget === 'true' && formDataStr) {
+      const savedFormData = JSON.parse(formDataStr);
+      setFormData(savedFormData);
+      
+      // If we were editing, restore that state
+      if (editingId && requests) {
+        const requestToEdit = requests.find((r: ChangeRequest) => r.id === parseInt(editingId));
+        if (requestToEdit) {
+          setEditingRequest(requestToEdit);
+        }
+      }
+      
+      // Open the create/edit dialog
+      setShowCreateDialog(true);
+      
+      // Clear session storage
+      sessionStorage.removeItem('modifyPMS_returnWithTarget');
+      sessionStorage.removeItem('modifyPMS_formData');
+      sessionStorage.removeItem('modifyPMS_editingId');
+    }
+  }, [requests]);
 
   const handleCreate = () => {
     resetForm();
@@ -222,7 +256,12 @@ export default function ModifyPMS() {
       targetId: request.targetId || null,
       snapshotBeforeJson: request.snapshotBeforeJson || null,
       proposedChangesJson: request.proposedChangesJson || null,
-      movePreviewJson: request.movePreviewJson || null
+      movePreviewJson: request.movePreviewJson || null,
+      targetDisplay: request.snapshotBeforeJson ? {
+        key: request.snapshotBeforeJson.displayKey,
+        name: request.snapshotBeforeJson.displayName,
+        path: request.snapshotBeforeJson.displayPath
+      } : null
     });
     setEditingRequest(request);
   };
@@ -568,7 +607,21 @@ export default function ModifyPMS() {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowTargetPicker(true)}
+                      onClick={() => {
+                        // Store current form data in sessionStorage for retrieval when returning
+                        sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
+                        sessionStorage.setItem('modifyPMS_editingId', editingRequest?.id?.toString() || '');
+                        sessionStorage.setItem('modifyPMS_selectMode', 'true');
+                        
+                        // Navigate to the appropriate sub-module
+                        const routes = {
+                          'components': '/pms/components',
+                          'work_orders': '/pms/work-orders',
+                          'spares': '/pms/spares',
+                          'stores': '/pms/stores'
+                        };
+                        navigate(routes[formData.category as keyof typeof routes] || '/pms/components');
+                      }}
                     >
                       Change Target
                     </Button>
@@ -579,7 +632,21 @@ export default function ModifyPMS() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setShowTargetPicker(true)}
+                      onClick={() => {
+                        // Store current form data in sessionStorage for retrieval when returning
+                        sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
+                        sessionStorage.setItem('modifyPMS_editingId', editingRequest?.id?.toString() || '');
+                        sessionStorage.setItem('modifyPMS_selectMode', 'true');
+                        
+                        // Navigate to the appropriate sub-module
+                        const routes = {
+                          'components': '/pms/components',
+                          'work_orders': '/pms/work-orders',
+                          'spares': '/pms/spares',
+                          'stores': '/pms/stores'
+                        };
+                        navigate(routes[formData.category as keyof typeof routes] || '/pms/components');
+                      }}
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Select Target

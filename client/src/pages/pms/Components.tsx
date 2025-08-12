@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import WorkOrderForm from "@/components/WorkOrderForm";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
 import { useLocation } from "wouter";
 import { getComponentCategory } from "@/utils/componentUtils";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -934,13 +935,79 @@ const Components: React.FC = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
+  const [isSelectMode, setIsSelectMode] = useState(false);
   
   const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  
+  // Check if we're in select mode from ModifyPMS
+  useEffect(() => {
+    const selectMode = sessionStorage.getItem('modifyPMS_selectMode');
+    if (selectMode === 'true') {
+      setIsSelectMode(true);
+      // Clear the flag so it doesn't persist on refresh
+      sessionStorage.removeItem('modifyPMS_selectMode');
+    }
+  }, []);
 
   const handleBackToModifyPMS = () => {
     exitChangeRequestMode();
     setLocation("/modify-pms");
+  };
+  
+  const handleSelectTarget = () => {
+    if (!selectedComponent) {
+      toast({
+        title: "No component selected",
+        description: "Please select a component from the tree",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Create snapshot of selected component
+    const snapshot = {
+      id: selectedComponent.id,
+      displayKey: selectedComponent.code,
+      displayName: selectedComponent.name,
+      displayPath: `${selectedComponent.code} ${selectedComponent.name}`,
+      componentCode: selectedComponent.code,
+      name: selectedComponent.name,
+      // Add more fields as needed from the component data
+      maker: "MAN B&W", // These would come from actual data
+      model: "6S60MC-C",
+      serialNo: "MB2020001",
+      category: getComponentCategory(selectedComponent.code),
+      deptCategory: "Engineering",
+      location: "Engine Room",
+      critical: "Yes",
+      classItem: "Yes",
+      commissionedDate: "01-Jan-2020"
+    };
+    
+    // Retrieve stored form data
+    const formDataStr = sessionStorage.getItem('modifyPMS_formData');
+    const editingId = sessionStorage.getItem('modifyPMS_editingId');
+    
+    if (formDataStr) {
+      const formData = JSON.parse(formDataStr);
+      formData.targetType = 'component';
+      formData.targetId = selectedComponent.id;
+      formData.snapshotBeforeJson = snapshot;
+      formData.targetDisplay = {
+        key: selectedComponent.code,
+        name: selectedComponent.name,
+        path: `${selectedComponent.code} ${selectedComponent.name}`
+      };
+      
+      // Store updated form data
+      sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
+      sessionStorage.setItem('modifyPMS_returnWithTarget', 'true');
+    }
+    
+    // Navigate back to ModifyPMS
+    setLocation("/pms/modify-pms");
   };
 
   const toggleNode = (nodeId: string) => {
@@ -1025,12 +1092,46 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className={`h-full p-6 ${isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
+    <div className={`h-full p-6 ${isSelectMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
+      {/* Select Mode Banner */}
+      {isSelectMode && (
+        <div className="mb-4 p-4 bg-orange-100 border border-orange-300 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Package className="h-5 w-5 text-orange-600" />
+              <div>
+                <h3 className="font-semibold text-orange-900">Select Target Component</h3>
+                <p className="text-sm text-orange-700">Choose a component from the tree and click "Use This Target" to select it for your change request</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsSelectMode(false);
+                  setLocation("/pms/modify-pms");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                onClick={handleSelectTarget}
+                disabled={!selectedComponent}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Use This Target
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Header with SubModule Title */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            {isChangeRequestMode && (
+            {isChangeRequestMode && !isSelectMode && (
               <Button
                 variant="ghost"
                 onClick={handleBackToModifyPMS}
@@ -1040,11 +1141,11 @@ const Components: React.FC = () => {
                 Back to Modify PMS
               </Button>
             )}
-            <h1 className={`text-2xl font-semibold ${isChangeRequestMode ? 'text-white' : 'text-gray-800'}`}>
-              Components {isChangeRequestMode && '- Change Request Mode'}
+            <h1 className={`text-2xl font-semibold ${isChangeRequestMode && !isSelectMode ? 'text-white' : 'text-gray-800'}`}>
+              Components {isSelectMode ? '- Select Target' : isChangeRequestMode ? '- Change Request Mode' : ''}
             </h1>
           </div>
-          {!isChangeRequestMode && (
+          {!isChangeRequestMode && !isSelectMode && (
             <Button 
               className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
               onClick={() => setIsComponentFormOpen(true)}
