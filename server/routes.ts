@@ -369,6 +369,244 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Change Request API routes
+  
+  // Get change requests with filters
+  app.get("/api/modify-pms/requests", async (req, res) => {
+    try {
+      const filters = {
+        category: req.query.category as string,
+        status: req.query.status as string,
+        q: req.query.q as string,
+        vesselId: req.query.vesselId as string
+      };
+      
+      const requests = await storage.getChangeRequests(filters);
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch change requests" });
+    }
+  });
+  
+  // Get single change request
+  app.get("/api/modify-pms/requests/:id", async (req, res) => {
+    try {
+      const request = await storage.getChangeRequest(parseInt(req.params.id));
+      if (!request) {
+        return res.status(404).json({ error: "Change request not found" });
+      }
+      
+      // Get attachments and comments
+      const attachments = await storage.getChangeRequestAttachments(request.id);
+      const comments = await storage.getChangeRequestComments(request.id);
+      
+      res.json({ ...request, attachments, comments });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch change request" });
+    }
+  });
+  
+  // Create change request (draft)
+  app.post("/api/modify-pms/requests", async (req, res) => {
+    try {
+      const { vesselId, category, title, reason } = req.body;
+      
+      // Validation for draft - only title required
+      if (!title) {
+        return res.status(400).json({ error: "Title is required" });
+      }
+      
+      const request = await storage.createChangeRequest({
+        vesselId: vesselId || '',
+        category: category || 'components',
+        title: title.substring(0, 120), // Enforce max length
+        reason: reason || '',
+        status: 'draft',
+        requestedByUserId: req.body.userId || 'current_user'
+      });
+      
+      res.json(request);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create change request" });
+    }
+  });
+  
+  // Update change request (draft/returned only)
+  app.put("/api/modify-pms/requests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const existing = await storage.getChangeRequest(id);
+      
+      if (!existing) {
+        return res.status(404).json({ error: "Change request not found" });
+      }
+      
+      if (existing.status !== 'draft' && existing.status !== 'returned') {
+        return res.status(400).json({ error: "Can only edit draft or returned requests" });
+      }
+      
+      const { vesselId, category, title, reason } = req.body;
+      
+      const updated = await storage.updateChangeRequest(id, {
+        vesselId,
+        category,
+        title: title?.substring(0, 120),
+        reason
+      });
+      
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update change request" });
+    }
+  });
+  
+  // Submit change request
+  app.put("/api/modify-pms/requests/:id/submit", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const existing = await storage.getChangeRequest(id);
+      
+      if (!existing) {
+        return res.status(404).json({ error: "Change request not found" });
+      }
+      
+      if (existing.status !== 'draft' && existing.status !== 'returned') {
+        return res.status(400).json({ error: "Can only submit draft or returned requests" });
+      }
+      
+      // Validate required fields for submission
+      if (!existing.title || !existing.category || !existing.vesselId || !existing.reason) {
+        return res.status(400).json({ 
+          error: "Title, Category, Vessel, and Reason are required for submission" 
+        });
+      }
+      
+      const updated = await storage.submitChangeRequest(id, req.body.userId || 'current_user');
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to submit change request" });
+    }
+  });
+  
+  // Approve change request (office only)
+  app.put("/api/modify-pms/requests/:id/approve", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { comment, reviewerId } = req.body;
+      
+      if (!comment) {
+        return res.status(400).json({ error: "Comment is required for approval" });
+      }
+      
+      const updated = await storage.approveChangeRequest(
+        id, 
+        reviewerId || 'reviewer', 
+        comment
+      );
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to approve change request" });
+    }
+  });
+  
+  // Reject change request (office only)
+  app.put("/api/modify-pms/requests/:id/reject", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { comment, reviewerId } = req.body;
+      
+      if (!comment) {
+        return res.status(400).json({ error: "Comment is required for rejection" });
+      }
+      
+      const updated = await storage.rejectChangeRequest(
+        id, 
+        reviewerId || 'reviewer', 
+        comment
+      );
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to reject change request" });
+    }
+  });
+  
+  // Return change request for clarification (office only)
+  app.put("/api/modify-pms/requests/:id/return", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { comment, reviewerId } = req.body;
+      
+      if (!comment) {
+        return res.status(400).json({ error: "Comment is required for return" });
+      }
+      
+      const updated = await storage.returnChangeRequest(
+        id, 
+        reviewerId || 'reviewer', 
+        comment
+      );
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to return change request" });
+    }
+  });
+  
+  // Delete change request (draft only)
+  app.delete("/api/modify-pms/requests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteChangeRequest(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to delete change request" });
+    }
+  });
+  
+  // Create attachment
+  app.post("/api/modify-pms/requests/:id/attachments", async (req, res) => {
+    try {
+      const changeRequestId = parseInt(req.params.id);
+      const { filename, url, uploadedByUserId } = req.body;
+      
+      if (!filename || !url) {
+        return res.status(400).json({ error: "Filename and URL are required" });
+      }
+      
+      const attachment = await storage.createChangeRequestAttachment({
+        changeRequestId,
+        filename,
+        url,
+        uploadedByUserId: uploadedByUserId || 'current_user'
+      });
+      
+      res.json(attachment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create attachment" });
+    }
+  });
+  
+  // Create comment
+  app.post("/api/modify-pms/requests/:id/comments", async (req, res) => {
+    try {
+      const changeRequestId = parseInt(req.params.id);
+      const { message, userId } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      
+      const comment = await storage.createChangeRequestComment({
+        changeRequestId,
+        userId: userId || 'current_user',
+        message
+      });
+      
+      res.json(comment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create comment" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

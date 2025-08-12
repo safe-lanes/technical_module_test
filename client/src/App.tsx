@@ -7,6 +7,7 @@ import { TechnicalModule } from "./pages/TechnicalModule";
 import WorkOrders from "./pages/pms/WorkOrders";
 import RunningHours from "./pages/pms/RunningHours";
 import Components from "./pages/pms/Components";
+import ModifyPMS from "./pages/pms/ModifyPMS";
 import Spares from "./pages/spares/SparesNew";
 import Stores from "./pages/stores/Stores";
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/pms/work-orders" component={WorkOrders} />
               <Route path="/pms/running-hours" component={RunningHours} />
               <Route path="/pms/components" component={Components} />
+              <Route path="/pms/modify-pms" component={ModifyPMS} />
               <Route path="/pms/spares" component={Spares} />
               <Route path="/spares" component={Spares} />
               <Route path="/stores" component={Stores} />

@@ -158,3 +158,70 @@ export const insertStoresLedgerSchema = createInsertSchema(storesLedger).omit({
 
 export type InsertStoresLedger = z.infer<typeof insertStoresLedgerSchema>;
 export type StoresLedger = typeof storesLedger.$inferSelect;
+
+// Change Request Tables for Modify PMS module
+export const changeRequest = mysqlTable("change_request", {
+  id: int("id").primaryKey().autoincrement(),
+  vesselId: text("vessel_id").notNull(),
+  category: text("category").notNull(), // 'components' | 'work_orders' | 'spares' | 'stores'
+  title: text("title").notNull(), // max 120 chars enforced in application
+  reason: text("reason").notNull(),
+  status: text("status").notNull().default("draft"), // 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected'
+  requestedByUserId: text("requested_by_user_id").notNull(),
+  submittedAt: timestamp("submitted_at"),
+  reviewedByUserId: text("reviewed_by_user_id"),
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
+}, (table) => ({
+  vesselCategoryIdx: index("idx_vessel_category").on(table.vesselId, table.category),
+  statusIdx: index("idx_status").on(table.status),
+}));
+
+export const insertChangeRequestSchema = createInsertSchema(changeRequest).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertChangeRequest = z.infer<typeof insertChangeRequestSchema>;
+export type ChangeRequest = typeof changeRequest.$inferSelect;
+
+// Change Request Attachments
+export const changeRequestAttachment = mysqlTable("change_request_attachment", {
+  id: int("id").primaryKey().autoincrement(),
+  changeRequestId: int("change_request_id").notNull(),
+  filename: text("filename").notNull(),
+  url: text("url").notNull(),
+  uploadedByUserId: text("uploaded_by_user_id").notNull(),
+  uploadedAt: timestamp("uploaded_at").notNull().defaultNow(),
+}, (table) => ({
+  changeRequestIdx: index("idx_change_request").on(table.changeRequestId),
+}));
+
+export const insertChangeRequestAttachmentSchema = createInsertSchema(changeRequestAttachment).omit({
+  id: true,
+  uploadedAt: true,
+});
+
+export type InsertChangeRequestAttachment = z.infer<typeof insertChangeRequestAttachmentSchema>;
+export type ChangeRequestAttachment = typeof changeRequestAttachment.$inferSelect;
+
+// Change Request Comments
+export const changeRequestComment = mysqlTable("change_request_comment", {
+  id: int("id").primaryKey().autoincrement(),
+  changeRequestId: int("change_request_id").notNull(),
+  userId: text("user_id").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  changeRequestIdx: index("idx_change_request_comment").on(table.changeRequestId),
+}));
+
+export const insertChangeRequestCommentSchema = createInsertSchema(changeRequestComment).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertChangeRequestComment = z.infer<typeof insertChangeRequestCommentSchema>;
+export type ChangeRequestComment = typeof changeRequestComment.$inferSelect;

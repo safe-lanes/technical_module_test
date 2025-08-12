@@ -14,7 +14,16 @@ import {
   type InsertSpare,
   sparesHistory,
   type SpareHistory,
-  type InsertSpareHistory
+  type InsertSpareHistory,
+  changeRequest,
+  type ChangeRequest,
+  type InsertChangeRequest,
+  changeRequestAttachment,
+  type ChangeRequestAttachment,
+  type InsertChangeRequestAttachment,
+  changeRequestComment,
+  type ChangeRequestComment,
+  type InsertChangeRequestComment
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -47,6 +56,25 @@ export interface IStorage {
   getSpareHistory(vesselId: string): Promise<SpareHistory[]>;
   getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]>;
   createSpareHistory(history: InsertSpareHistory): Promise<SpareHistory>;
+  
+  // Change Request methods
+  getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]>;
+  getChangeRequest(id: number): Promise<ChangeRequest | undefined>;
+  createChangeRequest(request: InsertChangeRequest): Promise<ChangeRequest>;
+  updateChangeRequest(id: number, data: Partial<ChangeRequest>): Promise<ChangeRequest>;
+  deleteChangeRequest(id: number): Promise<void>;
+  submitChangeRequest(id: number, userId: string): Promise<ChangeRequest>;
+  approveChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest>;
+  rejectChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest>;
+  returnChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest>;
+  
+  // Change Request Attachments
+  getChangeRequestAttachments(changeRequestId: number): Promise<ChangeRequestAttachment[]>;
+  createChangeRequestAttachment(attachment: InsertChangeRequestAttachment): Promise<ChangeRequestAttachment>;
+  
+  // Change Request Comments
+  getChangeRequestComments(changeRequestId: number): Promise<ChangeRequestComment[]>;
+  createChangeRequestComment(comment: InsertChangeRequestComment): Promise<ChangeRequestComment>;
 }
 
 export class MemStorage implements IStorage {
@@ -59,6 +87,12 @@ export class MemStorage implements IStorage {
   private currentSpareId: number;
   private sparesHistory: SpareHistory[];
   private currentHistoryId: number;
+  private changeRequests: Map<number, ChangeRequest>;
+  private currentChangeRequestId: number;
+  private changeRequestAttachments: ChangeRequestAttachment[];
+  private currentAttachmentId: number;
+  private changeRequestComments: ChangeRequestComment[];
+  private currentCommentId: number;
 
   constructor() {
     this.users = new Map();
@@ -70,6 +104,12 @@ export class MemStorage implements IStorage {
     this.currentSpareId = 1;
     this.sparesHistory = [];
     this.currentHistoryId = 1;
+    this.changeRequests = new Map();
+    this.currentChangeRequestId = 1;
+    this.changeRequestAttachments = [];
+    this.currentAttachmentId = 1;
+    this.changeRequestComments = [];
+    this.currentCommentId = 1;
     
     // Initialize sample components and spares
     this.initializeComponents();
@@ -437,6 +477,203 @@ export class MemStorage implements IStorage {
     const fullHistory: SpareHistory = { ...history, id };
     this.sparesHistory.push(fullHistory);
     return fullHistory;
+  }
+
+  // Change Request methods
+  async getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]> {
+    let requests = Array.from(this.changeRequests.values());
+    
+    if (filters) {
+      if (filters.category) {
+        requests = requests.filter(r => r.category === filters.category);
+      }
+      if (filters.status) {
+        requests = requests.filter(r => r.status === filters.status);
+      }
+      if (filters.vesselId) {
+        requests = requests.filter(r => r.vesselId === filters.vesselId);
+      }
+      if (filters.q) {
+        const search = filters.q.toLowerCase();
+        requests = requests.filter(r => 
+          r.title.toLowerCase().includes(search) || 
+          r.status.toLowerCase().includes(search)
+        );
+      }
+    }
+    
+    return requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async getChangeRequest(id: number): Promise<ChangeRequest | undefined> {
+    return this.changeRequests.get(id);
+  }
+
+  async createChangeRequest(request: InsertChangeRequest): Promise<ChangeRequest> {
+    const id = this.currentChangeRequestId++;
+    const now = new Date();
+    const fullRequest: ChangeRequest = {
+      ...request,
+      id,
+      status: request.status || 'draft',
+      submittedAt: request.submittedAt || null,
+      reviewedByUserId: request.reviewedByUserId || null,
+      reviewedAt: request.reviewedAt || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.changeRequests.set(id, fullRequest);
+    return fullRequest;
+  }
+
+  async updateChangeRequest(id: number, data: Partial<ChangeRequest>): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    
+    const updated = {
+      ...request,
+      ...data,
+      updatedAt: new Date()
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async deleteChangeRequest(id: number): Promise<void> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    if (request.status !== 'draft') {
+      throw new Error('Only draft requests can be deleted');
+    }
+    this.changeRequests.delete(id);
+  }
+
+  async submitChangeRequest(id: number, userId: string): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    
+    const now = new Date();
+    const updated = {
+      ...request,
+      status: 'submitted' as const,
+      submittedAt: now,
+      requestedByUserId: userId,
+      updatedAt: now
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async approveChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    if (request.status !== 'submitted') {
+      throw new Error('Only submitted requests can be approved');
+    }
+    
+    // Add comment
+    await this.createChangeRequestComment({
+      changeRequestId: id,
+      userId: reviewerId,
+      message: `APPROVED: ${comment}`
+    });
+    
+    const now = new Date();
+    const updated = {
+      ...request,
+      status: 'approved' as const,
+      reviewedByUserId: reviewerId,
+      reviewedAt: now,
+      updatedAt: now
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async rejectChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    if (request.status !== 'submitted') {
+      throw new Error('Only submitted requests can be rejected');
+    }
+    
+    // Add comment
+    await this.createChangeRequestComment({
+      changeRequestId: id,
+      userId: reviewerId,
+      message: `REJECTED: ${comment}`
+    });
+    
+    const now = new Date();
+    const updated = {
+      ...request,
+      status: 'rejected' as const,
+      reviewedByUserId: reviewerId,
+      reviewedAt: now,
+      updatedAt: now
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  async returnChangeRequest(id: number, reviewerId: string, comment: string): Promise<ChangeRequest> {
+    const request = this.changeRequests.get(id);
+    if (!request) throw new Error('Change request not found');
+    if (request.status !== 'submitted') {
+      throw new Error('Only submitted requests can be returned');
+    }
+    
+    // Add comment
+    await this.createChangeRequestComment({
+      changeRequestId: id,
+      userId: reviewerId,
+      message: `RETURNED FOR CLARIFICATION: ${comment}`
+    });
+    
+    const now = new Date();
+    const updated = {
+      ...request,
+      status: 'returned' as const,
+      reviewedByUserId: reviewerId,
+      reviewedAt: now,
+      updatedAt: now
+    };
+    this.changeRequests.set(id, updated);
+    return updated;
+  }
+
+  // Change Request Attachments
+  async getChangeRequestAttachments(changeRequestId: number): Promise<ChangeRequestAttachment[]> {
+    return this.changeRequestAttachments.filter(a => a.changeRequestId === changeRequestId);
+  }
+
+  async createChangeRequestAttachment(attachment: InsertChangeRequestAttachment): Promise<ChangeRequestAttachment> {
+    const id = this.currentAttachmentId++;
+    const fullAttachment: ChangeRequestAttachment = {
+      ...attachment,
+      id,
+      uploadedAt: new Date()
+    };
+    this.changeRequestAttachments.push(fullAttachment);
+    return fullAttachment;
+  }
+
+  // Change Request Comments
+  async getChangeRequestComments(changeRequestId: number): Promise<ChangeRequestComment[]> {
+    return this.changeRequestComments
+      .filter(c => c.changeRequestId === changeRequestId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async createChangeRequestComment(comment: InsertChangeRequestComment): Promise<ChangeRequestComment> {
+    const id = this.currentCommentId++;
+    const fullComment: ChangeRequestComment = {
+      ...comment,
+      id,
+      createdAt: new Date()
+    };
+    this.changeRequestComments.push(fullComment);
+    return fullComment;
   }
 }
 

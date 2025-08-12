@@ -4,9 +4,9 @@ import { SideMenuBar } from "@/components/SideMenuBar";
 import Components from "./pms/Components";
 import WorkOrders from "./pms/WorkOrders";
 import RunningHours from "./pms/RunningHours";
+import ModifyPMS from "./pms/ModifyPMS";
 import Spares from "./spares/SparesNew";
 import Stores from "./stores/Stores";
-import ModifyPMS from "./modify-pms/ModifyPMS";
 
 export const TechnicalModule: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState("pms");
