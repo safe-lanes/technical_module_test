@@ -321,13 +321,10 @@ export default function ModifyPMS() {
     // If editing an existing request, update it immediately
     if (editingRequest) {
       try {
-        await apiRequest(`/api/modify-pms/requests/${editingRequest.id}/target`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            targetType: actualTargetType,
-            targetId: actualTargetId,
-            snapshotBeforeJson: snapshot
-          })
+        await apiRequest('PUT', `/api/modify-pms/requests/${editingRequest.id}/target`, {
+          targetType: actualTargetType,
+          targetId: actualTargetId,
+          snapshotBeforeJson: snapshot
         });
         
         // Refresh the request data
@@ -762,7 +759,7 @@ export default function ModifyPMS() {
                       }).catch(console.error);
                     }
                   }}
-                  disabled={editingRequest && editingRequest.status !== 'draft' && editingRequest.status !== 'returned'}
+                  disabled={editingRequest ? editingRequest.status !== 'draft' && editingRequest.status !== 'returned' : false}
                 />
               </div>
             )}

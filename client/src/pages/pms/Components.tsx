@@ -1517,10 +1517,92 @@ const Components: React.FC = () => {
       {/* Component Register Form */}
       <ComponentRegisterForm 
         isOpen={isComponentFormOpen}
-        onClose={() => setIsComponentFormOpen(false)}
-        onSubmit={(componentData) => {
+        onClose={() => {
+          setIsComponentFormOpen(false);
+          // If in change mode and closing without submitting, go back to ModifyPMS
+          if (isChangeMode) {
+            exitChangeRequestMode();
+            reset();
+            setLocation("/pms/modify-pms");
+          }
+        }}
+        onSubmit={async (componentData) => {
           console.log('Component data submitted:', componentData);
-          // Handle component submission here
+          
+          // If in change mode, create a change request
+          if (isChangeMode) {
+            try {
+              // Create the change request with proper structure
+              const changeRequest = {
+                category: 'components',
+                title: changeRequestTitle || `New Component: ${componentData.componentName}`,
+                reason: `Adding new component ${componentData.componentName} with code ${componentData.componentCode}`,
+                targetType: 'component',
+                targetId: componentData.componentCode,
+                snapshotBeforeJson: {
+                  displayKey: componentData.componentCode,
+                  displayName: componentData.componentName,
+                  displayPath: `${componentData.componentCode} ${componentData.componentName}`,
+                  fields: {
+                    componentCode: componentData.componentCode,
+                    componentName: componentData.componentName,
+                    maker: componentData.maker || '',
+                    model: componentData.model || '',
+                    serialNo: componentData.serialNo || '',
+                    category: componentData.equipmentCategory || '',
+                    location: componentData.location || '',
+                    critical: componentData.critical || 'No',
+                    classItem: componentData.classItem || 'No'
+                  }
+                },
+                proposedChangesJson: [{
+                  field: 'New Component',
+                  oldValue: null,
+                  newValue: componentData.componentName,
+                  description: `Create new component ${componentData.componentCode} - ${componentData.componentName}`
+                }],
+                status: 'submitted',
+                vesselId: 'MV Test Vessel',
+                userId: 'current_user'
+              };
+
+              // Submit to API
+              const response = await fetch('/api/modify-pms/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(changeRequest)
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                toast({
+                  title: "Success",
+                  description: `Change request CR${String(result.id).padStart(4, '0')} created and submitted successfully`
+                });
+                
+                // Exit change mode and navigate back to ModifyPMS
+                exitChangeRequestMode();
+                reset();
+                setLocation("/pms/modify-pms");
+              } else {
+                throw new Error('Failed to create change request');
+              }
+            } catch (error) {
+              console.error('Error creating change request:', error);
+              toast({
+                title: "Error",
+                description: "Failed to create change request",
+                variant: "destructive"
+              });
+            }
+          } else {
+            // Normal mode - just close the form
+            toast({
+              title: "Success",
+              description: "Component saved successfully"
+            });
+            setIsComponentFormOpen(false);
+          }
         }}
       />
       
