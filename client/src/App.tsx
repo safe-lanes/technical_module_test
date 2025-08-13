@@ -1,15 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { ChangeRequestProvider } from "@/contexts/ChangeRequestContext";
 import { TechnicalModule } from "./pages/TechnicalModule";
-import WorkOrders from "./pages/pms/WorkOrders";
-import RunningHours from "./pages/pms/RunningHours";
-import Components from "./pages/pms/Components";
-import ModifyPMS from "./pages/pms/ModifyPMS";
-import Spares from "./pages/spares/SparesNew";
-import Stores from "./pages/stores/Stores";
 
 import NotFound from "./pages/not-found";
 
@@ -23,14 +17,9 @@ function App() {
           <div className="min-h-screen bg-gray-50">
             <Switch>
               <Route path="/" component={TechnicalModule} />
-              <Route path="/pms/work-orders" component={WorkOrders} />
-              <Route path="/pms/running-hours" component={RunningHours} />
-              <Route path="/pms/components" component={Components} />
-              <Route path="/pms/modify-pms" component={ModifyPMS} />
-              <Route path="/pms/spares" component={Spares} />
-              <Route path="/spares" component={Spares} />
-              <Route path="/stores" component={Stores} />
-
+              <Route path="/pms/:subpage" component={TechnicalModule} />
+              <Route path="/spares" component={TechnicalModule} />
+              <Route path="/stores" component={TechnicalModule} />
               <Route component={NotFound} />
             </Switch>
           </div>

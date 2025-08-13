@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import Components from "./pms/Components";
@@ -7,10 +7,35 @@ import RunningHours from "./pms/RunningHours";
 import ModifyPMS from "./pms/ModifyPMS";
 import Spares from "./spares/SparesNew";
 import Stores from "./stores/Stores";
+import { useLocation, useParams } from "wouter";
 
 export const TechnicalModule: React.FC = () => {
-  const [selectedSubModule, setSelectedSubModule] = useState("pms");
-  const [selectedMenuItem, setSelectedMenuItem] = useState("dashboard");
+  const [location] = useLocation();
+  const params = useParams();
+  
+  // Derive state from URL
+  const getStateFromUrl = () => {
+    if (location.startsWith("/pms/")) {
+      const subpage = location.replace("/pms/", "");
+      return { subModule: "pms", menuItem: subpage };
+    } else if (location.startsWith("/spares")) {
+      return { subModule: "pms", menuItem: "spares" };
+    } else if (location.startsWith("/stores")) {
+      return { subModule: "pms", menuItem: "stores" };
+    }
+    return { subModule: "pms", menuItem: "dashboard" };
+  };
+  
+  const { subModule, menuItem } = getStateFromUrl();
+  const [selectedSubModule, setSelectedSubModule] = useState(subModule);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(menuItem);
+  
+  // Update state when URL changes
+  useEffect(() => {
+    const { subModule, menuItem } = getStateFromUrl();
+    setSelectedSubModule(subModule);
+    setSelectedMenuItem(menuItem);
+  }, [location]);
 
   const handleSubModuleChange = (subModule: string) => {
     setSelectedSubModule(subModule);

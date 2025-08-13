@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 import {
   LayoutDashboard,
   Package,
@@ -66,7 +67,23 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
   onItemSelect,
   subModule,
 }) => {
+  const [, setLocation] = useLocation();
   const menuItems = menuConfigs[subModule] || menuConfigs.pms;
+
+  const handleItemClick = (itemId: string) => {
+    // Use navigation for routing
+    if (subModule === "pms") {
+      if (itemId === "spares") {
+        setLocation("/spares");
+      } else if (itemId === "stores") {
+        setLocation("/stores");
+      } else {
+        setLocation(`/pms/${itemId}`);
+      }
+    }
+    // Still call the callback for state management if provided
+    onItemSelect?.(itemId);
+  };
 
   return (
     <div className="w-20 min-h-screen flex flex-col items-center py-4 bg-[#16569e]">
@@ -77,7 +94,7 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
         return (
           <button
             key={item.id}
-            onClick={() => onItemSelect?.(item.id)}
+            onClick={() => handleItemClick(item.id)}
             className={cn(
               "w-full h-14 mb-4 flex flex-col items-center justify-center transition-all duration-200",
               isSelected ? "bg-[#52baf3]" : "hover:bg-[#1d4ed8]",
