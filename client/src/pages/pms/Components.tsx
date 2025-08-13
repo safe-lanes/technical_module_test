@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus, Check, Package } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus, Check, Package, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ComponentRegisterForm from "@/components/ComponentRegisterForm";
 import WorkOrderForm from "@/components/WorkOrderForm";
+import { ReviewChangesDrawer } from "@/components/ReviewChangesDrawer";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
+import { useChangeMode } from "@/contexts/ChangeModeContext";
 import { useLocation } from "wouter";
 import { getComponentCategory } from "@/utils/componentUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -935,78 +937,46 @@ const Components: React.FC = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
-  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [showReviewDrawer, setShowReviewDrawer] = useState(false);
   
   const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
+  const { isChangeMode, changeRequestTitle, changeRequestCategory, setOriginalSnapshot, collectDiff, getDiffs, reset } = useChangeMode();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Check if we're in select mode from ModifyPMS
+  // Handle change mode - capture original snapshot when component is selected
   useEffect(() => {
-    const selectMode = sessionStorage.getItem('modifyPMS_selectMode');
-    if (selectMode === 'true') {
-      setIsSelectMode(true);
-      // Clear the flag so it doesn't persist on refresh
-      sessionStorage.removeItem('modifyPMS_selectMode');
+    if (isChangeMode && selectedComponent) {
+      // Set the original snapshot for change tracking
+      const snapshot = {
+        id: selectedComponent.id,
+        displayKey: selectedComponent.code,
+        displayName: selectedComponent.name,
+        displayPath: `${selectedComponent.code} ${selectedComponent.name}`,
+        componentCode: selectedComponent.code,
+        name: selectedComponent.name,
+        maker: "MAN B&W", // These would come from actual data
+        model: "6S60MC-C",
+        serialNo: "MB2020001",
+        category: getComponentCategory(selectedComponent.code),
+        deptCategory: "Engineering",
+        location: "Engine Room",
+        critical: "Yes",
+        classItem: "Yes",
+        commissionedDate: "01-Jan-2020"
+      };
+      setOriginalSnapshot(snapshot);
     }
-  }, []);
+  }, [isChangeMode, selectedComponent]);
 
   const handleBackToModifyPMS = () => {
     exitChangeRequestMode();
-    setLocation("/modify-pms");
+    reset();
+    setLocation("/pms/modify-pms");
   };
   
-  const handleSelectTarget = () => {
-    if (!selectedComponent) {
-      toast({
-        title: "No component selected",
-        description: "Please select a component from the tree",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Create snapshot of selected component
-    const snapshot = {
-      id: selectedComponent.id,
-      displayKey: selectedComponent.code,
-      displayName: selectedComponent.name,
-      displayPath: `${selectedComponent.code} ${selectedComponent.name}`,
-      componentCode: selectedComponent.code,
-      name: selectedComponent.name,
-      // Add more fields as needed from the component data
-      maker: "MAN B&W", // These would come from actual data
-      model: "6S60MC-C",
-      serialNo: "MB2020001",
-      category: getComponentCategory(selectedComponent.code),
-      deptCategory: "Engineering",
-      location: "Engine Room",
-      critical: "Yes",
-      classItem: "Yes",
-      commissionedDate: "01-Jan-2020"
-    };
-    
-    // Retrieve stored form data
-    const formDataStr = sessionStorage.getItem('modifyPMS_formData');
-    const editingId = sessionStorage.getItem('modifyPMS_editingId');
-    
-    if (formDataStr) {
-      const formData = JSON.parse(formDataStr);
-      formData.targetType = 'component';
-      formData.targetId = selectedComponent.id;
-      formData.snapshotBeforeJson = snapshot;
-      formData.targetDisplay = {
-        key: selectedComponent.code,
-        name: selectedComponent.name,
-        path: `${selectedComponent.code} ${selectedComponent.name}`
-      };
-      
-      // Store updated form data
-      sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
-      sessionStorage.setItem('modifyPMS_returnWithTarget', 'true');
-    }
-    
-    // Navigate back to ModifyPMS
+  const handleCancelChangeMode = () => {
+    reset();
     setLocation("/pms/modify-pms");
   };
 
@@ -1092,35 +1062,34 @@ const Components: React.FC = () => {
   ];
 
   return (
-    <div className={`h-full p-6 ${isSelectMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
-      {/* Select Mode Banner */}
-      {isSelectMode && (
-        <div className="mb-4 p-4 bg-orange-100 border border-orange-300 rounded-lg">
+    <div className={`h-full p-6 ${isChangeMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
+      {/* Change Mode Banner */}
+      {isChangeMode && (
+        <div className="mb-4 p-4 bg-amber-50 border-b-2 border-amber-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Package className="h-5 w-5 text-orange-600" />
               <div>
-                <h3 className="font-semibold text-orange-900">Select Target Component</h3>
-                <p className="text-sm text-orange-700">Choose a component from the tree and click "Use This Target" to select it for your change request</p>
+                <h3 className="font-semibold text-amber-900">
+                  You are proposing changes to this record
+                </h3>
+                <p className="text-sm text-amber-700">
+                  {changeRequestTitle ? `Change Request: ${changeRequestTitle}` : 'Edited fields will be tracked and submitted for approval'}
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => {
-                  setIsSelectMode(false);
-                  setLocation("/pms/modify-pms");
-                }}
+                onClick={handleCancelChangeMode}
               >
                 Cancel
               </Button>
               <Button
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-                onClick={handleSelectTarget}
-                disabled={!selectedComponent}
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={() => setShowReviewDrawer(true)}
+                disabled={getDiffs().length === 0}
               >
-                <Check className="h-4 w-4 mr-2" />
-                Use This Target
+                Review & Submit
               </Button>
             </div>
           </div>
@@ -1291,6 +1260,16 @@ const Components: React.FC = () => {
           // Handle component submission here
         }}
       />
+      
+      {/* Review Changes Drawer */}
+      {isChangeMode && selectedComponent && (
+        <ReviewChangesDrawer
+          isOpen={showReviewDrawer}
+          onClose={() => setShowReviewDrawer(false)}
+          targetType="component"
+          targetId={selectedComponent.id}
+        />
+      )}
     </div>
   );
 };

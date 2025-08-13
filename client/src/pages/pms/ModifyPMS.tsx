@@ -37,12 +37,21 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, RotateCcw, Package, ClipboardList, Archive, Store, ExternalLink } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Plus, Search, Eye, Edit, Trash2, Send, Clock, CheckCircle, XCircle, RotateCcw, Package, ClipboardList, Archive, Store, ExternalLink, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { TargetPicker } from "@/components/TargetPicker";
 import { ProposeChanges } from "@/components/ProposeChanges";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
+import { useChangeMode } from "@/contexts/ChangeModeContext";
 
 interface ChangeRequest {
   id: number;
@@ -100,7 +109,8 @@ const statusIcons = {
 };
 
 export default function ModifyPMS() {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
+  const { enterChangeMode } = useChangeMode();
   const [selectedVessel] = useState('MV Test Vessel');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -245,6 +255,30 @@ export default function ModifyPMS() {
   const handleCreate = () => {
     resetForm();
     setShowCreateDialog(true);
+  };
+  
+  const handleCreateWithChangeMode = (category: string) => {
+    // Enter change mode with title and category
+    const title = `New ${category.charAt(0).toUpperCase() + category.slice(1)} Change Request`;
+    enterChangeMode(title, category);
+    
+    // Navigate to the appropriate screen
+    switch (category) {
+      case 'components':
+        setLocation('/pms/components');
+        break;
+      case 'work_orders':
+        setLocation('/pms/work-orders');
+        break;
+      case 'spares':
+        setLocation('/pms/spares');
+        break;
+      case 'stores':
+        setLocation('/pms/stores');
+        break;
+      default:
+        setLocation('/pms/components');
+    }
   };
 
   const handleEdit = (request: ChangeRequest) => {
@@ -406,10 +440,40 @@ export default function ModifyPMS() {
             </div>
 
             <div className="flex items-end">
-              <Button onClick={handleCreate} className="w-full bg-[#52baf3]">
-                <Plus className="w-4 h-4 mr-2" />
-                New Change Request
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="w-full bg-[#52baf3]">
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Change Request
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel>Select Category</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('components')}>
+                    <Package className="w-4 h-4 mr-2" />
+                    Components
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('work_orders')}>
+                    <ClipboardList className="w-4 h-4 mr-2" />
+                    Work Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('spares')}>
+                    <Archive className="w-4 h-4 mr-2" />
+                    Spares
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('stores')}>
+                    <Store className="w-4 h-4 mr-2" />
+                    Stores
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleCreate}>
+                    <Edit className="w-4 h-4 mr-2" />
+                    Legacy Form (Phase 1.0)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </CardContent>
@@ -608,19 +672,21 @@ export default function ModifyPMS() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        // Store current form data in sessionStorage for retrieval when returning
-                        sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
-                        sessionStorage.setItem('modifyPMS_editingId', editingRequest?.id?.toString() || '');
-                        sessionStorage.setItem('modifyPMS_selectMode', 'true');
+                        // Navigate to the appropriate screen with change request mode parameters
+                        const params = new URLSearchParams({
+                          editAsChangeRequest: '1',
+                          crTitle: formData.title || '',
+                          crCategory: formData.category || 'components',
+                          targetId: formData.targetId || ''
+                        });
                         
-                        // Navigate to the appropriate sub-module
                         const routes = {
-                          'components': '/pms/components',
-                          'work_orders': '/pms/work-orders',
-                          'spares': '/pms/spares',
-                          'stores': '/pms/stores'
+                          'components': `/pms/components?${params}`,
+                          'work_orders': `/pms/work-orders?${params}`,
+                          'spares': `/spares?${params}`,
+                          'stores': `/stores?${params}`
                         };
-                        navigate(routes[formData.category as keyof typeof routes] || '/pms/components');
+                        setLocation(routes[formData.category as keyof typeof routes] || `/pms/components?${params}`);
                       }}
                     >
                       Change Target
@@ -633,19 +699,20 @@ export default function ModifyPMS() {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        // Store current form data in sessionStorage for retrieval when returning
-                        sessionStorage.setItem('modifyPMS_formData', JSON.stringify(formData));
-                        sessionStorage.setItem('modifyPMS_editingId', editingRequest?.id?.toString() || '');
-                        sessionStorage.setItem('modifyPMS_selectMode', 'true');
+                        // Navigate to the appropriate screen with change request mode parameters
+                        const params = new URLSearchParams({
+                          editAsChangeRequest: '1',
+                          crTitle: formData.title || '',
+                          crCategory: formData.category || 'components'
+                        });
                         
-                        // Navigate to the appropriate sub-module
                         const routes = {
-                          'components': '/pms/components',
-                          'work_orders': '/pms/work-orders',
-                          'spares': '/pms/spares',
-                          'stores': '/pms/stores'
+                          'components': `/pms/components?${params}`,
+                          'work_orders': `/pms/work-orders?${params}`,
+                          'spares': `/spares?${params}`,
+                          'stores': `/stores?${params}`
                         };
-                        navigate(routes[formData.category as keyof typeof routes] || '/pms/components');
+                        setLocation(routes[formData.category as keyof typeof routes] || `/pms/components?${params}`);
                       }}
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
