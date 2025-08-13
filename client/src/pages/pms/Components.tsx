@@ -674,8 +674,7 @@ const WorkOrdersSection: React.FC<{ componentCode: string; componentName: string
         onClose={() => setIsWorkOrderFormOpen(false)}
         onSubmit={handleWorkOrderSubmit}
         component={{ code: componentCode, name: componentName }}
-        workOrderTemplate={selectedWorkOrder}
-        mode="template"
+        workOrder={selectedWorkOrder}
       />
     </>
   );
@@ -1100,7 +1099,7 @@ const Components: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            {isChangeRequestMode && !isSelectMode && (
+            {isChangeRequestMode && (
               <Button
                 variant="ghost"
                 onClick={handleBackToModifyPMS}
@@ -1110,11 +1109,11 @@ const Components: React.FC = () => {
                 Back to Modify PMS
               </Button>
             )}
-            <h1 className={`text-2xl font-semibold ${isChangeRequestMode && !isSelectMode ? 'text-white' : 'text-gray-800'}`}>
-              Components {isSelectMode ? '- Select Target' : isChangeRequestMode ? '- Change Request Mode' : ''}
+            <h1 className={`text-2xl font-semibold ${isChangeRequestMode ? 'text-white' : 'text-gray-800'}`}>
+              Components {isChangeMode ? '- Edit Mode' : isChangeRequestMode ? '- Change Request Mode' : ''}
             </h1>
           </div>
-          {!isChangeRequestMode && !isSelectMode && (
+          {!isChangeRequestMode && !isChangeMode && (
             <Button 
               className="bg-[#52baf3] hover:bg-[#40a8e0] text-white"
               onClick={() => setIsComponentFormOpen(true)}
