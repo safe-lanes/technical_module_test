@@ -297,6 +297,105 @@ const dummyComponents: ComponentNode[] = [
   }
 ];
 
+// Function to get mock data for a component based on its code
+const getComponentMockData = (code: string) => {
+  // Mock data mapping for different components
+  const mockDataMap: { [key: string]: any } = {
+    "6.1.1": {
+      maker: "MAN Energy Solutions",
+      model: "6S60MC-C",
+      serialNo: "12345",
+      department: "Engine",
+      critical: "Yes",
+      classItem: "Yes",
+      location: "Engine Room",
+      commissionedDate: "2020-02-01",
+      installationDate: "2020-01-15",
+      rating: "7,200 kW",
+      conditionBased: "Yes",
+      noOfUnits: "1",
+      eqptSystemDept: "Engine Department",
+      parentComponent: "Main Engine Block",
+      dimensionsSize: "15m x 3m x 4m",
+      notes: "Primary propulsion engine - critical for vessel operations"
+    },
+    "6.1.1.1": {
+      maker: "Caterpillar",
+      model: "CAT-CYL-001",
+      serialNo: "CYL-2345",
+      department: "Engine",
+      critical: "Yes",
+      classItem: "Yes",
+      location: "Main Engine",
+      commissionedDate: "2020-02-01",
+      installationDate: "2020-01-15",
+      rating: "900 Bar",
+      conditionBased: "Yes",
+      noOfUnits: "6",
+      eqptSystemDept: "Engine Department",
+      parentComponent: "6.1.1 Cylinder Head",
+      dimensionsSize: "1.2m x 0.8m",
+      notes: "Critical component for engine compression"
+    },
+    "6.1.1.2": {
+      maker: "Bosch",
+      model: "FUEL-INJ-2000",
+      serialNo: "FI-3456",
+      department: "Engine",
+      critical: "Yes",
+      classItem: "No",
+      location: "Cylinder Head",
+      commissionedDate: "2020-02-01",
+      installationDate: "2020-01-15",
+      rating: "2000 Bar",
+      conditionBased: "No",
+      noOfUnits: "6",
+      eqptSystemDept: "Engine Department",
+      parentComponent: "6.1.1 Cylinder Head",
+      dimensionsSize: "0.3m x 0.1m",
+      notes: "High-pressure fuel injection system"
+    },
+    "6.1.1.3": {
+      maker: "MAN",
+      model: "ROCKER-ARM-V2",
+      serialNo: "RA-4567",
+      department: "Engine",
+      critical: "No",
+      classItem: "No",
+      location: "Cylinder Head",
+      commissionedDate: "2020-02-01",
+      installationDate: "2020-01-15",
+      rating: "Standard",
+      conditionBased: "No",
+      noOfUnits: "12",
+      eqptSystemDept: "Engine Department",
+      parentComponent: "6.1.1 Cylinder Head",
+      dimensionsSize: "0.5m x 0.2m",
+      notes: "Valve actuation mechanism"
+    }
+  };
+  
+  // Return mock data for the component or default values
+  return mockDataMap[code] || {
+    maker: "Generic Manufacturer",
+    model: "Model-" + code,
+    serialNo: "SN-" + code,
+    department: "Machinery",
+    critical: "No",
+    classItem: "No",
+    location: "Ship",
+    commissionedDate: "2020-01-01",
+    installationDate: "2019-12-01",
+    rating: "Standard",
+    conditionBased: "No",
+    noOfUnits: "1",
+    eqptSystemDept: "Machinery",
+    parentComponent: "Parent",
+    dimensionsSize: "Various",
+    notes: "Component " + code
+  };
+};
+
 const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
   const { isChangeRequestMode } = useChangeRequest();
   const { isChangeMode, collectDiff } = useChangeMode();
@@ -306,25 +405,40 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
 
   // Component data - uses selected component code or defaults
   const [componentData, setComponentData] = useState({
-    maker: "MAN Energy Solutions",
-    model: "6S60MC-C",
-    serialNo: "12345",
-    department: "Engine",
-    componentCategory: componentCategory, // Derived from tree
-    componentCode: selectedComponent?.code || "6.1.1",  // Use selected component's code
-    critical: "Yes",
-    classItem: "Yes",
-    location: "Engine Room",
-    commissionedDate: "2020-02-01",
-    installationDate: "2020-01-15",
-    rating: "7,200 kW",
-    conditionBased: "Yes",
-    noOfUnits: "1",
-    eqptSystemDept: "Engine Department",
-    parentComponent: "Main Engine Block",
-    dimensionsSize: "15m x 3m x 4m",
-    notes: "Primary propulsion engine - critical for vessel operations"
+    maker: "",
+    model: "",
+    serialNo: "",
+    department: "",
+    componentCategory: "",
+    componentCode: "",
+    critical: "No",
+    classItem: "No",
+    location: "",
+    commissionedDate: "",
+    installationDate: "",
+    rating: "",
+    conditionBased: "No",
+    noOfUnits: "",
+    eqptSystemDept: "",
+    parentComponent: "",
+    dimensionsSize: "",
+    notes: ""
   });
+  
+  // Update component data when selected component changes
+  useEffect(() => {
+    if (selectedComponent) {
+      // Get mock data based on component code
+      const mockData = getComponentMockData(selectedComponent.code);
+      setComponentData({
+        ...mockData,
+        componentCode: selectedComponent.code,
+        componentCategory: getComponentCategory(selectedComponent.id)
+      });
+      // Reset changed fields when switching components
+      setChangedFields(new Set());
+    }
+  }, [selectedComponent]);
   
   // Track which fields have been changed
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
