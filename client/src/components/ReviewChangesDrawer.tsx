@@ -38,8 +38,8 @@ export const ReviewChangesDrawer: React.FC<ReviewChangesDrawerProps> = ({
     return acc;
   }, {} as Record<string, typeof diffs>);
   
-  const handleSubmit = async (status: 'draft' | 'pending') => {
-    if (!reason && status === 'pending') {
+  const handleSubmit = async (status: 'draft' | 'submitted') => {
+    if (!reason && status === 'submitted') {
       toast({
         title: "Reason required",
         description: "Please provide a reason for this change request",
@@ -67,8 +67,8 @@ export const ReviewChangesDrawer: React.FC<ReviewChangesDrawerProps> = ({
       
       if (response.ok) {
         toast({
-          title: status === 'pending' ? "Change request submitted" : "Draft saved",
-          description: status === 'pending' 
+          title: status === 'submitted' ? "Change request submitted" : "Draft saved",
+          description: status === 'submitted' 
             ? "Your change request has been submitted for approval"
             : "Your change request has been saved as draft"
         });
@@ -194,7 +194,7 @@ export const ReviewChangesDrawer: React.FC<ReviewChangesDrawerProps> = ({
               Save Draft
             </Button>
             <Button
-              onClick={() => handleSubmit('pending')}
+              onClick={() => handleSubmit('submitted')}
               disabled={isSubmitting || !reason}
             >
               Submit for Approval

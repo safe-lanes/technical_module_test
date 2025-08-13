@@ -52,6 +52,7 @@ import { ProposeChanges } from "@/components/ProposeChanges";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { useChangeMode } from "@/contexts/ChangeModeContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChangeRequest {
   id: number;
@@ -111,6 +112,7 @@ const statusIcons = {
 export default function ModifyPMS() {
   const [, setLocation] = useLocation();
   const { enterChangeMode } = useChangeMode();
+  const { toast } = useToast();
   const [selectedVessel] = useState('MV Test Vessel');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -932,8 +934,8 @@ export default function ModifyPMS() {
                           {viewingRequest.proposedChangesJson.map((change: any, idx: number) => (
                             <TableRow key={idx}>
                               <TableCell className="font-medium">{change.label}</TableCell>
-                              <TableCell>{String(change.before || '-')}</TableCell>
-                              <TableCell className="text-blue-600 font-medium">
+                              <TableCell className="text-gray-600">{String(change.before || '-')}</TableCell>
+                              <TableCell className="text-red-600 font-medium">
                                 {String(change.after || '-')}
                               </TableCell>
                             </TableRow>
@@ -1053,7 +1055,58 @@ export default function ModifyPMS() {
             </Tabs>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="flex justify-between">
+            <div className="flex gap-2">
+              {viewingRequest && viewingRequest.status === 'submitted' && (
+                <>
+                  <Button 
+                    variant="destructive"
+                    onClick={() => {
+                      const comment = prompt('Please provide a reason for rejection:');
+                      if (comment) {
+                        fetch(`/api/modify-pms/requests/${viewingRequest.id}/reject`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ comment, reviewerId: 'current_user' })
+                        }).then(() => {
+                          queryClient.invalidateQueries({ queryKey: ['/api/modify-pms/requests'] });
+                          setViewingRequest(null);
+                          toast({
+                            title: "Change request rejected",
+                            description: "The change request has been rejected"
+                          });
+                        });
+                      }
+                    }}
+                  >
+                    Reject
+                  </Button>
+                  <Button 
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700"
+                    onClick={() => {
+                      const comment = prompt('Please provide approval comments:');
+                      if (comment) {
+                        fetch(`/api/modify-pms/requests/${viewingRequest.id}/approve`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ comment, reviewerId: 'current_user' })
+                        }).then(() => {
+                          queryClient.invalidateQueries({ queryKey: ['/api/modify-pms/requests'] });
+                          setViewingRequest(null);
+                          toast({
+                            title: "Change request approved",
+                            description: "The change request has been approved successfully"
+                          });
+                        });
+                      }
+                    }}
+                  >
+                    Approve
+                  </Button>
+                </>
+              )}
+            </div>
             <Button onClick={() => setViewingRequest(null)}>Close</Button>
           </DialogFooter>
         </DialogContent>

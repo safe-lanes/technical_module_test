@@ -299,12 +299,13 @@ const dummyComponents: ComponentNode[] = [
 
 const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
   const { isChangeRequestMode } = useChangeRequest();
+  const { isChangeMode, collectDiff } = useChangeMode();
 
   // Derive Component Category from the component's tree position
   const componentCategory = selectedComponent ? getComponentCategory(selectedComponent.id) : '';
 
   // Component data - uses selected component code or defaults
-  const componentData = {
+  const [componentData, setComponentData] = useState({
     maker: "MAN Energy Solutions",
     model: "6S60MC-C",
     serialNo: "12345",
@@ -323,6 +324,28 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
     parentComponent: "Main Engine Block",
     dimensionsSize: "15m x 3m x 4m",
     notes: "Primary propulsion engine - critical for vessel operations"
+  });
+  
+  // Track which fields have been changed
+  const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
+  
+  const handleFieldChange = (fieldName: string, value: string) => {
+    if (!isChangeMode) return;
+    
+    const originalValue = componentData[fieldName as keyof typeof componentData];
+    setComponentData(prev => ({ ...prev, [fieldName]: value }));
+    
+    // Track the change
+    if (value !== originalValue) {
+      setChangedFields(prev => new Set(prev).add(fieldName));
+      collectDiff(`componentInfo.${fieldName}`, originalValue, value);
+    } else {
+      setChangedFields(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(fieldName);
+        return newSet;
+      });
+    }
   };
 
   return (
@@ -331,27 +354,71 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
       <div className="grid grid-cols-4 gap-4">
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Maker</label>
-          <div className="text-sm text-gray-900">
-            {componentData.maker}
-          </div>
+          {isChangeMode ? (
+            <input
+              type="text"
+              value={componentData.maker}
+              onChange={(e) => handleFieldChange('maker', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('maker') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            />
+          ) : (
+            <div className="text-sm text-gray-900">
+              {componentData.maker}
+            </div>
+          )}
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Model</label>
-          <div className="text-sm text-gray-900">
-            {componentData.model}
-          </div>
+          {isChangeMode ? (
+            <input
+              type="text"
+              value={componentData.model}
+              onChange={(e) => handleFieldChange('model', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('model') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            />
+          ) : (
+            <div className="text-sm text-gray-900">
+              {componentData.model}
+            </div>
+          )}
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Serial No</label>
-          <div className="text-sm text-gray-900">
-            {componentData.serialNo}
-          </div>
+          {isChangeMode ? (
+            <input
+              type="text"
+              value={componentData.serialNo}
+              onChange={(e) => handleFieldChange('serialNo', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('serialNo') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            />
+          ) : (
+            <div className="text-sm text-gray-900">
+              {componentData.serialNo}
+            </div>
+          )}
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Department</label>
-          <div className="text-sm text-gray-900">
-            {componentData.department}
-          </div>
+          {isChangeMode ? (
+            <input
+              type="text"
+              value={componentData.department}
+              onChange={(e) => handleFieldChange('department', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('department') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            />
+          ) : (
+            <div className="text-sm text-gray-900">
+              {componentData.department}
+            </div>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-4 gap-4">
@@ -369,27 +436,53 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Critical</label>
-          <div className="text-sm text-gray-900">
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              componentData.critical === "Yes" 
-                ? "bg-red-100 text-red-800" 
-                : "bg-gray-100 text-gray-800"
-            }`}>
-              {componentData.critical}
-            </span>
-          </div>
+          {isChangeMode ? (
+            <select
+              value={componentData.critical}
+              onChange={(e) => handleFieldChange('critical', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('critical') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          ) : (
+            <div className="text-sm text-gray-900">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                componentData.critical === "Yes" 
+                  ? "bg-red-100 text-red-800" 
+                  : "bg-gray-100 text-gray-800"
+              }`}>
+                {componentData.critical}
+              </span>
+            </div>
+          )}
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Class Item</label>
-          <div className="text-sm text-gray-900">
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              componentData.classItem === "Yes" 
-                ? "bg-blue-100 text-blue-800" 
-                : "bg-gray-100 text-gray-800"
-            }`}>
-              {componentData.classItem}
-            </span>
-          </div>
+          {isChangeMode ? (
+            <select
+              value={componentData.classItem}
+              onChange={(e) => handleFieldChange('classItem', e.target.value)}
+              className={`text-sm w-full px-2 py-1 border rounded ${
+                changedFields.has('classItem') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+              }`}
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          ) : (
+            <div className="text-sm text-gray-900">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                componentData.classItem === "Yes" 
+                  ? "bg-blue-100 text-blue-800" 
+                  : "bg-gray-100 text-gray-800"
+              }`}>
+                {componentData.classItem}
+              </span>
+            </div>
+          )}
         </div>
       </div>
       
@@ -1249,6 +1342,18 @@ const Components: React.FC = () => {
                     );
                   })}
                 </div>
+                
+                {/* Submit Changes Button - Only shown in change mode */}
+                {isChangeMode && (
+                  <div className="mt-6 pb-4">
+                    <button
+                      onClick={() => setShowReviewDrawer(true)}
+                      className="w-full bg-[#15569e] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0d3d6e] transition-colors"
+                    >
+                      Submit Changes
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
