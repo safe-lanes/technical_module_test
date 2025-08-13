@@ -1141,7 +1141,7 @@ const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["A"]));
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
   const [showReviewDrawer, setShowReviewDrawer] = useState(false);
   
@@ -1175,12 +1175,46 @@ const Components: React.FC = () => {
     }
   }, [isChangeMode, selectedComponent]);
   
-  // Check if we should open the Add/Edit Component form
+  // Check if we should open the Add/Edit Component form OR select a specific component
   useEffect(() => {
     const shouldOpenForm = sessionStorage.getItem('openComponentForm');
+    const targetComponentCode = sessionStorage.getItem('targetComponentCode');
+    
     if (shouldOpenForm === 'true') {
       setIsComponentFormOpen(true);
       sessionStorage.removeItem('openComponentForm');
+    }
+    
+    // If we have a target component code from ModifyPMS, find and select it
+    if (targetComponentCode) {
+      const findComponent = (nodes: ComponentNode[]): ComponentNode | null => {
+        for (const node of nodes) {
+          if (node.code === targetComponentCode) {
+            return node;
+          }
+          if (node.children) {
+            const found = findComponent(node.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      
+      const targetComponent = findComponent(dummyComponents);
+      if (targetComponent) {
+        setSelectedComponent(targetComponent);
+        // Expand parent nodes to show the selected component
+        const expandParents = (code: string) => {
+          const parts = code.split('.');
+          const parentsToExpand: string[] = [];
+          for (let i = 1; i <= parts.length; i++) {
+            parentsToExpand.push(parts.slice(0, i).join('.'));
+          }
+          setExpandedNodes(new Set(parentsToExpand));
+        };
+        expandParents(targetComponentCode);
+      }
+      sessionStorage.removeItem('targetComponentCode');
     }
   }, []);
 
@@ -1426,8 +1460,9 @@ const Components: React.FC = () => {
                             )}
                           </div>
                         </CardHeader>
-                        <CardContent className="pt-4 border-t border-gray-100">
-                          {section.id === "A" ? (
+                        {isExpanded && (
+                          <CardContent className="pt-4 border-t border-gray-100">
+                            {section.id === "A" ? (
                             <ComponentInformationSection isExpanded={isExpanded} selectedComponent={selectedComponent} />
                           ) : section.id === "B" ? (
                             <RunningHoursConditionSection />
@@ -1451,7 +1486,8 @@ const Components: React.FC = () => {
                               {section.title} content will be added here
                             </p>
                           )}
-                        </CardContent>
+                          </CardContent>
+                        )}
                       </Card>
                     );
                   })}
