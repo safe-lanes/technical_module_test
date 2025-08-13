@@ -967,6 +967,15 @@ const Components: React.FC = () => {
       setOriginalSnapshot(snapshot);
     }
   }, [isChangeMode, selectedComponent]);
+  
+  // Check if we should open the Add/Edit Component form
+  useEffect(() => {
+    const shouldOpenForm = sessionStorage.getItem('openComponentForm');
+    if (shouldOpenForm === 'true') {
+      setIsComponentFormOpen(true);
+      sessionStorage.removeItem('openComponentForm');
+    }
+  }, []);
 
   const handleBackToModifyPMS = () => {
     exitChangeRequestMode();

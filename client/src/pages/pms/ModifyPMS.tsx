@@ -265,6 +265,8 @@ export default function ModifyPMS() {
     // Navigate to the appropriate screen
     switch (category) {
       case 'components':
+        // Set flag to open Add/Edit Component form
+        sessionStorage.setItem('openComponentForm', 'true');
         setLocation('/pms/components');
         break;
       case 'work_orders':
