@@ -73,6 +73,8 @@ interface ComponentData {
   maker: string;
   model: string;
   serialNo: string;
+  drawingNo: string;
+  componentCategory: string;
   location: string;
   critical: string;
   installation: string;
@@ -88,14 +90,70 @@ interface ComponentData {
   dateUpdated: string;
   utilizationRate: string;
   avgDailyUsage: string;
-  vibration: string;
-  temperature: string;
-  pressure: string;
+  metrics: ConditionMetric[];
   workOrders: WorkOrder[];
   spares: Spare[];
-  documents: any[];
-  classification: any;
-  requisitions: any[];
+  documents: Document[];
+  classification: Classification;
+  requisitions: Requisition[];
+  maintenanceHistory: MaintenanceHistory[];
+}
+
+interface ConditionMetric {
+  id?: string;
+  name: string;
+  value: number;
+  isNew?: boolean;
+  isEditing?: boolean;
+  pendingDelete?: boolean;
+  originalData?: any;
+}
+
+interface Document {
+  id?: string;
+  type: string;
+  name: string;
+  isNew?: boolean;
+  pendingDelete?: boolean;
+}
+
+interface Classification {
+  classProvider: string;
+  certificateNo: string;
+  nextDataSurvey: string;
+  classNotation: string;
+  surveyor: string;
+}
+
+interface Requisition {
+  id?: string;
+  reqNo: string;
+  part: string;
+  qty: number;
+  date: string;
+  status: string;
+  isNew?: boolean;
+  pendingDelete?: boolean;
+}
+
+interface MaintenanceHistory {
+  id?: string;
+  woNo: string;
+  performedBy: string;
+  totalTime: number;
+  completionDate: string;
+  status: string;
+  isNew?: boolean;
+}
+
+interface ConditionMetric {
+  id?: string;
+  name: string;
+  value: number;
+  isNew?: boolean;
+  isEditing?: boolean;
+  pendingDelete?: boolean;
+  originalData?: any;
 }
 
 interface FieldChange {
@@ -125,6 +183,8 @@ const generateMockComponentData = (component: ComponentNode): ComponentData => {
     maker: isEngine ? "MAN B&W" : isDeck ? "MacGregor" : isHull ? "Hyundai Heavy Industries" : "Daikin Industries",
     model: isEngine ? "6S60ME-C8.2" : isDeck ? "TTS-2400" : isHull ? "HHI-TANK-500" : "FXMQ-200",
     serialNo: `SN-${component.code.replace(/\./g, "")}-2024-${Math.floor(Math.random() * 9000) + 1000}`,
+    drawingNo: `DRW-${component.code.replace(/\./g, "")}-001`,
+    componentCategory: getComponentCategory(component.id),
     location: isEngine ? "Engine Room" : isDeck ? "Main Deck" : isHull ? "Double Bottom" : "Accommodation Block",
     critical: Math.random() > 0.5 ? "Yes" : "No",
     installation: "2020-03-15",
@@ -140,9 +200,11 @@ const generateMockComponentData = (component: ComponentNode): ComponentData => {
     dateUpdated: "2024-12-15",
     utilizationRate: `${Math.floor(Math.random() * 30) + 70}%`,
     avgDailyUsage: `${Math.floor(Math.random() * 8) + 16} hrs`,
-    vibration: `${(Math.random() * 2 + 1).toFixed(1)} mm/s`,
-    temperature: `${Math.floor(Math.random() * 20) + 60}°C`,
-    pressure: `${(Math.random() * 2 + 6).toFixed(1)} bar`,
+    metrics: [
+      { id: "m1", name: "Vibration", value: parseFloat((Math.random() * 2 + 1).toFixed(1)), originalData: { name: "Vibration", value: parseFloat((Math.random() * 2 + 1).toFixed(1)) } },
+      { id: "m2", name: "Temperature", value: Math.floor(Math.random() * 20) + 60, originalData: { name: "Temperature", value: Math.floor(Math.random() * 20) + 60 } },
+      { id: "m3", name: "Pressure", value: parseFloat((Math.random() * 2 + 6).toFixed(1)), originalData: { name: "Pressure", value: parseFloat((Math.random() * 2 + 6).toFixed(1)) } }
+    ],
     workOrders: [
       {
         id: `wo-${component.code}-1`,
@@ -201,9 +263,26 @@ const generateMockComponentData = (component: ComponentNode): ComponentData => {
         location: "Store Room B"
       }
     ],
-    documents: [],
-    classification: {},
-    requisitions: []
+    documents: [
+      { id: "doc1", type: "General Arrangement", name: "GA_Drawing_v1.pdf" },
+      { id: "doc2", type: "Maintenance Manual", name: "MM_2024.pdf" },
+      { id: "doc3", type: "Installation Guide", name: "IG_v2.pdf" }
+    ],
+    classification: {
+      classProvider: "DNV GL",
+      certificateNo: "CERT-2024-001234",
+      nextDataSurvey: "2025-06-15",
+      classNotation: "1A1 General Cargo",
+      surveyor: "John Smith"
+    },
+    requisitions: [
+      { id: "req1", reqNo: "REQ-2025-001", part: "Bearing Set", qty: 2, date: "2025-01-10", status: "Pending" },
+      { id: "req2", reqNo: "REQ-2025-002", part: "Filter Element", qty: 5, date: "2025-01-12", status: "Approved" }
+    ],
+    maintenanceHistory: [
+      { id: "mh1", woNo: "WO-2024-100", performedBy: "Chief Engineer", totalTime: 4.5, completionDate: "2024-12-01", status: "Completed" },
+      { id: "mh2", woNo: "WO-2024-095", performedBy: "2nd Engineer", totalTime: 2.0, completionDate: "2024-11-15", status: "Completed" }
+    ]
   };
 
   return baseData;
@@ -466,6 +545,75 @@ export default function ComponentRegisterFormCR({
     updateSectionChangeCount();
   };
 
+  // Handle Metrics
+  const handleAddMetric = () => {
+    if (!componentData) return;
+    
+    const newMetric: ConditionMetric = {
+      id: `metric-new-${Date.now()}`,
+      name: "New Metric",
+      value: 0,
+      isNew: true,
+      isEditing: true
+    };
+    
+    setComponentData(prev => ({
+      ...prev!,
+      metrics: [...(prev!.metrics || []), newMetric]
+    }));
+    
+    updateSectionChangeCount();
+  };
+
+  const handleMetricFieldChange = (metricId: string, field: string, value: any) => {
+    if (!componentData) return;
+    
+    setComponentData(prev => ({
+      ...prev!,
+      metrics: (prev!.metrics || []).map(m => {
+        if (m.id === metricId) {
+          const updated = { ...m, [field]: value, isEditing: true };
+          if (!m.isNew && m.originalData) {
+            // Check if value is back to original
+            if (m.originalData[field] === value) {
+              delete updated.isEditing;
+            }
+          }
+          return updated;
+        }
+        return m;
+      })
+    }));
+    
+    updateSectionChangeCount();
+  };
+
+  const handleDeleteMetric = (metricId: string) => {
+    if (!componentData) return;
+    
+    setComponentData(prev => ({
+      ...prev!,
+      metrics: (prev!.metrics || []).map(m => 
+        m.id === metricId ? { ...m, pendingDelete: true } : m
+      )
+    }));
+    
+    updateSectionChangeCount();
+  };
+
+  const handleRestoreMetric = (metricId: string) => {
+    if (!componentData) return;
+    
+    setComponentData(prev => ({
+      ...prev!,
+      metrics: (prev!.metrics || []).map(m => 
+        m.id === metricId ? { ...m, pendingDelete: false } : m
+      )
+    }));
+    
+    updateSectionChangeCount();
+  };
+
   // Build change request payload
   const buildChangeRequestPayload = () => {
     if (!componentData || !originalData) return null;
@@ -710,7 +858,7 @@ export default function ComponentRegisterFormCR({
       <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-[#2c5282]">
-            Component Change Request - {selectedComponent.code} {selectedComponent.name}
+            Modify PMS - {selectedComponent.code} {selectedComponent.name}
           </DialogTitle>
         </DialogHeader>
 
@@ -733,8 +881,8 @@ export default function ComponentRegisterFormCR({
             </h4>
             
             {expandedSections.has('A') && (
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className={getLabelClass('A.maker')}>Maker</Label>
                     <Input 
@@ -759,6 +907,46 @@ export default function ComponentRegisterFormCR({
                       className={getFieldClass('A.serialNo', "border-[#52baf3] border-2")}
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.drawingNo')}>Drawing No</Label>
+                    <Input 
+                      value={componentData.drawingNo}
+                      onChange={(e) => handleInputChange('drawingNo', e.target.value, 'A')}
+                      className={getFieldClass('A.drawingNo', "border-[#52baf3] border-2")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Component Code</Label>
+                    <Input 
+                      value={componentData.code}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.componentCategory')}>Component Category</Label>
+                    <Select 
+                      value={componentData.componentCategory}
+                      onValueChange={(value) => handleInputChange('componentCategory', value, 'A')}
+                    >
+                      <SelectTrigger className={getFieldClass('A.componentCategory', "border-[#52baf3] border-2")}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Ship's Structure">Ship's Structure</SelectItem>
+                        <SelectItem value="Deck Machinery">Deck Machinery</SelectItem>
+                        <SelectItem value="Engine Department">Engine Department</SelectItem>
+                        <SelectItem value="Safety Equipment">Safety Equipment</SelectItem>
+                        <SelectItem value="Accommodation">Accommodation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className={getLabelClass('A.location')}>Location</Label>
                     <Input 
@@ -782,8 +970,24 @@ export default function ComponentRegisterFormCR({
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.conditionBased')}>Condition Based</Label>
+                    <Select 
+                      value={componentData.conditionBased}
+                      onValueChange={(value) => handleInputChange('conditionBased', value, 'A')}
+                    >
+                      <SelectTrigger className={getFieldClass('A.conditionBased', "border-[#52baf3] border-2")}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-4">
+
+                <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className={getLabelClass('A.installation')}>Installation Date</Label>
                     <Input 
@@ -810,28 +1014,52 @@ export default function ComponentRegisterFormCR({
                       className={getFieldClass('A.rating', "border-[#52baf3] border-2")}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className={getLabelClass('A.conditionBased')}>Condition Based</Label>
-                    <Select 
-                      value={componentData.conditionBased}
-                      onValueChange={(value) => handleInputChange('conditionBased', value, 'A')}
-                    >
-                      <SelectTrigger className={getFieldClass('A.conditionBased', "border-[#52baf3] border-2")}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label className={getLabelClass('A.noOfUnits')}>No of Units</Label>
                     <Input 
-                      type="number"
                       value={componentData.noOfUnits}
                       onChange={(e) => handleInputChange('noOfUnits', e.target.value, 'A')}
                       className={getFieldClass('A.noOfUnits', "border-[#52baf3] border-2")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.equipmentDepartment')}>Eqpt / System Department</Label>
+                    <Input 
+                      value={componentData.equipmentDepartment}
+                      onChange={(e) => handleInputChange('equipmentDepartment', e.target.value, 'A')}
+                      className={getFieldClass('A.equipmentDepartment', "border-[#52baf3] border-2")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.parentComponent')}>Parent Component</Label>
+                    <Input 
+                      value={componentData.parentComponent}
+                      onChange={(e) => handleInputChange('parentComponent', e.target.value, 'A')}
+                      className={getFieldClass('A.parentComponent', "border-[#52baf3] border-2")}
+                      placeholder="Select parent component"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.dimensionsSize')}>Dimensions / Size</Label>
+                    <Input 
+                      value={componentData.dimensionsSize}
+                      onChange={(e) => handleInputChange('dimensionsSize', e.target.value, 'A')}
+                      className={getFieldClass('A.dimensionsSize', "border-[#52baf3] border-2")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={getLabelClass('A.notes')}>Notes</Label>
+                    <Textarea 
+                      value={componentData.notes}
+                      onChange={(e) => handleInputChange('notes', e.target.value, 'A')}
+                      className={getFieldClass('A.notes', "border-[#52baf3] border-2")}
+                      rows={3}
                     />
                   </div>
                 </div>
@@ -857,8 +1085,8 @@ export default function ComponentRegisterFormCR({
             </h4>
             
             {expandedSections.has('B') && (
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className={getLabelClass('B.runningHours')}>Running Hours</Label>
                     <Input 
@@ -878,22 +1106,81 @@ export default function ComponentRegisterFormCR({
                     />
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className={getLabelClass('B.vibration')}>Vibration</Label>
-                    <Input 
-                      value={componentData.vibration}
-                      onChange={(e) => handleInputChange('vibration', e.target.value, 'B')}
-                      className={getFieldClass('B.vibration', "border-[#52baf3] border-2")}
-                    />
+
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <Label>Condition Monitoring Metrics</Label>
+                    <Button 
+                      onClick={() => handleAddMetric()}
+                      size="sm"
+                      className="bg-[#52baf3] hover:bg-[#4299d1] text-white"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Metric
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <Label className={getLabelClass('B.temperature')}>Temperature</Label>
-                    <Input 
-                      value={componentData.temperature}
-                      onChange={(e) => handleInputChange('temperature', e.target.value, 'B')}
-                      className={getFieldClass('B.temperature', "border-[#52baf3] border-2")}
-                    />
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Metric Name</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Value</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {componentData.metrics?.map((metric) => (
+                          <tr 
+                            key={metric.id} 
+                            className={`
+                              ${metric.pendingDelete ? 'strike-removed cr-changed-row' : ''}
+                              ${metric.isNew ? 'cr-new-item' : ''}
+                              ${metric.isEditing && !metric.isNew ? 'cr-modified-item' : ''}
+                            `}
+                          >
+                            <td className="px-4 py-2">
+                              <Input 
+                                value={metric.name}
+                                onChange={(e) => handleMetricFieldChange(metric.id!, 'name', e.target.value)}
+                                className={`h-8 ${metric.isEditing || metric.isNew ? 'cr-changed' : ''}`}
+                                disabled={metric.pendingDelete}
+                              />
+                            </td>
+                            <td className="px-4 py-2">
+                              <Input 
+                                type="number"
+                                value={metric.value}
+                                onChange={(e) => handleMetricFieldChange(metric.id!, 'value', parseFloat(e.target.value))}
+                                className={`h-8 w-32 ${metric.isEditing || metric.isNew ? 'cr-changed' : ''}`}
+                                disabled={metric.pendingDelete}
+                              />
+                            </td>
+                            <td className="px-4 py-2">
+                              {!metric.pendingDelete && (
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleDeleteMetric(metric.id!)}
+                                  className="h-8 text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {metric.pendingDelete && (
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleRestoreMetric(metric.id!)}
+                                  className="h-8"
+                                >
+                                  Restore
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
