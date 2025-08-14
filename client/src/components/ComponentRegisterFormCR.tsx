@@ -403,6 +403,7 @@ export default function ComponentRegisterFormCR({
 
   // Work Order functions
   const handleEditWorkOrder = (woId: string) => {
+    console.log('Edit Work Order clicked:', woId);
     setEditingWorkOrders(prev => new Set(prev).add(woId));
     setComponentData(prev => ({
       ...prev!,
@@ -461,6 +462,7 @@ export default function ComponentRegisterFormCR({
   };
 
   const handleDeleteWorkOrder = (woId: string) => {
+    console.log('Delete Work Order clicked:', woId);
     setComponentData(prev => ({
       ...prev!,
       workOrders: prev!.workOrders.map(wo => 
@@ -515,6 +517,7 @@ export default function ComponentRegisterFormCR({
   };
 
   const handleUnlinkSpare = (spareId: string) => {
+    console.log('handleUnlinkSpare called with:', spareId);
     setComponentData(prev => ({
       ...prev!,
       spares: prev!.spares.map(spare => 
@@ -589,6 +592,7 @@ export default function ComponentRegisterFormCR({
   };
 
   const handleDeleteMetric = (metricId: string) => {
+    console.log('handleDeleteMetric called with:', metricId);
     if (!componentData) return;
     
     setComponentData(prev => ({
@@ -1158,8 +1162,14 @@ export default function ComponentRegisterFormCR({
                                 <Button 
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleDeleteMetric(metric.id!)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('Delete metric clicked:', metric.id);
+                                    handleDeleteMetric(metric.id!);
+                                  }}
                                   className="h-8 text-red-600 hover:text-red-700"
+                                  type="button"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -1204,7 +1214,16 @@ export default function ComponentRegisterFormCR({
             
             {expandedSections.has('C') && (
               <div>
-                <div className="flex justify-end mb-4">
+                <div className="flex justify-end mb-4 gap-2">
+                  <Button 
+                    onClick={() => {
+                      console.log('Test button clicked!');
+                      alert('Test button works!');
+                    }}
+                    className="bg-gray-500 hover:bg-gray-600 text-white"
+                  >
+                    Test Click
+                  </Button>
                   <Button 
                     onClick={handleAddWorkOrder}
                     className="bg-[#52baf3] hover:bg-[#4299d1] text-white"
@@ -1328,16 +1347,28 @@ export default function ComponentRegisterFormCR({
                                     <Button 
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => handleEditWorkOrder(wo.id!)}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('Edit button actually clicked for:', wo.id);
+                                        handleEditWorkOrder(wo.id!);
+                                      }}
                                       className="h-8"
+                                      type="button"
                                     >
                                       <Edit2 className="h-4 w-4" />
                                     </Button>
                                     <Button 
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => handleDeleteWorkOrder(wo.id!)}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('Delete button actually clicked for:', wo.id);
+                                        handleDeleteWorkOrder(wo.id!);
+                                      }}
                                       className="h-8 text-red-600 hover:text-red-700"
+                                      type="button"
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -1450,8 +1481,14 @@ export default function ComponentRegisterFormCR({
                               <Button 
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleUnlinkSpare(spare.id!)}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Unlink spare clicked:', spare.id);
+                                  handleUnlinkSpare(spare.id!);
+                                }}
                                 className="h-8 text-red-600 hover:text-red-700"
+                                type="button"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
