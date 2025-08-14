@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ComponentRegisterForm from "@/components/ComponentRegisterForm";
+import ComponentRegisterFormCR from "@/components/ComponentRegisterFormCR";
 import WorkOrderForm from "@/components/WorkOrderForm";
 import { ReviewChangesDrawer } from "@/components/ReviewChangesDrawer";
 import { useChangeRequest } from "@/contexts/ChangeRequestContext";
@@ -1310,7 +1311,13 @@ const Components: React.FC = () => {
               isSelected ? "bg-blue-50" : ""
             }`}
             style={{ paddingLeft: `${level * 20 + 12}px` }}
-            onClick={() => setSelectedComponent(node)}
+            onClick={() => {
+              setSelectedComponent(node);
+              // Automatically open CR form when in change request mode
+              if (isChangeRequestMode) {
+                setIsComponentFormOpen(true);
+              }
+            }}
           >
             <button
               className="mr-2 flex-shrink-0"
@@ -1559,18 +1566,33 @@ const Components: React.FC = () => {
       </div>
 
       {/* Component Register Form */}
-      <ComponentRegisterForm 
-        isOpen={isComponentFormOpen}
-        onClose={() => {
-          setIsComponentFormOpen(false);
-          // If in change mode and closing without submitting, go back to ModifyPMS
-          if (isChangeMode) {
-            exitChangeRequestMode();
-            reset();
-            setLocation("/pms/modify-pms");
-          }
-        }}
-        onSubmit={async (componentData) => {
+      {/* Use CR form when in change request mode, regular form otherwise */}
+      {isChangeRequestMode ? (
+        <ComponentRegisterFormCR
+          isOpen={isComponentFormOpen}
+          onClose={() => {
+            setIsComponentFormOpen(false);
+            if (isChangeRequestMode) {
+              exitChangeRequestMode();
+              reset();
+              setLocation("/pms/modify-pms");
+            }
+          }}
+          selectedComponent={selectedComponent}
+        />
+      ) : (
+        <ComponentRegisterForm 
+          isOpen={isComponentFormOpen}
+          onClose={() => {
+            setIsComponentFormOpen(false);
+            // If in change mode and closing without submitting, go back to ModifyPMS
+            if (isChangeMode) {
+              exitChangeRequestMode();
+              reset();
+              setLocation("/pms/modify-pms");
+            }
+          }}
+          onSubmit={async (componentData) => {
           console.log('Component data submitted:', componentData);
           
           // If in change mode, create a change request
@@ -1649,6 +1671,7 @@ const Components: React.FC = () => {
           }
         }}
       />
+      )}
       
       {/* Review Changes Drawer */}
       {isChangeMode && selectedComponent && (
