@@ -308,7 +308,7 @@ export default function ComponentRegisterFormCR({
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const { changeMode, targetComponent } = useChangeMode();
+  const { isChangeMode } = useChangeMode();
 
   // State for component data
   const [componentData, setComponentData] = useState<ComponentData | null>(null);
@@ -576,7 +576,7 @@ export default function ComponentRegisterFormCR({
           if (!m.isNew && m.originalData) {
             // Check if value is back to original
             if (m.originalData[field] === value) {
-              delete updated.isEditing;
+              updated.isEditing = false;
             }
           }
           return updated;
@@ -758,10 +758,8 @@ export default function ComponentRegisterFormCR({
   // Submit mutation
   const submitChangeRequest = useMutation({
     mutationFn: async (payload: any) => {
-      return apiRequest("/api/modify-pms/requests", {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
+      const response = await apiRequest("POST", "/api/modify-pms/requests", payload);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/modify-pms/requests"] });
