@@ -299,101 +299,145 @@ const dummyComponents: ComponentNode[] = [
 
 // Function to get mock data for a component based on its code
 const getComponentMockData = (code: string) => {
-  // Mock data mapping for different components
-  const mockDataMap: { [key: string]: any } = {
+  // Generate realistic mock data based on component code and type
+  const getComponentDetails = (code: string, name?: string) => {
+    // Parse component hierarchy from code
+    const levels = code.split('.');
+    const topLevel = levels[0];
+    
+    // Department mapping based on top-level code
+    const departmentMap: { [key: string]: string } = {
+      "1": "Hull & Deck",
+      "2": "Deck Machinery",
+      "3": "Accommodation",
+      "4": "Ship's Equipment",
+      "5": "Safety Equipment",
+      "6": "Engine Department",
+      "7": "Engine Systems",
+      "8": "Common Systems"
+    };
+    
+    // Location mapping
+    const locationMap: { [key: string]: string } = {
+      "1": "Main Deck",
+      "2": "Fore Deck",
+      "3": "Accommodation Block",
+      "4": "Main Deck",
+      "5": "Bridge/Safety Station",
+      "6": "Engine Room",
+      "7": "Engine Room",
+      "8": "Various"
+    };
+    
+    // Criticality based on component level and type
+    const isCritical = topLevel === "6" || topLevel === "7" || (topLevel === "1" && levels.length > 2);
+    
+    // Generate appropriate maker based on component type
+    const getMaker = () => {
+      if (topLevel === "6") return ["MAN B&W", "Wärtsilä", "Caterpillar", "Yanmar"][Math.floor(Math.random() * 4)];
+      if (topLevel === "1") return ["Hyundai", "Samsung", "Daewoo"][Math.floor(Math.random() * 3)];
+      if (topLevel === "2") return ["MacGregor", "TTS Marine", "Rolls-Royce"][Math.floor(Math.random() * 3)];
+      if (topLevel === "3") return ["Marine Air Systems", "Novenco", "Heinen & Hopman"][Math.floor(Math.random() * 3)];
+      if (topLevel === "4") return ["Kongsberg", "Furuno", "JRC"][Math.floor(Math.random() * 3)];
+      if (topLevel === "5") return ["Viking", "Survitec", "LALIZAS"][Math.floor(Math.random() * 3)];
+      return "OEM Manufacturer";
+    };
+    
+    // Generate model based on code
+    const model = `${getMaker().split(' ')[0].toUpperCase()}-${code.replace(/\./g, '')}-${levels.length > 2 ? 'ADV' : 'STD'}`;
+    
+    // Generate serial number
+    const serialNo = `SN-${new Date().getFullYear()}-${code.replace(/\./g, '')}-${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}`;
+    
+    // Rating based on component type
+    const getRating = () => {
+      if (topLevel === "6" && levels.length === 3) return "7,200 kW";
+      if (topLevel === "6" && levels.length === 4) return "High Performance";
+      if (topLevel === "2") return "SWL 25 MT";
+      if (topLevel === "7") return "Medium Pressure";
+      return "Standard";
+    };
+    
+    return {
+      maker: getMaker(),
+      model: model,
+      serialNo: serialNo,
+      department: departmentMap[topLevel] || "General",
+      critical: isCritical ? "Yes" : "No",
+      classItem: isCritical ? "Yes" : "No",
+      location: locationMap[topLevel] || "Ship",
+      commissionedDate: "2020-01-15",
+      installationDate: "2019-12-20",
+      rating: getRating(),
+      conditionBased: levels.length > 2 ? "Yes" : "No",
+      noOfUnits: levels.length === 4 ? "6" : levels.length === 3 ? "2" : "1",
+      eqptSystemDept: departmentMap[topLevel] || "General",
+      parentComponent: levels.length > 1 ? `Level ${levels.slice(0, -1).join('.')}` : "Ship Structure",
+      dimensionsSize: levels.length === 4 ? "0.5m x 0.3m" : levels.length === 3 ? "2m x 1m" : "5m x 3m",
+      notes: `Component ${code} - ${isCritical ? 'Critical for vessel operations' : 'Standard equipment'}`
+    };
+  };
+  
+  // Special cases for specific well-known components
+  const specialCases: { [key: string]: any } = {
     "6.1.1": {
       maker: "MAN Energy Solutions",
       model: "6S60MC-C",
-      serialNo: "12345",
-      department: "Engine",
+      serialNo: "ME-2020-001",
+      department: "Engine Department",
       critical: "Yes",
       classItem: "Yes",
       location: "Engine Room",
       commissionedDate: "2020-02-01",
       installationDate: "2020-01-15",
-      rating: "7,200 kW",
+      rating: "7,200 kW @ 105 RPM",
       conditionBased: "Yes",
       noOfUnits: "1",
       eqptSystemDept: "Engine Department",
-      parentComponent: "Main Engine Block",
+      parentComponent: "6.1 Main Engine",
       dimensionsSize: "15m x 3m x 4m",
-      notes: "Primary propulsion engine - critical for vessel operations"
+      notes: "Main propulsion engine - 6 cylinder, 2-stroke diesel"
     },
-    "6.1.1.1": {
-      maker: "Caterpillar",
-      model: "CAT-CYL-001",
-      serialNo: "CYL-2345",
-      department: "Engine",
+    "1.1": {
+      maker: "Hyundai Heavy Industries",
+      model: "HHI-HULL-2020",
+      serialNo: "HULL-001",
+      department: "Hull & Deck",
       critical: "Yes",
       classItem: "Yes",
-      location: "Main Engine",
-      commissionedDate: "2020-02-01",
-      installationDate: "2020-01-15",
-      rating: "900 Bar",
+      location: "Ship Structure",
+      commissionedDate: "2020-01-01",
+      installationDate: "2019-06-01",
+      rating: "Double Hull",
       conditionBased: "Yes",
-      noOfUnits: "6",
-      eqptSystemDept: "Engine Department",
-      parentComponent: "6.1.1 Cylinder Head",
-      dimensionsSize: "1.2m x 0.8m",
-      notes: "Critical component for engine compression"
+      noOfUnits: "1",
+      eqptSystemDept: "Hull & Structure",
+      parentComponent: "1. Ship's Structure",
+      dimensionsSize: "180m x 32m x 18m",
+      notes: "Main hull structure - double bottom design"
     },
-    "6.1.1.2": {
-      maker: "Bosch",
-      model: "FUEL-INJ-2000",
-      serialNo: "FI-3456",
-      department: "Engine",
+    "2.1": {
+      maker: "MacGregor",
+      model: "MG-CRANE-45T",
+      serialNo: "CR-2020-001",
+      department: "Deck Machinery",
       critical: "Yes",
-      classItem: "No",
-      location: "Cylinder Head",
-      commissionedDate: "2020-02-01",
-      installationDate: "2020-01-15",
-      rating: "2000 Bar",
-      conditionBased: "No",
-      noOfUnits: "6",
-      eqptSystemDept: "Engine Department",
-      parentComponent: "6.1.1 Cylinder Head",
-      dimensionsSize: "0.3m x 0.1m",
-      notes: "High-pressure fuel injection system"
-    },
-    "6.1.1.3": {
-      maker: "MAN",
-      model: "ROCKER-ARM-V2",
-      serialNo: "RA-4567",
-      department: "Engine",
-      critical: "No",
-      classItem: "No",
-      location: "Cylinder Head",
-      commissionedDate: "2020-02-01",
-      installationDate: "2020-01-15",
-      rating: "Standard",
-      conditionBased: "No",
-      noOfUnits: "12",
-      eqptSystemDept: "Engine Department",
-      parentComponent: "6.1.1 Cylinder Head",
-      dimensionsSize: "0.5m x 0.2m",
-      notes: "Valve actuation mechanism"
+      classItem: "Yes",
+      location: "Main Deck Port",
+      commissionedDate: "2020-01-15",
+      installationDate: "2019-12-01",
+      rating: "SWL 45 MT",
+      conditionBased: "Yes",
+      noOfUnits: "1",
+      eqptSystemDept: "Deck Department",
+      parentComponent: "2. Deck Machinery",
+      dimensionsSize: "25m boom length",
+      notes: "Main cargo crane - hydraulic operation"
     }
   };
   
-  // Return mock data for the component or default values
-  return mockDataMap[code] || {
-    maker: "Generic Manufacturer",
-    model: "Model-" + code,
-    serialNo: "SN-" + code,
-    department: "Machinery",
-    critical: "No",
-    classItem: "No",
-    location: "Ship",
-    commissionedDate: "2020-01-01",
-    installationDate: "2019-12-01",
-    rating: "Standard",
-    conditionBased: "No",
-    noOfUnits: "1",
-    eqptSystemDept: "Machinery",
-    parentComponent: "Parent",
-    dimensionsSize: "Various",
-    notes: "Component " + code
-  };
+  // Return special case if exists, otherwise generate based on pattern
+  return specialCases[code] || getComponentDetails(code);
 };
 
 const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
@@ -1141,7 +1185,7 @@ const Components: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComponent, setSelectedComponent] = useState<ComponentNode | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["A"]));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["A", "B", "C", "D", "E", "F", "G", "H"]));
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
   const [showReviewDrawer, setShowReviewDrawer] = useState(false);
   
