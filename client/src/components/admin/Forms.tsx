@@ -68,7 +68,7 @@ export default function Forms() {
               <TabsList className="bg-gray-100">
                 <TabsTrigger value="bulk-data" className="data-[state=active]:bg-white">Bulk Data Imp</TabsTrigger>
                 <TabsTrigger value="alerts" className="data-[state=active]:bg-white">Alerts</TabsTrigger>
-                <TabsTrigger value="forms" className="bg-blue-500 text-white data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                <TabsTrigger value="forms" className="text-white data-[state=active]:text-white" style={{ backgroundColor: '#52baf3' }}>
                   Forms
                 </TabsTrigger>
                 <TabsTrigger value="adm4" className="data-[state=active]:bg-white">Adm 4</TabsTrigger>
@@ -92,7 +92,7 @@ export default function Forms() {
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow className="bg-blue-500 hover:bg-blue-500">
+                <TableRow className="hover:bg-[#52baf3]" style={{ backgroundColor: '#52baf3' }}>
                   <TableHead className="font-semibold text-white">Form Name</TableHead>
                   <TableHead className="font-semibold text-white">Form Sub Group</TableHead>
                   <TableHead className="font-semibold text-white text-center">Version No</TableHead>
