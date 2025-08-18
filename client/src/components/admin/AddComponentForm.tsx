@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -90,6 +91,7 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-hidden p-0">
+        <DialogTitle className="sr-only">Add Component Form</DialogTitle>
         <DialogDescription className="sr-only">Add Component Form Configuration</DialogDescription>
         
         {/* Header */}
@@ -168,11 +170,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 1. Component Information */}
+            {/* A. Component Information */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">A</span>
                   Component Information
                 </h3>
                 <Button variant="link" size="sm" className="text-blue-600">
@@ -249,11 +251,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 2. Running Hours & Condition Monitoring Metrics */}
+            {/* B. Running Hours & Condition Monitoring Metrics */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">B</span>
                   Running Hours & Condition Monitoring Metrics
                 </h3>
               </div>
@@ -276,11 +278,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 3. Work Orders */}
+            {/* C. Work Orders */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">C</span>
                   Work Orders
                 </h3>
               </div>
@@ -310,11 +312,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 4. Maintenance History */}
+            {/* D. Maintenance History */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">D</span>
                   Maintenance History
                 </h3>
               </div>
@@ -340,11 +342,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 5. Spares */}
+            {/* E. Spares */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">E</span>
                   Spares
                 </h3>
               </div>
@@ -374,11 +376,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 6. Drawings & Manuals */}
+            {/* F. Drawings & Manuals */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">6</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">F</span>
                   Drawings & Manuals
                 </h3>
               </div>
@@ -387,11 +389,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 7. Classification & Regulatory Data */}
+            {/* G. Classification & Regulatory Data */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">G</span>
                   Classification & Regulatory Data
                 </h3>
                 <Button variant="link" size="sm" className="text-blue-600">
@@ -441,11 +443,11 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
               </div>
             </div>
 
-            {/* 8. New Service Notes */}
+            {/* H. New Service Notes */}
             <div className="bg-white rounded-lg border">
               <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">8</span>
+                  <span className="bg-[#52baf3] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">H</span>
                   New Service Notes
                 </h3>
                 <Button variant="link" size="sm" className="text-blue-600">
