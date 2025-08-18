@@ -8,6 +8,7 @@ import ModifyPMS from "./pms/ModifyPMS";
 import Spares from "./spares/SparesNew";
 import Stores from "./stores/Stores";
 import BulkImport from "./admin/BulkImport";
+import Alerts from "./admin/Alerts";
 import { useLocation, useParams } from "wouter";
 
 export const TechnicalModule: React.FC = () => {
@@ -16,7 +17,10 @@ export const TechnicalModule: React.FC = () => {
   
   // Derive state from URL
   const getStateFromUrl = () => {
-    if (location.startsWith("/pms/")) {
+    if (location.startsWith("/admin/")) {
+      const subpage = location.replace("/admin/", "");
+      return { subModule: "admin", menuItem: subpage };
+    } else if (location.startsWith("/pms/")) {
       const subpage = location.replace("/pms/", "");
       return { subModule: "pms", menuItem: subpage };
     } else if (location.startsWith("/spares")) {
@@ -40,7 +44,12 @@ export const TechnicalModule: React.FC = () => {
 
   const handleSubModuleChange = (subModule: string) => {
     setSelectedSubModule(subModule);
-    setSelectedMenuItem("dashboard"); // Reset to dashboard when changing submodule
+    // Set default menu item based on submodule
+    if (subModule === "admin") {
+      setSelectedMenuItem("alerts"); // Default to alerts for admin
+    } else {
+      setSelectedMenuItem("dashboard"); // Default to dashboard for other modules
+    }
   };
 
   const handleMenuItemSelect = (item: string) => {
@@ -79,6 +88,8 @@ export const TechnicalModule: React.FC = () => {
             <ModifyPMS />
           ) : selectedSubModule === "pms" && selectedMenuItem === "admin" ? (
             <BulkImport />
+          ) : selectedSubModule === "admin" && selectedMenuItem === "alerts" ? (
+            <Alerts />
           ) : (
             <div className="p-6">
               <div className="bg-white rounded-lg shadow-sm p-6">

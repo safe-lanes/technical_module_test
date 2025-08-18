@@ -23,7 +23,7 @@ function App() {
                 <Route path="/pms/:subpage" component={TechnicalModule} />
                 <Route path="/spares" component={TechnicalModule} />
                 <Route path="/stores" component={TechnicalModule} />
-                <Route path="/admin/alerts" component={Alerts} />
+                <Route path="/admin/:subpage" component={TechnicalModule} />
                 <Route component={NotFound} />
               </Switch>
             </div>
