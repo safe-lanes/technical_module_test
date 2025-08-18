@@ -64,8 +64,8 @@ export default function AlertHistory() {
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
-    alertType: '',
-    priority: '',
+    alertType: 'all',
+    priority: 'all',
     status: ''
   });
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
@@ -77,8 +77,8 @@ export default function AlertHistory() {
       const params = new URLSearchParams();
       if (filters.startDate) params.append('startDate', filters.startDate);
       if (filters.endDate) params.append('endDate', filters.endDate);
-      if (filters.alertType) params.append('alertType', filters.alertType);
-      if (filters.priority) params.append('priority', filters.priority);
+      if (filters.alertType && filters.alertType !== 'all') params.append('alertType', filters.alertType);
+      if (filters.priority && filters.priority !== 'all') params.append('priority', filters.priority);
       
       const response = await fetch(`/api/alerts/events?${params}`);
       if (!response.ok) throw new Error('Failed to fetch events');
@@ -177,7 +177,7 @@ export default function AlertHistory() {
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="maintenance_due">Maintenance Due</SelectItem>
                   <SelectItem value="critical_inventory">Critical Inventory</SelectItem>
                   <SelectItem value="running_hours">Running Hours</SelectItem>
@@ -196,7 +196,7 @@ export default function AlertHistory() {
                   <SelectValue placeholder="All Priorities" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Priorities</SelectItem>
+                  <SelectItem value="all">All Priorities</SelectItem>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
