@@ -4,22 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface AddComponentFormProps {
   open: boolean;
@@ -28,35 +19,41 @@ interface AddComponentFormProps {
 
 export default function AddComponentForm({ open, onOpenChange }: AddComponentFormProps) {
   const [formData, setFormData] = useState({
-    // Component Specs
-    component: '',
-    location: '',
+    // Component Name
+    componentName: '',
+    // Component Information
+    origin: '',
+    supplier: '',
     partNo: '',
+    createdOn: '',
+    component: '',
+    maker: '',
     serialNo: '',
-    componentCode: '',
-    manufacturer: '',
-    rating: '',
     installedDate: '',
-    installBy: '',
+    componentCode: '',
     type: '',
-    modelSpecification: '',
     blackoutComponent: '',
+    modelSpecification: '',
+    warrantyInfo: '',
+    warrantyDays: '',
+    warrantyDate: '',
+    lastUsed: '',
+    supplier2: '',
     
-    // Running Hours & Condition Monitoring Metrics
+    // Running Hours
     runningHours: '',
     conditionMonitoring: '',
     
     // Work Orders
     workBy: '',
     jobTitle: '',
-    dueDateBy: '',
     dueDate: '',
     status: '',
     
     // Maintenance History
-    serialNumber: '',
+    serialNo2: '',
     performedBy: '',
-    nextDueDate: '',
+    nextDue: '',
     completionDate: '',
     
     // Spares
@@ -64,7 +61,7 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
     partName: '',
     qty: '',
     critical: '',
-    spareLocation: '',
+    location: '',
     
     // Classification & Regulatory Data
     classificationSociety: '',
@@ -73,8 +70,6 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
     nextClassDate: '',
     classCode: '',
     classRemarks: '',
-    classCode2: '',
-    certificate: '',
     
     // New Service Notes
     serviceNote: '',
@@ -94,527 +89,400 @@ export default function AddComponentForm({ open, onOpenChange }: AddComponentFor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-              className="h-8 w-8"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <DialogTitle className="text-xl font-semibold">
-              Component Register - Add Component
-            </DialogTitle>
-            <Badge variant="secondary" className="ml-2">Configuration Mode</Badge>
+      <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-hidden p-0">
+        <DialogDescription className="sr-only">Add Component Form Configuration</DialogDescription>
+        
+        {/* Header */}
+        <div className="bg-white border-b px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenChange(false)}
+                className="h-8 w-8"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h2 className="text-lg font-semibold">Component Register - Add Component</h2>
+              <Badge variant="secondary" className="bg-gray-100">Configuration Mode</Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+              >
+                Clear Form
+              </Button>
+              <Button 
+                size="sm"
+                className="bg-[#52baf3] hover:bg-[#3da8e0] text-white"
+                onClick={handleSave}
+              >
+                Save Form
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="destructive" size="sm">
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm">
-              Clear Form
-            </Button>
-            <Button 
-              onClick={handleSave}
-              className="bg-[#52baf3] hover:bg-[#3da8e0] text-white"
-              size="sm"
-            >
-              Save Form
-            </Button>
+        </div>
+
+        {/* Main Navigation Tabs */}
+        <div className="bg-gray-50 border-b px-4">
+          <div className="flex gap-1">
+            <button className="px-4 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent hover:text-gray-900">
+              Version No
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent hover:text-gray-900">
+              Version Date
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent hover:text-gray-900">
+              Select Date
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-gray-900 border-b-2 border-blue-500">
+              Status: Draft
+            </button>
           </div>
-        </DialogHeader>
+        </div>
 
-        <div className="space-y-6">
-          {/* Component Specs Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
-                Component Specs
-                <Button variant="link" size="sm" className="text-blue-600 ml-auto">
-                  Add Field
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="component">Component</Label>
-                  <Input
-                    id="component"
-                    value={formData.component}
-                    onChange={(e) => handleInputChange('component', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="part-no">Part No</Label>
-                  <Input
-                    id="part-no"
-                    value={formData.partNo}
-                    onChange={(e) => handleInputChange('partNo', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="serial-no">Serial No</Label>
-                  <Input
-                    id="serial-no"
-                    value={formData.serialNo}
-                    onChange={(e) => handleInputChange('serialNo', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="component-code">Component Code</Label>
-                  <Input
-                    id="component-code"
-                    value={formData.componentCode}
-                    onChange={(e) => handleInputChange('componentCode', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="manufacturer">Manufacturer</Label>
-                  <Input
-                    id="manufacturer"
-                    value={formData.manufacturer}
-                    onChange={(e) => handleInputChange('manufacturer', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="rating">Rating</Label>
-                  <Input
-                    id="rating"
-                    value={formData.rating}
-                    onChange={(e) => handleInputChange('rating', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="installed-date">Installed Date</Label>
-                  <Input
-                    id="installed-date"
-                    type="date"
-                    value={formData.installedDate}
-                    onChange={(e) => handleInputChange('installedDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="install-by">Install By</Label>
-                  <Input
-                    id="install-by"
-                    value={formData.installBy}
-                    onChange={(e) => handleInputChange('installBy', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <Input
-                    id="type"
-                    value={formData.type}
-                    onChange={(e) => handleInputChange('type', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="model-spec">Model Specification</Label>
-                  <Input
-                    id="model-spec"
-                    value={formData.modelSpecification}
-                    onChange={(e) => handleInputChange('modelSpecification', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="blackout">Blackout Component</Label>
-                  <Select value={formData.blackoutComponent} onValueChange={(value) => handleInputChange('blackoutComponent', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        {/* Form Content */}
+        <div className="overflow-y-auto p-6" style={{ maxHeight: 'calc(95vh - 120px)' }}>
+          <div className="space-y-6 max-w-6xl mx-auto">
+            
+            {/* Component Name Section */}
+            <div className="bg-white rounded-lg border p-4">
+              <div className="mb-4">
+                <Label htmlFor="component-name" className="text-sm font-semibold">Component Name</Label>
+                <Input
+                  id="component-name"
+                  value={formData.componentName}
+                  onChange={(e) => handleInputChange('componentName', e.target.value)}
+                  className="mt-1"
+                  placeholder="Component Information"
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Running Hours & Condition Monitoring Metrics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
-                Running Hours & Condition Monitoring Metrics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="running-hours">Running Hours</Label>
-                  <Input
-                    id="running-hours"
-                    value={formData.runningHours}
-                    onChange={(e) => handleInputChange('runningHours', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="condition-monitoring">Condition Monitoring Metrics</Label>
-                  <Input
-                    id="condition-monitoring"
-                    value={formData.conditionMonitoring}
-                    onChange={(e) => handleInputChange('conditionMonitoring', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="notes">Notes</Label>
-                  <Textarea
-                    id="notes"
-                    className="min-h-[80px]"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Work Orders */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
-                Work Orders
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-5 gap-4">
-                <div>
-                  <Label htmlFor="work-by">Work By</Label>
-                  <Input
-                    id="work-by"
-                    value={formData.workBy}
-                    onChange={(e) => handleInputChange('workBy', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="job-title">Job Title</Label>
-                  <Input
-                    id="job-title"
-                    value={formData.jobTitle}
-                    onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="due-date-by">Due Date By</Label>
-                  <Input
-                    id="due-date-by"
-                    value={formData.dueDateBy}
-                    onChange={(e) => handleInputChange('dueDateBy', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="due-date">Due Date</Label>
-                  <Input
-                    id="due-date"
-                    type="date"
-                    value={formData.dueDate}
-                    onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Maintenance History */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
-                Maintenance History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="serial-number">Serial Number</Label>
-                  <Input
-                    id="serial-number"
-                    value={formData.serialNumber}
-                    onChange={(e) => handleInputChange('serialNumber', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="performed-by">Performed By</Label>
-                  <Input
-                    id="performed-by"
-                    value={formData.performedBy}
-                    onChange={(e) => handleInputChange('performedBy', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="next-due">Next Due Date</Label>
-                  <Input
-                    id="next-due"
-                    type="date"
-                    value={formData.nextDueDate}
-                    onChange={(e) => handleInputChange('nextDueDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="completion">Completion Date</Label>
-                  <Input
-                    id="completion"
-                    type="date"
-                    value={formData.completionDate}
-                    onChange={(e) => handleInputChange('completionDate', e.target.value)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Spares */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
-                Spares
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-5 gap-4">
-                <div>
-                  <Label htmlFor="spare-part">Spare Part</Label>
-                  <Input
-                    id="spare-part"
-                    value={formData.sparePart}
-                    onChange={(e) => handleInputChange('sparePart', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="part-name">Part Name</Label>
-                  <Input
-                    id="part-name"
-                    value={formData.partName}
-                    onChange={(e) => handleInputChange('partName', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="qty">Qty</Label>
-                  <Input
-                    id="qty"
-                    type="number"
-                    value={formData.qty}
-                    onChange={(e) => handleInputChange('qty', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="critical">Critical</Label>
-                  <Select value={formData.critical} onValueChange={(value) => handleInputChange('critical', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="spare-location">Location</Label>
-                  <Input
-                    id="spare-location"
-                    value={formData.spareLocation}
-                    onChange={(e) => handleInputChange('spareLocation', e.target.value)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Drawings & Manuals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">6</span>
-                Drawings & Manuals
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                No drawings or manuals uploaded yet
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Classification & Regulatory Data */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
-                Classification & Regulatory Data
-                <Button variant="link" size="sm" className="text-blue-600 ml-auto">
-                  Add Field
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="classification-society">Classification Society</Label>
-                  <Input
-                    id="classification-society"
-                    value={formData.classificationSociety}
-                    onChange={(e) => handleInputChange('classificationSociety', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="certificate-no">Certificate No</Label>
-                  <Input
-                    id="certificate-no"
-                    value={formData.certificateNo}
-                    onChange={(e) => handleInputChange('certificateNo', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="last-class">Last Class Date</Label>
-                  <Input
-                    id="last-class"
-                    type="date"
-                    value={formData.lastClassDate}
-                    onChange={(e) => handleInputChange('lastClassDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="next-class">Next Class Date</Label>
-                  <Input
-                    id="next-class"
-                    type="date"
-                    value={formData.nextClassDate}
-                    onChange={(e) => handleInputChange('nextClassDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="class-code">Class Code</Label>
-                  <Input
-                    id="class-code"
-                    value={formData.classCode}
-                    onChange={(e) => handleInputChange('classCode', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="class-remarks">Class Remarks</Label>
-                  <Input
-                    id="class-remarks"
-                    value={formData.classRemarks}
-                    onChange={(e) => handleInputChange('classRemarks', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="class-code-2">Class Code</Label>
-                  <Input
-                    id="class-code-2"
-                    value={formData.classCode2}
-                    onChange={(e) => handleInputChange('classCode2', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="certificate">Certificate</Label>
-                  <Input
-                    id="certificate"
-                    value={formData.certificate}
-                    onChange={(e) => handleInputChange('certificate', e.target.value)}
-                  />
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="flex justify-center">
-                <Button variant="outline" className="text-blue-600">
-                  Add New Service
+            {/* 1. Component Information */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
+                  Component Information
+                </h3>
+                <Button variant="link" size="sm" className="text-blue-600">
+                  + Add Field
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* New Service Notes */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">8</span>
-                New Service Notes
-                <Button variant="link" size="sm" className="text-blue-600 ml-auto">
-                  Add Field
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="service-note">Service Note</Label>
-                  <Input
-                    id="service-note"
-                    value={formData.serviceNote}
-                    onChange={(e) => handleInputChange('serviceNote', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="note-date">Note Date</Label>
-                  <Input
-                    id="note-date"
-                    type="date"
-                    value={formData.noteDate}
-                    onChange={(e) => handleInputChange('noteDate', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="next-note">Next Note</Label>
-                  <Input
-                    id="next-note"
-                    type="date"
-                    value={formData.nextNote}
-                    onChange={(e) => handleInputChange('nextNote', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="note-level">Note Level</Label>
-                  <Input
-                    id="note-level"
-                    value={formData.noteLevel}
-                    onChange={(e) => handleInputChange('noteLevel', e.target.value)}
-                  />
+              <div className="p-4">
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="origin" className="text-xs">Origin</Label>
+                    <Input id="origin" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="supplier" className="text-xs">Supplier</Label>
+                    <Input id="supplier" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="part-no" className="text-xs">Part No</Label>
+                    <Input id="part-no" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="created-on" className="text-xs">Created On</Label>
+                    <Input id="created-on" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="component" className="text-xs">Component *</Label>
+                    <Input id="component" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="maker" className="text-xs">Maker / Maker Designator</Label>
+                    <Input id="maker" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="serial-no" className="text-xs">Serial No</Label>
+                    <Input id="serial-no" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="installed-date" className="text-xs">Installed Date</Label>
+                    <Input id="installed-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="component-code" className="text-xs">Component Code</Label>
+                    <Input id="component-code" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="type" className="text-xs">Type</Label>
+                    <Input id="type" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="blackout" className="text-xs">Blackout Component</Label>
+                    <Input id="blackout" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="model-spec" className="text-xs">Model Specification</Label>
+                    <Input id="model-spec" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="warranty-info" className="text-xs">Warranty Info</Label>
+                    <Input id="warranty-info" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="warranty-days" className="text-xs">Warranty Days</Label>
+                    <Input id="warranty-days" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="warranty-date" className="text-xs">Warranty Date</Label>
+                    <Input id="warranty-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="last-used" className="text-xs">Last Used</Label>
+                    <Input id="last-used" className="h-8 text-sm" />
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Save button at bottom */}
-          <div className="flex justify-end pt-4">
-            <Button 
-              onClick={handleSave}
-              className="bg-green-600 hover:bg-green-700 text-white px-8"
-            >
-              Save
-            </Button>
+            {/* 2. Running Hours & Condition Monitoring Metrics */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
+                  Running Hours & Condition Monitoring Metrics
+                </h3>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="running-hours" className="text-xs">Running Hours</Label>
+                    <Input id="running-hours" className="h-8 text-sm" />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="condition-metrics" className="text-xs">Condition Monitoring Metrics</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Button variant="outline" size="sm" className="text-xs">
+                        Add Metric Units
+                      </Button>
+                      <span className="text-sm text-gray-500">No Condition Monitoring Metrics</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Work Orders */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
+                  Work Orders
+                </h3>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-5 gap-4">
+                  <div>
+                    <Label htmlFor="work-by" className="text-xs">Work By</Label>
+                    <Input id="work-by" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="job-title" className="text-xs">Job Title</Label>
+                    <Input id="job-title" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="assigned-to" className="text-xs">Assigned To</Label>
+                    <Input id="assigned-to" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="due-date" className="text-xs">Due Date</Label>
+                    <Input id="due-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="status" className="text-xs">Status</Label>
+                    <Input id="status" className="h-8 text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Maintenance History */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
+                  Maintenance History
+                </h3>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="work-order-no" className="text-xs">Work Order No</Label>
+                    <Input id="work-order-no" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="performed-by" className="text-xs">Performed By</Label>
+                    <Input id="performed-by" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="next-due-date" className="text-xs">Next Due Date</Label>
+                    <Input id="next-due-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="completion-date" className="text-xs">Completion Date</Label>
+                    <Input id="completion-date" type="date" className="h-8 text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Spares */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
+                  Spares
+                </h3>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-5 gap-4">
+                  <div>
+                    <Label htmlFor="spare-part" className="text-xs">Spare Part</Label>
+                    <Input id="spare-part" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="part-name" className="text-xs">Part Name</Label>
+                    <Input id="part-name" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="qty" className="text-xs">Qty</Label>
+                    <Input id="qty" type="number" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="critical" className="text-xs">Critical</Label>
+                    <Input id="critical" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="location" className="text-xs">Location</Label>
+                    <Input id="location" className="h-8 text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Drawings & Manuals */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">6</span>
+                  Drawings & Manuals
+                </h3>
+              </div>
+              <div className="p-8 text-center text-gray-500">
+                <p className="text-sm">No drawings or manuals uploaded</p>
+              </div>
+            </div>
+
+            {/* 7. Classification & Regulatory Data */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
+                  Classification & Regulatory Data
+                </h3>
+                <Button variant="link" size="sm" className="text-blue-600">
+                  + Add Field
+                </Button>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="classification-society" className="text-xs">Classification Society</Label>
+                    <Input id="classification-society" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="certificate-no" className="text-xs">Certificate No</Label>
+                    <Input id="certificate-no" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="last-class-date" className="text-xs">Last Class Date</Label>
+                    <Input id="last-class-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="next-class-date" className="text-xs">Next Class Date</Label>
+                    <Input id="next-class-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="class-code" className="text-xs">Class Code</Label>
+                    <Input id="class-code" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="class-remarks" className="text-xs">Class Remarks</Label>
+                    <Input id="class-remarks" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="class-code-2" className="text-xs">Class Code</Label>
+                    <Input id="class-code-2" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="certificate" className="text-xs">Certificate</Label>
+                    <Input id="certificate" className="h-8 text-sm" />
+                  </div>
+                </div>
+                <div className="flex justify-center mt-4">
+                  <Button variant="outline" size="sm" className="text-blue-600">
+                    + Add New Service
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* 8. New Service Notes */}
+            <div className="bg-white rounded-lg border">
+              <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">8</span>
+                  New Service Notes
+                </h3>
+                <Button variant="link" size="sm" className="text-blue-600">
+                  + Add Field
+                </Button>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="service-note" className="text-xs">Service Note</Label>
+                    <Input id="service-note" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="note-date" className="text-xs">Note Date</Label>
+                    <Input id="note-date" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="next-note" className="text-xs">Next Note</Label>
+                    <Input id="next-note" type="date" className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label htmlFor="note-level" className="text-xs">Note Level</Label>
+                    <Input id="note-level" className="h-8 text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end pb-4">
+              <Button 
+                onClick={handleSave}
+                className="bg-green-600 hover:bg-green-700 text-white px-8"
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
