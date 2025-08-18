@@ -11,6 +11,11 @@ import {
   FileText,
   Settings2,
   Settings,
+  FileSpreadsheet,
+  AlertTriangle,
+  CheckCircle,
+  Users,
+  Shield,
 } from "lucide-react";
 
 interface SideMenuBarProps {
@@ -53,14 +58,12 @@ const menuConfigs: Record<string, MenuItem[]> = {
     { id: "reports", label: "Reports", icon: FileText },
   ],
   admin: [
+    { id: "bulk-import", label: "Bulk Data Import", icon: FileSpreadsheet },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "users", label: "Users", icon: Users },
     { id: "permissions", label: "Permissions", icon: Shield },
   ],
 };
-
-// Import additional icons that TypeScript is complaining about
-import { AlertTriangle, CheckCircle, Users, Shield } from "lucide-react";
 
 export const SideMenuBar: React.FC<SideMenuBarProps> = ({
   selectedItem = "dashboard",
@@ -79,6 +82,12 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
         setLocation("/stores");
       } else {
         setLocation(`/pms/${itemId}`);
+      }
+    } else if (subModule === "admin") {
+      if (itemId === "bulk-import") {
+        setLocation("/admin/bulk-import");
+      } else {
+        setLocation(`/admin/${itemId}`);
       }
     }
     // Still call the callback for state management if provided

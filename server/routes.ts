@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertRunningHoursAuditSchema } from "@shared/schema";
 import { z } from "zod";
+import bulkRoutes from "./routes/bulk";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Components API routes (for Target Picker)
@@ -661,6 +662,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to create comment" });
     }
   });
+
+  // Register bulk import routes
+  app.use("/api/bulk", bulkRoutes);
 
   const httpServer = createServer(app);
 

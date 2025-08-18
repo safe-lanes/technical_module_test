@@ -77,6 +77,16 @@ export interface IStorage {
   // Change Request Comments
   getChangeRequestComments(changeRequestId: number): Promise<ChangeRequestComment[]>;
   createChangeRequestComment(comment: InsertChangeRequestComment): Promise<ChangeRequestComment>;
+  
+  // Bulk Import methods
+  bulkCreateComponents(components: InsertComponent[]): Promise<Component[]>;
+  bulkUpdateComponents(components: Array<{ id: string; data: Partial<Component> }>): Promise<Component[]>;
+  bulkUpsertComponents(components: InsertComponent[]): Promise<{ created: number; updated: number }>;
+  bulkCreateSpares(spares: InsertSpare[]): Promise<Spare[]>;
+  bulkUpdateSparesByROB(spares: Array<{ robId: string; data: Partial<Spare> }>): Promise<Spare[]>;
+  bulkUpsertSpares(spares: InsertSpare[]): Promise<{ created: number; updated: number }>;
+  archiveComponentsByIds(ids: string[]): Promise<number>;
+  archiveSparesByIds(ids: number[]): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
@@ -122,24 +132,24 @@ export class MemStorage implements IStorage {
     // Create hierarchical component structure for MV Test Vessel
     const sampleComponents: Component[] = [
       // Top level - Ship groups
-      { id: "1", name: "Ship General", componentCode: "1", parentId: null, vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "2", name: "Hull", componentCode: "2", parentId: null, vesselId: "MV Test Vessel", category: "Hull", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "3", name: "Equipment for Cargo", componentCode: "3", parentId: null, vesselId: "MV Test Vessel", category: "Equipment for Cargo", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "4", name: "Ship's Equipment", componentCode: "4", parentId: null, vesselId: "MV Test Vessel", category: "Ship's Equipment", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "5", name: "Equipment for Crew & Passengers", componentCode: "5", parentId: null, vesselId: "MV Test Vessel", category: "Equipment for Crew & Passengers", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "6", name: "Machinery Main Components", componentCode: "6", parentId: null, vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "7", name: "Systems for Machinery Main Components", componentCode: "7", parentId: null, vesselId: "MV Test Vessel", category: "Systems for Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "8", name: "Ship Common Systems", componentCode: "8", parentId: null, vesselId: "MV Test Vessel", category: "Ship Common Systems", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
+      { id: "1", name: "Ship General", componentCode: "1", parentId: null, vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "2", name: "Hull", componentCode: "2", parentId: null, vesselId: "MV Test Vessel", category: "Hull", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "3", name: "Equipment for Cargo", componentCode: "3", parentId: null, vesselId: "MV Test Vessel", category: "Equipment for Cargo", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "4", name: "Ship's Equipment", componentCode: "4", parentId: null, vesselId: "MV Test Vessel", category: "Ship's Equipment", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "5", name: "Equipment for Crew & Passengers", componentCode: "5", parentId: null, vesselId: "MV Test Vessel", category: "Equipment for Crew & Passengers", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "6", name: "Machinery Main Components", componentCode: "6", parentId: null, vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "7", name: "Systems for Machinery Main Components", componentCode: "7", parentId: null, vesselId: "MV Test Vessel", category: "Systems for Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "8", name: "Ship Common Systems", componentCode: "8", parentId: null, vesselId: "MV Test Vessel", category: "Ship Common Systems", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
       
       // Level 2 - Under Ship General
-      { id: "1.1", name: "Fresh Water System", componentCode: "1.1", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "1.2", name: "Sewage Treatment System", componentCode: "1.2", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "1.3", name: "HVAC – Accommodation", componentCode: "1.3", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
+      { id: "1.1", name: "Fresh Water System", componentCode: "1.1", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "1.2", name: "Sewage Treatment System", componentCode: "1.2", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "1.3", name: "HVAC – Accommodation", componentCode: "1.3", parentId: "1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
       
       // Level 3 - Under Fresh Water System
-      { id: "1.1.1", name: "Hydrophore Unit", componentCode: "1.1.1", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "1.1.2", name: "Potable Water Maker", componentCode: "1.1.2", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "1.1.3", name: "UV Sterilizer", componentCode: "1.1.3", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
+      { id: "1.1.1", name: "Hydrophore Unit", componentCode: "1.1.1", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "1.1.2", name: "Potable Water Maker", componentCode: "1.1.2", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "1.1.3", name: "UV Sterilizer", componentCode: "1.1.3", parentId: "1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
       
       // Level 4 - Under Hydrophore Unit
       { id: "1.1.1.1", name: "Pressure Vessel", componentCode: "1.1.1.1", parentId: "1.1.1", vesselId: "MV Test Vessel", category: "Ship General", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025",
@@ -150,13 +160,13 @@ export class MemStorage implements IStorage {
         maker: "Danfoss", model: "KP35", serialNo: "DF2024003", deptCategory: "Engineering", componentCategory: "Ship General", location: "Engine Room", commissionedDate: "01-Jan-2020", critical: false, classItem: false },
       
       // Level 2 - Under Machinery Main Components
-      { id: "6.1", name: "Diesel Engines", componentCode: "6.1", parentId: "6", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
-      { id: "6.2", name: "Turbines", componentCode: "6.2", parentId: "6", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025" },
+      { id: "6.1", name: "Diesel Engines", componentCode: "6.1", parentId: "6", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "6.2", name: "Turbines", componentCode: "6.2", parentId: "6", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "0", lastUpdated: "02-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
       
       // Level 3 - Under Diesel Engines
-      { id: "6.1.1", name: "Main Engine", componentCode: "6.1.1", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "12580", lastUpdated: "30-Jun-2025" },
-      { id: "6.1.2", name: "Auxiliary Engine #1", componentCode: "6.1.2", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "15670", lastUpdated: "09-Jun-2025" },
-      { id: "6.1.3", name: "Auxiliary Engine #2", componentCode: "6.1.3", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "14980", lastUpdated: "16-Jun-2025" },
+      { id: "6.1.1", name: "Main Engine", componentCode: "6.1.1", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "12580", lastUpdated: "30-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "6.1.2", name: "Auxiliary Engine #1", componentCode: "6.1.2", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "15670", lastUpdated: "09-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
+      { id: "6.1.3", name: "Auxiliary Engine #2", componentCode: "6.1.3", parentId: "6.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "14980", lastUpdated: "16-Jun-2025", maker: null, model: null, serialNo: null, deptCategory: null, componentCategory: null, location: null, commissionedDate: null, critical: false, classItem: false },
       
       // Level 4 - Under Main Engine
       { id: "6.1.1.1", name: "Crankshaft", componentCode: "6.1.1.1", parentId: "6.1.1", vesselId: "MV Test Vessel", category: "Machinery Main Components", currentCumulativeRH: "12580", lastUpdated: "30-Jun-2025",
@@ -757,6 +767,172 @@ export class MemStorage implements IStorage {
     };
     this.changeRequestComments.push(fullComment);
     return fullComment;
+  }
+  
+  // Bulk Import methods
+  async bulkCreateComponents(components: InsertComponent[]): Promise<Component[]> {
+    const created: Component[] = [];
+    for (const comp of components) {
+      const newComp: Component = {
+        ...comp,
+        id: comp.id || String(Date.now() + Math.random()),
+        currentCumulativeRH: comp.currentCumulativeRH || "0",
+        lastUpdated: comp.lastUpdated || new Date().toISOString().split('T')[0]
+      };
+      this.components.set(newComp.id, newComp);
+      created.push(newComp);
+    }
+    return created;
+  }
+
+  async bulkUpdateComponents(updates: Array<{ id: string; data: Partial<Component> }>): Promise<Component[]> {
+    const updated: Component[] = [];
+    for (const { id, data } of updates) {
+      const existing = this.components.get(id);
+      if (existing) {
+        const updatedComp = { ...existing, ...data };
+        this.components.set(id, updatedComp);
+        updated.push(updatedComp);
+      }
+    }
+    return updated;
+  }
+
+  async bulkUpsertComponents(components: InsertComponent[]): Promise<{ created: number; updated: number }> {
+    let created = 0;
+    let updated = 0;
+    
+    for (const comp of components) {
+      const id = comp.id || comp.componentCode;
+      if (!id) continue;
+      
+      if (this.components.has(id)) {
+        const existing = this.components.get(id)!;
+        this.components.set(id, { ...existing, ...comp });
+        updated++;
+      } else {
+        const newComp: Component = {
+          ...comp,
+          id,
+          currentCumulativeRH: comp.currentCumulativeRH || "0",
+          lastUpdated: comp.lastUpdated || new Date().toISOString().split('T')[0]
+        };
+        this.components.set(id, newComp);
+        created++;
+      }
+    }
+    
+    return { created, updated };
+  }
+
+  async bulkCreateSpares(spares: InsertSpare[]): Promise<Spare[]> {
+    const created: Spare[] = [];
+    for (const spare of spares) {
+      const id = this.currentSpareId++;
+      const newSpare: Spare = {
+        ...spare,
+        id,
+        robStock: spare.robStock || 0,
+        consumed: spare.consumed || 0,
+        received: spare.received || 0,
+        status: spare.status || 'active',
+        minStock: spare.minStock || 0,
+        stockStatus: this.calculateStockStatus(spare.robStock || 0, spare.minStock || 0),
+        issuedWithUnit: spare.issuedWithUnit || 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.spares.set(id, newSpare);
+      created.push(newSpare);
+    }
+    return created;
+  }
+
+  async bulkUpdateSparesByROB(updates: Array<{ robId: string; data: Partial<Spare> }>): Promise<Spare[]> {
+    const updated: Spare[] = [];
+    for (const { robId, data } of updates) {
+      // Find spare by robId
+      const existingEntry = Array.from(this.spares.entries()).find(([_, spare]) => spare.robId === robId);
+      if (existingEntry) {
+        const [id, existing] = existingEntry;
+        const updatedSpare = { ...existing, ...data, updatedAt: new Date() };
+        this.spares.set(id, updatedSpare);
+        updated.push(updatedSpare);
+      }
+    }
+    return updated;
+  }
+
+  async bulkUpsertSpares(spares: InsertSpare[]): Promise<{ created: number; updated: number }> {
+    let created = 0;
+    let updated = 0;
+    
+    for (const spare of spares) {
+      // Try to find existing spare by robId
+      const existingEntry = Array.from(this.spares.entries()).find(([_, s]) => s.robId === spare.robId);
+      
+      if (existingEntry) {
+        const [id, existing] = existingEntry;
+        const updatedSpare = {
+          ...existing,
+          ...spare,
+          stockStatus: this.calculateStockStatus(spare.robStock || existing.robStock, spare.minStock || existing.minStock),
+          updatedAt: new Date()
+        };
+        this.spares.set(id, updatedSpare);
+        updated++;
+      } else {
+        const id = this.currentSpareId++;
+        const newSpare: Spare = {
+          ...spare,
+          id,
+          robStock: spare.robStock || 0,
+          consumed: spare.consumed || 0,
+          received: spare.received || 0,
+          status: spare.status || 'active',
+          minStock: spare.minStock || 0,
+          stockStatus: this.calculateStockStatus(spare.robStock || 0, spare.minStock || 0),
+          issuedWithUnit: spare.issuedWithUnit || 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.spares.set(id, newSpare);
+        created++;
+      }
+    }
+    
+    return { created, updated };
+  }
+
+  async archiveComponentsByIds(ids: string[]): Promise<number> {
+    let archived = 0;
+    for (const id of ids) {
+      if (this.components.has(id)) {
+        const comp = this.components.get(id)!;
+        this.components.set(id, { ...comp, status: 'archived' });
+        archived++;
+      }
+    }
+    return archived;
+  }
+
+  async archiveSparesByIds(ids: number[]): Promise<number> {
+    let archived = 0;
+    for (const id of ids) {
+      if (this.spares.has(id)) {
+        const spare = this.spares.get(id)!;
+        this.spares.set(id, { ...spare, status: 'archived' });
+        archived++;
+      }
+    }
+    return archived;
+  }
+
+  private calculateStockStatus(robStock: number, minStock: number): string {
+    if (robStock === 0) return 'Out of Stock';
+    if (robStock < minStock) return 'Minimum';
+    if (robStock < minStock * 1.5) return 'Low';
+    return 'OK';
   }
 }
 
