@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import Alerts from './Alerts';
 
 interface Template {
   id: string;
@@ -278,18 +279,52 @@ export default function BulkImport() {
     }
   };
 
+  const [activeTab, setActiveTab] = useState<'bulk-import' | 'alerts' | 'forms' | 'admin4'>('bulk-import');
+
   return (
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Bulk Data Import</h1>
+        <h1 className="text-3xl font-bold">Admin</h1>
+        <div className="mt-4 flex gap-2">
+          <Button 
+            variant={activeTab === 'bulk-import' ? "default" : "outline"}
+            className={activeTab === 'bulk-import' ? "bg-blue-600 hover:bg-blue-700" : ""}
+            onClick={() => setActiveTab('bulk-import')}
+          >
+            Bulk Data Imp
+          </Button>
+          <Button 
+            variant={activeTab === 'alerts' ? "default" : "outline"}
+            className={activeTab === 'alerts' ? "bg-blue-600 hover:bg-blue-700" : ""}
+            onClick={() => setActiveTab('alerts')}
+          >
+            Alerts
+          </Button>
+          <Button 
+            variant={activeTab === 'forms' ? "default" : "outline"}
+            className={activeTab === 'forms' ? "bg-blue-600 hover:bg-blue-700" : ""}
+            onClick={() => setActiveTab('forms')}
+          >
+            Forms
+          </Button>
+          <Button 
+            variant={activeTab === 'admin4' ? "default" : "outline"} 
+            className={activeTab === 'admin4' ? "bg-blue-600 hover:bg-blue-700" : ""}
+            onClick={() => setActiveTab('admin4')}
+          >
+            Adm 4
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* Left Column - Templates */}
-        <div className="col-span-3">
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-4 text-blue-600">TEMPLATES</h2>
+      {/* Tab Content */}
+      {activeTab === 'bulk-import' ? (
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - Templates */}
+          <div className="col-span-3">
+            <Card className="p-4">
+              <h2 className="text-lg font-semibold mb-4 text-blue-600">TEMPLATES</h2>
             <div className="space-y-2">
               {templates.map((template, index) => (
                 <button
@@ -550,6 +585,23 @@ export default function BulkImport() {
           )}
         </div>
       </div>
+      ) : activeTab === 'alerts' ? (
+        <Alerts />
+      ) : activeTab === 'forms' ? (
+        <div className="p-6">
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Forms Management</h2>
+            <p className="text-gray-600">Forms configuration will be implemented here.</p>
+          </Card>
+        </div>
+      ) : activeTab === 'admin4' ? (
+        <div className="p-6">
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Admin 4</h2>
+            <p className="text-gray-600">Admin 4 functionality will be implemented here.</p>
+          </Card>
+        </div>
+      ) : null}
     </div>
   );
 }

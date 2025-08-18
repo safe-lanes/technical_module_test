@@ -7,7 +7,7 @@ import RunningHours from "./pms/RunningHours";
 import ModifyPMS from "./pms/ModifyPMS";
 import Spares from "./spares/SparesNew";
 import Stores from "./stores/Stores";
-import BulkImport from "./admin/BulkImport";
+import AdminPanel from "./admin/AdminPanel";
 import Alerts from "./admin/Alerts";
 import { useLocation, useParams } from "wouter";
 
@@ -87,7 +87,7 @@ export const TechnicalModule: React.FC = () => {
           ) : selectedSubModule === "pms" && selectedMenuItem === "modify-pms" ? (
             <ModifyPMS />
           ) : selectedSubModule === "pms" && selectedMenuItem === "admin" ? (
-            <BulkImport />
+            <AdminPanel />
           ) : selectedSubModule === "admin" && selectedMenuItem === "alerts" ? (
             <Alerts />
           ) : (
