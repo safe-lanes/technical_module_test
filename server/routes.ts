@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertRunningHoursAuditSchema } from "@shared/schema";
 import { z } from "zod";
 import bulkRoutes from "./routes/bulk";
+import alertRoutes from "./routes/alerts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Components API routes (for Target Picker)
@@ -665,6 +666,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register bulk import routes
   app.use("/api/bulk", bulkRoutes);
+  app.use("/api/alerts", alertRoutes);
 
   const httpServer = createServer(app);
 

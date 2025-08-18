@@ -241,3 +241,105 @@ export const insertChangeRequestCommentSchema = createInsertSchema(changeRequest
 
 export type InsertChangeRequestComment = z.infer<typeof insertChangeRequestCommentSchema>;
 export type ChangeRequestComment = typeof changeRequestComment.$inferSelect;
+
+// Alert Policy Table
+export const alertPolicies = mysqlTable("alert_policies", {
+  id: int("id").primaryKey().autoincrement(),
+  alertType: text("alert_type").notNull(), // 'maintenance_due' | 'running_hours' | 'critical_inventory' | 'certificate_expiration' | 'system_backup'
+  enabled: boolean("enabled").notNull().default(true),
+  priority: text("priority").notNull().default("medium"), // 'low' | 'medium' | 'high'
+  emailEnabled: boolean("email_enabled").notNull().default(false),
+  inAppEnabled: boolean("in_app_enabled").notNull().default(true),
+  thresholds: text("thresholds").notNull().default("{}"), // JSON string for type-specific thresholds
+  scopeFilters: text("scope_filters").notNull().default("{}"), // JSON string for filters
+  recipients: text("recipients").notNull().default("{}"), // JSON string for recipient configuration
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdBy: text("created_by").notNull(),
+  updatedBy: text("updated_by").notNull(),
+});
+
+export const insertAlertPolicySchema = createInsertSchema(alertPolicies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertAlertPolicy = z.infer<typeof insertAlertPolicySchema>;
+export type AlertPolicy = typeof alertPolicies.$inferSelect;
+
+// Alert Events Table
+export const alertEvents = mysqlTable("alert_events", {
+  id: int("id").primaryKey().autoincrement(),
+  policyId: int("policy_id").notNull(),
+  alertType: text("alert_type").notNull(),
+  priority: text("priority").notNull(),
+  objectType: text("object_type"), // 'work_order' | 'component' | 'spare' | 'certificate' | 'system'
+  objectId: text("object_id"),
+  vesselId: text("vessel_id"),
+  dedupeKey: text("dedupe_key").notNull(),
+  state: text("state"), // 'due' | 'overdue' | 'low' | 'critical' | 'expired' | 'failed' etc
+  payload: text("payload").notNull(), // JSON string with all event details
+  ackBy: text("ack_by"),
+  ackAt: timestamp("ack_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  dedupeKeyIdx: index("idx_dedupe_key").on(table.dedupeKey, table.createdAt),
+  policyIdx: index("idx_policy_events").on(table.policyId, table.createdAt),
+}));
+
+export const insertAlertEventSchema = createInsertSchema(alertEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertAlertEvent = z.infer<typeof insertAlertEventSchema>;
+export type AlertEvent = typeof alertEvents.$inferSelect;
+
+// Alert Deliveries Table
+export const alertDeliveries = mysqlTable("alert_deliveries", {
+  id: int("id").primaryKey().autoincrement(),
+  eventId: int("event_id").notNull(),
+  channel: text("channel").notNull(), // 'email' | 'in_app' | 'sms' | 'slack'
+  recipient: text("recipient").notNull(), // email address, user ID, phone number, etc
+  status: text("status").notNull().default("pending"), // 'pending' | 'sent' | 'failed' | 'acknowledged'
+  errorMessage: text("error_message"),
+  sentAt: timestamp("sent_at"),
+  acknowledgedAt: timestamp("acknowledged_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  eventIdx: index("idx_event_deliveries").on(table.eventId, table.channel),
+  recipientIdx: index("idx_recipient_deliveries").on(table.recipient, table.status),
+}));
+
+export const insertAlertDeliverySchema = createInsertSchema(alertDeliveries).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertAlertDelivery = z.infer<typeof insertAlertDeliverySchema>;
+export type AlertDelivery = typeof alertDeliveries.$inferSelect;
+
+// Alert Configuration Table (for quiet hours and escalation)
+export const alertConfig = mysqlTable("alert_config", {
+  id: int("id").primaryKey().autoincrement(),
+  vesselId: text("vessel_id").notNull(),
+  quietHoursEnabled: boolean("quiet_hours_enabled").notNull().default(false),
+  quietHoursStart: text("quiet_hours_start"), // HH:mm format
+  quietHoursEnd: text("quiet_hours_end"), // HH:mm format
+  escalationEnabled: boolean("escalation_enabled").notNull().default(false),
+  escalationHours: int("escalation_hours").notNull().default(4),
+  escalationRecipients: text("escalation_recipients").notNull().default("[]"), // JSON array of recipients
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updatedBy: text("updated_by").notNull(),
+});
+
+export const insertAlertConfigSchema = createInsertSchema(alertConfig).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertAlertConfig = z.infer<typeof insertAlertConfigSchema>;
+export type AlertConfig = typeof alertConfig.$inferSelect;

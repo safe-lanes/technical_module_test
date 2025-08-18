@@ -5,6 +5,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { ChangeRequestProvider } from "@/contexts/ChangeRequestContext";
 import { ChangeModeProvider } from "@/contexts/ChangeModeContext";
 import { TechnicalModule } from "./pages/TechnicalModule";
+import Alerts from "./pages/admin/Alerts";
 
 import NotFound from "./pages/not-found";
 
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/pms/:subpage" component={TechnicalModule} />
                 <Route path="/spares" component={TechnicalModule} />
                 <Route path="/stores" component={TechnicalModule} />
+                <Route path="/admin/alerts" component={Alerts} />
                 <Route component={NotFound} />
               </Switch>
             </div>

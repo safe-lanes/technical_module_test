@@ -57,6 +57,11 @@ const menuConfigs: Record<string, MenuItem[]> = {
     { id: "resolved", label: "Resolved", icon: CheckCircle },
     { id: "reports", label: "Reports", icon: FileText },
   ],
+  admin: [
+    { id: "alerts", label: "Alerts", icon: AlertTriangle },
+    { id: "users", label: "Users", icon: Users },
+    { id: "permissions", label: "Permissions", icon: Shield },
+  ],
 };
 
 export const SideMenuBar: React.FC<SideMenuBarProps> = ({
@@ -77,6 +82,8 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
       } else {
         setLocation(`/pms/${itemId}`);
       }
+    } else if (subModule === "admin") {
+      setLocation(`/admin/${itemId}`);
     }
     // Still call the callback for state management if provided
     onItemSelect?.(itemId);

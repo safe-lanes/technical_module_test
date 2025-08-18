@@ -23,7 +23,19 @@ import {
   type InsertChangeRequestAttachment,
   changeRequestComment,
   type ChangeRequestComment,
-  type InsertChangeRequestComment
+  type InsertChangeRequestComment,
+  alertPolicies,
+  type AlertPolicy,
+  type InsertAlertPolicy,
+  alertEvents,
+  type AlertEvent,
+  type InsertAlertEvent,
+  alertDeliveries,
+  type AlertDelivery,
+  type InsertAlertDelivery,
+  alertConfig,
+  type AlertConfig,
+  type InsertAlertConfig
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -87,6 +99,25 @@ export interface IStorage {
   bulkUpsertSpares(spares: InsertSpare[]): Promise<{ created: number; updated: number }>;
   archiveComponentsByIds(ids: string[]): Promise<number>;
   archiveSparesByIds(ids: number[]): Promise<number>;
+  
+  // Alert methods
+  getAlertPolicies(): Promise<AlertPolicy[]>;
+  getAlertPolicy(id: number): Promise<AlertPolicy | undefined>;
+  createAlertPolicy(policy: InsertAlertPolicy): Promise<AlertPolicy>;
+  updateAlertPolicy(id: number, data: Partial<AlertPolicy>): Promise<AlertPolicy>;
+  deleteAlertPolicy(id: number): Promise<void>;
+  
+  getAlertEvents(filters?: { startDate?: Date; endDate?: Date; alertType?: string; priority?: string; status?: string; vesselId?: string }): Promise<AlertEvent[]>;
+  getAlertEvent(id: number): Promise<AlertEvent | undefined>;
+  createAlertEvent(event: InsertAlertEvent): Promise<AlertEvent>;
+  acknowledgeAlertEvent(id: number, userId: string): Promise<AlertEvent>;
+  
+  getAlertDeliveries(eventId: number): Promise<AlertDelivery[]>;
+  createAlertDelivery(delivery: InsertAlertDelivery): Promise<AlertDelivery>;
+  updateAlertDeliveryStatus(id: number, status: string, errorMessage?: string): Promise<AlertDelivery>;
+  
+  getAlertConfig(vesselId: string): Promise<AlertConfig | undefined>;
+  createOrUpdateAlertConfig(config: InsertAlertConfig): Promise<AlertConfig>;
 }
 
 export class MemStorage implements IStorage {
@@ -105,6 +136,14 @@ export class MemStorage implements IStorage {
   private currentAttachmentId: number;
   private changeRequestComments: ChangeRequestComment[];
   private currentCommentId: number;
+  private alertPolicies: Map<number, AlertPolicy>;
+  private currentAlertPolicyId: number;
+  private alertEvents: Map<number, AlertEvent>;
+  private currentAlertEventId: number;
+  private alertDeliveries: Map<number, AlertDelivery>;
+  private currentAlertDeliveryId: number;
+  private alertConfigs: Map<string, AlertConfig>;
+  private currentAlertConfigId: number;
 
   constructor() {
     this.users = new Map();
@@ -122,10 +161,19 @@ export class MemStorage implements IStorage {
     this.currentAttachmentId = 1;
     this.changeRequestComments = [];
     this.currentCommentId = 1;
+    this.alertPolicies = new Map();
+    this.currentAlertPolicyId = 1;
+    this.alertEvents = new Map();
+    this.currentAlertEventId = 1;
+    this.alertDeliveries = new Map();
+    this.currentAlertDeliveryId = 1;
+    this.alertConfigs = new Map();
+    this.currentAlertConfigId = 1;
     
     // Initialize sample components and spares
     this.initializeComponents();
     this.initializeSpares();
+    this.initializeAlertPolicies();
   }
 
   private initializeComponents() {
@@ -933,6 +981,272 @@ export class MemStorage implements IStorage {
     if (robStock < minStock) return 'Minimum';
     if (robStock < minStock * 1.5) return 'Low';
     return 'OK';
+  }
+
+  private initializeAlertPolicies() {
+    // Initialize default alert policies
+    const defaultPolicies = [
+      {
+        alertType: 'maintenance_due',
+        enabled: true,
+        priority: 'medium',
+        emailEnabled: false,
+        inAppEnabled: true,
+        thresholds: JSON.stringify({
+          daysBeforeDue: 7,
+          includePendingApproval: false,
+          onlyCritical: false
+        }),
+        scopeFilters: JSON.stringify({}),
+        recipients: JSON.stringify({
+          roles: ['Chief Engineer', '2nd Engineer'],
+          users: []
+        }),
+        createdBy: 'system',
+        updatedBy: 'system'
+      },
+      {
+        alertType: 'critical_inventory',
+        enabled: true,
+        priority: 'high',
+        emailEnabled: true,
+        inAppEnabled: true,
+        thresholds: JSON.stringify({
+          bufferQty: 0,
+          includeNonCritical: false
+        }),
+        scopeFilters: JSON.stringify({}),
+        recipients: JSON.stringify({
+          roles: ['Chief Engineer', 'Tech Superintendent'],
+          users: []
+        }),
+        createdBy: 'system',
+        updatedBy: 'system'
+      },
+      {
+        alertType: 'running_hours',
+        enabled: true,
+        priority: 'medium',
+        emailEnabled: false,
+        inAppEnabled: true,
+        thresholds: JSON.stringify({
+          hoursBeforeService: 100,
+          utilizationSpikePercent: null
+        }),
+        scopeFilters: JSON.stringify({}),
+        recipients: JSON.stringify({
+          roles: ['Chief Engineer'],
+          users: []
+        }),
+        createdBy: 'system',
+        updatedBy: 'system'
+      },
+      {
+        alertType: 'certificate_expiration',
+        enabled: true,
+        priority: 'high',
+        emailEnabled: true,
+        inAppEnabled: true,
+        thresholds: JSON.stringify({
+          daysBeforeExpiry: 30,
+          types: ['Class Certificates', 'Flag', 'Insurance']
+        }),
+        scopeFilters: JSON.stringify({}),
+        recipients: JSON.stringify({
+          roles: ['Tech Superintendent', 'Office'],
+          users: []
+        }),
+        createdBy: 'system',
+        updatedBy: 'system'
+      },
+      {
+        alertType: 'system_backup',
+        enabled: true,
+        priority: 'low',
+        emailEnabled: false,
+        inAppEnabled: true,
+        thresholds: JSON.stringify({
+          requireDailySuccess: true,
+          maxAgeHours: 26
+        }),
+        scopeFilters: JSON.stringify({}),
+        recipients: JSON.stringify({
+          roles: ['Tech Superintendent'],
+          users: []
+        }),
+        createdBy: 'system',
+        updatedBy: 'system'
+      }
+    ];
+
+    defaultPolicies.forEach((policy, index) => {
+      const newPolicy: AlertPolicy = {
+        id: index + 1,
+        ...policy,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.alertPolicies.set(newPolicy.id, newPolicy);
+      this.currentAlertPolicyId = index + 2;
+    });
+  }
+
+  // Alert Policy methods
+  async getAlertPolicies(): Promise<AlertPolicy[]> {
+    return Array.from(this.alertPolicies.values());
+  }
+
+  async getAlertPolicy(id: number): Promise<AlertPolicy | undefined> {
+    return this.alertPolicies.get(id);
+  }
+
+  async createAlertPolicy(policy: InsertAlertPolicy): Promise<AlertPolicy> {
+    const newPolicy: AlertPolicy = {
+      id: this.currentAlertPolicyId++,
+      ...policy,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.alertPolicies.set(newPolicy.id, newPolicy);
+    return newPolicy;
+  }
+
+  async updateAlertPolicy(id: number, data: Partial<AlertPolicy>): Promise<AlertPolicy> {
+    const policy = this.alertPolicies.get(id);
+    if (!policy) {
+      throw new Error(`Alert policy ${id} not found`);
+    }
+    const updated = {
+      ...policy,
+      ...data,
+      updatedAt: new Date()
+    };
+    this.alertPolicies.set(id, updated);
+    return updated;
+  }
+
+  async deleteAlertPolicy(id: number): Promise<void> {
+    this.alertPolicies.delete(id);
+  }
+
+  // Alert Event methods
+  async getAlertEvents(filters?: { 
+    startDate?: Date; 
+    endDate?: Date; 
+    alertType?: string; 
+    priority?: string; 
+    status?: string; 
+    vesselId?: string 
+  }): Promise<AlertEvent[]> {
+    let events = Array.from(this.alertEvents.values());
+    
+    if (filters) {
+      if (filters.startDate) {
+        events = events.filter(e => e.createdAt >= filters.startDate!);
+      }
+      if (filters.endDate) {
+        events = events.filter(e => e.createdAt <= filters.endDate!);
+      }
+      if (filters.alertType) {
+        events = events.filter(e => e.alertType === filters.alertType);
+      }
+      if (filters.priority) {
+        events = events.filter(e => e.priority === filters.priority);
+      }
+      if (filters.vesselId) {
+        events = events.filter(e => e.vesselId === filters.vesselId);
+      }
+    }
+    
+    return events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async getAlertEvent(id: number): Promise<AlertEvent | undefined> {
+    return this.alertEvents.get(id);
+  }
+
+  async createAlertEvent(event: InsertAlertEvent): Promise<AlertEvent> {
+    const newEvent: AlertEvent = {
+      id: this.currentAlertEventId++,
+      ...event,
+      createdAt: new Date()
+    };
+    this.alertEvents.set(newEvent.id, newEvent);
+    return newEvent;
+  }
+
+  async acknowledgeAlertEvent(id: number, userId: string): Promise<AlertEvent> {
+    const event = this.alertEvents.get(id);
+    if (!event) {
+      throw new Error(`Alert event ${id} not found`);
+    }
+    const updated = {
+      ...event,
+      ackBy: userId,
+      ackAt: new Date()
+    };
+    this.alertEvents.set(id, updated);
+    return updated;
+  }
+
+  // Alert Delivery methods
+  async getAlertDeliveries(eventId: number): Promise<AlertDelivery[]> {
+    return Array.from(this.alertDeliveries.values())
+      .filter(d => d.eventId === eventId);
+  }
+
+  async createAlertDelivery(delivery: InsertAlertDelivery): Promise<AlertDelivery> {
+    const newDelivery: AlertDelivery = {
+      id: this.currentAlertDeliveryId++,
+      ...delivery,
+      createdAt: new Date()
+    };
+    this.alertDeliveries.set(newDelivery.id, newDelivery);
+    return newDelivery;
+  }
+
+  async updateAlertDeliveryStatus(id: number, status: string, errorMessage?: string): Promise<AlertDelivery> {
+    const delivery = this.alertDeliveries.get(id);
+    if (!delivery) {
+      throw new Error(`Alert delivery ${id} not found`);
+    }
+    const updated = {
+      ...delivery,
+      status,
+      errorMessage,
+      sentAt: status === 'sent' ? new Date() : delivery.sentAt,
+      acknowledgedAt: status === 'acknowledged' ? new Date() : delivery.acknowledgedAt
+    };
+    this.alertDeliveries.set(id, updated);
+    return updated;
+  }
+
+  // Alert Config methods
+  async getAlertConfig(vesselId: string): Promise<AlertConfig | undefined> {
+    return this.alertConfigs.get(vesselId);
+  }
+
+  async createOrUpdateAlertConfig(config: InsertAlertConfig): Promise<AlertConfig> {
+    const existing = this.alertConfigs.get(config.vesselId);
+    
+    if (existing) {
+      const updated = {
+        ...existing,
+        ...config,
+        updatedAt: new Date()
+      };
+      this.alertConfigs.set(config.vesselId, updated);
+      return updated;
+    } else {
+      const newConfig: AlertConfig = {
+        id: this.currentAlertConfigId++,
+        ...config,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.alertConfigs.set(config.vesselId, newConfig);
+      return newConfig;
+    }
   }
 }
 
