@@ -328,7 +328,7 @@ export default function AlertPolicyDrawer({
             <div className="space-y-2">
               <Label htmlFor="priority">Priority</Label>
               <Select
-                value={localPolicy.priority}
+                value={localPolicy.priority || 'medium'}
                 onValueChange={(value) => setLocalPolicy({ ...localPolicy, priority: value })}
               >
                 <SelectTrigger id="priority">

@@ -263,7 +263,7 @@ export default function Alerts() {
                             </td>
                             <td className="py-3 px-4">
                               <Select
-                                value={policy.priority}
+                                value={policy.priority || 'medium'}
                                 onValueChange={(value) => handlePriorityChange(policy.id, value)}
                                 disabled={!policy.enabled}
                               >
