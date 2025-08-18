@@ -33,6 +33,7 @@ import {
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import Alerts from './Alerts';
+import Forms from '@/components/admin/Forms';
 
 interface Template {
   id: string;
@@ -588,12 +589,7 @@ export default function BulkImport() {
       ) : activeTab === 'alerts' ? (
         <Alerts />
       ) : activeTab === 'forms' ? (
-        <div className="p-6">
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Forms Management</h2>
-            <p className="text-gray-600">Forms configuration will be implemented here.</p>
-          </Card>
-        </div>
+        <Forms />
       ) : activeTab === 'admin4' ? (
         <div className="p-6">
           <Card className="p-6">
