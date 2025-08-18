@@ -283,14 +283,6 @@ export default function BulkImport() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Bulk Data Import</h1>
-        <div className="mt-4 flex gap-2">
-          <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
-            Bulk Data Imp
-          </Button>
-          <Button variant="outline" disabled>Alerts</Button>
-          <Button variant="outline" disabled>Forms</Button>
-          <Button variant="outline" disabled>Adm 4</Button>
-        </div>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
