@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Edit } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AddComponentForm from './AddComponentForm';
 
 interface FormConfig {
   id: number;
@@ -24,6 +25,7 @@ interface FormConfig {
 export default function Forms() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('forms');
+  const [addComponentFormOpen, setAddComponentFormOpen] = useState(false);
 
   // Sample data matching the image
   const formsData: FormConfig[] = [
@@ -112,7 +114,13 @@ export default function Forms() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => console.log('Edit form:', form.id)}
+                          onClick={() => {
+                            if (form.formName === 'Add Component Form') {
+                              setAddComponentFormOpen(true);
+                            } else {
+                              console.log('Edit form:', form.id);
+                            }
+                          }}
                           className="h-8 w-8"
                         >
                           <Edit className="h-4 w-4" />
@@ -132,6 +140,12 @@ export default function Forms() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Component Form Dialog */}
+      <AddComponentForm 
+        open={addComponentFormOpen}
+        onOpenChange={setAddComponentFormOpen}
+      />
     </div>
   );
 }
