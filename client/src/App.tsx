@@ -5,7 +5,6 @@ import { Switch, Route, useLocation } from "wouter";
 import { ChangeRequestProvider } from "@/contexts/ChangeRequestContext";
 import { ChangeModeProvider } from "@/contexts/ChangeModeContext";
 import { TechnicalModule } from "./pages/TechnicalModule";
-import BulkImport from "./pages/admin/BulkImport";
 
 import NotFound from "./pages/not-found";
 
@@ -23,7 +22,6 @@ function App() {
                 <Route path="/pms/:subpage" component={TechnicalModule} />
                 <Route path="/spares" component={TechnicalModule} />
                 <Route path="/stores" component={TechnicalModule} />
-                <Route path="/admin/bulk-import" component={BulkImport} />
                 <Route component={NotFound} />
               </Switch>
             </div>

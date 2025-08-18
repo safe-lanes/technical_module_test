@@ -47,11 +47,6 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
       label: "PMS",
       icon: Wrench,
     },
-    {
-      id: "admin",
-      label: "Admin",
-      icon: Settings,
-    },
   ];
 
   return (

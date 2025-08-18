@@ -57,12 +57,6 @@ const menuConfigs: Record<string, MenuItem[]> = {
     { id: "resolved", label: "Resolved", icon: CheckCircle },
     { id: "reports", label: "Reports", icon: FileText },
   ],
-  admin: [
-    { id: "bulk-import", label: "Bulk Data Import", icon: FileSpreadsheet },
-    { id: "settings", label: "Settings", icon: Settings },
-    { id: "users", label: "Users", icon: Users },
-    { id: "permissions", label: "Permissions", icon: Shield },
-  ],
 };
 
 export const SideMenuBar: React.FC<SideMenuBarProps> = ({
@@ -82,12 +76,6 @@ export const SideMenuBar: React.FC<SideMenuBarProps> = ({
         setLocation("/stores");
       } else {
         setLocation(`/pms/${itemId}`);
-      }
-    } else if (subModule === "admin") {
-      if (itemId === "bulk-import") {
-        setLocation("/admin/bulk-import");
-      } else {
-        setLocation(`/admin/${itemId}`);
       }
     }
     // Still call the callback for state management if provided
