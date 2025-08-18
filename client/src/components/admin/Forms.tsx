@@ -65,13 +65,13 @@ export default function Forms() {
           {/* Tab Navigation */}
           <div className="flex items-center justify-between">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="bulk-data">Bulk Data Imp</TabsTrigger>
-                <TabsTrigger value="alerts">Alerts</TabsTrigger>
-                <TabsTrigger value="forms" className="bg-primary text-primary-foreground">
+              <TabsList className="bg-gray-100">
+                <TabsTrigger value="bulk-data" className="data-[state=active]:bg-white">Bulk Data Imp</TabsTrigger>
+                <TabsTrigger value="alerts" className="data-[state=active]:bg-white">Alerts</TabsTrigger>
+                <TabsTrigger value="forms" className="bg-blue-500 text-white data-[state=active]:bg-blue-500 data-[state=active]:text-white">
                   Forms
                 </TabsTrigger>
-                <TabsTrigger value="adm4">Adm 4</TabsTrigger>
+                <TabsTrigger value="adm4" className="data-[state=active]:bg-white">Adm 4</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -92,12 +92,12 @@ export default function Forms() {
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow className="bg-primary/10">
-                  <TableHead className="font-semibold">Form Name</TableHead>
-                  <TableHead className="font-semibold">Form Sub Group</TableHead>
-                  <TableHead className="font-semibold text-center">Version No</TableHead>
-                  <TableHead className="font-semibold text-center">Version Date</TableHead>
-                  <TableHead className="font-semibold text-center">Actions</TableHead>
+                <TableRow className="bg-blue-500 hover:bg-blue-500">
+                  <TableHead className="font-semibold text-white">Form Name</TableHead>
+                  <TableHead className="font-semibold text-white">Form Sub Group</TableHead>
+                  <TableHead className="font-semibold text-white text-center">Version No</TableHead>
+                  <TableHead className="font-semibold text-white text-center">Version Date</TableHead>
+                  <TableHead className="font-semibold text-white text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
