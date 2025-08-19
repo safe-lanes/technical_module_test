@@ -74,6 +74,57 @@ export const insertComponentSchema = createInsertSchema(components).omit({});
 export type InsertComponent = z.infer<typeof insertComponentSchema>;
 export type Component = typeof components.$inferSelect;
 
+// Form Definitions Table
+export const formDefinitions = mysqlTable("form_definitions", {
+  id: int("id").primaryKey().autoincrement(),
+  name: text("name").notNull().unique(), // ADD_COMPONENT, WO_PLANNED, WO_UNPLANNED
+  subgroup: text("subgroup"),
+});
+
+export const insertFormDefinitionSchema = createInsertSchema(formDefinitions).omit({
+  id: true,
+});
+
+export type InsertFormDefinition = z.infer<typeof insertFormDefinitionSchema>;
+export type FormDefinition = typeof formDefinitions.$inferSelect;
+
+// Form Versions Table
+export const formVersions = mysqlTable("form_versions", {
+  id: int("id").primaryKey().autoincrement(),
+  formId: int("form_id").notNull(),
+  versionNo: int("version_no").notNull(),
+  versionDate: timestamp("version_date").notNull(),
+  status: text("status").notNull(), // DRAFT, PUBLISHED, ARCHIVED
+  authorUserId: text("author_user_id").notNull(),
+  changelog: text("changelog"),
+  schemaJson: text("schema_json").notNull(), // JSON string
+}, (table) => ({
+  formIdIdx: index("idx_form_id").on(table.formId),
+  statusIdx: index("idx_status").on(table.status),
+}));
+
+export const insertFormVersionSchema = createInsertSchema(formVersions).omit({
+  id: true,
+});
+
+export type InsertFormVersion = z.infer<typeof insertFormVersionSchema>;
+export type FormVersion = typeof formVersions.$inferSelect;
+
+// Form Version Usage Table (Audit)
+export const formVersionUsage = mysqlTable("form_version_usage", {
+  id: int("id").primaryKey().autoincrement(),
+  formVersionId: int("form_version_id").notNull(),
+  usedInModule: text("used_in_module").notNull(),
+  usedAt: timestamp("used_at").notNull(),
+});
+
+export const insertFormVersionUsageSchema = createInsertSchema(formVersionUsage).omit({
+  id: true,
+});
+
+export type InsertFormVersionUsage = z.infer<typeof insertFormVersionUsageSchema>;
+export type FormVersionUsage = typeof formVersionUsage.$inferSelect;
+
 // Spares Table
 export const spares = mysqlTable("spares", {
   id: int("id").primaryKey().autoincrement(),

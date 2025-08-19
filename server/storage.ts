@@ -35,7 +35,16 @@ import {
   type InsertAlertDelivery,
   alertConfig,
   type AlertConfig,
-  type InsertAlertConfig
+  type InsertAlertConfig,
+  formDefinitions,
+  type FormDefinition,
+  type InsertFormDefinition,
+  formVersions,
+  type FormVersion,
+  type InsertFormVersion,
+  formVersionUsage,
+  type FormVersionUsage,
+  type InsertFormVersionUsage
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -118,6 +127,26 @@ export interface IStorage {
   
   getAlertConfig(vesselId: string): Promise<AlertConfig | undefined>;
   createOrUpdateAlertConfig(config: InsertAlertConfig): Promise<AlertConfig>;
+  
+  // Form Definition methods
+  getFormDefinitions(): Promise<FormDefinition[]>;
+  getFormDefinition(id: number): Promise<FormDefinition | undefined>;
+  getFormDefinitionByName(name: string): Promise<FormDefinition | undefined>;
+  createFormDefinition(form: InsertFormDefinition): Promise<FormDefinition>;
+  
+  // Form Version methods
+  getFormVersions(formId: number): Promise<FormVersion[]>;
+  getFormVersion(id: number): Promise<FormVersion | undefined>;
+  getLatestPublishedVersion(formId: number): Promise<FormVersion | undefined>;
+  getLatestPublishedVersionByName(name: string): Promise<FormVersion | undefined>;
+  createFormVersion(version: InsertFormVersion): Promise<FormVersion>;
+  updateFormVersion(id: number, data: Partial<FormVersion>): Promise<FormVersion>;
+  publishFormVersion(id: number, userId: string, changelog: string): Promise<FormVersion>;
+  discardFormVersion(id: number): Promise<void>;
+  
+  // Form Version Usage methods
+  createFormVersionUsage(usage: InsertFormVersionUsage): Promise<FormVersionUsage>;
+  getFormVersionUsage(formVersionId: number): Promise<FormVersionUsage[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -144,6 +173,12 @@ export class MemStorage implements IStorage {
   private currentAlertDeliveryId: number;
   private alertConfigs: Map<string, AlertConfig>;
   private currentAlertConfigId: number;
+  private formDefinitions: Map<number, FormDefinition>;
+  private currentFormDefinitionId: number;
+  private formVersions: Map<number, FormVersion>;
+  private currentFormVersionId: number;
+  private formVersionUsages: FormVersionUsage[];
+  private currentFormUsageId: number;
 
   constructor() {
     this.users = new Map();
@@ -169,11 +204,215 @@ export class MemStorage implements IStorage {
     this.currentAlertDeliveryId = 1;
     this.alertConfigs = new Map();
     this.currentAlertConfigId = 1;
+    this.formDefinitions = new Map();
+    this.currentFormDefinitionId = 1;
+    this.formVersions = new Map();
+    this.currentFormVersionId = 1;
+    this.formVersionUsages = [];
+    this.currentFormUsageId = 1;
     
     // Initialize sample components and spares
     this.initializeComponents();
     this.initializeSpares();
     this.initializeAlertPolicies();
+    this.initializeFormDefinitions();
+  }
+  
+  private async initializeFormDefinitions() {
+    // Bootstrap form definitions with exact live schemas
+    const forms = [
+      { name: 'ADD_COMPONENT', subgroup: 'Component Register' },
+      { name: 'WO_PLANNED', subgroup: 'New Work Order (Planned)' },
+      { name: 'WO_UNPLANNED', subgroup: 'Unplanned Work Order' }
+    ];
+    
+    for (const form of forms) {
+      const formDef = await this.createFormDefinition(form);
+      
+      // Create initial published version with exact live schema
+      const schemaJson = this.getInitialFormSchema(form.name);
+      await this.createFormVersion({
+        formId: formDef.id,
+        versionNo: 1,
+        versionDate: new Date(),
+        status: 'PUBLISHED',
+        authorUserId: 'system',
+        changelog: 'Initial version from live form',
+        schemaJson: JSON.stringify(schemaJson)
+      });
+    }
+  }
+  
+  private getInitialFormSchema(formName: string) {
+    // Return exact schema from current live forms
+    if (formName === 'ADD_COMPONENT') {
+      return {
+        title: "Add Component Form",
+        sections: [
+          {
+            key: "A",
+            title: "A. Component Information",
+            layout: "grid-4",
+            fields: [
+              { key: "origin", label: "Origin", type: "text", required: false },
+              { key: "supplier", label: "Supplier", type: "text", required: false },
+              { key: "partNo", label: "Part No", type: "text", required: false },
+              { key: "createdOn", label: "Created On", type: "date", required: false },
+              { key: "component", label: "Component", type: "text", required: true },
+              { key: "maker", label: "Maker / Maker Designator", type: "text", required: false },
+              { key: "serialNo", label: "Serial No", type: "text", required: false },
+              { key: "installedDate", label: "Installed Date", type: "date", required: false },
+              { key: "componentCode", label: "Component Code", type: "text", required: false },
+              { key: "type", label: "Type", type: "text", required: false },
+              { key: "blackoutComponent", label: "Blackout Component", type: "text", required: false },
+              { key: "modelSpecification", label: "Model Specification", type: "text", required: false },
+              { key: "warrantyInfo", label: "Warranty Info", type: "text", required: false },
+              { key: "warrantyDays", label: "Warranty Days", type: "text", required: false },
+              { key: "warrantyDate", label: "Warranty Date", type: "date", required: false },
+              { key: "lastUsed", label: "Last Used", type: "text", required: false }
+            ]
+          },
+          {
+            key: "B",
+            title: "B. Running Hours & Condition Monitoring Metrics",
+            layout: "grid-3",
+            fields: [
+              { key: "runningHours", label: "Running Hours", type: "number", required: false },
+              { key: "conditionMetrics", label: "Condition Monitoring Metrics", type: "repeater", required: false }
+            ]
+          },
+          {
+            key: "C",
+            title: "C. Work Orders",
+            layout: "grid-5",
+            fields: [
+              { key: "workBy", label: "Work By", type: "text", required: false },
+              { key: "jobTitle", label: "Job Title", type: "text", required: false },
+              { key: "assignedTo", label: "Assigned To", type: "text", required: false },
+              { key: "dueDate", label: "Due Date", type: "date", required: false },
+              { key: "status", label: "Status", type: "text", required: false }
+            ]
+          },
+          {
+            key: "D",
+            title: "D. Maintenance History",
+            layout: "grid-4",
+            fields: [
+              { key: "workOrderNo", label: "Work Order No", type: "text", required: false },
+              { key: "performedBy", label: "Performed By", type: "text", required: false },
+              { key: "nextDueDate", label: "Next Due Date", type: "date", required: false },
+              { key: "completionDate", label: "Completion Date", type: "date", required: false }
+            ]
+          },
+          {
+            key: "E",
+            title: "E. Spares",
+            layout: "grid-5",
+            fields: [
+              { key: "sparePart", label: "Spare Part", type: "text", required: false },
+              { key: "partName", label: "Part Name", type: "text", required: false },
+              { key: "qty", label: "Qty", type: "number", required: false },
+              { key: "critical", label: "Critical", type: "text", required: false },
+              { key: "location", label: "Location", type: "text", required: false }
+            ]
+          },
+          {
+            key: "F",
+            title: "F. Drawings & Manuals",
+            layout: "file-upload",
+            fields: []
+          },
+          {
+            key: "G",
+            title: "G. Classification & Regulatory Data",
+            layout: "grid-4",
+            fields: [
+              { key: "classificationSociety", label: "Classification Society", type: "text", required: false },
+              { key: "certificateNo", label: "Certificate No", type: "text", required: false },
+              { key: "lastClassDate", label: "Last Class Date", type: "date", required: false },
+              { key: "nextClassDate", label: "Next Class Date", type: "date", required: false },
+              { key: "classCode", label: "Class Code", type: "text", required: false },
+              { key: "classRemarks", label: "Class Remarks", type: "text", required: false }
+            ]
+          },
+          {
+            key: "H",
+            title: "H. New Service Notes",
+            layout: "grid-4",
+            fields: [
+              { key: "serviceNote", label: "Service Note", type: "text", required: false },
+              { key: "noteDate", label: "Note Date", type: "date", required: false },
+              { key: "nextNote", label: "Next Note", type: "date", required: false },
+              { key: "noteLevel", label: "Note Level", type: "text", required: false }
+            ]
+          }
+        ]
+      };
+    } else if (formName === 'WO_PLANNED') {
+      return {
+        title: "Work Order Form (Planned)",
+        sections: [
+          {
+            key: "partA",
+            title: "Part A - Work Order Details",
+            layout: "grid-3",
+            fields: [
+              { key: "woNumber", label: "WO Number", type: "text", required: true },
+              { key: "component", label: "Component", type: "select", required: true },
+              { key: "jobTitle", label: "Job Title", type: "text", required: true },
+              { key: "workBy", label: "Work By", type: "select", required: true },
+              { key: "assignedTo", label: "Assigned To", type: "select", required: false },
+              { key: "priority", label: "Priority", type: "select", required: true },
+              { key: "plannedDate", label: "Planned Date", type: "date", required: true },
+              { key: "estimatedHours", label: "Estimated Hours", type: "number", required: false }
+            ]
+          },
+          {
+            key: "partB",
+            title: "Part B - Job Description & Instructions",
+            layout: "grid-1",
+            fields: [
+              { key: "description", label: "Description", type: "textarea", required: true },
+              { key: "instructions", label: "Instructions", type: "textarea", required: false },
+              { key: "safetyPrecautions", label: "Safety Precautions", type: "textarea", required: false },
+              { key: "requiredSpares", label: "Required Spares", type: "repeater", required: false }
+            ]
+          }
+        ]
+      };
+    } else if (formName === 'WO_UNPLANNED') {
+      return {
+        title: "Work Order Form (Unplanned)",
+        sections: [
+          {
+            key: "partA",
+            title: "Part A - Breakdown Details",
+            layout: "grid-3",
+            fields: [
+              { key: "woNumber", label: "WO Number", type: "text", required: true },
+              { key: "component", label: "Component", type: "select", required: true },
+              { key: "breakdownDate", label: "Breakdown Date", type: "datetime", required: true },
+              { key: "reportedBy", label: "Reported By", type: "text", required: true },
+              { key: "severity", label: "Severity", type: "select", required: true },
+              { key: "impactOnOperation", label: "Impact on Operation", type: "select", required: true }
+            ]
+          },
+          {
+            key: "partB",
+            title: "Part B - Corrective Action",
+            layout: "grid-1",
+            fields: [
+              { key: "failureDescription", label: "Failure Description", type: "textarea", required: true },
+              { key: "rootCause", label: "Root Cause", type: "textarea", required: false },
+              { key: "correctiveAction", label: "Corrective Action", type: "textarea", required: true },
+              { key: "preventiveAction", label: "Preventive Action", type: "textarea", required: false },
+              { key: "actualSpares", label: "Actual Spares Used", type: "repeater", required: false }
+            ]
+          }
+        ]
+      };
+    }
+    return {};
   }
 
   private initializeComponents() {
@@ -1247,6 +1486,128 @@ export class MemStorage implements IStorage {
       this.alertConfigs.set(config.vesselId, newConfig);
       return newConfig;
     }
+  }
+
+  // Form Definition methods
+  async getFormDefinitions(): Promise<FormDefinition[]> {
+    return Array.from(this.formDefinitions.values());
+  }
+
+  async getFormDefinition(id: number): Promise<FormDefinition | undefined> {
+    return this.formDefinitions.get(id);
+  }
+
+  async getFormDefinitionByName(name: string): Promise<FormDefinition | undefined> {
+    return Array.from(this.formDefinitions.values()).find(f => f.name === name);
+  }
+
+  async createFormDefinition(form: InsertFormDefinition): Promise<FormDefinition> {
+    const newForm: FormDefinition = {
+      id: this.currentFormDefinitionId++,
+      ...form
+    };
+    this.formDefinitions.set(newForm.id, newForm);
+    return newForm;
+  }
+
+  // Form Version methods
+  async getFormVersions(formId: number): Promise<FormVersion[]> {
+    return Array.from(this.formVersions.values())
+      .filter(v => v.formId === formId)
+      .sort((a, b) => b.versionNo - a.versionNo);
+  }
+
+  async getFormVersion(id: number): Promise<FormVersion | undefined> {
+    return this.formVersions.get(id);
+  }
+
+  async getLatestPublishedVersion(formId: number): Promise<FormVersion | undefined> {
+    const versions = await this.getFormVersions(formId);
+    return versions.find(v => v.status === 'PUBLISHED');
+  }
+
+  async getLatestPublishedVersionByName(name: string): Promise<FormVersion | undefined> {
+    const form = await this.getFormDefinitionByName(name);
+    if (!form) return undefined;
+    return this.getLatestPublishedVersion(form.id);
+  }
+
+  async createFormVersion(version: InsertFormVersion): Promise<FormVersion> {
+    const newVersion: FormVersion = {
+      id: this.currentFormVersionId++,
+      ...version,
+      versionDate: version.versionDate || new Date()
+    };
+    this.formVersions.set(newVersion.id, newVersion);
+    return newVersion;
+  }
+
+  async updateFormVersion(id: number, data: Partial<FormVersion>): Promise<FormVersion> {
+    const version = this.formVersions.get(id);
+    if (!version) throw new Error('Form version not found');
+    
+    if (version.status !== 'DRAFT') {
+      throw new Error('Can only update draft versions');
+    }
+    
+    const updated = { ...version, ...data };
+    this.formVersions.set(id, updated);
+    return updated;
+  }
+
+  async publishFormVersion(id: number, userId: string, changelog: string): Promise<FormVersion> {
+    const version = this.formVersions.get(id);
+    if (!version) throw new Error('Form version not found');
+    
+    if (version.status !== 'DRAFT') {
+      throw new Error('Can only publish draft versions');
+    }
+    
+    // Archive current published version
+    const currentPublished = await this.getLatestPublishedVersion(version.formId);
+    if (currentPublished) {
+      this.formVersions.set(currentPublished.id, {
+        ...currentPublished,
+        status: 'ARCHIVED'
+      });
+    }
+    
+    // Publish new version
+    const published = {
+      ...version,
+      status: 'PUBLISHED' as const,
+      authorUserId: userId,
+      changelog,
+      versionDate: new Date()
+    };
+    this.formVersions.set(id, published);
+    return published;
+  }
+
+  async discardFormVersion(id: number): Promise<void> {
+    const version = this.formVersions.get(id);
+    if (!version) throw new Error('Form version not found');
+    
+    if (version.status !== 'DRAFT') {
+      throw new Error('Can only discard draft versions');
+    }
+    
+    this.formVersions.delete(id);
+  }
+
+  // Form Version Usage methods
+  async createFormVersionUsage(usage: InsertFormVersionUsage): Promise<FormVersionUsage> {
+    const newUsage: FormVersionUsage = {
+      id: this.currentFormUsageId++,
+      ...usage,
+      usedAt: usage.usedAt || new Date()
+    };
+    this.formVersionUsages.push(newUsage);
+    return newUsage;
+  }
+
+  async getFormVersionUsage(formVersionId: number): Promise<FormVersionUsage[]> {
+    return this.formVersionUsages.filter(u => u.formVersionId === formVersionId);
   }
 }
 
