@@ -140,13 +140,32 @@ export default function Forms() {
           {/* Tab Navigation */}
           <div className="flex items-center justify-between">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="bg-gray-100">
-                <TabsTrigger value="bulk-data" className="data-[state=active]:bg-white">Bulk Data Imp</TabsTrigger>
-                <TabsTrigger value="alerts" className="data-[state=active]:bg-white">Alerts</TabsTrigger>
-                <TabsTrigger value="forms" className="text-white data-[state=active]:text-white" style={{ backgroundColor: '#52baf3' }}>
+              <TabsList className="bg-transparent border-b">
+                <TabsTrigger 
+                  value="bulk-data" 
+                  className="rounded-t-lg px-4 py-2 data-[state=active]:bg-white data-[state=active]:border-t data-[state=active]:border-l data-[state=active]:border-r data-[state=active]:border-gray-200 data-[state=inactive]:bg-gray-100"
+                >
+                  Bulk Data Imp
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="alerts" 
+                  className="rounded-t-lg px-4 py-2 data-[state=active]:bg-white data-[state=active]:border-t data-[state=active]:border-l data-[state=active]:border-r data-[state=active]:border-gray-200 data-[state=inactive]:bg-gray-100"
+                >
+                  Alerts
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="forms" 
+                  className="rounded-t-lg px-4 py-2 text-white"
+                  style={{ backgroundColor: '#52baf3' }}
+                >
                   Forms
                 </TabsTrigger>
-                <TabsTrigger value="adm4" className="data-[state=active]:bg-white">Adm 4</TabsTrigger>
+                <TabsTrigger 
+                  value="adm4" 
+                  className="rounded-t-lg px-4 py-2 data-[state=active]:bg-white data-[state=active]:border-t data-[state=active]:border-l data-[state=active]:border-r data-[state=active]:border-gray-200 data-[state=inactive]:bg-gray-100"
+                >
+                  Adm 4
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
