@@ -147,6 +147,9 @@ export interface IStorage {
   // Form Version Usage methods
   createFormVersionUsage(usage: InsertFormVersionUsage): Promise<FormVersionUsage>;
   getFormVersionUsage(formVersionId: number): Promise<FormVersionUsage[]>;
+  
+  // Seed forms method
+  seedForms(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -1608,6 +1611,17 @@ export class MemStorage implements IStorage {
 
   async getFormVersionUsage(formVersionId: number): Promise<FormVersionUsage[]> {
     return this.formVersionUsages.filter(u => u.formVersionId === formVersionId);
+  }
+
+  // Seed forms method
+  async seedForms(): Promise<void> {
+    // Check if forms already exist
+    if (this.formDefinitions.size > 0) {
+      return; // Already seeded
+    }
+    
+    // Re-initialize forms
+    await this.initializeFormDefinitions();
   }
 }
 

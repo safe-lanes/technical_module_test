@@ -57,6 +57,11 @@ export default function Forms() {
   // Fetch forms list
   const { data: forms = [], isLoading, error, refetch } = useQuery<FormDefinition[]>({
     queryKey: ['/api/admin/forms'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/forms');
+      if (!response.ok) throw new Error('Failed to fetch forms');
+      return response.json();
+    },
   });
 
   // Fetch versions for selected form

@@ -9,7 +9,9 @@ const router = Router();
 router.post('/admin/forms/seed-from-live', async (req, res) => {
   try {
     // Seed if not already present
-    await storage.seedForms();
+    if (storage.seedForms) {
+      await storage.seedForms();
+    }
     res.json({ ok: true, message: 'Forms seeded successfully' });
   } catch (error) {
     console.error('Error seeding forms:', error);
