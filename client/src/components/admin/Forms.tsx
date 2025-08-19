@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Edit, History, Plus, Eye } from 'lucide-react';
+import { Search, Edit, History, Plus, Eye, X, FileText } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -49,29 +49,38 @@ export default function Forms() {
   const [versionDialogOpen, setVersionDialogOpen] = useState(false);
   const [editorDialogOpen, setEditorDialogOpen] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState<FormVersion | null>(null);
+  const [isSeeding, setIsSeeding] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch forms list
-  const { data: forms = [], isLoading } = useQuery<FormDefinition[]>({
+  const { data: forms = [], isLoading, error, refetch } = useQuery<FormDefinition[]>({
     queryKey: ['/api/admin/forms'],
   });
 
   // Fetch versions for selected form
   const { data: versions = [] } = useQuery<FormVersion[]>({
     queryKey: ['/api/admin/forms', selectedForm?.id, 'versions'],
-    queryFn: () => apiRequest(`/api/admin/forms/${selectedForm?.id}/versions`),
+    queryFn: async () => {
+      const response = await fetch(`/api/admin/forms/${selectedForm?.id}/versions`);
+      if (!response.ok) throw new Error('Failed to fetch versions');
+      return response.json();
+    },
     enabled: !!selectedForm && versionDialogOpen,
   });
 
   // Create draft mutation
   const createDraftMutation = useMutation({
-    mutationFn: (formId: number) => 
-      apiRequest(`/api/admin/forms/${formId}/versions`, {
+    mutationFn: async (formId: number) => {
+      const response = await fetch(`/api/admin/forms/${formId}/versions`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: 'admin' }),
-      }),
+      });
+      if (!response.ok) throw new Error('Failed to create draft');
+      return response.json();
+    },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/forms'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/forms', selectedForm?.id, 'versions'] });
@@ -113,7 +122,8 @@ export default function Forms() {
     setSelectedForm(form);
     
     // Check if there's a draft version
-    const versionsResponse = await apiRequest(`/api/admin/forms/${form.id}/versions`);
+    const response = await fetch(`/api/admin/forms/${form.id}/versions`);
+    const versionsResponse = await response.json();
     const draftVersion = versionsResponse.find((v: FormVersion) => v.status === 'DRAFT');
     
     if (draftVersion) {
@@ -130,11 +140,50 @@ export default function Forms() {
     setVersionDialogOpen(true);
   };
 
+  const handleRescanForms = async () => {
+    setIsSeeding(true);
+    try {
+      const response = await fetch('/api/admin/forms/seed-from-live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (!response.ok) throw new Error('Failed to seed forms');
+      
+      toast({
+        title: 'Success',
+        description: 'Forms rescanned successfully',
+      });
+      
+      // Refetch the forms list
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to rescan forms',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Forms Configuration</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Forms Configuration</CardTitle>
+            <Button
+              onClick={handleRescanForms}
+              disabled={isSeeding}
+              size="sm"
+              variant="outline"
+            >
+              <History className="h-4 w-4 mr-2" />
+              {isSeeding ? 'Rescanning...' : 'Rescan Live Forms'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Tab Navigation */}
@@ -198,7 +247,54 @@ export default function Forms() {
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      Loading forms...
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#52baf3]"></div>
+                        <span>Loading forms...</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-red-500">
+                          <X className="h-8 w-8" />
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Failed to load forms</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => refetch()}
+                            className="mt-2"
+                          >
+                            Retry
+                          </Button>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : forms.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-3">
+                        <FileText className="h-12 w-12 text-gray-300" />
+                        <div>
+                          <h3 className="font-medium text-gray-900">No forms found</h3>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Seed from the live screens to create version 1 of each form.
+                          </p>
+                          <Button
+                            onClick={handleRescanForms}
+                            disabled={isSeeding}
+                            className="mt-4"
+                            style={{ backgroundColor: '#52baf3', color: 'white' }}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Rescan Live Forms
+                          </Button>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : filteredForms.length > 0 ? (

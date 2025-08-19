@@ -5,10 +5,28 @@ import { insertFormVersionSchema } from '@shared/schema';
 
 const router = Router();
 
+// Seed forms from live schemas
+router.post('/admin/forms/seed-from-live', async (req, res) => {
+  try {
+    // Seed if not already present
+    await storage.seedForms();
+    res.json({ ok: true, message: 'Forms seeded successfully' });
+  } catch (error) {
+    console.error('Error seeding forms:', error);
+    res.status(500).json({ error: 'Failed to seed forms' });
+  }
+});
+
 // List all form definitions with latest version info
 router.get('/admin/forms', async (req, res) => {
   try {
-    const forms = await storage.getFormDefinitions();
+    let forms = await storage.getFormDefinitions();
+    
+    // Auto-seed if no forms exist
+    if (forms.length === 0) {
+      await storage.seedForms();
+      forms = await storage.getFormDefinitions();
+    }
     
     // Get latest version for each form
     const formsWithVersions = await Promise.all(
