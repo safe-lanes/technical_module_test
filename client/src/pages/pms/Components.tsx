@@ -442,9 +442,10 @@ const getComponentMockData = (code: string) => {
   return specialCases[code] || getComponentDetails(code);
 };
 
-const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null }> = ({ isExpanded, selectedComponent }) => {
+const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null; isModifyMode?: boolean; onDataChange?: (data: any) => void }> = ({ isExpanded, selectedComponent, isModifyMode = false, onDataChange }) => {
   const { isChangeRequestMode } = useChangeRequest();
-  const { isChangeMode, collectDiff } = useChangeMode();
+  const { collectDiff } = useChangeMode();
+  const isChangeMode = isModifyMode;
 
   // Derive Component Category from the component's tree position
   const componentCategory = selectedComponent ? getComponentCategory(selectedComponent.id) : '';
@@ -498,13 +499,20 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
     // Track the change
     if (value !== originalValue) {
       setChangedFields(prev => new Set(prev).add(fieldName));
-      collectDiff(`componentInfo.${fieldName}`, originalValue, value);
+      if (isModifyMode && collectDiff) {
+        collectDiff(`componentInfo.${fieldName}`, originalValue, value);
+      }
     } else {
       setChangedFields(prev => {
         const newSet = new Set(prev);
         newSet.delete(fieldName);
         return newSet;
       });
+    }
+    
+    // Notify parent component of changes
+    if (onDataChange) {
+      onDataChange(componentData);
     }
   };
 
@@ -520,8 +528,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.maker}
               onChange={(e) => handleFieldChange('maker', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('maker') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('maker') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="maker"
             />
           ) : (
             <div className="text-sm text-gray-900">
@@ -537,8 +546,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.model}
               onChange={(e) => handleFieldChange('model', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('model') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('model') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="model"
             />
           ) : (
             <div className="text-sm text-gray-900">
@@ -554,8 +564,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.serialNo}
               onChange={(e) => handleFieldChange('serialNo', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('serialNo') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('serialNo') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="serialNo"
             />
           ) : (
             <div className="text-sm text-gray-900">
@@ -571,8 +582,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.department}
               onChange={(e) => handleFieldChange('department', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('department') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('department') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="department"
             />
           ) : (
             <div className="text-sm text-gray-900">
@@ -601,8 +613,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.critical}
               onChange={(e) => handleFieldChange('critical', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('critical') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('critical') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="critical"
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -626,8 +639,9 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.classItem}
               onChange={(e) => handleFieldChange('classItem', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('classItem') ? 'text-red-600 border-red-300' : 'text-gray-900 border-gray-200'
+                changedFields.has('classItem') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
+              data-field-value="classItem"
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -1191,6 +1205,8 @@ const Components: React.FC = () => {
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
   const [showReviewDrawer, setShowReviewDrawer] = useState(false);
   const [showModifySubmitFooter, setShowModifySubmitFooter] = useState(false);
+  const [modifiedComponentData, setModifiedComponentData] = useState<any>(null);
+  const [originalComponentData, setOriginalComponentData] = useState<any>(null);
   
   const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
   const { isChangeMode, changeRequestTitle, changeRequestCategory, setOriginalSnapshot, collectDiff, getDiffs, reset } = useChangeMode();
@@ -1598,7 +1614,18 @@ const Components: React.FC = () => {
                         {isExpanded && (
                           <CardContent className="pt-4 border-t border-gray-100">
                             {section.id === "A" ? (
-                            <ComponentInformationSection isExpanded={isExpanded} selectedComponent={selectedComponent} />
+                            <ComponentInformationSection 
+                              isExpanded={isExpanded} 
+                              selectedComponent={selectedComponent}
+                              isModifyMode={isModifyMode}
+                              onDataChange={(data) => {
+                                // Track changes for submission
+                                setModifiedComponentData(data);
+                                if (!originalComponentData && data) {
+                                  setOriginalComponentData(JSON.parse(JSON.stringify(data)));
+                                }
+                              }}
+                            />
                           ) : section.id === "B" ? (
                             <RunningHoursConditionSection />
                           ) : section.id === "C" ? (
@@ -1628,12 +1655,36 @@ const Components: React.FC = () => {
                   })}
                 </div>
                 
-                {/* Submit Changes Button - Only shown in change mode */}
-                {isChangeMode && (
+                {/* Submit Changes Button - Only shown in modify mode */}
+                {isModifyMode && modifiedComponentData && (
                   <div className="mt-6 pb-4">
                     <button
-                      onClick={() => setShowReviewDrawer(true)}
+                      onClick={() => {
+                        // Create change request with modified data
+                        const changedFields: any = {};
+                        if (originalComponentData && modifiedComponentData) {
+                          Object.keys(modifiedComponentData).forEach(key => {
+                            if (modifiedComponentData[key] !== originalComponentData[key]) {
+                              changedFields[key] = {
+                                old: originalComponentData[key],
+                                new: modifiedComponentData[key]
+                              };
+                            }
+                          });
+                        }
+                        
+                        if (Object.keys(changedFields).length > 0) {
+                          // Show review drawer with changes
+                          setShowReviewDrawer(true);
+                        } else {
+                          toast({
+                            title: "No Changes",
+                            description: "No fields have been modified",
+                          });
+                        }
+                      }}
                       className="w-full bg-[#15569e] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0d3d6e] transition-colors"
+                      disabled={!modifiedComponentData}
                     >
                       Submit Changes
                     </button>
@@ -1758,12 +1809,84 @@ const Components: React.FC = () => {
       )}
       
       {/* Review Changes Drawer */}
-      {isChangeMode && selectedComponent && (
+      {(isChangeMode || isModifyMode) && selectedComponent && (
         <ReviewChangesDrawer
           isOpen={showReviewDrawer}
           onClose={() => setShowReviewDrawer(false)}
           targetType="component"
           targetId={selectedComponent.id}
+          changedFields={modifiedComponentData && originalComponentData ? 
+            Object.keys(modifiedComponentData).reduce((acc, key) => {
+              if (modifiedComponentData[key] !== originalComponentData[key]) {
+                acc[key] = {
+                  old: originalComponentData[key],
+                  new: modifiedComponentData[key]
+                };
+              }
+              return acc;
+            }, {} as any)
+            : {}
+          }
+          onSubmit={async (reason: string) => {
+            try {
+              // Create change request
+              const changeRequest = {
+                category: 'components',
+                title: `Modify Component: ${selectedComponent.code} ${selectedComponent.name}`,
+                reason: reason,
+                targetType: 'component',
+                targetId: selectedComponent.id,
+                snapshotBeforeJson: originalComponentData,
+                proposedChangesJson: Object.keys(modifiedComponentData).reduce((acc: any[], key) => {
+                  if (modifiedComponentData[key] !== originalComponentData[key]) {
+                    acc.push({
+                      field: key,
+                      oldValue: originalComponentData[key],
+                      newValue: modifiedComponentData[key],
+                      description: `Changed ${key} from "${originalComponentData[key]}" to "${modifiedComponentData[key]}"`
+                    });
+                  }
+                  return acc;
+                }, []),
+                status: 'submitted',
+                vesselId: 'MV Test Vessel',
+                userId: 'current_user'
+              };
+
+              const response = await fetch('/api/change-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(changeRequest)
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                toast({
+                  title: "Success",
+                  description: `Change request CR${String(result.id).padStart(4, '0')} created successfully`
+                });
+                
+                // Reset states
+                setShowReviewDrawer(false);
+                setModifiedComponentData(null);
+                setOriginalComponentData(null);
+                
+                // Exit modify mode
+                if (isModifyMode) {
+                  window.location.href = '/pms/modify-pms';
+                }
+              } else {
+                throw new Error('Failed to create change request');
+              }
+            } catch (error) {
+              console.error('Error creating change request:', error);
+              toast({
+                title: "Error",
+                description: "Failed to create change request",
+                variant: "destructive"
+              });
+            }
+          }}
         />
       )}
       
