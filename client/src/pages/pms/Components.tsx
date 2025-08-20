@@ -13,6 +13,7 @@ import { useChangeMode } from "@/contexts/ChangeModeContext";
 import { useLocation } from "wouter";
 import { getComponentCategory } from "@/utils/componentUtils";
 import { useToast } from "@/hooks/use-toast";
+import { useModifyMode } from "@/hooks/useModifyMode";
 import {
   Select,
   SelectContent,
@@ -1189,11 +1190,16 @@ const Components: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["A", "B", "C", "D", "E", "F", "G", "H"]));
   const [isComponentFormOpen, setIsComponentFormOpen] = useState(false);
   const [showReviewDrawer, setShowReviewDrawer] = useState(false);
+  const [showModifySubmitFooter, setShowModifySubmitFooter] = useState(false);
   
   const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
   const { isChangeMode, changeRequestTitle, changeRequestCategory, setOriginalSnapshot, collectDiff, getDiffs, reset } = useChangeMode();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  // Check for modify mode from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const isModifyMode = urlParams.get('modify') === '1';
   
   // Handle change mode - capture original snapshot when component is selected
   useEffect(() => {
@@ -1219,6 +1225,18 @@ const Components: React.FC = () => {
       setOriginalSnapshot(snapshot);
     }
   }, [isChangeMode, selectedComponent]);
+  
+  // Initialize modify mode from URL parameter
+  useEffect(() => {
+    if (isModifyMode) {
+      setShowModifySubmitFooter(true);
+      // Apply modify mode styles to the body
+      document.body.classList.add('modify-mode');
+    }
+    return () => {
+      document.body.classList.remove('modify-mode');
+    };
+  }, [isModifyMode]);
   
   // Check if we should open the Add/Edit Component form OR select a specific component
   useEffect(() => {
@@ -1361,8 +1379,74 @@ const Components: React.FC = () => {
     { id: "H", title: "Requisitions" }
   ];
 
+  // Handle Submit for modify mode
+  const handleModifySubmit = async () => {
+    if (!selectedComponent) {
+      toast({
+        title: "Please select a component",
+        description: "You must select a component to modify before submitting",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Collect changes (this would be tracked during editing)
+    const changeRequest = {
+      title: `Modify Component: ${selectedComponent.code} ${selectedComponent.name}`,
+      targetType: 'component',
+      targetId: selectedComponent.id,
+      targetCode: selectedComponent.code,
+      targetName: selectedComponent.name,
+      original: {
+        // This would be the original component data
+        id: selectedComponent.id,
+        code: selectedComponent.code,
+        name: selectedComponent.name,
+        // ... other original fields
+      },
+      proposed: {
+        // This would be the modified component data
+        id: selectedComponent.id,
+        code: selectedComponent.code,
+        name: selectedComponent.name,
+        // ... modified fields
+      },
+      diff: [],
+      diffSummaryCount: 0,
+      submittedBy: 'current_user',
+      submittedAt: new Date().toISOString()
+    };
+
+    try {
+      const response = await fetch('/api/change-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changeRequest),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Change request submitted",
+          description: "Your change request has been submitted for review",
+        });
+        // Navigate back to Modify PMS
+        setLocation('/pms/modify-pms');
+      } else {
+        throw new Error('Failed to submit change request');
+      }
+    } catch (error) {
+      toast({
+        title: "Submission failed",
+        description: "Failed to submit change request. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
-    <div className={`h-full p-6 ${isChangeMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
+    <div className={`h-full p-6 ${isModifyMode ? '' : isChangeMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]'}`}>
       {/* Change Mode Banner */}
       {isChangeMode && (
         <div className="mb-4 p-4 bg-amber-50 border-b-2 border-amber-200">
@@ -1681,6 +1765,46 @@ const Components: React.FC = () => {
           targetType="component"
           targetId={selectedComponent.id}
         />
+      )}
+      
+      {/* Sticky Footer for Modify Mode */}
+      {isModifyMode && showModifySubmitFooter && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">
+                  {selectedComponent 
+                    ? `Selected: ${selectedComponent.code} ${selectedComponent.name}`
+                    : 'Select a component to modify'}
+                </span>
+                {selectedComponent && (
+                  <span className="text-xs text-gray-500">
+                    • Make your changes then click Submit
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowModifySubmitFooter(false);
+                    setLocation('/pms/modify-pms');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white"
+                  onClick={handleModifySubmit}
+                  disabled={!selectedComponent}
+                >
+                  Submit Change Request
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

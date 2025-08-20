@@ -11,6 +11,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Modify Mode Styles */
+.modify-mode [data-field-label],
+.modify-mode [data-field-value] {
+  color: #52BAF3;
+}
+
+.modify-mode .is-edited [data-field-label],
+.modify-mode .is-edited [data-field-value],
+.modify-mode [data-field-label].is-edited,
+.modify-mode [data-field-value].is-edited {
+  color: #FF3B30;
+}
+
+.modify-mode .row-added { 
+  border-left: 3px solid #FF3B30; 
+}
+
+.modify-mode .row-deleted { 
+  background: rgba(255,59,48,0.08); 
+  text-decoration: line-through; 
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -4,7 +4,7 @@ import { SideMenuBar } from "@/components/SideMenuBar";
 import Components from "./pms/Components";
 import WorkOrders from "./pms/WorkOrders";
 import RunningHours from "./pms/RunningHours";
-import ModifyPMS from "./pms/ModifyPMS";
+import { ModifyPMS } from "@/components/modifyPms/ModifyPMS";
 import Spares from "./spares/SparesNew";
 import Stores from "./stores/Stores";
 import AdminPanel from "./admin/AdminPanel";
