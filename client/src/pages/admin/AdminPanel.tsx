@@ -81,8 +81,11 @@ export default function BulkImport() {
 
   const templates: Template[] = [
     { id: '1', name: 'Machinery Components', type: 'components' },
-    { id: '2', name: 'Spares', type: 'spares' },
-    { id: '3', name: 'Stores', type: 'stores' },
+    { id: '2', name: 'Stores', type: 'spares' },
+    { id: '3', name: 'Spares', type: 'stores' },
+    { id: '4', name: 'Template 4', type: 'components' },
+    { id: '5', name: 'Template 5', type: 'components' },
+    { id: '6', name: 'Template 6', type: 'components' },
   ];
 
   // Fetch import history
@@ -286,7 +289,7 @@ export default function BulkImport() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Admin</h1>
+        <h1 className="text-3xl font-bold">Bulk Data Import</h1>
         <div className="mt-4 flex gap-2">
           <Button 
             variant={activeTab === 'bulk-import' ? "default" : "outline"}
@@ -314,7 +317,7 @@ export default function BulkImport() {
             className={activeTab === 'admin4' ? "bg-blue-600 hover:bg-blue-700" : ""}
             onClick={() => setActiveTab('admin4')}
           >
-            Adm 4
+            Admin 4
           </Button>
         </div>
       </div>
@@ -324,29 +327,31 @@ export default function BulkImport() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Column - Templates */}
           <div className="col-span-3">
-            <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-4 text-blue-600">TEMPLATES</h2>
-            <div className="space-y-2">
-              {templates.map((template, index) => (
-                <button
-                  key={template.id}
-                  onClick={() => {
-                    setSelectedTemplate(template);
-                    setSelectedFile(null);
-                    setDryRunResult(null);
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                    selectedTemplate?.id === template.id
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  {index + 1}. {template.name}
-                </button>
-              ))}
+            <div className="bg-[#52baf3] text-white p-0 rounded-lg overflow-hidden">
+              <div className="bg-[#40a6e0] px-4 py-3">
+                <h2 className="text-lg font-semibold text-white">TEMPLATES</h2>
+              </div>
+              <div className="p-4 space-y-2">
+                {templates.map((template, index) => (
+                  <button
+                    key={template.id}
+                    onClick={() => {
+                      setSelectedTemplate(template);
+                      setSelectedFile(null);
+                      setDryRunResult(null);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                      selectedTemplate?.id === template.id
+                        ? 'bg-white bg-opacity-20 text-white font-medium'
+                        : 'hover:bg-white hover:bg-opacity-10 text-white'
+                    }`}
+                  >
+                    {index + 1}. {template.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </Card>
-        </div>
+          </div>
 
         {/* Right Column - Detail */}
         <div className="col-span-9">
@@ -385,7 +390,7 @@ export default function BulkImport() {
                     className="hidden"
                   />
                   <Button variant="outline" asChild>
-                    <span>Select File</span>
+                    <span>Choose Files</span>
                   </Button>
                 </label>
                 {selectedFile && (
