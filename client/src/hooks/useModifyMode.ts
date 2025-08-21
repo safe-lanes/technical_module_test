@@ -18,7 +18,8 @@ interface ModifyModeState {
 
 export function useModifyMode() {
   const [location, setLocation] = useLocation();
-  const searchParams = new URLSearchParams(useSearch());
+  const search = useSearch();
+  const searchParams = new URLSearchParams(search);
   
   const [state, setState] = useState<ModifyModeState>({
     isModifyMode: searchParams.get("modify") === "1",
@@ -30,29 +31,29 @@ export function useModifyMode() {
 
   // Update state when URL changes
   useEffect(() => {
-    const newSearchParams = new URLSearchParams(useSearch());
+    const newSearchParams = new URLSearchParams(search);
     setState(prev => ({
       ...prev,
       isModifyMode: newSearchParams.get("modify") === "1",
       targetType: newSearchParams.get("targetType"),
       targetId: newSearchParams.get("targetId")
     }));
-  }, [useSearch()]);
+  }, [search]);
 
   // Enable modify mode for a specific target
   const enableModifyMode = useCallback((targetType: string, targetId?: string) => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(search);
     newParams.set("modify", "1");
     newParams.set("targetType", targetType);
     if (targetId) {
       newParams.set("targetId", targetId);
     }
     setLocation(`${location.split('?')[0]}?${newParams.toString()}`);
-  }, [location, searchParams, setLocation]);
+  }, [location, search, setLocation]);
 
   // Disable modify mode
   const disableModifyMode = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(search);
     newParams.delete("modify");
     newParams.delete("targetType");
     newParams.delete("targetId");
@@ -66,7 +67,7 @@ export function useModifyMode() {
       fieldChanges: {},
       originalSnapshot: {}
     }));
-  }, [location, searchParams, setLocation]);
+  }, [location, search, setLocation]);
 
   // Set original snapshot for comparison
   const setOriginalSnapshot = useCallback((snapshot: Record<string, any>) => {
