@@ -21,6 +21,7 @@ import WorkInstructionsDialog from "./WorkInstructionsDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useModifyMode } from "@/hooks/useModifyMode";
 import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
+import { ModifyStickyFooter } from "@/components/modify/ModifyStickyFooter";
 
 interface WorkOrderFormProps {
   isOpen: boolean;
@@ -443,17 +444,21 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   Work Instructions
                 </Button>
               )}
-              <Button 
-                size="sm" 
-                className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
-                onClick={handleSubmit}
-              >
-                Save
-              </Button>
-              <Button variant="outline" size="sm" onClick={onClose}>
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back
-              </Button>
+              {!isModifyMode && (
+                <>
+                  <Button 
+                    size="sm" 
+                    className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white"
+                    onClick={handleSubmit}
+                  >
+                    Save
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={onClose}>
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Back
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </DialogHeader>
@@ -507,7 +512,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">WO Title *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.woTitle?.originalValue}
+                          originalValue={workOrder?.jobTitle || ""}
                           currentValue={templateData.woTitle}
                           fieldName="woTitle"
                           isModifyMode={isModifyMode}
@@ -518,7 +523,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                             onChange={(e) => handleTemplateChange('woTitle', e.target.value)}
                             className="text-sm"
                             placeholder="Enter work order title"
-                            disabled={!isModifyMode && isReadOnly}
+                            disabled={isReadOnly}
                           />
                         </ModifyFieldWrapper>
                       </div>
@@ -541,15 +546,27 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       {/* Row 1 - Maintenance Basis */}
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Maintenance Basis *</Label>
-                        <Select value={templateData.maintenanceBasis} onValueChange={(value) => handleTemplateChange('maintenanceBasis', value)}>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Calendar">Calendar</SelectItem>
-                            <SelectItem value="Running Hours">Running Hours</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <ModifyFieldWrapper
+                          originalValue={workOrder?.maintenanceBasis || "Calendar"}
+                          currentValue={templateData.maintenanceBasis}
+                          fieldName="maintenanceBasis"
+                          isModifyMode={isModifyMode}
+                          onFieldChange={trackFieldChange}
+                        >
+                          <Select 
+                            value={templateData.maintenanceBasis} 
+                            onValueChange={(value) => handleTemplateChange('maintenanceBasis', value)}
+                            disabled={isReadOnly}
+                          >
+                            <SelectTrigger className="text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Calendar">Calendar</SelectItem>
+                              <SelectItem value="Running Hours">Running Hours</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </ModifyFieldWrapper>
                       </div>
                       
                       {/* Frequency Fields */}
@@ -557,29 +574,50 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         <Label className="text-sm text-[#8798ad]">
                           {templateData.maintenanceBasis === "Calendar" ? "Every *" : "Every (Hours) *"}
                         </Label>
-                        <Input 
-                          type="number"
-                          value={templateData.frequencyValue} 
-                          onChange={(e) => handleTemplateChange('frequencyValue', e.target.value)}
-                          className="text-sm"
-                          placeholder={templateData.maintenanceBasis === "Running Hours" ? "e.g., 1000" : ""}
-                        />
+                        <ModifyFieldWrapper
+                          originalValue={workOrder?.frequencyValue || ""}
+                          currentValue={templateData.frequencyValue}
+                          fieldName="frequencyValue"
+                          isModifyMode={isModifyMode}
+                          onFieldChange={trackFieldChange}
+                        >
+                          <Input 
+                            type="number"
+                            value={templateData.frequencyValue} 
+                            onChange={(e) => handleTemplateChange('frequencyValue', e.target.value)}
+                            className="text-sm"
+                            placeholder={templateData.maintenanceBasis === "Running Hours" ? "e.g., 1000" : ""}
+                            disabled={isReadOnly}
+                          />
+                        </ModifyFieldWrapper>
                       </div>
                       
                       {templateData.maintenanceBasis === "Calendar" && (
                         <div className="space-y-2">
                           <Label className="text-sm text-[#8798ad]">Unit *</Label>
-                          <Select value={templateData.frequencyUnit} onValueChange={(value) => handleTemplateChange('frequencyUnit', value)}>
-                            <SelectTrigger className="text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Days">Days</SelectItem>
-                              <SelectItem value="Weeks">Weeks</SelectItem>
-                              <SelectItem value="Months">Months</SelectItem>
-                              <SelectItem value="Years">Years</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <ModifyFieldWrapper
+                            originalValue={workOrder?.frequencyUnit || "Months"}
+                            currentValue={templateData.frequencyUnit}
+                            fieldName="frequencyUnit"
+                            isModifyMode={isModifyMode}
+                            onFieldChange={trackFieldChange}
+                          >
+                            <Select 
+                              value={templateData.frequencyUnit} 
+                              onValueChange={(value) => handleTemplateChange('frequencyUnit', value)}
+                              disabled={isReadOnly}
+                            >
+                              <SelectTrigger className="text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Days">Days</SelectItem>
+                                <SelectItem value="Weeks">Weeks</SelectItem>
+                                <SelectItem value="Months">Months</SelectItem>
+                                <SelectItem value="Years">Years</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </ModifyFieldWrapper>
                         </div>
                       )}
 
@@ -587,7 +625,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Task Type *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.taskType?.originalValue}
+                          originalValue={workOrder?.taskType || "Inspection"}
                           currentValue={templateData.taskType}
                           fieldName="taskType"
                           isModifyMode={isModifyMode}
@@ -596,7 +634,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Select 
                             value={templateData.taskType} 
                             onValueChange={(value) => handleTemplateChange('taskType', value)}
-                            disabled={!isModifyMode && isReadOnly}
+                            disabled={isReadOnly}
                           >
                             <SelectTrigger className="text-sm">
                               <SelectValue />
@@ -614,7 +652,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Assigned To *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.assignedTo?.originalValue}
+                          originalValue={workOrder?.assignedTo || ""}
                           currentValue={templateData.assignedTo}
                           fieldName="assignedTo"
                           isModifyMode={isModifyMode}
@@ -623,7 +661,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Select 
                             value={templateData.assignedTo} 
                             onValueChange={(value) => handleTemplateChange('assignedTo', value)}
-                            disabled={!isModifyMode && isReadOnly}
+                            disabled={isReadOnly}
                           >
                             <SelectTrigger className="text-sm">
                               <SelectValue placeholder="Select rank" />
@@ -695,7 +733,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     <div className="mt-6">
                       <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
                       <ModifyFieldWrapper
-                        originalValue={fieldChanges.briefWorkDescription?.originalValue}
+                        originalValue={workOrder?.briefWorkDescription || ""}
                         currentValue={templateData.briefWorkDescription}
                         fieldName="briefWorkDescription"
                         isModifyMode={isModifyMode}
@@ -707,7 +745,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           className="mt-2 text-sm"
                           rows={3}
                           placeholder="Enter work description..."
-                          disabled={!isModifyMode && isReadOnly}
+                          disabled={isReadOnly}
                         />
                       </ModifyFieldWrapper>
                     </div>
@@ -1321,6 +1359,44 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         isOpen={isWorkInstructionsOpen}
         onClose={() => setIsWorkInstructionsOpen(false)}
       />
+
+      {/* Modify Mode Sticky Footer */}
+      {isModifyMode && (
+        <ModifyStickyFooter
+          isVisible={true}
+          hasChanges={Object.keys(fieldChanges).length > 0}
+          changedFieldsCount={Object.keys(fieldChanges).length}
+          onCancel={() => {
+            onClose();
+            // Navigate back to modify PMS page
+            window.location.href = '/pms/modify';
+          }}
+          onSubmitChangeRequest={() => {
+            if (Object.keys(fieldChanges).length === 0) {
+              toast({
+                title: "No changes to submit",
+                description: "Please make some changes before submitting a change request.",
+                variant: "destructive"
+              });
+              return;
+            }
+            // Submit change request logic
+            const changeRequestPayload = {
+              targetType: "workOrder",
+              targetId: workOrder?.id,
+              changes: fieldChanges,
+              originalSnapshot: workOrder
+            };
+            console.log("Submitting change request:", changeRequestPayload);
+            toast({
+              title: "Change Request Submitted",
+              description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
+            });
+            onClose();
+            window.location.href = '/pms/modify';
+          }}
+        />
+      )}
     </Dialog>
   );
 };

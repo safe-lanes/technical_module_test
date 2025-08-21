@@ -19,7 +19,7 @@ export function ModifyFieldWrapper({
   onFieldChange 
 }: ModifyFieldWrapperProps) {
   // Check if the field has been modified
-  const isModified = originalValue !== currentValue;
+  const isModified = originalValue !== undefined && originalValue !== currentValue;
   
   // Define colors according to specifications
   const baselineColor = "#52BAF3"; // Blue for editable fields
@@ -43,11 +43,15 @@ export function ModifyFieldWrapper({
             onFieldChange(fieldName, newValue, originalValue);
           }
         },
+        // Apply color styling
+        style: {
+          ...(children as any).props.style,
+          borderColor: isModified ? changedColor : baselineColor,
+          borderWidth: '2px'
+        },
         className: cn(
           (children as any).props.className,
-          isModified 
-            ? "border-[#FF3B30] focus:border-[#FF3B30] focus:ring-[#FF3B30]/20" 
-            : "border-[#52BAF3] focus:border-[#52BAF3] focus:ring-[#52BAF3]/20"
+          "transition-colors duration-200"
         )
       })
     : children;
