@@ -1,10 +1,10 @@
 
-import { mysqlTable, text, int, boolean, timestamp, decimal, index } from "drizzle-orm/mysql-core";
+import { pgTable, text, integer, boolean, timestamp, decimal, index, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = mysqlTable("users", {
-  id: int("id").primaryKey().autoincrement(),
+export const users = pgTable("users", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
@@ -18,8 +18,8 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
 // Running Hours Audit Table
-export const runningHoursAudit = mysqlTable("running_hours_audit", {
-  id: int("id").primaryKey().autoincrement(),
+export const runningHoursAudit = pgTable("running_hours_audit", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   vesselId: text("vessel_id").notNull(),
   componentId: text("component_id").notNull(),
   previousRH: decimal("previous_rh", { precision: 10, scale: 2 }).notNull(),
@@ -34,7 +34,7 @@ export const runningHoursAudit = mysqlTable("running_hours_audit", {
   meterReplaced: boolean("meter_replaced").notNull().default(false),
   oldMeterFinal: decimal("old_meter_final", { precision: 10, scale: 2 }),
   newMeterStart: decimal("new_meter_start", { precision: 10, scale: 2 }),
-  version: int("version").notNull().default(1),
+  version: integer("version").notNull().default(1),
 }, (table) => ({
   componentIdIdx: index("idx_component_entered").on(table.componentId, table.enteredAtUTC),
   componentDateIdx: index("idx_component_date").on(table.componentId, table.dateUpdatedLocal),
@@ -48,7 +48,7 @@ export type InsertRunningHoursAudit = z.infer<typeof insertRunningHoursAuditSche
 export type RunningHoursAudit = typeof runningHoursAudit.$inferSelect;
 
 // Components Table (for storing current cumulative RH)
-export const components = mysqlTable("components", {
+export const components = pgTable("components", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   componentCode: text("component_code"),
@@ -75,8 +75,8 @@ export type InsertComponent = z.infer<typeof insertComponentSchema>;
 export type Component = typeof components.$inferSelect;
 
 // Form Definitions Table
-export const formDefinitions = mysqlTable("form_definitions", {
-  id: int("id").primaryKey().autoincrement(),
+export const formDefinitions = pgTable("form_definitions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: text("name").notNull().unique(), // ADD_COMPONENT, WO_PLANNED, WO_UNPLANNED
   subgroup: text("subgroup"),
 });
@@ -89,10 +89,10 @@ export type InsertFormDefinition = z.infer<typeof insertFormDefinitionSchema>;
 export type FormDefinition = typeof formDefinitions.$inferSelect;
 
 // Form Versions Table
-export const formVersions = mysqlTable("form_versions", {
-  id: int("id").primaryKey().autoincrement(),
-  formId: int("form_id").notNull(),
-  versionNo: int("version_no").notNull(),
+export const formVersions = pgTable("form_versions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  formId: integer("form_id").notNull(),
+  versionNo: integer("version_no").notNull(),
   versionDate: timestamp("version_date").notNull(),
   status: text("status").notNull(), // DRAFT, PUBLISHED, ARCHIVED
   authorUserId: text("author_user_id").notNull(),
@@ -111,9 +111,9 @@ export type InsertFormVersion = z.infer<typeof insertFormVersionSchema>;
 export type FormVersion = typeof formVersions.$inferSelect;
 
 // Form Version Usage Table (Audit)
-export const formVersionUsage = mysqlTable("form_version_usage", {
-  id: int("id").primaryKey().autoincrement(),
-  formVersionId: int("form_version_id").notNull(),
+export const formVersionUsage = pgTable("form_version_usage", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  formVersionId: integer("form_version_id").notNull(),
   usedInModule: text("used_in_module").notNull(),
   usedAt: timestamp("used_at").notNull(),
 });
@@ -126,8 +126,8 @@ export type InsertFormVersionUsage = z.infer<typeof insertFormVersionUsageSchema
 export type FormVersionUsage = typeof formVersionUsage.$inferSelect;
 
 // Spares Table
-export const spares = mysqlTable("spares", {
-  id: int("id").primaryKey().autoincrement(),
+export const spares = pgTable("spares", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   partCode: text("part_code").notNull(),
   partName: text("part_name").notNull(),
   componentId: text("component_id").notNull(),
@@ -135,8 +135,8 @@ export const spares = mysqlTable("spares", {
   componentName: text("component_name").notNull(),
   componentSpareCode: text("component_spare_code"), // Format: SP-<ComponentCode>-<NNN>
   critical: text("critical").notNull(), // 'Critical' | 'Non-Critical' | 'Yes' | 'No'
-  rob: int("rob").notNull().default(0), // Remaining on Board
-  min: int("min").notNull().default(0), // Minimum stock
+  rob: integer("rob").notNull().default(0), // Remaining on Board
+  min: integer("min").notNull().default(0), // Minimum stock
   location: text("location"),
   vesselId: text("vessel_id").notNull().default("V001"),
   deleted: boolean("deleted").notNull().default(false),
@@ -155,11 +155,11 @@ export type InsertSpare = z.infer<typeof insertSpareSchema>;
 export type Spare = typeof spares.$inferSelect;
 
 // Spares History Table
-export const sparesHistory = mysqlTable("spares_history", {
-  id: int("id").primaryKey().autoincrement(),
+export const sparesHistory = pgTable("spares_history", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   timestampUTC: timestamp("timestamp_utc").notNull(),
   vesselId: text("vessel_id").notNull(),
-  spareId: int("spare_id").notNull(),
+  spareId: integer("spare_id").notNull(),
   partCode: text("part_code").notNull(),
   partName: text("part_name").notNull(),
   componentId: text("component_id").notNull(),
@@ -167,8 +167,8 @@ export const sparesHistory = mysqlTable("spares_history", {
   componentName: text("component_name").notNull(),
   componentSpareCode: text("component_spare_code"), // Component Spare Code at time of event
   eventType: text("event_type").notNull(), // 'CONSUME' | 'RECEIVE' | 'ADJUST' | 'CREATE' | 'EDIT' | 'LINK_CREATED' | 'CODE_RENUMBERED'
-  qtyChange: int("qty_change").notNull(), // positive for receive, negative for consume
-  robAfter: int("rob_after").notNull(),
+  qtyChange: integer("qty_change").notNull(), // positive for receive, negative for consume
+  robAfter: integer("rob_after").notNull(),
   userId: text("user_id").notNull(),
   remarks: text("remarks"),
   reference: text("reference"), // Work Order or PO reference
@@ -189,11 +189,11 @@ export type InsertSpareHistory = z.infer<typeof insertSpareHistorySchema>;
 export type SpareHistory = typeof sparesHistory.$inferSelect;
 
 // Stores Ledger Table (for Stores module history)
-export const storesLedger = mysqlTable("stores_ledger", {
-  id: int("id").primaryKey().autoincrement(),
+export const storesLedger = pgTable("stores_ledger", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   vesselId: text("vessel_id").notNull(),
   section: text("section").notNull(), // 'stores' | 'lubes' | 'chemicals' | 'others'
-  itemId: int("item_id").notNull(),
+  itemId: integer("item_id").notNull(),
   partCode: text("part_code").notNull(),
   itemName: text("item_name").notNull(),
   uom: text("uom"), // Base unit of measure
@@ -222,8 +222,8 @@ export type InsertStoresLedger = z.infer<typeof insertStoresLedgerSchema>;
 export type StoresLedger = typeof storesLedger.$inferSelect;
 
 // Change Request Tables for Modify PMS module
-export const changeRequest = mysqlTable("change_request", {
-  id: int("id").primaryKey().autoincrement(),
+export const changeRequest = pgTable("change_request", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   vesselId: text("vessel_id").notNull(),
   category: text("category").notNull(), // 'components' | 'work_orders' | 'spares' | 'stores'
   title: text("title").notNull(), // max 120 chars enforced in application
@@ -239,7 +239,7 @@ export const changeRequest = mysqlTable("change_request", {
   reviewedByUserId: text("reviewed_by_user_id"),
   reviewedAt: timestamp("reviewed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdateFn(() => new Date()),
 }, (table) => ({
   vesselCategoryIdx: index("idx_vessel_category").on(table.vesselId, table.category),
   statusIdx: index("idx_status").on(table.status),
@@ -255,9 +255,9 @@ export type InsertChangeRequest = z.infer<typeof insertChangeRequestSchema>;
 export type ChangeRequest = typeof changeRequest.$inferSelect;
 
 // Change Request Attachments
-export const changeRequestAttachment = mysqlTable("change_request_attachment", {
-  id: int("id").primaryKey().autoincrement(),
-  changeRequestId: int("change_request_id").notNull(),
+export const changeRequestAttachment = pgTable("change_request_attachment", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  changeRequestId: integer("change_request_id").notNull(),
   filename: text("filename").notNull(),
   url: text("url").notNull(),
   uploadedByUserId: text("uploaded_by_user_id").notNull(),
@@ -275,9 +275,9 @@ export type InsertChangeRequestAttachment = z.infer<typeof insertChangeRequestAt
 export type ChangeRequestAttachment = typeof changeRequestAttachment.$inferSelect;
 
 // Change Request Comments
-export const changeRequestComment = mysqlTable("change_request_comment", {
-  id: int("id").primaryKey().autoincrement(),
-  changeRequestId: int("change_request_id").notNull(),
+export const changeRequestComment = pgTable("change_request_comment", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  changeRequestId: integer("change_request_id").notNull(),
   userId: text("user_id").notNull(),
   message: text("message").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -294,8 +294,8 @@ export type InsertChangeRequestComment = z.infer<typeof insertChangeRequestComme
 export type ChangeRequestComment = typeof changeRequestComment.$inferSelect;
 
 // Alert Policy Table
-export const alertPolicies = mysqlTable("alert_policies", {
-  id: int("id").primaryKey().autoincrement(),
+export const alertPolicies = pgTable("alert_policies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   alertType: text("alert_type").notNull(), // 'maintenance_due' | 'running_hours' | 'critical_inventory' | 'certificate_expiration' | 'system_backup'
   enabled: boolean("enabled").notNull().default(true),
   priority: text("priority").notNull().default("medium"), // 'low' | 'medium' | 'high'
@@ -320,9 +320,9 @@ export type InsertAlertPolicy = z.infer<typeof insertAlertPolicySchema>;
 export type AlertPolicy = typeof alertPolicies.$inferSelect;
 
 // Alert Events Table
-export const alertEvents = mysqlTable("alert_events", {
-  id: int("id").primaryKey().autoincrement(),
-  policyId: int("policy_id").notNull(),
+export const alertEvents = pgTable("alert_events", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  policyId: integer("policy_id").notNull(),
   alertType: text("alert_type").notNull(),
   priority: text("priority").notNull(),
   objectType: text("object_type"), // 'work_order' | 'component' | 'spare' | 'certificate' | 'system'
@@ -348,9 +348,9 @@ export type InsertAlertEvent = z.infer<typeof insertAlertEventSchema>;
 export type AlertEvent = typeof alertEvents.$inferSelect;
 
 // Alert Deliveries Table
-export const alertDeliveries = mysqlTable("alert_deliveries", {
-  id: int("id").primaryKey().autoincrement(),
-  eventId: int("event_id").notNull(),
+export const alertDeliveries = pgTable("alert_deliveries", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  eventId: integer("event_id").notNull(),
   channel: text("channel").notNull(), // 'email' | 'in_app' | 'sms' | 'slack'
   recipient: text("recipient").notNull(), // email address, user ID, phone number, etc
   status: text("status").notNull().default("pending"), // 'pending' | 'sent' | 'failed' | 'acknowledged'
@@ -372,14 +372,14 @@ export type InsertAlertDelivery = z.infer<typeof insertAlertDeliverySchema>;
 export type AlertDelivery = typeof alertDeliveries.$inferSelect;
 
 // Alert Configuration Table (for quiet hours and escalation)
-export const alertConfig = mysqlTable("alert_config", {
-  id: int("id").primaryKey().autoincrement(),
+export const alertConfig = pgTable("alert_config", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   vesselId: text("vessel_id").notNull(),
   quietHoursEnabled: boolean("quiet_hours_enabled").notNull().default(false),
   quietHoursStart: text("quiet_hours_start"), // HH:mm format
   quietHoursEnd: text("quiet_hours_end"), // HH:mm format
   escalationEnabled: boolean("escalation_enabled").notNull().default(false),
-  escalationHours: int("escalation_hours").notNull().default(4),
+  escalationHours: integer("escalation_hours").notNull().default(4),
   escalationRecipients: text("escalation_recipients").notNull().default("[]"), // JSON array of recipients
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

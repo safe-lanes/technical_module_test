@@ -6,7 +6,7 @@ import { z } from "zod";
 import bulkRoutes from "./routes/bulk";
 import alertRoutes from "./routes/alerts";
 import formRoutes from "./routes/forms";
-import changeRequestsRoutes from "./routes/changeRequests";
+import createChangeRequestsRouter from "./routes/changeRequests";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Components API routes (for Target Picker)
@@ -670,7 +670,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/bulk", bulkRoutes);
   app.use("/api/alerts", alertRoutes);
   app.use("/api", formRoutes);
-  app.use("/api/change-requests", changeRequestsRoutes(storage));
+  app.use("/api/change-requests", createChangeRequestsRouter(storage));
 
   const httpServer = createServer(app);
 

@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChangeRequestModal } from "@/components/modify/ChangeRequestModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -123,6 +124,7 @@ export default function ModifyPMS() {
   const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [showSnapshotDialog, setShowSnapshotDialog] = useState(false);
   const [snapshotToView, setSnapshotToView] = useState<any>(null);
+  const [isNewRequestModalOpen, setIsNewRequestModalOpen] = useState(false);
   
   // Form state for create/edit
   const [formData, setFormData] = useState({
@@ -456,34 +458,13 @@ export default function ModifyPMS() {
                     className="pl-8 w-64"
                   />
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="bg-[#52baf3] hover:bg-[#40a6e0]">
-                      <Plus className="w-4 h-4 mr-2" />
-                      New Change Request
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64">
-                    <DropdownMenuLabel>Select Category</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('components')}>
-                      <Package className="w-4 h-4 mr-2" />
-                      Components
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('work_orders')}>
-                      <ClipboardList className="w-4 h-4 mr-2" />
-                      Work Orders
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('spares')}>
-                      <Archive className="w-4 h-4 mr-2" />
-                      Spares
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('stores')}>
-                      <Store className="w-4 h-4 mr-2" />
-                      Stores
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button 
+                  className="bg-[#52baf3] hover:bg-[#40a6e0]"
+                  onClick={() => setIsNewRequestModalOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Change Request
+                </Button>
               </div>
             </div>
 
@@ -1073,6 +1054,12 @@ export default function ModifyPMS() {
           onTargetSelect={handleTargetSelect}
         />
       )}
+
+      {/* Change Request Modal */}
+      <ChangeRequestModal
+        isOpen={isNewRequestModalOpen}
+        onClose={() => setIsNewRequestModalOpen(false)}
+      />
     </div>
   );
 }

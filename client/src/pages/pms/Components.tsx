@@ -1815,7 +1815,7 @@ const Components: React.FC = () => {
           onClose={() => setShowReviewDrawer(false)}
           targetType="component"
           targetId={selectedComponent.id}
-          changedFields={modifiedComponentData && originalComponentData ? 
+          changes={modifiedComponentData && originalComponentData ? 
             Object.keys(modifiedComponentData).reduce((acc, key) => {
               if (modifiedComponentData[key] !== originalComponentData[key]) {
                 acc[key] = {

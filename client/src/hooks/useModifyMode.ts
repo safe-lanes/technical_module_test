@@ -1,165 +1,150 @@
-import { useState, useCallback, useEffect } from 'react';
-import { isEqual, cloneDeep } from 'lodash';
+import { useState, useEffect, useCallback } from "react";
+import { useLocation, useSearch } from "wouter";
 
 interface FieldChange {
-  key: string;
-  from: any;
-  to: any;
+  fieldName: string;
+  originalValue: any;
+  currentValue: any;
+  timestamp: Date;
 }
 
-interface RowChange {
-  section: string;
-  row?: any;
-  rowId?: string;
-  fields?: FieldChange[];
+interface ModifyModeState {
+  isModifyMode: boolean;
+  targetType: string | null;
+  targetId: string | null;
+  fieldChanges: Record<string, FieldChange>;
+  originalSnapshot: Record<string, any>;
 }
 
-interface ModifyModeDiff {
-  fields: FieldChange[];
-  rows: {
-    added: RowChange[];
-    deleted: RowChange[];
-    changed: RowChange[];
-  };
-}
+export function useModifyMode() {
+  const [location, setLocation] = useLocation();
+  const searchParams = new URLSearchParams(useSearch());
+  
+  const [state, setState] = useState<ModifyModeState>({
+    isModifyMode: searchParams.get("modify") === "1",
+    targetType: searchParams.get("targetType"),
+    targetId: searchParams.get("targetId"),
+    fieldChanges: {},
+    originalSnapshot: {}
+  });
 
-export function useModifyMode(initialData: any) {
-  const [originalData] = useState(() => cloneDeep(initialData));
-  const [currentData, setCurrentData] = useState(() => cloneDeep(initialData));
-  const [editedFields, setEditedFields] = useState<Set<string>>(new Set());
-  const [addedRows, setAddedRows] = useState<Set<string>>(new Set());
-  const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
+  // Update state when URL changes
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(useSearch());
+    setState(prev => ({
+      ...prev,
+      isModifyMode: newSearchParams.get("modify") === "1",
+      targetType: newSearchParams.get("targetType"),
+      targetId: newSearchParams.get("targetId")
+    }));
+  }, [useSearch()]);
 
-  // Check if a field is edited
-  const isEdited = useCallback((fieldKey: string) => {
-    return editedFields.has(fieldKey);
-  }, [editedFields]);
-
-  // Update field value and track changes
-  const updateField = useCallback((fieldKey: string, value: any) => {
-    const keys = fieldKey.split('.');
-    const newData = cloneDeep(currentData);
-    
-    // Navigate to the nested field
-    let current = newData;
-    for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]];
+  // Enable modify mode for a specific target
+  const enableModifyMode = useCallback((targetType: string, targetId?: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("modify", "1");
+    newParams.set("targetType", targetType);
+    if (targetId) {
+      newParams.set("targetId", targetId);
     }
-    current[keys[keys.length - 1]] = value;
-    
-    setCurrentData(newData);
-    
-    // Get original value
-    let originalValue = originalData;
-    for (const key of keys) {
-      originalValue = originalValue?.[key];
-    }
-    
-    // Check if value differs from original
-    if (!isEqual(value, originalValue)) {
-      setEditedFields(prev => new Set(prev).add(fieldKey));
-    } else {
-      setEditedFields(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(fieldKey);
-        return newSet;
-      });
-    }
-  }, [currentData, originalData]);
+    setLocation(`${location.split('?')[0]}?${newParams.toString()}`);
+  }, [location, searchParams, setLocation]);
 
-  // Mark row as added
-  const markRowAdded = useCallback((rowId: string) => {
-    setAddedRows(prev => new Set(prev).add(rowId));
+  // Disable modify mode
+  const disableModifyMode = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("modify");
+    newParams.delete("targetType");
+    newParams.delete("targetId");
+    
+    const newSearch = newParams.toString();
+    setLocation(`${location.split('?')[0]}${newSearch ? `?${newSearch}` : ''}`);
+    
+    // Clear field changes
+    setState(prev => ({
+      ...prev,
+      fieldChanges: {},
+      originalSnapshot: {}
+    }));
+  }, [location, searchParams, setLocation]);
+
+  // Set original snapshot for comparison
+  const setOriginalSnapshot = useCallback((snapshot: Record<string, any>) => {
+    setState(prev => ({
+      ...prev,
+      originalSnapshot: snapshot
+    }));
   }, []);
 
-  // Mark row as deleted
-  const markRowDeleted = useCallback((rowId: string) => {
-    setDeletedRows(prev => new Set(prev).add(rowId));
-  }, []);
-
-  // Undo row deletion
-  const undoRowDeletion = useCallback((rowId: string) => {
-    setDeletedRows(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(rowId);
-      return newSet;
-    });
-  }, []);
-
-  // Get the diff between original and current data
-  const getDiff = useCallback((): ModifyModeDiff => {
-    const fields: FieldChange[] = [];
-    const rows = {
-      added: [] as RowChange[],
-      deleted: [] as RowChange[],
-      changed: [] as RowChange[]
-    };
-
-    // Collect field changes
-    editedFields.forEach(fieldKey => {
-      const keys = fieldKey.split('.');
+  // Track field changes
+  const trackFieldChange = useCallback((fieldName: string, newValue: any, oldValue?: any) => {
+    setState(prev => {
+      const originalValue = oldValue !== undefined ? oldValue : prev.originalSnapshot[fieldName];
       
-      let originalValue = originalData;
-      let currentValue = currentData;
-      
-      for (const key of keys) {
-        originalValue = originalValue?.[key];
-        currentValue = currentValue?.[key];
+      // If the new value equals the original value, remove the change
+      if (newValue === originalValue) {
+        const { [fieldName]: removed, ...remainingChanges } = prev.fieldChanges;
+        return {
+          ...prev,
+          fieldChanges: remainingChanges
+        };
       }
-      
-      fields.push({
-        key: fieldKey,
-        from: originalValue,
-        to: currentValue
-      });
+
+      // Add or update the field change
+      return {
+        ...prev,
+        fieldChanges: {
+          ...prev.fieldChanges,
+          [fieldName]: {
+            fieldName,
+            originalValue,
+            currentValue: newValue,
+            timestamp: new Date()
+          }
+        }
+      };
     });
+  }, []);
 
-    // Collect row changes
-    addedRows.forEach(rowId => {
-      const [section, ...idParts] = rowId.split('.');
-      rows.added.push({
-        section,
-        rowId: idParts.join('.')
-      });
-    });
+  // Get change summary
+  const getChangeSummary = useCallback(() => {
+    const changes = Object.values(state.fieldChanges);
+    return {
+      hasChanges: changes.length > 0,
+      changedFieldsCount: changes.length,
+      changes: changes
+    };
+  }, [state.fieldChanges]);
 
-    deletedRows.forEach(rowId => {
-      const [section, ...idParts] = rowId.split('.');
-      rows.deleted.push({
-        section,
-        rowId: idParts.join('.')
-      });
-    });
+  // Generate change request payload
+  const generateChangeRequestPayload = useCallback(() => {
+    const changes = Object.values(state.fieldChanges);
+    if (changes.length === 0) return null;
 
-    return { fields, rows };
-  }, [editedFields, addedRows, deletedRows, originalData, currentData]);
-
-  // Check if there are any changes
-  const hasChanges = useCallback(() => {
-    return editedFields.size > 0 || addedRows.size > 0 || deletedRows.size > 0;
-  }, [editedFields, addedRows, deletedRows]);
-
-  // Reset all changes
-  const resetChanges = useCallback(() => {
-    setCurrentData(cloneDeep(originalData));
-    setEditedFields(new Set());
-    setAddedRows(new Set());
-    setDeletedRows(new Set());
-  }, [originalData]);
+    return {
+      category: state.targetType,
+      targetType: state.targetType,
+      targetId: state.targetId,
+      snapshotBefore: state.originalSnapshot,
+      proposedChanges: changes.map(change => ({
+        field: change.fieldName,
+        from: change.originalValue,
+        to: change.currentValue,
+        timestamp: change.timestamp.toISOString()
+      }))
+    };
+  }, [state]);
 
   return {
-    originalData,
-    currentData,
-    isEdited,
-    updateField,
-    markRowAdded,
-    markRowDeleted,
-    undoRowDeletion,
-    getDiff,
-    hasChanges,
-    resetChanges,
-    editedFields,
-    addedRows,
-    deletedRows
+    isModifyMode: state.isModifyMode,
+    targetType: state.targetType,
+    targetId: state.targetId,
+    enableModifyMode,
+    disableModifyMode,
+    setOriginalSnapshot,
+    trackFieldChange,
+    getChangeSummary,
+    generateChangeRequestPayload,
+    fieldChanges: state.fieldChanges
   };
 }

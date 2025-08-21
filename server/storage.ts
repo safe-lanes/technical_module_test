@@ -520,7 +520,9 @@ export class MemStorage implements IStorage {
       cumulativeRH: audit.cumulativeRH.toString(),
       oldMeterFinal: audit.oldMeterFinal?.toString() || null,
       newMeterStart: audit.newMeterStart?.toString() || null,
-      enteredAtUTC: audit.enteredAtUTC || new Date()
+      enteredAtUTC: audit.enteredAtUTC || new Date(),
+      notes: audit.notes || null,
+      version: audit.version || 1
     };
     this.runningHoursAudits.push(fullAudit);
     return fullAudit;
@@ -606,12 +608,17 @@ export class MemStorage implements IStorage {
     
     // Generate component spare code if not provided
     const componentSpareCode = spare.componentSpareCode || 
-      (spare.componentCode ? this.generateComponentSpareCode(spare.vesselId, spare.componentCode) : null);
+      (spare.componentCode ? this.generateComponentSpareCode(spare.vesselId || 'V001', spare.componentCode) : null);
     
     const newSpare: Spare = { 
       ...spare, 
       id, 
+      vesselId: spare.vesselId || 'V001',
+      componentCode: spare.componentCode || null,
+      location: spare.location || null,
       componentSpareCode,
+      rob: spare.rob || 0,
+      min: spare.min || 0,
       deleted: false 
     };
     this.spares.set(id, newSpare);
@@ -619,7 +626,7 @@ export class MemStorage implements IStorage {
     // Create history entry
     await this.createSpareHistory({
       timestampUTC: new Date(),
-      vesselId: spare.vesselId,
+      vesselId: spare.vesselId || 'V001',
       spareId: id,
       partCode: spare.partCode,
       partName: spare.partName,
@@ -628,8 +635,8 @@ export class MemStorage implements IStorage {
       componentName: spare.componentName,
       componentSpareCode: componentSpareCode,
       eventType: 'LINK_CREATED',
-      qtyChange: spare.rob,
-      robAfter: spare.rob,
+      qtyChange: spare.rob || 0,
+      robAfter: spare.rob || 0,
       userId: 'system',
       remarks: 'Initial creation',
       reference: null
@@ -1066,6 +1073,7 @@ export class MemStorage implements IStorage {
       const newComp: Component = {
         ...comp,
         id: comp.id || String(Date.now() + Math.random()),
+        vesselId: comp.vesselId || 'V001',
         currentCumulativeRH: comp.currentCumulativeRH || "0",
         lastUpdated: comp.lastUpdated || new Date().toISOString().split('T')[0]
       };
