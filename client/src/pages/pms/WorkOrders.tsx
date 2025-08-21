@@ -12,6 +12,9 @@ import {
 import PostponeWorkOrderDialog from "@/components/PostponeWorkOrderDialog";
 import WorkOrderForm from "@/components/WorkOrderForm";
 import UnplannedWorkOrderForm from "@/components/UnplannedWorkOrderForm";
+import { useModifyMode } from "@/hooks/useModifyMode";
+import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
+import { ModifyStickyFooter } from "@/components/modify/ModifyStickyFooter";
 
 interface WorkOrder {
   id: string;
@@ -299,6 +302,9 @@ const WorkOrders: React.FC = () => {
   const [workOrderFormOpen, setWorkOrderFormOpen] = useState(false);
   const [unplannedWorkOrderFormOpen, setUnplannedWorkOrderFormOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
+  
+  // Modify mode integration  
+  const { isModifyMode, targetId, fieldChanges } = useModifyMode();
   
   // Backfill templateCode for existing work orders if missing
   const backfilledWorkOrders = initialWorkOrders.map(wo => {
@@ -764,6 +770,18 @@ const WorkOrders: React.FC = () => {
         isOpen={unplannedWorkOrderFormOpen}
         onClose={() => setUnplannedWorkOrderFormOpen(false)}
       />
+
+      {/* Modify Mode Sticky Footer */}
+      {isModifyMode && (
+        <ModifyStickyFooter
+          hasChanges={Object.keys(fieldChanges).length > 0}
+          onCancel={() => window.location.href = '/pms/modify'}
+          onSubmit={() => {
+            // Submit change request logic will be implemented
+            console.log('Submitting changes:', fieldChanges);
+          }}
+        />
+      )}
     </div>
   );
 };

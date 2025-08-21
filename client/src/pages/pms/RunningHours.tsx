@@ -10,6 +10,9 @@ import { Search, FileSpreadsheet, Calendar } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { getComponentCategory } from "@/utils/componentUtils";
+import { useModifyMode } from "@/hooks/useModifyMode";
+import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
+import { ModifyStickyFooter } from "@/components/modify/ModifyStickyFooter";
 
 interface RunningHoursData {
   id: string;
@@ -25,6 +28,9 @@ const RunningHours = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<RunningHoursData | null>(null);
+  
+  // Modify mode integration  
+  const { isModifyMode, targetId, fieldChanges } = useModifyMode();
   const [updateMode, setUpdateMode] = useState<"setTotal" | "addDelta">("setTotal");
   const [meterReplaced, setMeterReplaced] = useState(false);
   const [updateForm, setUpdateForm] = useState({
@@ -225,7 +231,7 @@ const RunningHours = () => {
       item.componentCategory,
       item.runningHours.replace(" hrs", ""),
       item.lastUpdated,
-      item.utilizationRate !== null ? item.utilizationRate.toString() : "",
+      item.utilizationRate !== null && item.utilizationRate !== undefined ? item.utilizationRate.toString() : "",
       "" // Notes field (empty for now)
     ]);
 
@@ -816,6 +822,18 @@ const RunningHours = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modify Mode Sticky Footer */}
+      {isModifyMode && (
+        <ModifyStickyFooter
+          hasChanges={Object.keys(fieldChanges).length > 0}
+          onCancel={() => window.location.href = '/pms/modify'}
+          onSubmit={() => {
+            // Submit change request logic will be implemented
+            console.log('Submitting changes:', fieldChanges);
+          }}
+        />
+      )}
     </div>
   );
 };
