@@ -381,207 +381,161 @@ export default function ModifyPMS() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Modify PMS - Change Requests</h1>
-        <p className="text-gray-600">Phase 1.0 - Request log and workflow management</p>
+        <h1 className="text-3xl font-bold">Modify PMS - Change Requests</h1>
       </div>
 
-      {/* Filters and Search */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Search & Filter</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label>Category</Label>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="components">Components</SelectItem>
-                  <SelectItem value="work_orders">Work Orders</SelectItem>
-                  <SelectItem value="running_hours">Running Hours</SelectItem>
-                  <SelectItem value="spares">Spares</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="grid grid-cols-12 gap-6">
+        {/* Left Sidebar - Categories */}
+        <div className="col-span-3">
+          <div className="bg-[#52baf3] text-white p-0 rounded-lg overflow-hidden">
+            <div className="bg-[#40a6e0] px-4 py-3">
+              <h2 className="text-lg font-semibold text-white">Category</h2>
             </div>
-
-            <div>
-              <Label>Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="submitted">Submitted</SelectItem>
-                  <SelectItem value="returned">Returned</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="p-4 space-y-2">
+              <button
+                onClick={() => setCategoryFilter('components')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  categoryFilter === 'components'
+                    ? 'bg-white bg-opacity-20 text-white font-medium'
+                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                }`}
+              >
+                1. Components
+              </button>
+              <button
+                onClick={() => setCategoryFilter('work_orders')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  categoryFilter === 'work_orders'
+                    ? 'bg-white bg-opacity-20 text-white font-medium'
+                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                }`}
+              >
+                2. Work orders
+              </button>
+              <button
+                onClick={() => setCategoryFilter('spares')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  categoryFilter === 'spares'
+                    ? 'bg-white bg-opacity-20 text-white font-medium'
+                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                }`}
+              >
+                3. Spares
+              </button>
+              <button
+                onClick={() => setCategoryFilter('stores')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  categoryFilter === 'stores'
+                    ? 'bg-white bg-opacity-20 text-white font-medium'
+                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                }`}
+              >
+                4. Stores
+              </button>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <Label>Search</Label>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                  placeholder="Search requests..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
+        {/* Right Content Area */}
+        <div className="col-span-9">
+          <Card className="p-6">
+            {/* Header with Search and New Button */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">
+                {categoryFilter === 'all' ? 'All Categories' : `${categoryFilter === 'components' ? '1. Components' : categoryFilter === 'work_orders' ? '2. Work orders' : categoryFilter === 'spares' ? '3. Spares' : '4. Stores'}`}
+              </h2>
+              <div className="flex gap-4">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    placeholder="Search Status"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-8 w-64"
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="bg-[#52baf3] hover:bg-[#40a6e0]">
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Change Request
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64">
+                    <DropdownMenuLabel>Select Category</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('components')}>
+                      <Package className="w-4 h-4 mr-2" />
+                      Components
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('work_orders')}>
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      Work Orders
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('spares')}>
+                      <Archive className="w-4 h-4 mr-2" />
+                      Spares
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleCreateWithChangeMode('stores')}>
+                      <Store className="w-4 h-4 mr-2" />
+                      Stores
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
-            <div className="flex items-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="w-full bg-[#52baf3]">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Change Request
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuLabel>Select Category</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('components')}>
-                    <Package className="w-4 h-4 mr-2" />
-                    Components
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('work_orders')}>
-                    <ClipboardList className="w-4 h-4 mr-2" />
-                    Work Orders
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('spares')}>
-                    <Archive className="w-4 h-4 mr-2" />
-                    Spares
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleCreateWithChangeMode('stores')}>
-                    <Store className="w-4 h-4 mr-2" />
-                    Stores
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleCreate}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Legacy Form (Phase 1.0)
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Requests Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Change Requests</CardTitle>
-          <CardDescription>
-            Total: {requests.length} requests
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8">Loading...</div>
-          ) : requests.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No change requests found. Click "New Change Request" to create one.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Requested By</TableHead>
-                  <TableHead>Submitted</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requests.map((request: ChangeRequest) => (
-                  <TableRow key={request.id}>
-                    <TableCell className="font-mono">CR{String(request.id).padStart(4, '0')}</TableCell>
-                    <TableCell className="capitalize">{request.category.replace('_', ' ')}</TableCell>
-                    <TableCell className="max-w-xs truncate">{request.title}</TableCell>
-                    <TableCell>
-                      {request.targetType && request.snapshotBeforeJson ? (
-                        <div className="flex items-center gap-1">
-                          {getTargetIcon(request.targetType)}
-                          <span className="text-sm truncate max-w-[150px]">
-                            {getTargetDisplayName(request)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">No target</span>
-                      )}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(request.status)}</TableCell>
-                    <TableCell>{request.requestedByUserId}</TableCell>
-                    <TableCell>
-                      {request.submittedAt 
-                        ? new Date(request.submittedAt).toLocaleDateString() 
-                        : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleView(request)}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        
-                        {(request.status === 'draft' || request.status === 'returned') && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEdit(request)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            {request.reason && request.title && request.targetType && request.targetId && (
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={() => submitMutation.mutate(request.id)}
-                              >
-                                <Send className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {request.status === 'draft' && (
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => deleteMutation.mutate(request.id)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+            {/* Requests Table */}
+            {isLoading ? (
+              <div className="text-center py-8">Loading...</div>
+            ) : requests.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No change requests found. Click "New Change Request" to create one.
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Request Title</TableHead>
+                    <TableHead>Requested By</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {requests.map((request: ChangeRequest) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="max-w-xs">
+                        <div>
+                          <div className="font-medium">{request.title}</div>
+                          <div className="text-sm text-gray-500 capitalize">{request.category.replace('_', ' ')}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{request.requestedByUserId}</TableCell>
+                      <TableCell>
+                        {request.submittedAt 
+                          ? new Date(request.submittedAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })
+                          : new Date(request.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </Card>
+        </div>
+      </div>
 
       {/* Create/Edit Dialog */}
       <Dialog open={showCreateDialog || !!editingRequest} onOpenChange={(open) => {
