@@ -774,9 +774,11 @@ const WorkOrders: React.FC = () => {
       {/* Modify Mode Sticky Footer */}
       {isModifyMode && (
         <ModifyStickyFooter
+          isVisible={true}
           hasChanges={Object.keys(fieldChanges).length > 0}
-          onCancel={() => window.location.href = '/pms/modify'}
-          onSubmit={() => {
+          changedFieldsCount={Object.keys(fieldChanges).length}
+          onCancel={() => { window.location.href = '/pms/modify'; }}
+          onSubmitChangeRequest={() => {
             // Submit change request logic will be implemented
             console.log('Submitting changes:', fieldChanges);
           }}

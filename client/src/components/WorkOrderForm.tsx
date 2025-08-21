@@ -19,6 +19,8 @@ import {
 import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
 import WorkInstructionsDialog from "./WorkInstructionsDialog";
 import { useToast } from "@/hooks/use-toast";
+import { useModifyMode } from "@/hooks/useModifyMode";
+import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
 
 interface WorkOrderFormProps {
   isOpen: boolean;
@@ -50,11 +52,14 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   const [rejectionComments, setRejectionComments] = useState("");
   const [showRejectionComments, setShowRejectionComments] = useState(false);
   
+  // Modify mode integration
+  const { isModifyMode, targetId, fieldChanges, trackFieldChange, setOriginalSnapshot } = useModifyMode();
+  
   // Check if we're in execution mode (Part B)
   const executionMode = workOrder?.executionMode === true;
   
-  // Check if form should be read-only (when status is Pending Approval, Approved, or Rejected for non-approvers)
-  const isReadOnly = workOrder?.status === "Pending Approval" || workOrder?.status === "Approved" || isApprovalMode;
+  // Check if form should be read-only - BUT in modify mode, make it editable
+  const isReadOnly = !isModifyMode && (workOrder?.status === "Pending Approval" || workOrder?.status === "Approved" || isApprovalMode);
 
   // Template data (Part A)
   const [templateData, setTemplateData] = useState({
@@ -171,8 +176,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   // Load existing workOrder data
   useEffect(() => {
     if (workOrder) {
-      setTemplateData(prev => ({
-        ...prev,
+      const initialData = {
         woTitle: workOrder.jobTitle || "",
         component: workOrder.component || component?.name || "",
         componentCode: workOrder.componentCode || component?.code || "",
@@ -196,7 +200,14 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           other: ""
         },
         workHistory: []
-      }));
+      };
+      
+      setTemplateData(prev => ({ ...prev, ...initialData }));
+      
+      // Set original snapshot for modify mode
+      if (isModifyMode && setOriginalSnapshot) {
+        setOriginalSnapshot(initialData);
+      }
       
       // If in execution mode, switch to Part B and generate execution ID
       if (executionMode) {
@@ -208,17 +219,23 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         }));
       }
     }
-  }, [workOrder, executionMode]);
+  }, [workOrder, executionMode, isModifyMode, setOriginalSnapshot]);
 
   const selectSection = (section: 'partA' | 'partB') => {
     setActiveSection(section);
   };
 
   const handleTemplateChange = (field: string, value: string) => {
-    setTemplateData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setTemplateData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Track field change for modify mode
+      if (isModifyMode && trackFieldChange) {
+        trackFieldChange(field, value, (prev as any)[field]);
+      }
+      
+      return newData;
+    });
   };
 
   const handleExecutionChange = (field: string, value: string) => {
@@ -485,12 +502,21 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">WO Title *</Label>
-                        <Input 
-                          value={templateData.woTitle} 
-                          onChange={(e) => handleTemplateChange('woTitle', e.target.value)}
-                          className="text-sm"
-                          placeholder="Enter work order title"
-                        />
+                        <ModifyFieldWrapper
+                          originalValue={fieldChanges.woTitle?.originalValue || templateData.woTitle}
+                          currentValue={templateData.woTitle}
+                          fieldName="woTitle"
+                          isModifyMode={isModifyMode}
+                          onFieldChange={trackFieldChange}
+                        >
+                          <Input 
+                            value={templateData.woTitle} 
+                            onChange={(e) => handleTemplateChange('woTitle', e.target.value)}
+                            className="text-sm"
+                            placeholder="Enter work order title"
+                            disabled={!isModifyMode && isReadOnly}
+                          />
+                        </ModifyFieldWrapper>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Component</Label>
@@ -556,31 +582,55 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       {/* Row 2 */}
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Task Type *</Label>
-                        <Select value={templateData.taskType} onValueChange={(value) => handleTemplateChange('taskType', value)}>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Inspection">Inspection</SelectItem>
-                            <SelectItem value="Overhaul">Overhaul</SelectItem>
-                            <SelectItem value="Service">Service</SelectItem>
-                            <SelectItem value="Testing">Testing</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <ModifyFieldWrapper
+                          originalValue={fieldChanges.taskType?.originalValue || templateData.taskType}
+                          currentValue={templateData.taskType}
+                          fieldName="taskType"
+                          isModifyMode={isModifyMode}
+                          onFieldChange={trackFieldChange}
+                        >
+                          <Select 
+                            value={templateData.taskType} 
+                            onValueChange={(value) => handleTemplateChange('taskType', value)}
+                            disabled={!isModifyMode && isReadOnly}
+                          >
+                            <SelectTrigger className="text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Inspection">Inspection</SelectItem>
+                              <SelectItem value="Overhaul">Overhaul</SelectItem>
+                              <SelectItem value="Service">Service</SelectItem>
+                              <SelectItem value="Testing">Testing</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </ModifyFieldWrapper>
                       </div>
                       
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Assigned To *</Label>
-                        <Select value={templateData.assignedTo} onValueChange={(value) => handleTemplateChange('assignedTo', value)}>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select rank" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {ranks.map(rank => (
-                              <SelectItem key={rank} value={rank}>{rank}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <ModifyFieldWrapper
+                          originalValue={fieldChanges.assignedTo?.originalValue || templateData.assignedTo}
+                          currentValue={templateData.assignedTo}
+                          fieldName="assignedTo"
+                          isModifyMode={isModifyMode}
+                          onFieldChange={trackFieldChange}
+                        >
+                          <Select 
+                            value={templateData.assignedTo} 
+                            onValueChange={(value) => handleTemplateChange('assignedTo', value)}
+                            disabled={!isModifyMode && isReadOnly}
+                          >
+                            <SelectTrigger className="text-sm">
+                              <SelectValue placeholder="Select rank" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ranks.map(rank => (
+                                <SelectItem key={rank} value={rank}>{rank}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </ModifyFieldWrapper>
                       </div>
                       
                       <div className="space-y-2">
@@ -640,13 +690,22 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     {/* Brief Work Description */}
                     <div className="mt-6">
                       <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
-                      <Textarea 
-                        value={templateData.briefWorkDescription} 
-                        onChange={(e) => handleTemplateChange('briefWorkDescription', e.target.value)}
-                        className="mt-2 text-sm"
-                        rows={3}
-                        placeholder="Enter work description..."
-                      />
+                      <ModifyFieldWrapper
+                        originalValue={fieldChanges.briefWorkDescription?.originalValue || templateData.briefWorkDescription}
+                        currentValue={templateData.briefWorkDescription}
+                        fieldName="briefWorkDescription"
+                        isModifyMode={isModifyMode}
+                        onFieldChange={trackFieldChange}
+                      >
+                        <Textarea 
+                          value={templateData.briefWorkDescription} 
+                          onChange={(e) => handleTemplateChange('briefWorkDescription', e.target.value)}
+                          className="mt-2 text-sm"
+                          rows={3}
+                          placeholder="Enter work description..."
+                          disabled={!isModifyMode && isReadOnly}
+                        />
+                      </ModifyFieldWrapper>
                     </div>
                   </div>
 
