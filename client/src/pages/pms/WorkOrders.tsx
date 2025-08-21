@@ -442,7 +442,15 @@ const WorkOrders: React.FC = () => {
 
   const handleWorkOrderClick = (workOrder: WorkOrder) => {
     setSelectedWorkOrder(workOrder);
-    setWorkOrderFormOpen(true);
+    
+    // If in modify mode, activate modify mode for this specific work order
+    if (isModifyMode) {
+      // The modify mode is already active via URL params
+      // Just open the form and it will detect modify mode automatically
+      setWorkOrderFormOpen(true);
+    } else {
+      setWorkOrderFormOpen(true);
+    }
   };
 
   const handlePencilClick = (workOrder: WorkOrder) => {

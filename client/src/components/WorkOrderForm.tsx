@@ -55,6 +55,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   // Modify mode integration
   const { isModifyMode, targetId, fieldChanges, trackFieldChange, setOriginalSnapshot } = useModifyMode();
   
+  // Debug logging
+  console.log("WorkOrderForm Debug:", { isModifyMode, targetId, fieldChanges, isOpen });
+  
   // Check if we're in execution mode (Part B)
   const executionMode = workOrder?.executionMode === true;
   
@@ -206,6 +209,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       
       // Set original snapshot for modify mode
       if (isModifyMode && setOriginalSnapshot) {
+        console.log("Setting original snapshot:", initialData);
         setOriginalSnapshot(initialData);
       }
       
@@ -503,7 +507,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">WO Title *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.woTitle?.originalValue || templateData.woTitle}
+                          originalValue={fieldChanges.woTitle?.originalValue}
                           currentValue={templateData.woTitle}
                           fieldName="woTitle"
                           isModifyMode={isModifyMode}
@@ -583,7 +587,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Task Type *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.taskType?.originalValue || templateData.taskType}
+                          originalValue={fieldChanges.taskType?.originalValue}
                           currentValue={templateData.taskType}
                           fieldName="taskType"
                           isModifyMode={isModifyMode}
@@ -610,7 +614,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2">
                         <Label className="text-sm text-[#8798ad]">Assigned To *</Label>
                         <ModifyFieldWrapper
-                          originalValue={fieldChanges.assignedTo?.originalValue || templateData.assignedTo}
+                          originalValue={fieldChanges.assignedTo?.originalValue}
                           currentValue={templateData.assignedTo}
                           fieldName="assignedTo"
                           isModifyMode={isModifyMode}
@@ -691,7 +695,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     <div className="mt-6">
                       <Label className="text-sm text-[#8798ad]">Brief Work Description</Label>
                       <ModifyFieldWrapper
-                        originalValue={fieldChanges.briefWorkDescription?.originalValue || templateData.briefWorkDescription}
+                        originalValue={fieldChanges.briefWorkDescription?.originalValue}
                         currentValue={templateData.briefWorkDescription}
                         fieldName="briefWorkDescription"
                         isModifyMode={isModifyMode}
