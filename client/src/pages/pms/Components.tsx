@@ -1875,31 +1875,37 @@ const Components: React.FC = () => {
       return;
     }
 
-    // Collect changes (this would be tracked during editing)
+    // Get component details for the snapshot
+    const componentDetails = getComponentMockData(selectedComponent.code);
+
+    // Create proper change request structure matching the schema
     const changeRequest = {
-      title: `Modify Component: ${selectedComponent.code} ${selectedComponent.name}`,
+      vesselId: 'V001',  // Required field
+      category: 'components',  // Required field
+      title: `Modify Component: ${selectedComponent.code} ${selectedComponent.name}`,  // Required field
+      reason: 'Component modification request',  // Required field
+      requestedByUserId: 'current_user',  // Required field
       targetType: 'component',
       targetId: selectedComponent.id,
-      targetCode: selectedComponent.code,
-      targetName: selectedComponent.name,
-      original: {
-        // This would be the original component data
-        id: selectedComponent.id,
-        code: selectedComponent.code,
-        name: selectedComponent.name,
-        // ... other original fields
+      snapshotBeforeJson: {
+        displayKey: selectedComponent.code,
+        displayName: selectedComponent.name,
+        displayPath: `${selectedComponent.code} ${selectedComponent.name}`,
+        fields: {
+          id: selectedComponent.id,
+          code: selectedComponent.code,
+          name: selectedComponent.name,
+          maker: componentDetails.maker,
+          model: componentDetails.model,
+          serialNo: componentDetails.serialNo,
+          department: componentDetails.department,
+          location: componentDetails.location,
+          critical: componentDetails.critical,
+          classItem: componentDetails.classItem
+        }
       },
-      proposed: {
-        // This would be the modified component data
-        id: selectedComponent.id,
-        code: selectedComponent.code,
-        name: selectedComponent.name,
-        // ... modified fields
-      },
-      diff: [],
-      diffSummaryCount: 0,
-      submittedBy: 'current_user',
-      submittedAt: new Date().toISOString()
+      proposedChangesJson: [],  // This will be populated with actual changes
+      status: 'draft'  // Start as draft
     };
 
     try {
@@ -1913,18 +1919,21 @@ const Components: React.FC = () => {
 
       if (response.ok) {
         toast({
-          title: "Change request submitted",
-          description: "Your change request has been submitted for review",
+          title: "Change request created",
+          description: "Your change request has been created as a draft. Navigate to Modify PMS to complete it.",
         });
         // Navigate back to Modify PMS
         setLocation('/pms/modify-pms');
       } else {
-        throw new Error('Failed to submit change request');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || 'Failed to submit change request');
       }
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: "Submission failed",
-        description: "Failed to submit change request. Please try again.",
+        description: error.message || "Failed to submit change request. Please try again.",
         variant: "destructive"
       });
     }
@@ -2233,11 +2242,11 @@ const Components: React.FC = () => {
                 }],
                 status: 'submitted',
                 vesselId: 'MV Test Vessel',
-                userId: 'current_user'
+                requestedByUserId: 'current_user'
               };
 
               // Submit to API
-              const response = await fetch('/api/modify-pms/requests', {
+              const response = await fetch('/api/change-requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(changeRequest)
@@ -2319,7 +2328,7 @@ const Components: React.FC = () => {
                 }, []),
                 status: 'submitted',
                 vesselId: 'MV Test Vessel',
-                userId: 'current_user'
+                requestedByUserId: 'current_user'
               };
 
               const response = await fetch('/api/change-requests', {
