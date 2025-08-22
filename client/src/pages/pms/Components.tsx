@@ -895,6 +895,25 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
 
 const RunningHoursConditionSection: React.FC = () => {
   const { isChangeRequestMode } = useChangeRequest();
+  const { isModifyMode } = useModifyMode();
+  
+  // State for running hours data
+  const [runningHoursData, setRunningHoursData] = useState({
+    currentHours: "12580 hours",
+    updatedDate: "12-Jun-2025",
+    vibration: 40,
+    temperature: 60,
+    pressure: 80
+  });
+  
+  const [originalData] = useState(runningHoursData);
+  
+  const handleFieldChange = (field: string, value: any) => {
+    setRunningHoursData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
   
   return (
     <div className="space-y-6">
@@ -907,11 +926,45 @@ const RunningHoursConditionSection: React.FC = () => {
         <div className="flex gap-12">
           <div>
             <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Current</label>
-            <div className="text-sm font-semibold text-gray-900">12580 hours</div>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.currentHours}
+                currentValue={runningHoursData.currentHours}
+                fieldName="currentHours"
+                isModifyMode={isModifyMode}
+                onFieldChange={(field, value) => handleFieldChange('currentHours', value)}
+              >
+                <input
+                  type="text"
+                  value={runningHoursData.currentHours}
+                  onChange={(e) => handleFieldChange('currentHours', e.target.value)}
+                  className="text-sm w-full px-2 py-1 border rounded"
+                />
+              </ModifyFieldWrapper>
+            ) : (
+              <div className="text-sm font-semibold text-gray-900">{runningHoursData.currentHours}</div>
+            )}
           </div>
           <div>
             <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Updated</label>
-            <div className="text-sm font-semibold text-gray-900">12-Jun-2025</div>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.updatedDate}
+                currentValue={runningHoursData.updatedDate}
+                fieldName="updatedDate"
+                isModifyMode={isModifyMode}
+                onFieldChange={(field, value) => handleFieldChange('updatedDate', value)}
+              >
+                <input
+                  type="text"
+                  value={runningHoursData.updatedDate}
+                  onChange={(e) => handleFieldChange('updatedDate', e.target.value)}
+                  className="text-sm w-full px-2 py-1 border rounded"
+                />
+              </ModifyFieldWrapper>
+            ) : (
+              <div className="text-sm font-semibold text-gray-900">{runningHoursData.updatedDate}</div>
+            )}
           </div>
         </div>
       </div>
@@ -925,25 +978,91 @@ const RunningHoursConditionSection: React.FC = () => {
           {/* Vibration */}
           <div>
             <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Vibration</label>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{ width: '40%' }}></div>
-            </div>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.vibration}
+                currentValue={runningHoursData.vibration}
+                fieldName="vibration"
+                isModifyMode={isModifyMode}
+                onFieldChange={(field, value) => handleFieldChange('vibration', value)}
+              >
+                <div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={runningHoursData.vibration}
+                    onChange={(e) => handleFieldChange('vibration', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-xs">{runningHoursData.vibration}%</span>
+                </div>
+              </ModifyFieldWrapper>
+            ) : (
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-green-500 h-2 rounded-full" style={{ width: `${runningHoursData.vibration}%` }}></div>
+              </div>
+            )}
           </div>
           
           {/* Temperature */}
           <div>
             <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Temperature</label>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '60%' }}></div>
-            </div>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.temperature}
+                currentValue={runningHoursData.temperature}
+                fieldName="temperature"
+                isModifyMode={isModifyMode}
+                onFieldChange={(field, value) => handleFieldChange('temperature', value)}
+              >
+                <div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={runningHoursData.temperature}
+                    onChange={(e) => handleFieldChange('temperature', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-xs">{runningHoursData.temperature}%</span>
+                </div>
+              </ModifyFieldWrapper>
+            ) : (
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${runningHoursData.temperature}%` }}></div>
+              </div>
+            )}
           </div>
           
           {/* Pressure */}
           <div>
             <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Pressure</label>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-red-500 h-2 rounded-full" style={{ width: '80%' }}></div>
-            </div>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.pressure}
+                currentValue={runningHoursData.pressure}
+                fieldName="pressure"
+                isModifyMode={isModifyMode}
+                onFieldChange={(field, value) => handleFieldChange('pressure', value)}
+              >
+                <div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={runningHoursData.pressure}
+                    onChange={(e) => handleFieldChange('pressure', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-xs">{runningHoursData.pressure}%</span>
+                </div>
+              </ModifyFieldWrapper>
+            ) : (
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full" style={{ width: `${runningHoursData.pressure}%` }}></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1134,7 +1253,9 @@ const MaintenanceHistorySection: React.FC = () => {
 };
 
 const SparesSection: React.FC = () => {
-  const spares = [
+  const { isModifyMode } = useModifyMode();
+  
+  const [spares, setSpares] = useState([
     {
       partCode: "SP-ME-001",
       partName: "Fuel Injector",
@@ -1153,7 +1274,18 @@ const SparesSection: React.FC = () => {
       stock: "OK",
       location: "Store Room B"
     }
-  ];
+  ]);
+  
+  const [originalSpares] = useState(JSON.parse(JSON.stringify(spares)));
+  
+  const handleFieldChange = (index: number, field: string, value: string) => {
+    const updatedSpares = [...spares];
+    updatedSpares[index] = {
+      ...updatedSpares[index],
+      [field]: value
+    };
+    setSpares(updatedSpares);
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -1172,23 +1304,137 @@ const SparesSection: React.FC = () => {
         <tbody>
           {spares.map((spare, index) => (
             <tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{spare.partCode}</td>
-              <td className="py-3 px-3 text-gray-900">{spare.partName}</td>
-              <td className="py-3 px-3">
-                {spare.critical && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
-                    {spare.critical}
-                  </span>
+              <td className="py-3 px-3 text-gray-900">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].partCode}
+                    currentValue={spare.partCode}
+                    fieldName={`partCode-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'partCode', value)}
+                  >
+                    <input
+                      type="text"
+                      value={spare.partCode}
+                      onChange={(e) => handleFieldChange(index, 'partCode', e.target.value)}
+                      className="text-sm w-full px-2 py-1 border rounded"
+                    />
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.partCode
                 )}
               </td>
-              <td className="py-3 px-3 text-gray-900">{spare.rob}</td>
-              <td className="py-3 px-3 text-gray-900">{spare.min}</td>
+              <td className="py-3 px-3 text-gray-900">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].partName}
+                    currentValue={spare.partName}
+                    fieldName={`partName-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'partName', value)}
+                  >
+                    <input
+                      type="text"
+                      value={spare.partName}
+                      onChange={(e) => handleFieldChange(index, 'partName', e.target.value)}
+                      className="text-sm w-full px-2 py-1 border rounded"
+                    />
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.partName
+                )}
+              </td>
+              <td className="py-3 px-3">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].critical}
+                    currentValue={spare.critical}
+                    fieldName={`critical-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'critical', value)}
+                  >
+                    <select
+                      value={spare.critical}
+                      onChange={(e) => handleFieldChange(index, 'critical', e.target.value)}
+                      className="text-sm w-full px-2 py-1 border rounded"
+                    >
+                      <option value="">Non-Critical</option>
+                      <option value="Critical">Critical</option>
+                    </select>
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.critical && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
+                      {spare.critical}
+                    </span>
+                  )
+                )}
+              </td>
+              <td className="py-3 px-3 text-gray-900">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].rob}
+                    currentValue={spare.rob}
+                    fieldName={`rob-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'rob', value)}
+                  >
+                    <input
+                      type="text"
+                      value={spare.rob}
+                      onChange={(e) => handleFieldChange(index, 'rob', e.target.value)}
+                      className="text-sm w-[60px] px-2 py-1 border rounded"
+                    />
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.rob
+                )}
+              </td>
+              <td className="py-3 px-3 text-gray-900">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].min}
+                    currentValue={spare.min}
+                    fieldName={`min-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'min', value)}
+                  >
+                    <input
+                      type="text"
+                      value={spare.min}
+                      onChange={(e) => handleFieldChange(index, 'min', e.target.value)}
+                      className="text-sm w-[60px] px-2 py-1 border rounded"
+                    />
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.min
+                )}
+              </td>
               <td className="py-3 px-3">
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   {spare.stock}
                 </span>
               </td>
-              <td className="py-3 px-3 text-gray-900">{spare.location}</td>
+              <td className="py-3 px-3 text-gray-900">
+                {isModifyMode ? (
+                  <ModifyFieldWrapper
+                    originalValue={originalSpares[index].location}
+                    currentValue={spare.location}
+                    fieldName={`location-${index}`}
+                    isModifyMode={isModifyMode}
+                    onFieldChange={(field, value) => handleFieldChange(index, 'location', value)}
+                  >
+                    <input
+                      type="text"
+                      value={spare.location}
+                      onChange={(e) => handleFieldChange(index, 'location', e.target.value)}
+                      className="text-sm w-full px-2 py-1 border rounded"
+                    />
+                  </ModifyFieldWrapper>
+                ) : (
+                  spare.location
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -1221,25 +1467,112 @@ const DrawingsAndManualsSection: React.FC = () => {
 };
 
 const ClassificationRegulatorySection: React.FC = () => {
+  const { isChangeRequestMode } = useChangeRequest();
+  const { isModifyMode } = useModifyMode();
+  
+  const [classData, setClassData] = useState({
+    classificationSociety: "DNV",
+    certificateNo: "CERT-ME-2025-01",
+    lastClassSurvey: "15-Mar-2023",
+    nextClassSurvey: "15-Mar-2025"
+  });
+  
+  const [originalClassData] = useState(classData);
+  
+  const handleFieldChange = (field: string, value: string) => {
+    setClassData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  
   return (
     <div className="space-y-4">
       {/* First row */}
       <div className="grid grid-cols-4 gap-4">
         <div>
           <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Classification Society</label>
-          <div className="text-sm text-gray-900">DNV</div>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.classificationSociety}
+              currentValue={classData.classificationSociety}
+              fieldName="classificationSociety"
+              isModifyMode={isModifyMode}
+              onFieldChange={(field, value) => handleFieldChange('classificationSociety', value)}
+            >
+              <input
+                type="text"
+                value={classData.classificationSociety}
+                onChange={(e) => handleFieldChange('classificationSociety', e.target.value)}
+                className="text-sm w-full px-2 py-1 border rounded"
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className="text-sm text-gray-900">{classData.classificationSociety}</div>
+          )}
         </div>
         <div>
           <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Certificate No.</label>
-          <div className="text-sm text-gray-900">CERT-ME-2025-01</div>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.certificateNo}
+              currentValue={classData.certificateNo}
+              fieldName="certificateNo"
+              isModifyMode={isModifyMode}
+              onFieldChange={(field, value) => handleFieldChange('certificateNo', value)}
+            >
+              <input
+                type="text"
+                value={classData.certificateNo}
+                onChange={(e) => handleFieldChange('certificateNo', e.target.value)}
+                className="text-sm w-full px-2 py-1 border rounded"
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className="text-sm text-gray-900">{classData.certificateNo}</div>
+          )}
         </div>
         <div>
           <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Last Class Survey</label>
-          <div className="text-sm text-gray-900">15-Mar-2023</div>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.lastClassSurvey}
+              currentValue={classData.lastClassSurvey}
+              fieldName="lastClassSurvey"
+              isModifyMode={isModifyMode}
+              onFieldChange={(field, value) => handleFieldChange('lastClassSurvey', value)}
+            >
+              <input
+                type="text"
+                value={classData.lastClassSurvey}
+                onChange={(e) => handleFieldChange('lastClassSurvey', e.target.value)}
+                className="text-sm w-full px-2 py-1 border rounded"
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className="text-sm text-gray-900">{classData.lastClassSurvey}</div>
+          )}
         </div>
         <div>
           <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Next Class Survey</label>
-          <div className="text-sm text-gray-900">15-Mar-2025</div>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.nextClassSurvey}
+              currentValue={classData.nextClassSurvey}
+              fieldName="nextClassSurvey"
+              isModifyMode={isModifyMode}
+              onFieldChange={(field, value) => handleFieldChange('nextClassSurvey', value)}
+            >
+              <input
+                type="text"
+                value={classData.nextClassSurvey}
+                onChange={(e) => handleFieldChange('nextClassSurvey', e.target.value)}
+                className="text-sm w-full px-2 py-1 border rounded"
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className="text-sm text-gray-900">{classData.nextClassSurvey}</div>
+          )}
         </div>
       </div>
 
