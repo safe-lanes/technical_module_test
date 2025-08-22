@@ -14,6 +14,8 @@ import { useLocation } from "wouter";
 import { getComponentCategory } from "@/utils/componentUtils";
 import { useToast } from "@/hooks/use-toast";
 import { useModifyMode } from "@/hooks/useModifyMode";
+import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
+import { ModifyStickyFooter } from "@/components/modify/ModifyStickyFooter";
 import {
   Select,
   SelectContent,
@@ -472,20 +474,30 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
     notes: ""
   });
   
+  // Track original component data for modify mode
+  const [originalComponentData, setOriginalComponentData] = useState<typeof componentData | null>(null);
+  
   // Update component data when selected component changes
   useEffect(() => {
     if (selectedComponent) {
       // Get mock data based on component code
       const mockData = getComponentMockData(selectedComponent.code);
-      setComponentData({
+      const newData = {
         ...mockData,
         componentCode: selectedComponent.code,
         componentCategory: getComponentCategory(selectedComponent.id)
-      });
+      };
+      setComponentData(newData);
+      
+      // Store original data for modify mode
+      if (isModifyMode || isChangeMode) {
+        setOriginalComponentData(newData);
+      }
+      
       // Reset changed fields when switching components
       setChangedFields(new Set());
     }
-  }, [selectedComponent]);
+  }, [selectedComponent, isModifyMode, isChangeMode]);
   
   // Track which fields have been changed
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -694,36 +706,124 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
           <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Installation Date</label>
-              <div className="text-sm text-gray-900">
-                {componentData.installationDate}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.installationDate || componentData.installationDate}
+                  currentValue={componentData.installationDate}
+                  fieldName="installationDate"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('installationDate', value)}
+                >
+                  <input
+                    type="date"
+                    value={componentData.installationDate}
+                    onChange={(e) => handleFieldChange('installationDate', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.installationDate}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Commissioned Date</label>
-              <div className="text-sm text-gray-900">
-                {componentData.commissionedDate}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.commissionedDate || componentData.commissionedDate}
+                  currentValue={componentData.commissionedDate}
+                  fieldName="commissionedDate"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('commissionedDate', value)}
+                >
+                  <input
+                    type="date"
+                    value={componentData.commissionedDate}
+                    onChange={(e) => handleFieldChange('commissionedDate', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.commissionedDate}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Rating</label>
-              <div className="text-sm text-gray-900">
-                {componentData.rating}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.rating || componentData.rating}
+                  currentValue={componentData.rating}
+                  fieldName="rating"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('rating', value)}
+                >
+                  <input
+                    type="text"
+                    value={componentData.rating}
+                    onChange={(e) => handleFieldChange('rating', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                    placeholder="e.g., High Performance"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.rating}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Condition Based</label>
-              <div className="text-sm text-gray-900">
-                {componentData.conditionBased}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.conditionBased || componentData.conditionBased}
+                  currentValue={componentData.conditionBased}
+                  fieldName="conditionBased"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('conditionBased', value)}
+                >
+                  <select
+                    value={componentData.conditionBased}
+                    onChange={(e) => handleFieldChange('conditionBased', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.conditionBased}
+                </div>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">No of Units</label>
-              <div className="text-sm text-gray-900">
-                {componentData.noOfUnits}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.noOfUnits || componentData.noOfUnits}
+                  currentValue={componentData.noOfUnits}
+                  fieldName="noOfUnits"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('noOfUnits', value)}
+                >
+                  <input
+                    type="text"
+                    value={componentData.noOfUnits}
+                    onChange={(e) => handleFieldChange('noOfUnits', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.noOfUnits}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Eqpt. System / Dept.</label>
@@ -733,15 +833,51 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Parent Component</label>
-              <div className="text-sm text-gray-900">
-                {componentData.parentComponent}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.parentComponent || componentData.parentComponent}
+                  currentValue={componentData.parentComponent}
+                  fieldName="parentComponent"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('parentComponent', value)}
+                >
+                  <input
+                    type="text"
+                    value={componentData.parentComponent}
+                    onChange={(e) => handleFieldChange('parentComponent', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                    placeholder="e.g., Level 6.1.1"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.parentComponent}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Dimensions / Size</label>
-              <div className="text-sm text-gray-900">
-                {componentData.dimensionsSize}
-              </div>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={originalComponentData?.dimensionsSize || componentData.dimensionsSize}
+                  currentValue={componentData.dimensionsSize}
+                  fieldName="dimensionsSize"
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={(field, value) => handleFieldChange('dimensionsSize', value)}
+                >
+                  <input
+                    type="text"
+                    value={componentData.dimensionsSize}
+                    onChange={(e) => handleFieldChange('dimensionsSize', e.target.value)}
+                    className="text-sm w-full px-2 py-1 border rounded"
+                    placeholder="e.g., 0.5m x 0.3m"
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className="text-sm text-gray-900">
+                  {componentData.dimensionsSize}
+                </div>
+              )}
             </div>
           </div>
 
