@@ -1905,7 +1905,7 @@ const Components: React.FC = () => {
         }
       },
       proposedChangesJson: [],  // This will be populated with actual changes
-      status: 'draft'  // Start as draft
+      status: 'submitted'  // Submit directly as submitted for review
     };
 
     try {

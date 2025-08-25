@@ -114,7 +114,7 @@ export default function ModifyPMS() {
   const [, setLocation] = useLocation();
   const { enterChangeMode } = useChangeMode();
   const { toast } = useToast();
-  const [selectedVessel] = useState('MV Test Vessel');
+  const [selectedVessel] = useState('V001');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -391,13 +391,93 @@ export default function ModifyPMS() {
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        {/* Left Sidebar - Categories */}
+        {/* Left Sidebar - Categories and Status */}
         <div className="col-span-3">
+          {/* Status Filter */}
+          <div className="bg-gray-100 p-0 rounded-lg overflow-hidden mb-4">
+            <div className="bg-gray-700 px-4 py-3">
+              <h2 className="text-lg font-semibold text-white">Status</h2>
+            </div>
+            <div className="p-4 space-y-2">
+              <button
+                onClick={() => setStatusFilter('all')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'all'
+                    ? 'bg-gray-700 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                All Requests
+              </button>
+              <button
+                onClick={() => setStatusFilter('submitted')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'submitted'
+                    ? 'bg-blue-500 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Pending Requests
+              </button>
+              <button
+                onClick={() => setStatusFilter('draft')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'draft'
+                    ? 'bg-gray-500 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Drafts
+              </button>
+              <button
+                onClick={() => setStatusFilter('approved')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'approved'
+                    ? 'bg-green-500 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Approved
+              </button>
+              <button
+                onClick={() => setStatusFilter('rejected')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'rejected'
+                    ? 'bg-red-500 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Rejected
+              </button>
+              <button
+                onClick={() => setStatusFilter('returned')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  statusFilter === 'returned'
+                    ? 'bg-yellow-500 text-white font-medium'
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Returned
+              </button>
+            </div>
+          </div>
+
+          {/* Category Filter */}
           <div className="bg-[#52baf3] text-white p-0 rounded-lg overflow-hidden">
             <div className="bg-[#40a6e0] px-4 py-3">
               <h2 className="text-lg font-semibold text-white">Category</h2>
             </div>
             <div className="p-4 space-y-2">
+              <button
+                onClick={() => setCategoryFilter('all')}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                  categoryFilter === 'all'
+                    ? 'bg-white bg-opacity-20 text-white font-medium'
+                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                }`}
+              >
+                All Categories
+              </button>
               <button
                 onClick={() => setCategoryFilter('components')}
                 className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
