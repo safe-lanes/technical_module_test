@@ -10,7 +10,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wrench, Package, FileText, Archive } from 'lucide-react';
+import { Wrench, Package, FileText, Archive, ArrowLeft } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 interface ModifyOption {
   id: string;
@@ -51,9 +61,27 @@ const modifyOptions: ModifyOption[] = [
   }
 ];
 
+type ViewMode = 'dashboard' | 'pending' | 'history';
+
+interface ChangeRequest {
+  id: number;
+  vesselId: string;
+  category: string;
+  title: string;
+  reason: string;
+  status: 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected';
+  requestedByUserId: string;
+  submittedAt: Date | null;
+  reviewedByUserId: string | null;
+  reviewedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export function ModifyPMS() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<ModifyOption | null>(null);
+  const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [location, setLocation] = useLocation();
 
   const handleOptionSelect = (option: ModifyOption) => {
@@ -71,6 +99,193 @@ export function ModifyPMS() {
     setSelectedOption(null);
     setIsModalOpen(false);
   };
+
+  // Fetch change requests for pending and history views
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ['/api/change-requests', currentView],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append('vesselId', 'V001');
+      
+      if (currentView === 'pending') {
+        params.append('status', 'submitted');
+      } else if (currentView === 'history') {
+        // Get approved and rejected requests
+        const approvedResponse = await fetch(`/api/change-requests?${params}&status=approved`);
+        const rejectedResponse = await fetch(`/api/change-requests?${params}&status=rejected`);
+        
+        if (approvedResponse.ok && rejectedResponse.ok) {
+          const approved = await approvedResponse.json();
+          const rejected = await rejectedResponse.json();
+          return [...approved, ...rejected];
+        }
+        return [];
+      }
+      
+      const response = await fetch(`/api/change-requests?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch requests');
+      return response.json();
+    },
+    enabled: currentView !== 'dashboard'
+  });
+
+  const getStatusBadge = (status: string) => {
+    const colors = {
+      draft: 'bg-gray-500',
+      submitted: 'bg-blue-500',
+      returned: 'bg-yellow-500',
+      approved: 'bg-green-500',
+      rejected: 'bg-red-500'
+    };
+    
+    return (
+      <Badge className={`${colors[status as keyof typeof colors]} text-white`}>
+        {status.toUpperCase()}
+      </Badge>
+    );
+  };
+
+  if (currentView === 'pending') {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="mb-6 flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Pending Requests</h1>
+            <p className="text-muted-foreground mt-2">
+              Change requests awaiting approval
+            </p>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-8">Loading...</div>
+        ) : requests.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            No pending requests found.
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Request Title</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Requested By</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requests.map((request: ChangeRequest) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium">{request.title}</TableCell>
+                      <TableCell className="capitalize">{request.category.replace('_', ' ')}</TableCell>
+                      <TableCell>{request.requestedByUserId}</TableCell>
+                      <TableCell>
+                        {request.submittedAt 
+                          ? new Date(request.submittedAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })
+                          : new Date(request.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
+
+  if (currentView === 'history') {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="mb-6 flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Request History</h1>
+            <p className="text-muted-foreground mt-2">
+              Approved and rejected change requests
+            </p>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-8">Loading...</div>
+        ) : requests.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            No historical requests found.
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Request Title</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Requested By</TableHead>
+                    <TableHead>Reviewed By</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requests.map((request: ChangeRequest) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium">{request.title}</TableCell>
+                      <TableCell className="capitalize">{request.category.replace('_', ' ')}</TableCell>
+                      <TableCell>{request.requestedByUserId}</TableCell>
+                      <TableCell>{request.reviewedByUserId || '-'}</TableCell>
+                      <TableCell>
+                        {request.reviewedAt 
+                          ? new Date(request.reviewedAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })
+                          : new Date(request.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: '2-digit', 
+                              day: '2-digit' 
+                            })}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -102,7 +317,10 @@ export function ModifyPMS() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:border-primary transition-colors"
+          onClick={() => setCurrentView('pending')}
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-orange-500" />
@@ -119,7 +337,10 @@ export function ModifyPMS() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:border-primary transition-colors"
+          onClick={() => setCurrentView('history')}
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Archive className="h-5 w-5 text-green-500" />
