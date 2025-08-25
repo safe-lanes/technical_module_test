@@ -60,7 +60,7 @@ router.post("/", async (req, res) => {
     const requestData = {
       ...validatedData,
       vesselId: validatedData.vesselId || 'V001',
-      status: 'draft' as const,
+      status: validatedData.status || 'draft' as const,
       requestedByUserId: validatedData.requestedByUserId || 'system'
     };
     
