@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wrench, Package, FileText, Archive, ArrowLeft } from 'lucide-react';
+import { Wrench, Package, FileText, Archive, ArrowLeft, Eye, Check, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Table,
@@ -21,6 +21,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useMutation } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 
 interface ModifyOption {
   id: string;
@@ -82,7 +87,9 @@ export function ModifyPMS() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<ModifyOption | null>(null);
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
+  const [viewingRequest, setViewingRequest] = useState<ChangeRequest | null>(null);
   const [location, setLocation] = useLocation();
+  const { toast } = useToast();
 
   const handleOptionSelect = (option: ModifyOption) => {
     setSelectedOption(option);
@@ -145,6 +152,76 @@ export function ModifyPMS() {
     );
   };
 
+  // Approve mutation
+  const approveMutation = useMutation({
+    mutationFn: async ({ id, comment }: { id: number; comment: string }) => {
+      const response = await fetch(`/api/change-requests/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment, reviewerId: 'current_user' })
+      });
+      if (!response.ok) throw new Error('Failed to approve request');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
+      setViewingRequest(null);
+      toast({
+        title: "Request approved",
+        description: "The change request has been approved successfully"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Approval failed",
+        description: "Failed to approve the change request",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Reject mutation
+  const rejectMutation = useMutation({
+    mutationFn: async ({ id, comment }: { id: number; comment: string }) => {
+      const response = await fetch(`/api/change-requests/${id}/reject`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment, reviewerId: 'current_user' })
+      });
+      if (!response.ok) throw new Error('Failed to reject request');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
+      setViewingRequest(null);
+      toast({
+        title: "Request rejected",
+        description: "The change request has been rejected"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Rejection failed",
+        description: "Failed to reject the change request",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleApprove = (request: ChangeRequest) => {
+    const comment = prompt('Please provide approval comments:');
+    if (comment) {
+      approveMutation.mutate({ id: request.id, comment });
+    }
+  };
+
+  const handleReject = (request: ChangeRequest) => {
+    const comment = prompt('Please provide a reason for rejection:');
+    if (comment) {
+      rejectMutation.mutate({ id: request.id, comment });
+    }
+  };
+
   if (currentView === 'pending') {
     return (
       <div className="container mx-auto p-6">
@@ -182,6 +259,7 @@ export function ModifyPMS() {
                     <TableHead>Requested By</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -204,12 +282,189 @@ export function ModifyPMS() {
                             })}
                       </TableCell>
                       <TableCell>{getStatusBadge(request.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setViewingRequest(request)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => handleApprove(request)}
+                            disabled={approveMutation.isPending}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleReject(request)}
+                            disabled={rejectMutation.isPending}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
+        )}
+        
+        {/* Request Details Dialog */}
+        {viewingRequest && (
+          <Dialog open={!!viewingRequest} onOpenChange={(open) => !open && setViewingRequest(null)}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">
+                  Change Request Details
+                </DialogTitle>
+                <DialogDescription>
+                  Review the proposed changes and approve or reject this request.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Basic Info */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Title</Label>
+                    <p className="text-sm font-medium">{viewingRequest.title}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Category</Label>
+                    <p className="text-sm capitalize">{viewingRequest.category.replace('_', ' ')}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Requested By</Label>
+                    <p className="text-sm">{viewingRequest.requestedByUserId}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Status</Label>
+                    <div className="pt-1">{getStatusBadge(viewingRequest.status)}</div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-gray-500">Reason</Label>
+                  <p className="text-sm mt-1">{viewingRequest.reason}</p>
+                </div>
+
+                <Tabs defaultValue="changes" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="changes">Proposed Changes</TabsTrigger>
+                    <TabsTrigger value="snapshot">Current State</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="changes" className="space-y-4">
+                    {viewingRequest.proposedChangesJson && viewingRequest.proposedChangesJson.length > 0 ? (
+                      <div className="space-y-4">
+                        {viewingRequest.proposedChangesJson.map((change: any, index: number) => (
+                          <Card key={index} className="border-l-4 border-l-orange-500">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-base flex items-center gap-2">
+                                Field: <span className="font-mono text-blue-600">{change.field}</span>
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-xs text-gray-500">Current Value</Label>
+                                  <div className="p-2 bg-red-50 border border-red-200 rounded text-sm">
+                                    {String(change.oldValue || '-')}
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label className="text-xs text-gray-500">Proposed Value</Label>
+                                  <div className="p-2 bg-green-50 border border-green-200 rounded text-sm">
+                                    {String(change.newValue || '-')}
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No specific field changes recorded
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="snapshot" className="space-y-4">
+                    {viewingRequest.snapshotBeforeJson ? (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Target Item Details</CardTitle>
+                          <CardDescription>
+                            {viewingRequest.snapshotBeforeJson.displayPath || 'Item snapshot at time of request'}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Field</TableHead>
+                                <TableHead>Value</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {Object.entries(viewingRequest.snapshotBeforeJson.fields || {}).map(([key, value]: [string, any]) => (
+                                <TableRow key={key}>
+                                  <TableCell className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</TableCell>
+                                  <TableCell>{String(value || '-')}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No snapshot available
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              <DialogFooter className="flex justify-between">
+                <div className="flex gap-2">
+                  <Button
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700"
+                    onClick={() => handleApprove(viewingRequest)}
+                    disabled={approveMutation.isPending}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    {approveMutation.isPending ? 'Approving...' : 'Approve'}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleReject(viewingRequest)}
+                    disabled={rejectMutation.isPending}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
+                  </Button>
+                </div>
+                <Button variant="outline" onClick={() => setViewingRequest(null)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     );
