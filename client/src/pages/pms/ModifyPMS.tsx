@@ -1080,12 +1080,12 @@ export default function ModifyPMS() {
                     onClick={() => {
                       const comment = prompt('Please provide a reason for rejection:');
                       if (comment) {
-                        fetch(`/api/modify-pms/requests/${viewingRequest.id}/reject`, {
+                        fetch(`/api/change-requests/${viewingRequest.id}/reject`, {
                           method: 'PUT',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ comment, reviewerId: 'current_user' })
                         }).then(() => {
-                          queryClient.invalidateQueries({ queryKey: ['/api/modify-pms/requests'] });
+                          queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
                           setViewingRequest(null);
                           toast({
                             title: "Change request rejected",
@@ -1103,12 +1103,12 @@ export default function ModifyPMS() {
                     onClick={() => {
                       const comment = prompt('Please provide approval comments:');
                       if (comment) {
-                        fetch(`/api/modify-pms/requests/${viewingRequest.id}/approve`, {
+                        fetch(`/api/change-requests/${viewingRequest.id}/approve`, {
                           method: 'PUT',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ comment, reviewerId: 'current_user' })
                         }).then(() => {
-                          queryClient.invalidateQueries({ queryKey: ['/api/modify-pms/requests'] });
+                          queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
                           setViewingRequest(null);
                           toast({
                             title: "Change request approved",
@@ -1141,7 +1141,7 @@ export default function ModifyPMS() {
 
       {/* Change Request Modal */}
       <ChangeRequestModal
-        isOpen={isNewRequestModalOpen}
+        open={isNewRequestModalOpen}
         onClose={() => setIsNewRequestModalOpen(false)}
       />
     </div>
