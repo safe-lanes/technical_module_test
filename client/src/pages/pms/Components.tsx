@@ -492,6 +492,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
       // Store original data for modify mode
       if (isModifyMode || isChangeMode) {
         setOriginalComponentData(newData);
+        setModifiedComponentData({ ...newData });
       }
       
       // Reset changed fields when switching components
@@ -503,10 +504,15 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
   
   const handleFieldChange = (fieldName: string, value: string) => {
-    if (!isChangeMode) return;
+    if (!isChangeMode && !isModifyMode) return;
     
     const originalValue = componentData[fieldName as keyof typeof componentData];
     setComponentData(prev => ({ ...prev, [fieldName]: value }));
+    
+    // Update modified component data for modify mode
+    if (isModifyMode) {
+      setModifiedComponentData(prev => prev ? { ...prev, [fieldName]: value } : null);
+    }
     
     // Track the change
     if (value !== originalValue) {
@@ -1864,6 +1870,36 @@ const Components: React.FC = () => {
     { id: "H", title: "Requisitions" }
   ];
 
+  // Build proposed changes from tracked modifications
+  const buildProposedChanges = () => {
+    const changes: any[] = [];
+    
+    if (modifiedComponentData && originalComponentData) {
+      // Compare all fields between original and modified data
+      const fieldsToCheck = [
+        'maker', 'model', 'serialNo', 'department', 'location', 
+        'critical', 'classItem', 'commissionedDate', 'installationDate',
+        'rating', 'conditionBased', 'noOfUnits', 'eqptSystemDept',
+        'parentComponent', 'dimensionsSize', 'notes'
+      ];
+      
+      fieldsToCheck.forEach(field => {
+        const oldValue = originalComponentData[field];
+        const newValue = modifiedComponentData[field];
+        
+        if (oldValue !== newValue) {
+          changes.push({
+            field: field,
+            oldValue: oldValue || '',
+            newValue: newValue || ''
+          });
+        }
+      });
+    }
+    
+    return changes;
+  };
+
   // Handle Submit for modify mode
   const handleModifySubmit = async () => {
     if (!selectedComponent) {
@@ -1877,6 +1913,18 @@ const Components: React.FC = () => {
 
     // Get component details for the snapshot
     const componentDetails = getComponentMockData(selectedComponent.code);
+    
+    // Build the proposed changes from actual modifications
+    const proposedChanges = buildProposedChanges();
+    
+    if (proposedChanges.length === 0) {
+      toast({
+        title: "No changes detected",
+        description: "Please make some modifications before submitting",
+        variant: "destructive"
+      });
+      return;
+    }
 
     // Create proper change request structure matching the schema
     const changeRequest = {
@@ -1901,10 +1949,19 @@ const Components: React.FC = () => {
           department: componentDetails.department,
           location: componentDetails.location,
           critical: componentDetails.critical,
-          classItem: componentDetails.classItem
+          classItem: componentDetails.classItem,
+          commissionedDate: componentDetails.commissionedDate,
+          installationDate: componentDetails.installationDate,
+          rating: componentDetails.rating,
+          conditionBased: componentDetails.conditionBased,
+          noOfUnits: componentDetails.noOfUnits,
+          eqptSystemDept: componentDetails.eqptSystemDept,
+          parentComponent: componentDetails.parentComponent,
+          dimensionsSize: componentDetails.dimensionsSize,
+          notes: componentDetails.notes
         }
       },
-      proposedChangesJson: [],  // This will be populated with actual changes
+      proposedChangesJson: proposedChanges,  // Now populated with actual changes
       status: 'submitted'  // Submit directly as submitted for review
     };
 
