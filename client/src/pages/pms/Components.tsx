@@ -492,7 +492,6 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
       // Store original data for modify mode
       if (isModifyMode || isChangeMode) {
         setOriginalComponentData(newData);
-        setModifiedComponentData({ ...newData });
       }
       
       // Reset changed fields when switching components
@@ -530,7 +529,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
     
     // Notify parent component of changes
     if (onDataChange) {
-      onDataChange(componentData);
+      onDataChange({ ...componentData, [fieldName]: value });
     }
   };
 
@@ -2154,8 +2153,10 @@ const Components: React.FC = () => {
                               selectedComponent={selectedComponent}
                               isModifyMode={isModifyMode}
                               onDataChange={(data) => {
-                                // Track changes for submission
-                                setModifiedComponentData(data);
+                                // Update modified component data for change tracking
+                                if (isModifyMode) {
+                                  setModifiedComponentData(data);
+                                }
                                 if (!originalComponentData && data) {
                                   setOriginalComponentData(JSON.parse(JSON.stringify(data)));
                                 }
