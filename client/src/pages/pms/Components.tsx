@@ -1870,6 +1870,10 @@ const Components: React.FC = () => {
   const buildProposedChanges = () => {
     const changes: any[] = [];
     
+    console.log('Building proposed changes...');
+    console.log('modifiedComponentData:', modifiedComponentData);
+    console.log('originalComponentData:', originalComponentData);
+    
     if (modifiedComponentData && originalComponentData) {
       // Compare all fields between original and modified data
       const fieldsToCheck = [
@@ -1883,7 +1887,10 @@ const Components: React.FC = () => {
         const oldValue = originalComponentData[field];
         const newValue = modifiedComponentData[field];
         
+        console.log(`Comparing ${field}: "${oldValue}" vs "${newValue}"`);
+        
         if (oldValue !== newValue) {
+          console.log(`Change detected in ${field}: "${oldValue}" -> "${newValue}"`);
           changes.push({
             field: field,
             oldValue: oldValue || '',
@@ -1893,6 +1900,8 @@ const Components: React.FC = () => {
       });
     }
     
+    console.log('Total changes found:', changes.length);
+    console.log('Changes:', changes);
     return changes;
   };
 
@@ -2150,11 +2159,17 @@ const Components: React.FC = () => {
                               selectedComponent={selectedComponent}
                               isModifyMode={isModifyMode}
                               onDataChange={(data) => {
+                                console.log('onDataChange called with data:', data);
+                                console.log('isModifyMode:', isModifyMode);
+                                console.log('Current originalComponentData:', originalComponentData);
+                                
                                 // Update modified component data for change tracking
                                 if (isModifyMode) {
+                                  console.log('Setting modified component data:', data);
                                   setModifiedComponentData(data);
                                 }
                                 if (!originalComponentData && data) {
+                                  console.log('Setting original component data:', data);
                                   setOriginalComponentData(JSON.parse(JSON.stringify(data)));
                                 }
                               }}
