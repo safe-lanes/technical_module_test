@@ -1336,6 +1336,38 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           Reject
                         </Button>
                       </>
+                    ) : isModifyMode ? (
+                      <Button 
+                        size="lg" 
+                        className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-8 py-3 text-base font-medium"
+                        onClick={() => {
+                          if (Object.keys(fieldChanges).length === 0) {
+                            toast({
+                              title: "No changes to submit",
+                              description: "Please make some changes before submitting a change request.",
+                              variant: "destructive"
+                            });
+                            return;
+                          }
+                          // Submit change request logic
+                          const changeRequestPayload = {
+                            targetType: "workOrder",
+                            targetId: workOrder?.id,
+                            changes: fieldChanges,
+                            originalSnapshot: workOrder
+                          };
+                          console.log("Submitting change request:", changeRequestPayload);
+                          toast({
+                            title: "Change Request Submitted",
+                            description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
+                          });
+                          onClose();
+                          window.location.href = '/pms/modify-pms';
+                        }}
+                        disabled={Object.keys(fieldChanges).length === 0}
+                      >
+                        Submit Change Request
+                      </Button>
                     ) : (
                       <Button 
                         size="lg" 
@@ -1359,44 +1391,6 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         isOpen={isWorkInstructionsOpen}
         onClose={() => setIsWorkInstructionsOpen(false)}
       />
-
-      {/* Modify Mode Sticky Footer */}
-      {isModifyMode && (
-        <ModifyStickyFooter
-          isVisible={true}
-          hasChanges={Object.keys(fieldChanges).length > 0}
-          changedFieldsCount={Object.keys(fieldChanges).length}
-          onCancel={() => {
-            onClose();
-            // Navigate back to modify PMS page
-            window.location.href = '/pms/modify';
-          }}
-          onSubmitChangeRequest={() => {
-            if (Object.keys(fieldChanges).length === 0) {
-              toast({
-                title: "No changes to submit",
-                description: "Please make some changes before submitting a change request.",
-                variant: "destructive"
-              });
-              return;
-            }
-            // Submit change request logic
-            const changeRequestPayload = {
-              targetType: "workOrder",
-              targetId: workOrder?.id,
-              changes: fieldChanges,
-              originalSnapshot: workOrder
-            };
-            console.log("Submitting change request:", changeRequestPayload);
-            toast({
-              title: "Change Request Submitted",
-              description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
-            });
-            onClose();
-            window.location.href = '/pms/modify';
-          }}
-        />
-      )}
     </Dialog>
   );
 };
