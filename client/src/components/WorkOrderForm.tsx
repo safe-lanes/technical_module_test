@@ -956,6 +956,45 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </div>
                   </div>
                 </div>
+                
+                {/* Part A Action Buttons - Show for modify mode */}
+                {isModifyMode && (
+                  <div className="border-t border-gray-200 px-6 py-4">
+                    <div className="flex justify-end">
+                      <Button 
+                        size="lg" 
+                        className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-8 py-3 text-base font-medium"
+                        onClick={() => {
+                          if (Object.keys(fieldChanges).length === 0) {
+                            toast({
+                              title: "No changes to submit",
+                              description: "Please make some changes before submitting a change request.",
+                              variant: "destructive"
+                            });
+                            return;
+                          }
+                          // Submit change request logic
+                          const changeRequestPayload = {
+                            targetType: "workOrder",
+                            targetId: workOrder?.id,
+                            changes: fieldChanges,
+                            originalSnapshot: workOrder
+                          };
+                          console.log("Submitting change request:", changeRequestPayload);
+                          toast({
+                            title: "Change Request Submitted",
+                            description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
+                          });
+                          onClose();
+                          window.location.href = '/pms/modify-pms';
+                        }}
+                        disabled={Object.keys(fieldChanges).length === 0}
+                      >
+                        Submit Change Request
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
