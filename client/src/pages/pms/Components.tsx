@@ -508,10 +508,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
     const originalValue = componentData[fieldName as keyof typeof componentData];
     setComponentData(prev => ({ ...prev, [fieldName]: value }));
     
-    // Update modified component data for modify mode
-    if (isModifyMode) {
-      setModifiedComponentData(prev => prev ? { ...prev, [fieldName]: value } : null);
-    }
+    // Component change tracking is handled through onDataChange callback
     
     // Track the change
     if (value !== originalValue) {
