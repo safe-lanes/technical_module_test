@@ -163,5 +163,52 @@ router.post("/:id/attachments", async (req, res) => {
   }
 });
 
+// Approve a change request
+router.put("/:id/approve", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { comment, reviewerId } = req.body;
+    
+    if (!comment) {
+      return res.status(400).json({ error: "Comment is required for approval" });
+    }
+    
+    const updated = await storage.approveChangeRequest(
+      id, 
+      reviewerId || 'reviewer', 
+      comment
+    );
+    res.json(updated);
+  } catch (error: any) {
+    console.error('Error approving change request:', error);
+    res.status(500).json({ error: error.message || 'Failed to approve change request' });
+  }
+});
+
+// Reject a change request  
+router.put("/:id/reject", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { comment, reviewerId } = req.body;
+    
+    console.log('Rejecting change request:', id, 'with comment:', comment);
+    
+    if (!comment) {
+      return res.status(400).json({ error: "Comment is required for rejection" });
+    }
+    
+    const updated = await storage.rejectChangeRequest(
+      id, 
+      reviewerId || 'reviewer', 
+      comment
+    );
+    console.log('Successfully rejected request:', updated);
+    res.json(updated);
+  } catch (error: any) {
+    console.error('Error rejecting change request:', error);
+    res.status(500).json({ error: error.message || 'Failed to reject change request' });
+  }
+});
+
   return router;
 }

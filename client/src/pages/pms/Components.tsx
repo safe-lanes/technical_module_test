@@ -1870,10 +1870,6 @@ const Components: React.FC = () => {
   const buildProposedChanges = () => {
     const changes: any[] = [];
     
-    console.log('Building proposed changes...');
-    console.log('modifiedComponentData:', modifiedComponentData);
-    console.log('originalComponentData:', originalComponentData);
-    
     if (modifiedComponentData && originalComponentData) {
       // Compare all fields between original and modified data
       const fieldsToCheck = [
@@ -1887,10 +1883,7 @@ const Components: React.FC = () => {
         const oldValue = originalComponentData[field];
         const newValue = modifiedComponentData[field];
         
-        console.log(`Comparing ${field}: "${oldValue}" vs "${newValue}"`);
-        
         if (oldValue !== newValue) {
-          console.log(`Change detected in ${field}: "${oldValue}" -> "${newValue}"`);
           changes.push({
             field: field,
             oldValue: oldValue || '',
@@ -1900,8 +1893,6 @@ const Components: React.FC = () => {
       });
     }
     
-    console.log('Total changes found:', changes.length);
-    console.log('Changes:', changes);
     return changes;
   };
 
@@ -1995,7 +1986,7 @@ const Components: React.FC = () => {
       console.error('Submission error:', error);
       toast({
         title: "Submission failed",
-        description: error.message || "Failed to submit change request. Please try again.",
+        description: (error as Error).message || "Failed to submit change request. Please try again.",
         variant: "destructive"
       });
     }
@@ -2159,17 +2150,11 @@ const Components: React.FC = () => {
                               selectedComponent={selectedComponent}
                               isModifyMode={isModifyMode}
                               onDataChange={(data) => {
-                                console.log('onDataChange called with data:', data);
-                                console.log('isModifyMode:', isModifyMode);
-                                console.log('Current originalComponentData:', originalComponentData);
-                                
                                 // Update modified component data for change tracking
                                 if (isModifyMode) {
-                                  console.log('Setting modified component data:', data);
                                   setModifiedComponentData(data);
                                 }
                                 if (!originalComponentData && data) {
-                                  console.log('Setting original component data:', data);
                                   setOriginalComponentData(JSON.parse(JSON.stringify(data)));
                                 }
                               }}
@@ -2363,78 +2348,6 @@ const Components: React.FC = () => {
           onClose={() => setShowReviewDrawer(false)}
           targetType="component"
           targetId={selectedComponent.id}
-          changes={modifiedComponentData && originalComponentData ? 
-            Object.keys(modifiedComponentData).reduce((acc, key) => {
-              if (modifiedComponentData[key] !== originalComponentData[key]) {
-                acc[key] = {
-                  old: originalComponentData[key],
-                  new: modifiedComponentData[key]
-                };
-              }
-              return acc;
-            }, {} as any)
-            : {}
-          }
-          onSubmit={async (reason: string) => {
-            try {
-              // Create change request
-              const changeRequest = {
-                category: 'components',
-                title: `Modify Component: ${selectedComponent.code} ${selectedComponent.name}`,
-                reason: reason,
-                targetType: 'component',
-                targetId: selectedComponent.id,
-                snapshotBeforeJson: originalComponentData,
-                proposedChangesJson: Object.keys(modifiedComponentData).reduce((acc: any[], key) => {
-                  if (modifiedComponentData[key] !== originalComponentData[key]) {
-                    acc.push({
-                      field: key,
-                      oldValue: originalComponentData[key],
-                      newValue: modifiedComponentData[key],
-                      description: `Changed ${key} from "${originalComponentData[key]}" to "${modifiedComponentData[key]}"`
-                    });
-                  }
-                  return acc;
-                }, []),
-                status: 'submitted',
-                vesselId: 'MV Test Vessel',
-                requestedByUserId: 'current_user'
-              };
-
-              const response = await fetch('/api/change-requests', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(changeRequest)
-              });
-
-              if (response.ok) {
-                const result = await response.json();
-                toast({
-                  title: "Success",
-                  description: `Change request CR${String(result.id).padStart(4, '0')} created successfully`
-                });
-                
-                // Reset states
-                setShowReviewDrawer(false);
-                setModifiedComponentData(null);
-                setOriginalComponentData(null);
-                
-                // Exit modify mode
-                if (isModifyMode) {
-                  window.location.href = '/pms/modify-pms';
-                }
-              } else {
-                throw new Error('Failed to create change request');
-              }
-            } catch (error) {
-              console.error('Error creating change request:', error);
-              toast({
-                title: "Error",
-                description: "Failed to create change request",
-                variant: "destructive"
-              });
-            }
-          }}
         />
       )}
       
