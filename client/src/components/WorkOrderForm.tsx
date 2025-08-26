@@ -964,7 +964,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <Button 
                         size="lg" 
                         className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-8 py-3 text-base font-medium"
-                        onClick={() => {
+                        onClick={async () => {
                           if (Object.keys(fieldChanges).length === 0) {
                             toast({
                               title: "No changes to submit",
@@ -973,20 +973,63 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                             });
                             return;
                           }
-                          // Submit change request logic
-                          const changeRequestPayload = {
-                            targetType: "workOrder",
-                            targetId: workOrder?.id,
-                            changes: fieldChanges,
-                            originalSnapshot: workOrder
-                          };
-                          console.log("Submitting change request:", changeRequestPayload);
-                          toast({
-                            title: "Change Request Submitted",
-                            description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
-                          });
-                          onClose();
-                          window.location.href = '/pms/modify-pms';
+                          
+                          try {
+                            // Convert field changes to proposed changes format
+                            const proposedChanges = Object.entries(fieldChanges).map(([fieldName, change]) => ({
+                              field: fieldName,
+                              oldValue: change.originalValue,
+                              newValue: change.currentValue
+                            }));
+
+                            // Create change request payload matching the schema
+                            const changeRequest = {
+                              vesselId: 'V001',
+                              category: 'workOrders',
+                              title: `Modify Work Order: ${workOrder?.jobTitle || workOrder?.woTitle || 'Unknown'}`,
+                              reason: 'Work order modification request',
+                              requestedByUserId: 'current_user',
+                              targetType: 'workOrder',
+                              targetId: workOrder?.id,
+                              snapshotBeforeJson: {
+                                displayKey: workOrder?.workOrderNo || workOrder?.templateCode,
+                                displayName: workOrder?.jobTitle || workOrder?.woTitle,
+                                displayPath: `${workOrder?.componentCode || ''} ${workOrder?.jobTitle || workOrder?.woTitle || ''}`,
+                                fields: workOrder
+                              },
+                              proposedChangesJson: proposedChanges,
+                              status: 'submitted'
+                            };
+
+                            console.log("Submitting change request:", changeRequest);
+                            
+                            const response = await fetch('/api/change-requests', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify(changeRequest),
+                            });
+
+                            if (response.ok) {
+                              toast({
+                                title: "Change Request Submitted",
+                                description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
+                              });
+                              onClose();
+                              window.location.href = '/pms/modify-pms';
+                            } else {
+                              const errorData = await response.json();
+                              throw new Error(errorData.error || 'Failed to submit change request');
+                            }
+                          } catch (error) {
+                            console.error('Error submitting change request:', error);
+                            toast({
+                              title: "Submission failed",
+                              description: (error as Error).message || "Failed to submit change request. Please try again.",
+                              variant: "destructive"
+                            });
+                          }
                         }}
                         disabled={Object.keys(fieldChanges).length === 0}
                       >
@@ -1379,7 +1422,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <Button 
                         size="lg" 
                         className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-8 py-3 text-base font-medium"
-                        onClick={() => {
+                        onClick={async () => {
                           if (Object.keys(fieldChanges).length === 0) {
                             toast({
                               title: "No changes to submit",
@@ -1388,20 +1431,63 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                             });
                             return;
                           }
-                          // Submit change request logic
-                          const changeRequestPayload = {
-                            targetType: "workOrder",
-                            targetId: workOrder?.id,
-                            changes: fieldChanges,
-                            originalSnapshot: workOrder
-                          };
-                          console.log("Submitting change request:", changeRequestPayload);
-                          toast({
-                            title: "Change Request Submitted",
-                            description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
-                          });
-                          onClose();
-                          window.location.href = '/pms/modify-pms';
+                          
+                          try {
+                            // Convert field changes to proposed changes format
+                            const proposedChanges = Object.entries(fieldChanges).map(([fieldName, change]) => ({
+                              field: fieldName,
+                              oldValue: change.originalValue,
+                              newValue: change.currentValue
+                            }));
+
+                            // Create change request payload matching the schema
+                            const changeRequest = {
+                              vesselId: 'V001',
+                              category: 'workOrders',
+                              title: `Modify Work Order: ${workOrder?.jobTitle || workOrder?.woTitle || 'Unknown'}`,
+                              reason: 'Work order modification request',
+                              requestedByUserId: 'current_user',
+                              targetType: 'workOrder',
+                              targetId: workOrder?.id,
+                              snapshotBeforeJson: {
+                                displayKey: workOrder?.workOrderNo || workOrder?.templateCode,
+                                displayName: workOrder?.jobTitle || workOrder?.woTitle,
+                                displayPath: `${workOrder?.componentCode || ''} ${workOrder?.jobTitle || workOrder?.woTitle || ''}`,
+                                fields: workOrder
+                              },
+                              proposedChangesJson: proposedChanges,
+                              status: 'submitted'
+                            };
+
+                            console.log("Submitting change request:", changeRequest);
+                            
+                            const response = await fetch('/api/change-requests', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify(changeRequest),
+                            });
+
+                            if (response.ok) {
+                              toast({
+                                title: "Change Request Submitted",
+                                description: `Your change request with ${Object.keys(fieldChanges).length} modifications has been submitted for approval.`,
+                              });
+                              onClose();
+                              window.location.href = '/pms/modify-pms';
+                            } else {
+                              const errorData = await response.json();
+                              throw new Error(errorData.error || 'Failed to submit change request');
+                            }
+                          } catch (error) {
+                            console.error('Error submitting change request:', error);
+                            toast({
+                              title: "Submission failed",
+                              description: (error as Error).message || "Failed to submit change request. Please try again.",
+                              variant: "destructive"
+                            });
+                          }
                         }}
                         disabled={Object.keys(fieldChanges).length === 0}
                       >
