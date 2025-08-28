@@ -126,8 +126,22 @@ export function ModifyPMS() {
       if (!response.ok) throw new Error('Failed to approve request');
       return response.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ id }) => {
+      // Optimistically update the UI immediately
+      if (viewingRequest) {
+        setViewingRequest({ ...viewingRequest, status: 'approved' });
+      }
+    },
+    onSuccess: (updatedRequest) => {
+      // Invalidate both list queries and individual request query
       queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
+      if (viewingRequest) {
+        queryClient.invalidateQueries({ queryKey: [`/api/change-requests/${viewingRequest.id}`] });
+      }
+      
+      // Force refetch to ensure UI updates immediately
+      queryClient.refetchQueries({ queryKey: ['/api/change-requests', categoryFilter] });
+      
       setViewingRequest(null);
       toast({
         title: "Request approved",
@@ -147,8 +161,22 @@ export function ModifyPMS() {
       if (!response.ok) throw new Error('Failed to reject request');
       return response.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ id }) => {
+      // Optimistically update the UI immediately
+      if (viewingRequest) {
+        setViewingRequest({ ...viewingRequest, status: 'rejected' });
+      }
+    },
+    onSuccess: (updatedRequest) => {
+      // Invalidate both list queries and individual request query
       queryClient.invalidateQueries({ queryKey: ['/api/change-requests'] });
+      if (viewingRequest) {
+        queryClient.invalidateQueries({ queryKey: [`/api/change-requests/${viewingRequest.id}`] });
+      }
+      
+      // Force refetch to ensure UI updates immediately
+      queryClient.refetchQueries({ queryKey: ['/api/change-requests', categoryFilter] });
+      
       setViewingRequest(null);
       toast({
         title: "Request rejected",
