@@ -385,43 +385,20 @@ export default function ModifyPMS() {
   };
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Modify PMS - Change Requests</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search Status"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-64 border-gray-300"
-            />
+    <div className="flex h-screen bg-gray-100">
+      {/* Left Sidebar - Blue Background */}
+      <div className="w-64 bg-[#52BAF3] text-white">
+        <div className="p-4">
+          <div className="bg-[#40a8e0] px-4 py-3 rounded-t-lg">
+            <h2 className="text-white font-medium">Category</h2>
           </div>
-          <Button 
-            className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-6"
-            onClick={() => setIsNewRequestModalOpen(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Change Request
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex gap-6">
-        {/* Left Sidebar - Categories */}
-        <div className="w-64">
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="bg-[#52BAF3] px-4 py-3">
-              <h2 className="text-white font-medium">Category</h2>
-            </div>
+          <div className="bg-white rounded-b-lg">
             <div className="p-4 space-y-1">
               <button
                 onClick={() => setCategoryFilter('components')}
                 className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'components'
-                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    ? 'bg-[#52BAF3] text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -431,7 +408,7 @@ export default function ModifyPMS() {
                 onClick={() => setCategoryFilter('work_orders')}
                 className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'work_orders'
-                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    ? 'bg-[#52BAF3] text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -441,7 +418,7 @@ export default function ModifyPMS() {
                 onClick={() => setCategoryFilter('spares')}
                 className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'spares'
-                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    ? 'bg-[#52BAF3] text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -451,7 +428,7 @@ export default function ModifyPMS() {
                 onClick={() => setCategoryFilter('stores')}
                 className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'stores'
-                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    ? 'bg-[#52BAF3] text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -460,11 +437,37 @@ export default function ModifyPMS() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1">
-          <div className="bg-white rounded-lg border border-gray-200">
-            {/* Table */}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="bg-white p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Modify PMS - Change Requests</h1>
+          
+          <div className="flex justify-between items-center">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search Status"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-80 border-gray-300"
+              />
+            </div>
+            <Button 
+              className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-6"
+              onClick={() => setIsNewRequestModalOpen(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Change Request
+            </Button>
+          </div>
+        </div>
+
+        {/* Table Content */}
+        <div className="flex-1 p-6">
+          <div className="bg-white rounded-lg border border-gray-200 h-full">
             {isLoading ? (
               <div className="text-center py-12 text-gray-500">Loading...</div>
             ) : requests.length === 0 ? (
@@ -472,64 +475,64 @@ export default function ModifyPMS() {
                 No change requests found. Click "New Change Request" to create one.
               </div>
             ) : (
-              <div className="overflow-hidden">
+              <div className="h-full flex flex-col">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#52BAF3] hover:bg-[#52BAF3]">
-                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Request Title</TableHead>
-                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Requested By</TableHead>
-                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Date</TableHead>
-                      <TableHead className="text-white font-medium">Status</TableHead>
+                    <TableRow className="bg-[#52BAF3] hover:bg-[#52BAF3] border-b-0">
+                      <TableHead className="text-white font-medium py-4 px-6">Request Title</TableHead>
+                      <TableHead className="text-white font-medium py-4 px-6">Requested By</TableHead>
+                      <TableHead className="text-white font-medium py-4 px-6">Date</TableHead>
+                      <TableHead className="text-white font-medium py-4 px-6">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {requests.map((request: ChangeRequest) => (
                       <TableRow key={request.id} className="border-b border-gray-200 hover:bg-gray-50">
-                        <TableCell className="py-3">
+                        <TableCell className="py-4 px-6">
                           <div className="font-medium text-gray-900">{request.title}</div>
                         </TableCell>
-                        <TableCell className="py-3 text-gray-700">
+                        <TableCell className="py-4 px-6 text-gray-700">
                           {request.requestedByUserId === 'current_user' ? 'Chief Engineer' : 
                            request.requestedByUserId === '2nd_engineer' ? '2nd Engineer' : 
                            request.requestedByUserId === '3rd_engineer' ? '3rd Engineer' : 
                            request.requestedByUserId}
                         </TableCell>
-                        <TableCell className="py-3 text-gray-700">
+                        <TableCell className="py-4 px-6 text-gray-700">
                           {request.submittedAt 
                             ? new Date(request.submittedAt).toLocaleDateString('en-GB', { 
                                 year: 'numeric', 
                                 month: '2-digit', 
                                 day: '2-digit' 
-                              }).replace(/\//g, '-')
+                              }).replace(/\//g, ' ')
                             : new Date(request.createdAt).toLocaleDateString('en-GB', { 
                                 year: 'numeric', 
                                 month: '2-digit', 
                                 day: '2-digit' 
-                              }).replace(/\//g, '-')}
+                              }).replace(/\//g, ' ')}
                         </TableCell>
-                        <TableCell className="py-3">
+                        <TableCell className="py-4 px-6">
                           {request.status === 'submitted' && (
-                            <Badge className="bg-[#52BAF3] text-white px-3 py-1 text-xs">
+                            <Badge className="bg-[#52BAF3] text-white px-3 py-1 text-xs rounded-full">
                               Pending Approval
                             </Badge>
                           )}
                           {request.status === 'approved' && (
-                            <Badge className="bg-green-500 text-white px-3 py-1 text-xs">
+                            <Badge className="bg-green-500 text-white px-3 py-1 text-xs rounded-full">
                               Approved
                             </Badge>
                           )}
                           {request.status === 'rejected' && (
-                            <Badge className="bg-red-500 text-white px-3 py-1 text-xs">
+                            <Badge className="bg-red-500 text-white px-3 py-1 text-xs rounded-full">
                               Rejected
                             </Badge>
                           )}
                           {request.status === 'draft' && (
-                            <Badge className="bg-gray-500 text-white px-3 py-1 text-xs">
+                            <Badge className="bg-gray-500 text-white px-3 py-1 text-xs rounded-full">
                               Draft
                             </Badge>
                           )}
                           {request.status === 'returned' && (
-                            <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs">
+                            <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs rounded-full">
                               Returned
                             </Badge>
                           )}
@@ -540,7 +543,7 @@ export default function ModifyPMS() {
                 </Table>
                 
                 {/* Pagination info at bottom */}
-                <div className="px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
+                <div className="mt-auto px-6 py-4 border-t border-gray-200 text-sm text-gray-500">
                   {requests.length > 0 ? `0 to ${requests.length} of ${requests.length}` : '0 to 0 of 0'}
                 </div>
               </div>
@@ -548,6 +551,7 @@ export default function ModifyPMS() {
           </div>
         </div>
       </div>
+    </div>
 
       {/* Create/Edit Dialog */}
       <Dialog open={showCreateDialog || !!editingRequest} onOpenChange={(open) => {
