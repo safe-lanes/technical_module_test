@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Plus, Pen, Timer } from "lucide-react";
+import { useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -305,6 +306,7 @@ const WorkOrders: React.FC = () => {
   
   // Modify mode integration  
   const { isModifyMode, targetId, fieldChanges } = useModifyMode();
+  const [location] = useLocation();
   
   // Backfill templateCode for existing work orders if missing
   const backfilledWorkOrders = initialWorkOrders.map(wo => {
@@ -322,6 +324,24 @@ const WorkOrders: React.FC = () => {
   });
   
   const [workOrdersList, setWorkOrdersList] = useState<WorkOrder[]>(backfilledWorkOrders);
+
+  // Handle preview mode from "View Changes" button
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const previewChanges = urlParams.get('previewChanges');
+    const changeRequestId = urlParams.get('changeRequestId');
+    const targetType = urlParams.get('targetType');
+    const previewTargetId = urlParams.get('targetId');
+    
+    // Auto-open work order form if navigating from "View Changes"
+    if (previewChanges === '1' && targetType === 'workOrder' && previewTargetId) {
+      const targetWorkOrder = workOrdersList.find(wo => wo.id === previewTargetId);
+      if (targetWorkOrder) {
+        setSelectedWorkOrder(targetWorkOrder);
+        setWorkOrderFormOpen(true);
+      }
+    }
+  }, [location, workOrdersList]);
 
   const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
     if (formData?.type === 'execution') {
