@@ -385,6 +385,7 @@ export default function ModifyPMS() {
   };
 
   return (
+    <>
     <div className="flex h-screen bg-gray-100">
       {/* Left Sidebar - Blue Background */}
       <div className="w-64 bg-[#52BAF3] text-white">
@@ -553,14 +554,14 @@ export default function ModifyPMS() {
       </div>
     </div>
 
-      {/* Create/Edit Dialog */}
-      <Dialog open={showCreateDialog || !!editingRequest} onOpenChange={(open) => {
-        if (!open) {
-          setShowCreateDialog(false);
-          setEditingRequest(null);
-          resetForm();
-        }
-      }}>
+    {/* Create/Edit Dialog */}
+    <Dialog open={showCreateDialog || !!editingRequest} onOpenChange={(open) => {
+      if (!open) {
+        setShowCreateDialog(false);
+        setEditingRequest(null);
+        resetForm();
+      }
+    }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
@@ -1092,11 +1093,11 @@ export default function ModifyPMS() {
         />
       )}
 
-      {/* Change Request Modal */}
-      <ChangeRequestModal
-        open={isNewRequestModalOpen}
-        onClose={() => setIsNewRequestModalOpen(false)}
-      />
-    </div>
+    {/* Change Request Modal */}
+    <ChangeRequestModal
+      open={isNewRequestModalOpen}
+      onClose={() => setIsNewRequestModalOpen(false)}
+    />
+  </>
   );
 }
