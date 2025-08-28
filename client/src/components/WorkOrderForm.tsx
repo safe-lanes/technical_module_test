@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronDown, ChevronRight, FileText, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 import WorkInstructionsDialog from "./WorkInstructionsDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useModifyMode } from "@/hooks/useModifyMode";
@@ -52,12 +53,66 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
   const [rejectionComments, setRejectionComments] = useState("");
   const [showRejectionComments, setShowRejectionComments] = useState(false);
+  const [location, setLocation] = useLocation();
+  
+  // Preview mode state 
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [changeRequestData, setChangeRequestData] = useState<any>(null);
+  const [previewChanges, setPreviewChanges] = useState<any>({});
   
   // Modify mode integration
   const { isModifyMode, targetId, fieldChanges, trackFieldChange, setOriginalSnapshot } = useModifyMode();
   
   // Debug logging
   console.log("WorkOrderForm Debug:", { isModifyMode, targetId, fieldChanges, isOpen });
+  
+  // Preview mode detection from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const previewChanges = urlParams.get('previewChanges');
+    const changeRequestId = urlParams.get('changeRequestId');
+    const targetType = urlParams.get('targetType');
+    const previewTargetId = urlParams.get('targetId');
+    
+    if (previewChanges === '1' && changeRequestId && targetType === 'workOrder') {
+      setIsPreviewMode(true);
+      
+      // Fetch change request data to get proposed changes
+      fetch(`/api/change-requests/${changeRequestId}`)
+        .then(res => res.json())
+        .then(data => {
+          setChangeRequestData(data);
+          
+          // Convert proposed changes to a lookup map for easy access
+          const changes: any = {};
+          if (data.proposedChangesJson) {
+            data.proposedChangesJson.forEach((change: any) => {
+              changes[change.field] = {
+                oldValue: change.oldValue,
+                newValue: change.newValue
+              };
+            });
+          }
+          setPreviewChanges(changes);
+        })
+        .catch(error => {
+          console.error('Failed to fetch change request data:', error);
+        });
+    } else {
+      setIsPreviewMode(false);
+      setChangeRequestData(null);
+      setPreviewChanges({});
+    }
+  }, [location, isOpen]);
+  
+  // Functions for preview mode
+  const hasPreviewChange = (fieldName: string) => {
+    return previewChanges[fieldName] !== undefined;
+  };
+  
+  const getPreviewValue = (fieldName: string) => {
+    return previewChanges[fieldName]?.newValue || '';
+  };
   
   // Check if we're in execution mode (Part B)
   const executionMode = workOrder?.executionMode === true;
@@ -432,7 +487,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       <DialogContent className="w-[80vw] max-w-none h-[90vh] flex flex-col">
         <DialogHeader className="pb-4 pr-12">
           <div className="flex items-center justify-between">
-            <DialogTitle>Work Order Form</DialogTitle>
+            <DialogTitle>
+              {isPreviewMode ? "Preview Change Request - Work Order Form" : "Work Order Form"}
+            </DialogTitle>
             <div className="flex items-center gap-2">
               {activeSection === 'partA' && (
                 <Button 
@@ -461,6 +518,30 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
               )}
             </div>
           </div>
+          
+          {/* Preview Mode Banner */}
+          {isPreviewMode && changeRequestData && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-blue-900 text-sm">Viewing Change Request Preview</h4>
+                  <p className="text-xs text-blue-700">
+                    {changeRequestData.title} - Changed fields are highlighted in <span className="text-red-600 font-medium">red</span>
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/pms/modify-pms')}
+                  className="text-blue-700 border-blue-300 text-xs px-2 py-1 h-7"
+                >
+                  <ArrowLeft className="w-3 h-3 mr-1" />
+                  Back
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="flex flex-1 overflow-hidden">
@@ -583,11 +664,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         >
                           <Input 
                             type="number"
-                            value={templateData.frequencyValue} 
+                            value={isPreviewMode && hasPreviewChange('frequencyValue') ? getPreviewValue('frequencyValue') : templateData.frequencyValue} 
                             onChange={(e) => handleTemplateChange('frequencyValue', e.target.value)}
-                            className="text-sm"
+                            className={`text-sm ${
+                              hasPreviewChange('frequencyValue') ? 'text-red-600 border-red-300 bg-red-50' : ''
+                            }`}
                             placeholder={templateData.maintenanceBasis === "Running Hours" ? "e.g., 1000" : ""}
-                            disabled={isReadOnly}
+                            disabled={isReadOnly || isPreviewMode}
                           />
                         </ModifyFieldWrapper>
                       </div>
