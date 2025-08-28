@@ -1870,26 +1870,16 @@ const Components: React.FC = () => {
   const buildProposedChanges = () => {
     const changes: any[] = [];
     
-    if (modifiedComponentData && originalComponentData) {
-      // Compare all fields between original and modified data
-      const fieldsToCheck = [
-        'maker', 'model', 'serialNo', 'department', 'location', 
-        'critical', 'classItem', 'commissionedDate', 'installationDate',
-        'rating', 'conditionBased', 'noOfUnits', 'eqptSystemDept',
-        'parentComponent', 'dimensionsSize', 'notes'
-      ];
-      
-      fieldsToCheck.forEach(field => {
-        const oldValue = originalComponentData[field];
-        const newValue = modifiedComponentData[field];
-        
-        if (oldValue !== newValue) {
-          changes.push({
-            field: field,
-            oldValue: oldValue || '',
-            newValue: newValue || ''
-          });
-        }
+    // Use Change Mode Context diffs which properly track all field changes
+    const diffs = getDiffs();
+    
+    if (diffs.length > 0) {
+      diffs.forEach(diff => {
+        changes.push({
+          field: diff.path,
+          oldValue: diff.oldVal || '',
+          newValue: diff.newVal || ''
+        });
       });
     }
     
