@@ -386,134 +386,73 @@ export default function ModifyPMS() {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Modify PMS - Change Requests</h1>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Modify PMS - Change Requests</h1>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search Status"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-64 border-gray-300"
+            />
+          </div>
+          <Button 
+            className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white px-6"
+            onClick={() => setIsNewRequestModalOpen(true)}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Change Request
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* Left Sidebar - Categories and Status */}
-        <div className="col-span-3">
-          {/* Status Filter */}
-          <div className="bg-gray-100 p-0 rounded-lg overflow-hidden mb-4">
-            <div className="bg-gray-700 px-4 py-3">
-              <h2 className="text-lg font-semibold text-white">Status</h2>
+      <div className="flex gap-6">
+        {/* Left Sidebar - Categories */}
+        <div className="w-64">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-[#52BAF3] px-4 py-3">
+              <h2 className="text-white font-medium">Category</h2>
             </div>
-            <div className="p-4 space-y-2">
-              <button
-                onClick={() => setStatusFilter('all')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'all'
-                    ? 'bg-gray-700 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                All Requests
-              </button>
-              <button
-                onClick={() => setStatusFilter('submitted')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'submitted'
-                    ? 'bg-blue-500 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                Pending Requests
-              </button>
-              <button
-                onClick={() => setStatusFilter('draft')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'draft'
-                    ? 'bg-gray-500 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                Drafts
-              </button>
-              <button
-                onClick={() => setStatusFilter('approved')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'approved'
-                    ? 'bg-green-500 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                Approved
-              </button>
-              <button
-                onClick={() => setStatusFilter('rejected')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'rejected'
-                    ? 'bg-red-500 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                Rejected
-              </button>
-              <button
-                onClick={() => setStatusFilter('returned')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  statusFilter === 'returned'
-                    ? 'bg-yellow-500 text-white font-medium'
-                    : 'hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                Returned
-              </button>
-            </div>
-          </div>
-
-          {/* Category Filter */}
-          <div className="bg-[#52baf3] text-white p-0 rounded-lg overflow-hidden">
-            <div className="bg-[#40a6e0] px-4 py-3">
-              <h2 className="text-lg font-semibold text-white">Category</h2>
-            </div>
-            <div className="p-4 space-y-2">
-              <button
-                onClick={() => setCategoryFilter('all')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  categoryFilter === 'all'
-                    ? 'bg-white bg-opacity-20 text-white font-medium'
-                    : 'hover:bg-white hover:bg-opacity-10 text-white'
-                }`}
-              >
-                All Categories
-              </button>
+            <div className="p-4 space-y-1">
               <button
                 onClick={() => setCategoryFilter('components')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'components'
-                    ? 'bg-white bg-opacity-20 text-white font-medium'
-                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 1. Components
               </button>
               <button
                 onClick={() => setCategoryFilter('work_orders')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'work_orders'
-                    ? 'bg-white bg-opacity-20 text-white font-medium'
-                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 2. Work orders
               </button>
               <button
                 onClick={() => setCategoryFilter('spares')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'spares'
-                    ? 'bg-white bg-opacity-20 text-white font-medium'
-                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 3. Spares
               </button>
               <button
                 onClick={() => setCategoryFilter('stores')}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                   categoryFilter === 'stores'
-                    ? 'bg-white bg-opacity-20 text-white font-medium'
-                    : 'hover:bg-white hover:bg-opacity-10 text-white'
+                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 4. Stores
@@ -522,81 +461,91 @@ export default function ModifyPMS() {
           </div>
         </div>
 
-        {/* Right Content Area */}
-        <div className="col-span-9">
-          <Card className="p-6">
-            {/* Header with Search and New Button */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">
-                {categoryFilter === 'all' ? 'All Categories' : `${categoryFilter === 'components' ? '1. Components' : categoryFilter === 'work_orders' ? '2. Work orders' : categoryFilter === 'spares' ? '3. Spares' : '4. Stores'}`}
-              </h2>
-              <div className="flex gap-4">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Search Status"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 w-64"
-                  />
-                </div>
-                <Button 
-                  className="bg-[#52baf3] hover:bg-[#40a6e0]"
-                  onClick={() => setIsNewRequestModalOpen(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Change Request
-                </Button>
-              </div>
-            </div>
-
-            {/* Requests Table */}
+        {/* Main Content Area */}
+        <div className="flex-1">
+          <div className="bg-white rounded-lg border border-gray-200">
+            {/* Table */}
             {isLoading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="text-center py-12 text-gray-500">Loading...</div>
             ) : requests.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-12 text-gray-500">
                 No change requests found. Click "New Change Request" to create one.
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Request Title</TableHead>
-                    <TableHead>Requested By</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {requests.map((request: ChangeRequest) => (
-                    <TableRow key={request.id}>
-                      <TableCell className="max-w-xs">
-                        <div>
-                          <div className="font-medium">{request.title}</div>
-                          <div className="text-sm text-gray-500 capitalize">{request.category.replace('_', ' ')}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{request.requestedByUserId}</TableCell>
-                      <TableCell>
-                        {request.submittedAt 
-                          ? new Date(request.submittedAt).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: '2-digit', 
-                              day: '2-digit' 
-                            })
-                          : new Date(request.createdAt).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: '2-digit', 
-                              day: '2-digit' 
-                            })}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+              <div className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#52BAF3] hover:bg-[#52BAF3]">
+                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Request Title</TableHead>
+                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Requested By</TableHead>
+                      <TableHead className="text-white font-medium border-r border-[#40a8e0]">Date</TableHead>
+                      <TableHead className="text-white font-medium">Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {requests.map((request: ChangeRequest) => (
+                      <TableRow key={request.id} className="border-b border-gray-200 hover:bg-gray-50">
+                        <TableCell className="py-3">
+                          <div className="font-medium text-gray-900">{request.title}</div>
+                        </TableCell>
+                        <TableCell className="py-3 text-gray-700">
+                          {request.requestedByUserId === 'current_user' ? 'Chief Engineer' : 
+                           request.requestedByUserId === '2nd_engineer' ? '2nd Engineer' : 
+                           request.requestedByUserId === '3rd_engineer' ? '3rd Engineer' : 
+                           request.requestedByUserId}
+                        </TableCell>
+                        <TableCell className="py-3 text-gray-700">
+                          {request.submittedAt 
+                            ? new Date(request.submittedAt).toLocaleDateString('en-GB', { 
+                                year: 'numeric', 
+                                month: '2-digit', 
+                                day: '2-digit' 
+                              }).replace(/\//g, '-')
+                            : new Date(request.createdAt).toLocaleDateString('en-GB', { 
+                                year: 'numeric', 
+                                month: '2-digit', 
+                                day: '2-digit' 
+                              }).replace(/\//g, '-')}
+                        </TableCell>
+                        <TableCell className="py-3">
+                          {request.status === 'submitted' && (
+                            <Badge className="bg-[#52BAF3] text-white px-3 py-1 text-xs">
+                              Pending Approval
+                            </Badge>
+                          )}
+                          {request.status === 'approved' && (
+                            <Badge className="bg-green-500 text-white px-3 py-1 text-xs">
+                              Approved
+                            </Badge>
+                          )}
+                          {request.status === 'rejected' && (
+                            <Badge className="bg-red-500 text-white px-3 py-1 text-xs">
+                              Rejected
+                            </Badge>
+                          )}
+                          {request.status === 'draft' && (
+                            <Badge className="bg-gray-500 text-white px-3 py-1 text-xs">
+                              Draft
+                            </Badge>
+                          )}
+                          {request.status === 'returned' && (
+                            <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs">
+                              Returned
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                
+                {/* Pagination info at bottom */}
+                <div className="px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
+                  {requests.length > 0 ? `0 to ${requests.length} of ${requests.length}` : '0 to 0 of 0'}
+                </div>
+              </div>
             )}
-          </Card>
+          </div>
         </div>
       </div>
 
