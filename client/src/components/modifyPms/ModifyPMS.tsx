@@ -428,6 +428,52 @@ export function ModifyPMS() {
         )}
 
         <DialogFooter className="space-x-2">
+          {/* View Changes Button - available for all requests */}
+          {viewingRequest && (
+            <Button
+              variant="outline"
+              className="border-blue-300 text-blue-600 hover:bg-blue-50"
+              onClick={() => {
+                if (viewingRequest) {
+                  // Navigate to the appropriate module with change preview mode
+                  const params = new URLSearchParams();
+                  params.append('previewChanges', '1');
+                  params.append('changeRequestId', viewingRequest.id.toString());
+                  
+                  if (viewingRequest.targetType && viewingRequest.targetId) {
+                    params.append('targetType', viewingRequest.targetType);
+                    params.append('targetId', viewingRequest.targetId);
+                  }
+                  
+                  // Navigate based on category
+                  let targetPath = '';
+                  switch (viewingRequest.category) {
+                    case 'components':
+                      targetPath = '/pms/components';
+                      break;
+                    case 'workOrders':
+                      targetPath = '/pms/work-orders';
+                      break;
+                    case 'spares':
+                      targetPath = '/pms/spares';
+                      break;
+                    case 'stores':
+                      targetPath = '/pms/stores';
+                      break;
+                    default:
+                      targetPath = '/pms/components';
+                  }
+                  
+                  setLocation(`${targetPath}?${params.toString()}`);
+                  setViewingRequest(null);
+                }
+              }}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              View Changes
+            </Button>
+          )}
+          
           {viewingRequest && viewingRequest.status === 'submitted' && (
             <>
               <Button

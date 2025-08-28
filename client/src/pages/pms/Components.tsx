@@ -444,10 +444,29 @@ const getComponentMockData = (code: string) => {
   return specialCases[code] || getComponentDetails(code);
 };
 
-const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null; isModifyMode?: boolean; onDataChange?: (data: any) => void }> = ({ isExpanded, selectedComponent, isModifyMode = false, onDataChange }) => {
+const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedComponent: ComponentNode | null; isModifyMode?: boolean; onDataChange?: (data: any) => void; previewChanges?: any[]; isPreviewMode?: boolean }> = ({ isExpanded, selectedComponent, isModifyMode = false, onDataChange, previewChanges = [], isPreviewMode = false }) => {
   const { isChangeRequestMode } = useChangeRequest();
   const { collectDiff } = useChangeMode();
   const isChangeMode = isModifyMode;
+
+  // Helper function to check if a field has changes in preview mode
+  const hasPreviewChange = (fieldName: string) => {
+    if (!isPreviewMode || !previewChanges) return false;
+    return previewChanges.some(change => 
+      change.field === fieldName || change.fieldName === fieldName ||
+      change.field === `componentInfo.${fieldName}` || change.fieldName === `componentInfo.${fieldName}`
+    );
+  };
+
+  // Helper function to get the new value from preview changes
+  const getPreviewValue = (fieldName: string) => {
+    if (!isPreviewMode || !previewChanges) return null;
+    const change = previewChanges.find(change => 
+      change.field === fieldName || change.fieldName === fieldName ||
+      change.field === `componentInfo.${fieldName}` || change.fieldName === `componentInfo.${fieldName}`
+    );
+    return change ? (change.newValue || change.currentValue) : null;
+  };
 
   // Derive Component Category from the component's tree position
   const componentCategory = selectedComponent ? getComponentCategory(selectedComponent.id) : '';
@@ -542,7 +561,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.maker}
               onChange={(e) => handleFieldChange('maker', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('maker') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
+                changedFields.has('maker') || hasPreviewChange('maker') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
               data-field-value="maker"
             />
@@ -560,7 +579,7 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
               value={componentData.model}
               onChange={(e) => handleFieldChange('model', e.target.value)}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('model') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
+                changedFields.has('model') || hasPreviewChange('model') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
               }`}
               data-field-value="model"
             />
@@ -622,13 +641,14 @@ const ComponentInformationSection: React.FC<{ isExpanded: boolean; selectedCompo
         </div>
         <div>
           <label className={`text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1`}>Critical</label>
-          {isChangeMode ? (
+          {isChangeMode || isPreviewMode ? (
             <select
-              value={componentData.critical}
+              value={isPreviewMode && hasPreviewChange('critical') ? getPreviewValue('critical') : componentData.critical}
               onChange={(e) => handleFieldChange('critical', e.target.value)}
+              disabled={isPreviewMode}
               className={`text-sm w-full px-2 py-1 border rounded ${
-                changedFields.has('critical') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]'
-              }`}
+                changedFields.has('critical') || hasPreviewChange('critical') ? 'text-red-600 border-red-300 bg-red-50' : 'text-[#52BAF3] border-[#52BAF3]'
+              } ${isPreviewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
               data-field-value="critical"
             >
               <option value="Yes">Yes</option>
@@ -1679,14 +1699,88 @@ const Components: React.FC = () => {
   const [modifiedComponentData, setModifiedComponentData] = useState<any>(null);
   const [originalComponentData, setOriginalComponentData] = useState<any>(null);
   
+  // Preview changes mode state
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [changeRequestData, setChangeRequestData] = useState<any>(null);
+  const [previewChanges, setPreviewChanges] = useState<any[]>([]);
+  
   const { isChangeRequestMode, exitChangeRequestMode } = useChangeRequest();
   const { isChangeMode, changeRequestTitle, changeRequestCategory, setOriginalSnapshot, collectDiff, getDiffs, reset } = useChangeMode();
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Helper function to find component by ID
+  const findComponentById = (id: string): ComponentNode | null => {
+    const searchInTree = (nodes: ComponentNode[]): ComponentNode | null => {
+      for (const node of nodes) {
+        if (node.id === id || node.code === id) {
+          return node;
+        }
+        if (node.children) {
+          const found = searchInTree(node.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    return searchInTree(dummyComponents);
+  };
   
   // Check for modify mode from URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const isModifyMode = urlParams.get('modify') === '1';
+
+  // Check for preview changes mode and load change request data
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const previewMode = params.get('previewChanges') === '1';
+    const changeRequestId = params.get('changeRequestId');
+    const targetId = params.get('targetId');
+    
+    if (previewMode && changeRequestId) {
+      setIsPreviewMode(true);
+      
+      // Fetch the change request data
+      fetch(`/api/change-requests/${changeRequestId}`)
+        .then(res => res.json())
+        .then(data => {
+          setChangeRequestData(data);
+          if (data.proposedChangesJson) {
+            setPreviewChanges(Array.isArray(data.proposedChangesJson) ? data.proposedChangesJson : []);
+          }
+          
+          // Auto-select the target component if provided
+          if (targetId && data.targetType === 'component') {
+            const component = findComponentById(targetId);
+            if (component) {
+              setSelectedComponent(component);
+              // Expand the path to show the component
+              const expandPath = (componentCode: string) => {
+                const parts = componentCode.split('.');
+                const newExpanded = new Set(expandedNodes);
+                for (let i = 0; i < parts.length - 1; i++) {
+                  newExpanded.add(parts.slice(0, i + 1).join('.'));
+                }
+                setExpandedNodes(newExpanded);
+              };
+              expandPath(component.code);
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load change request data:', err);
+          toast({
+            title: "Error",
+            description: "Failed to load change request data",
+            variant: "destructive"
+          });
+        });
+    } else {
+      setIsPreviewMode(false);
+      setChangeRequestData(null);
+      setPreviewChanges([]);
+    }
+  }, [location]);
   
   // Handle change mode - capture original snapshot when component is selected
   useEffect(() => {
@@ -2109,6 +2203,30 @@ const Components: React.FC = () => {
                 <h3 className="text-lg font-semibold text-[#15569e]">
                   {selectedComponent.code} {selectedComponent.name}
                 </h3>
+                
+                {/* Preview Mode Banner */}
+                {isPreviewMode && changeRequestData && (
+                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-blue-900 text-sm">Viewing Change Request Preview</h4>
+                        <p className="text-xs text-blue-700">
+                          {changeRequestData.title} - Changed fields are highlighted in <span className="text-red-600 font-medium">red</span>
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation('/pms/modify-pms')}
+                        className="text-blue-700 border-blue-300 text-xs px-2 py-1 h-7"
+                      >
+                        <ArrowLeft className="w-3 h-3 mr-1" />
+                        Back
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex-1 overflow-auto p-4">
                 <div className="space-y-2">
@@ -2138,7 +2256,9 @@ const Components: React.FC = () => {
                             <ComponentInformationSection 
                               isExpanded={isExpanded} 
                               selectedComponent={selectedComponent}
-                              isModifyMode={isModifyMode}
+                              isModifyMode={isModifyMode || isPreviewMode}
+                              isPreviewMode={isPreviewMode}
+                              previewChanges={previewChanges}
                               onDataChange={(data) => {
                                 // Update modified component data for change tracking
                                 if (isModifyMode) {
