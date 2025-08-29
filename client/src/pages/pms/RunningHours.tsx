@@ -633,16 +633,13 @@ const RunningHours = () => {
             
             <div>
               <Label className="text-sm text-gray-600">Date Updated</Label>
-              <div className="relative mt-1">
-                <Input 
-                  type="date"
-                  value={updateForm.dateUpdated}
-                  onChange={(e) => handleUpdateFormChange('dateUpdated', e.target.value)}
-                  className="pr-10"
-                  max={new Date().toISOString().split('T')[0]}
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              </div>
+              <Input 
+                type="date"
+                value={updateForm.dateUpdated}
+                onChange={(e) => handleUpdateFormChange('dateUpdated', e.target.value)}
+                className="mt-1"
+                max={new Date().toISOString().split('T')[0]}
+              />
             </div>
 
             {/* Meter Replaced Checkbox */}
