@@ -17,6 +17,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, Plus, Upload, Eye, Trash2, Edit3, X, ChevronRight, ChevronDown, Search } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { getComponentCategory } from "@/utils/componentUtils";
 
@@ -448,8 +458,10 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     return `${parent.code}.${siblingCount + 1}`;
   };
 
-  // State for editable field labels
+  // State for editable field labels and deletable fields
   const [editingLabel, setEditingLabel] = useState<string | null>(null);
+  const [deletedFields, setDeletedFields] = useState<Set<string>>(new Set());
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [fieldLabels, setFieldLabels] = useState({
     maker: "Maker",
     model: "Model", 
@@ -468,7 +480,22 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     notes: "Notes",
     runningHours: "Running Hours",
     dateUpdated: "Date Updated",
-    nextDue: "Next Due"
+    nextDue: "Next Due",
+    metric: "Metric",
+    alertsThresholds: "Alerts/ Thresholds",
+    woTitle: "WO Title",
+    assignedTo: "Assigned To",
+    maintenanceType: "Maintenance Type",
+    frequency: "Frequency",
+    initialNextDue: "Initial Next Due",
+    classificationProvider: "Classification Provider",
+    certificateNo: "Certificate No.",
+    lastDataSurvey: "Last Data Survey",
+    nextDataSurvey: "Next Data Survey",
+    surveyType: "Survey Type",
+    classRequirements: "Class Requirements",
+    classCode: "Class Code",
+    information: "Information"
   });
 
   const [componentData, setComponentData] = useState({
@@ -691,7 +718,27 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     setEditingLabel(null);
   };
 
-  // Editable Label Component
+  // Field deletion handlers
+  const handleFieldDelete = (fieldKey: string) => {
+    setShowDeleteConfirm(fieldKey);
+  };
+
+  const confirmFieldDelete = () => {
+    if (showDeleteConfirm) {
+      setDeletedFields(prev => new Set([...prev, showDeleteConfirm]));
+      setShowDeleteConfirm(null);
+      toast({
+        title: "Field Deleted",
+        description: `${fieldLabels[showDeleteConfirm as keyof typeof fieldLabels]} field has been removed.`,
+      });
+    }
+  };
+
+  const cancelFieldDelete = () => {
+    setShowDeleteConfirm(null);
+  };
+
+  // Editable Label Component with deletion support
   const EditableLabel = ({ fieldKey, className = "text-sm text-[#8798ad]" }: { fieldKey: string, className?: string }) => {
     const [tempLabel, setTempLabel] = useState(fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey);
     
@@ -707,6 +754,9 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
             } else if (e.key === 'Escape') {
               setTempLabel(fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey);
               handleLabelCancel();
+            } else if (e.key === 'Delete') {
+              e.preventDefault();
+              handleFieldDelete(fieldKey);
             }
           }}
           className="h-6 text-sm border-[#52baf3] focus:border-[#52baf3]"
@@ -719,10 +769,30 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
       <Label 
         className={`${className} text-[#52baf3] cursor-pointer hover:underline`}
         onClick={() => handleLabelEdit(fieldKey)}
-        title="Click to edit field label"
+        onKeyDown={(e) => {
+          if (e.key === 'Delete') {
+            e.preventDefault();
+            handleFieldDelete(fieldKey);
+          }
+        }}
+        tabIndex={0}
+        title="Click to edit field label, press Delete to remove field"
       >
         {fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey}
       </Label>
+    );
+  };
+
+  // Deletable Field Wrapper Component
+  const DeletableField = ({ fieldKey, children, className = "space-y-2" }: { fieldKey: string, children: React.ReactNode, className?: string }) => {
+    if (deletedFields.has(fieldKey)) {
+      return null;
+    }
+
+    return (
+      <div className={className}>
+        {children}
+      </div>
     );
   };
 
@@ -947,68 +1017,50 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">No of Units</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                    <DeletableField fieldKey="noOfUnits">
+                      <EditableLabel fieldKey="noOfUnits" />
                       <Input 
                         value={componentData.noOfUnits}
                         onChange={(e) => handleInputChange('noOfUnits', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Eqpt / System Department</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                    </DeletableField>
+                    <DeletableField fieldKey="eqptSystemDept">
+                      <EditableLabel fieldKey="eqptSystemDept" />
                       <Input 
                         value={componentData.equipmentDepartment}
                         onChange={(e) => handleInputChange('equipmentDepartment', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Parent Component</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                    </DeletableField>
+                    <DeletableField fieldKey="parentComponent">
+                      <EditableLabel fieldKey="parentComponent" />
                       <Input 
                         value={componentData.parentComponent}
                         onChange={(e) => handleInputChange('parentComponent', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Dimensions/Size</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                    </DeletableField>
+                    <DeletableField fieldKey="dimensionsSize">
+                      <EditableLabel fieldKey="dimensionsSize" />
                       <Input 
                         value={componentData.dimensionsSize}
                         onChange={(e) => handleInputChange('dimensionsSize', e.target.value)}
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
-                    </div>
+                    </DeletableField>
                   </div>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm text-[#8798ad]">Notes</Label>
-                      <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                      <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                    </div>
-                    <Textarea 
-                      value={componentData.notes}
-                      onChange={(e) => handleInputChange('notes', e.target.value)}
-                      placeholder="Notes"
-                      className="border-[#52baf3] border-2 focus:border-[#52baf3]"
-                      rows={2}
-                    />
+                  <div className="mt-4">
+                    <DeletableField fieldKey="notes">
+                      <EditableLabel fieldKey="notes" />
+                      <Textarea 
+                        value={componentData.notes}
+                        onChange={(e) => handleInputChange('notes', e.target.value)}
+                        placeholder="Notes"
+                        className="border-[#52baf3] border-2 focus:border-[#52baf3]"
+                        rows={2}
+                      />
+                    </DeletableField>
                   </div>
                 </div>
 
@@ -1016,17 +1068,13 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                 <div>
                   <h4 className="text-lg font-semibold mb-4 text-[#16569e]">B. Running Hours & Condition Monitoring Metrics</h4>
                   <div className="grid grid-cols-2 gap-6 mb-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Running Hours</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                    <DeletableField fieldKey="runningHours">
+                      <EditableLabel fieldKey="runningHours" />
                       <Input 
                         placeholder="20000"
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
-                    </div>
+                    </DeletableField>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label className="text-sm text-[#8798ad]">Date Updated</Label>
@@ -1550,6 +1598,24 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
           </div>
         </div>
       </DialogContent>
+
+      {/* Field Deletion Confirmation Dialog */}
+      <AlertDialog open={!!showDeleteConfirm} onOpenChange={cancelFieldDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Field</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the "{showDeleteConfirm ? fieldLabels[showDeleteConfirm as keyof typeof fieldLabels] : ''}" field? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelFieldDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmFieldDelete} className="bg-red-600 hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
