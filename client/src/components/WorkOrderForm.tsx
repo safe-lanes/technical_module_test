@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +60,24 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   const [changeRequestData, setChangeRequestData] = useState<any>(null);
   const [previewChanges, setPreviewChanges] = useState<any>({});
   
+  // Quick Input functionality for Work Carried Out
+  const workCarriedOutRef = useRef<HTMLTextAreaElement>(null);
+  const [showQuickInputs, setShowQuickInputs] = useState(false);
+  
+  // Predefined quick answers for Work Carried Out
+  const quickAnswers = [
+    "Work carried out, found satisfactory.",
+    "Checked and tested, no defects observed.",
+    "Alarm tested, found satisfactory.",
+    "Routine maintenance carried out as per PMS.",
+    "Equipment inspected, found in good condition.",
+    "Lubrication/oiling carried out, parameters normal.",
+    "Work completed, system restored to normal.",
+    "Trial conducted, performance satisfactory.",
+    "Defect rectified, equipment put back in service.",
+    "Cleaning carried out, area left tidy."
+  ];
+  
   // Modify mode integration
   const { isModifyMode, targetId, fieldChanges, trackFieldChange, setOriginalSnapshot } = useModifyMode();
   
@@ -112,6 +130,34 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   
   const getPreviewValue = (fieldName: string) => {
     return previewChanges[fieldName]?.newValue || '';
+  };
+  
+  // Quick Input function to insert text at cursor position
+  const insertQuickText = (text: string) => {
+    const textarea = workCarriedOutRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = executionData.workCarriedOut;
+    
+    // Insert text at cursor position (or replace selection)
+    const beforeCursor = currentValue.substring(0, start);
+    const afterCursor = currentValue.substring(end);
+    
+    // Add newline if there's existing text and cursor is not at the beginning
+    const prefix = beforeCursor && start > 0 ? '\n' : '';
+    const newValue = beforeCursor + prefix + text + afterCursor;
+    
+    // Update the state
+    handleExecutionChange('workCarriedOut', newValue);
+    
+    // Focus back to textarea and set cursor after inserted text
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPosition = start + prefix.length + text.length;
+      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    }, 0);
   };
   
   // Check if we're in execution mode (Part B)
@@ -1358,8 +1404,40 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       
                       {/* Work Carried Out */}
                       <div className="space-y-2 mb-4">
-                        <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowQuickInputs(!showQuickInputs)}
+                            className="text-xs text-[#52BAF3] border-[#52BAF3] hover:bg-blue-50 h-6 px-2"
+                          >
+                            Quick Input {showQuickInputs ? '▲' : '▼'}
+                          </Button>
+                        </div>
+                        
+                        {/* Quick Input Pills */}
+                        {showQuickInputs && (
+                          <div className="mb-3 p-3 bg-gray-50 rounded-lg border">
+                            <p className="text-xs text-gray-600 mb-2">Click to insert common phrases:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {quickAnswers.map((answer, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  onClick={() => insertQuickText(answer)}
+                                  className="inline-flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded-full text-gray-700 hover:bg-[#52BAF3] hover:text-white hover:border-[#52BAF3] transition-colors duration-150 cursor-pointer"
+                                >
+                                  {answer}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         <Textarea 
+                          ref={workCarriedOutRef}
                           value={executionData.workCarriedOut}
                           onChange={(e) => handleExecutionChange('workCarriedOut', e.target.value)}
                           className="w-full min-h-[80px]" 
