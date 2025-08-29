@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useModifyMode } from "@/hooks/useModifyMode";
 import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
 import { ModifyStickyFooter } from "@/components/modify/ModifyStickyFooter";
+import { generateSuggestions, extractContextFromWorkOrder, type WorkOrderContext } from "@/utils/suggestionEngine";
 
 interface WorkOrderFormProps {
   isOpen: boolean;
@@ -63,6 +64,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   // Quick Input functionality for Work Carried Out
   const workCarriedOutRef = useRef<HTMLTextAreaElement>(null);
   const [showQuickInputs, setShowQuickInputs] = useState(false);
+  
+  // Smart Suggestions functionality
+  const [showSmartSuggestions, setShowSmartSuggestions] = useState(false);
+  const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
   
   // Predefined quick answers for Work Carried Out
   const quickAnswers = [
@@ -158,6 +163,33 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       const newCursorPosition = start + prefix.length + text.length;
       textarea.setSelectionRange(newCursorPosition, newCursorPosition);
     }, 0);
+  };
+  
+  // Smart Suggestions function to generate context-aware suggestions
+  const generateSmartSuggestions = () => {
+    try {
+      const context = extractContextFromWorkOrder(workOrder, executionData);
+      const suggestions = generateSuggestions(context);
+      setSmartSuggestions(suggestions);
+    } catch (error) {
+      console.error('Error generating smart suggestions:', error);
+      setSmartSuggestions([]);
+    }
+  };
+  
+  // Function to insert suggestion text (reuses Quick Input logic)
+  const insertSuggestion = (text: string) => {
+    insertQuickText(text);
+  };
+  
+  // Toggle Smart Suggestions and generate on first open
+  const toggleSmartSuggestions = () => {
+    const newShowState = !showSmartSuggestions;
+    setShowSmartSuggestions(newShowState);
+    
+    if (newShowState && smartSuggestions.length === 0) {
+      generateSmartSuggestions();
+    }
   };
   
   // Check if we're in execution mode (Part B)
@@ -1406,15 +1438,26 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center justify-between">
                           <Label className="text-sm text-[#8798ad]">Work Carried Out</Label>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowQuickInputs(!showQuickInputs)}
-                            className="text-xs text-[#52BAF3] border-[#52BAF3] hover:bg-blue-50 h-6 px-2"
-                          >
-                            Quick Input {showQuickInputs ? '▲' : '▼'}
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowQuickInputs(!showQuickInputs)}
+                              className="text-xs text-[#52BAF3] border-[#52BAF3] hover:bg-blue-50 h-6 px-2"
+                            >
+                              Quick Input {showQuickInputs ? '▲' : '▼'}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={toggleSmartSuggestions}
+                              className="text-xs text-[#52BAF3] border-[#52BAF3] hover:bg-blue-50 h-6 px-2"
+                            >
+                              Smart Suggestions {showSmartSuggestions ? '▲' : '▼'}
+                            </Button>
+                          </div>
                         </div>
                         
                         {/* Quick Input Pills */}
@@ -1433,6 +1476,36 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 </button>
                               ))}
                             </div>
+                          </div>
+                        )}
+                        
+                        {/* Smart Suggestions Panel */}
+                        {showSmartSuggestions && (
+                          <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <p className="text-xs text-blue-700 mb-2 font-medium">🧠 Smart Suggestions (based on work order details):</p>
+                            <div className="space-y-2">
+                              {smartSuggestions.length > 0 ? (
+                                smartSuggestions.map((suggestion, index) => (
+                                  <div 
+                                    key={index}
+                                    onClick={() => insertSuggestion(suggestion)}
+                                    className="p-2 bg-white border border-blue-200 rounded cursor-pointer hover:bg-blue-100 hover:border-blue-300 transition-colors duration-150"
+                                    title={suggestion} // Full text on hover
+                                  >
+                                    <p className="text-sm text-gray-800 leading-relaxed">
+                                      {suggestion.length > 140 ? `${suggestion.substring(0, 140)}...` : suggestion}
+                                    </p>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-2 text-sm text-gray-500 italic">
+                                  No smart suggestions for this job yet.
+                                </div>
+                              )}
+                            </div>
+                            {smartSuggestions.length > 0 && (
+                              <p className="text-xs text-blue-600 mt-2 italic">💡 Click any suggestion to insert at cursor position</p>
+                            )}
                           </div>
                         )}
                         
