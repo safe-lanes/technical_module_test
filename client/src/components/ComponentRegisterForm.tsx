@@ -448,6 +448,29 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     return `${parent.code}.${siblingCount + 1}`;
   };
 
+  // State for editable field labels
+  const [editingLabel, setEditingLabel] = useState<string | null>(null);
+  const [fieldLabels, setFieldLabels] = useState({
+    maker: "Maker",
+    model: "Model", 
+    serialNo: "Serial No",
+    drawingNo: "Drawing No",
+    location: "Location",
+    critical: "Critical",
+    installation: "Installation Date",
+    commissionedDate: "Commissioned Date",
+    rating: "Rating",
+    conditionBased: "Condition Based",
+    noOfUnits: "No of Units",
+    eqptSystemDept: "Eqpt / System Department",
+    parentComponent: "Parent Component",
+    dimensionsSize: "Dimensions/Size",
+    notes: "Notes",
+    runningHours: "Running Hours",
+    dateUpdated: "Date Updated",
+    nextDue: "Next Due"
+  });
+
   const [componentData, setComponentData] = useState({
     componentId: "601.003.XXX",
     componentName: "",
@@ -651,6 +674,58 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     }
   };
 
+  // Handle label editing
+  const handleLabelEdit = (fieldKey: string) => {
+    setEditingLabel(fieldKey);
+  };
+
+  const handleLabelSave = (fieldKey: string, newLabel: string) => {
+    setFieldLabels(prev => ({
+      ...prev,
+      [fieldKey]: newLabel
+    }));
+    setEditingLabel(null);
+  };
+
+  const handleLabelCancel = () => {
+    setEditingLabel(null);
+  };
+
+  // Editable Label Component
+  const EditableLabel = ({ fieldKey, className = "text-sm text-[#8798ad]" }: { fieldKey: string, className?: string }) => {
+    const [tempLabel, setTempLabel] = useState(fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey);
+    
+    if (editingLabel === fieldKey) {
+      return (
+        <Input
+          value={tempLabel}
+          onChange={(e) => setTempLabel(e.target.value)}
+          onBlur={() => handleLabelSave(fieldKey, tempLabel)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleLabelSave(fieldKey, tempLabel);
+            } else if (e.key === 'Escape') {
+              setTempLabel(fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey);
+              handleLabelCancel();
+            }
+          }}
+          className="h-6 text-sm border-[#52baf3] focus:border-[#52baf3]"
+          autoFocus
+        />
+      );
+    }
+
+    return (
+      <Label 
+        className={`${className} text-[#52baf3] cursor-pointer hover:underline`}
+        onClick={() => handleLabelEdit(fieldKey)}
+        title="Click to edit field label"
+      >
+        {fieldLabels[fieldKey as keyof typeof fieldLabels] || fieldKey}
+      </Label>
+    );
+  };
+
   const handleSubmit = () => {
     // Validate Component Name is required
     if (!componentData.componentName || componentData.componentName.trim() === '') {
@@ -775,11 +850,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                   <h4 className="text-lg font-semibold mb-4 text-[#16569e]">A. Component Information</h4>
                   <div className="grid grid-cols-4 gap-6">
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Maker</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="maker" />
                       <Input 
                         value={componentData.maker}
                         onChange={(e) => handleInputChange('maker', e.target.value)}
@@ -787,11 +858,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Model</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="model" />
                       <Input 
                         value={componentData.model}
                         onChange={(e) => handleInputChange('model', e.target.value)}
@@ -799,11 +866,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Serial No</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="serialNo" />
                       <Input 
                         value={componentData.serialNo}
                         onChange={(e) => handleInputChange('serialNo', e.target.value)}
@@ -811,11 +874,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Drawing No</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="drawingNo" />
                       <Input 
                         value={componentData.drawingNo}
                         onChange={(e) => handleInputChange('drawingNo', e.target.value)}
@@ -841,11 +900,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Location</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="location" />
                       <Input 
                         value={componentData.location}
                         onChange={(e) => handleInputChange('location', e.target.value)}
@@ -853,11 +908,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Critical</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="critical" />
                       <Input 
                         value={componentData.critical}
                         onChange={(e) => handleInputChange('critical', e.target.value)}
@@ -865,11 +916,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Installation Date</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="installation" />
                       <Input 
                         value={componentData.installation}
                         onChange={(e) => handleInputChange('installation', e.target.value)}
@@ -877,11 +924,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Commissioned Date</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="commissionedDate" />
                       <Input 
                         value={componentData.commissionedDate}
                         onChange={(e) => handleInputChange('commissionedDate', e.target.value)}
@@ -889,11 +932,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Rating</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="rating" />
                       <Input 
                         value={componentData.rating}
                         onChange={(e) => handleInputChange('rating', e.target.value)}
@@ -901,11 +940,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm text-[#8798ad]">Condition Based</Label>
-                        <Edit3 className="h-3 w-3 text-[#52baf3] cursor-pointer" />
-                        <X className="h-3 w-3 text-red-500 cursor-pointer" />
-                      </div>
+                      <EditableLabel fieldKey="conditionBased" />
                       <Input 
                         value={componentData.conditionBased}
                         onChange={(e) => handleInputChange('conditionBased', e.target.value)}
