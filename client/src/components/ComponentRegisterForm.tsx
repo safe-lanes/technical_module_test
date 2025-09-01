@@ -27,8 +27,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { getComponentCategory } from "@/utils/componentUtils";
+import AddFieldModal from "@/components/modals/AddFieldModal";
+import AddSectionModal from "@/components/modals/AddSectionModal";
 
 interface ComponentNode {
   id: string;
@@ -449,6 +453,23 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["6", "6.1", "6.1.1"]));
   const [isAddMode, setIsAddMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Permission state - mock for now, should come from user context
+  const [hasFormConfigPermission] = useState(true);
+  
+  // Modal states for adding fields and sections
+  const [showAddFieldModal, setShowAddFieldModal] = useState(false);
+  const [showAddSectionModal, setShowAddSectionModal] = useState(false);
+  const [currentSection, setCurrentSection] = useState<string>("");
+  
+  // New fields and sections tracking
+  const [customFields, setCustomFields] = useState<Record<string, any[]>>({});
+  const [customSections, setCustomSections] = useState<any[]>([]);
+  const [formVersion, setFormVersion] = useState(1);
+  
+  // Track newly added fields for session
+  const [sessionAddedFields, setSessionAddedFields] = useState<Set<string>>(new Set());
+  const [sessionModifiedFields, setSessionModifiedFields] = useState<Set<string>>(new Set());
 
   // Auto-generate component code based on parent
   const generateComponentCode = (parent: ComponentNode | null) => {
@@ -628,11 +649,10 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
       componentCode: newCode,
       equipmentCategory: "",
       location: "",
-      criticality: "",
-      unitOfMeasurement: "",
+      critical: "No",
+      conditionBased: "No",
       department: "",
-      inService: "",
-      conditionBased: "",
+      installation: "",
       noOfUnits: "",
       equipmentDepartment: "",
       parentComponent: selectedNode.name,
@@ -754,7 +774,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
 
   const confirmFieldDelete = () => {
     if (showDeleteConfirm) {
-      setDeletedFields(prev => new Set([...prev, showDeleteConfirm]));
+      setDeletedFields(prev => new Set([...Array.from(prev), showDeleteConfirm]));
       setShowDeleteConfirm(null);
       toast({
         title: "Field Deleted",
@@ -823,6 +843,107 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
         {children}
       </div>
     );
+  };
+
+  // Render custom field based on type
+  const renderCustomField = (field: any) => {
+    const isNewField = sessionAddedFields.has(field.key);
+    const isModified = sessionModifiedFields.has(field.key);
+    const borderColor = isModified ? '#FF3B30' : '#52baf3';
+    
+    switch (field.type) {
+      case 'textarea':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.required && '*'}
+            </Label>
+            <Textarea 
+              placeholder={field.placeholder}
+              className={`border-2 focus:border-[${borderColor}]`}
+              style={{ borderColor }}
+            />
+          </div>
+        );
+      case 'number':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.unit && `(${field.unit})`} {field.required && '*'}
+            </Label>
+            <Input 
+              type="number"
+              placeholder={field.placeholder}
+              className={`border-2 focus:border-[${borderColor}]`}
+              style={{ borderColor }}
+              min={field.validation?.min}
+              max={field.validation?.max}
+            />
+          </div>
+        );
+      case 'date':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.required && '*'}
+            </Label>
+            <Input 
+              type="date"
+              placeholder={field.placeholder}
+              className={`border-2 focus:border-[${borderColor}]`}
+              style={{ borderColor }}
+              min={field.validation?.minDate}
+              max={field.validation?.maxDate}
+            />
+          </div>
+        );
+      case 'boolean':
+        return (
+          <div key={field.id} className="flex items-center space-x-2">
+            <Switch 
+              defaultChecked={field.defaultValue === 'true'}
+            />
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.required && '*'}
+            </Label>
+          </div>
+        );
+      case 'select':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.required && '*'}
+            </Label>
+            <Select defaultValue={field.defaultValue}>
+              <SelectTrigger className={`border-2 focus:border-[${borderColor}]`} style={{ borderColor }}>
+                <SelectValue placeholder={field.placeholder || 'Select...'} />
+              </SelectTrigger>
+              <SelectContent>
+                {field.options?.map((option: any) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      default:
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label className={`text-sm ${isModified ? 'text-[#FF3B30]' : 'text-[#52baf3]'} cursor-pointer hover:underline`}>
+              {field.label} {field.required && '*'}
+            </Label>
+            <Input 
+              placeholder={field.placeholder}
+              defaultValue={field.defaultValue}
+              className={`border-2 focus:border-[${borderColor}]`}
+              style={{ borderColor }}
+              maxLength={field.validation?.maxLength}
+            />
+          </div>
+        );
+    }
   };
 
   const handleSubmit = () => {
@@ -946,7 +1067,22 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
               <div className="p-6 space-y-6">
                 {/* A. Component Information */}
                 <div>
-                  <h4 className="text-lg font-semibold mb-4 text-[#16569e]">A. Component Information</h4>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold text-[#16569e]">A. Component Information</h4>
+                    {hasFormConfigPermission && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setCurrentSection('A');
+                          setShowAddFieldModal(true);
+                        }}
+                        className="text-[#52baf3] hover:text-[#52baf3]"
+                      >
+                        <Plus className="h-3 w-3 mr-1" /> Add field
+                      </Button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-4 gap-6">
                     <div className="space-y-2">
                       <EditableLabel fieldKey="maker" />
@@ -1091,11 +1227,33 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       />
                     </DeletableField>
                   </div>
+                  
+                  {/* Custom Fields for Section A */}
+                  {customFields['A'] && customFields['A'].length > 0 && (
+                    <div className="grid grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-200">
+                      {customFields['A'].map(field => renderCustomField(field))}
+                    </div>
+                  )}
                 </div>
 
                 {/* B. Running Hours & Condition Monitoring Metrics */}
                 <div>
-                  <h4 className="text-lg font-semibold mb-4 text-[#16569e]">B. Running Hours & Condition Monitoring Metrics</h4>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold text-[#16569e]">B. Running Hours & Condition Monitoring Metrics</h4>
+                    {hasFormConfigPermission && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setCurrentSection('B');
+                          setShowAddFieldModal(true);
+                        }}
+                        className="text-[#52baf3] hover:text-[#52baf3]"
+                      >
+                        <Plus className="h-3 w-3 mr-1" /> Add field
+                      </Button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-6 mb-4">
                     <DeletableField fieldKey="runningHours">
                       <EditableLabel fieldKey="runningHours" />
@@ -1143,16 +1301,38 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       </DeletableField>
                     </div>
                   </div>
+                  
+                  {/* Custom Fields for Section B */}
+                  {customFields['B'] && customFields['B'].length > 0 && (
+                    <div className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-200">
+                      {customFields['B'].map(field => renderCustomField(field))}
+                    </div>
+                  )}
                 </div>
 
                 {/* C. Work Orders */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-lg font-semibold text-[#16569e]">C. Work Orders</h4>
-                    <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add W.O
-                    </Button>
+                    <div className="flex gap-2">
+                      {hasFormConfigPermission && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSection('C');
+                            setShowAddFieldModal(true);
+                          }}
+                          className="text-[#52baf3] hover:text-[#52baf3]"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Add field
+                        </Button>
+                      )}
+                      <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add W.O
+                      </Button>
+                    </div>
                   </div>
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -1220,10 +1400,25 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-lg font-semibold text-[#16569e]">D. Maintenance History</h4>
-                    <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add M History
-                    </Button>
+                    <div className="flex gap-2">
+                      {hasFormConfigPermission && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSection('D');
+                            setShowAddFieldModal(true);
+                          }}
+                          className="text-[#52baf3] hover:text-[#52baf3]"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Add field
+                        </Button>
+                      )}
+                      <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add M History
+                      </Button>
+                    </div>
                   </div>
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -1476,10 +1671,25 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-lg font-semibold text-[#16569e]">H. Requisitions</h4>
-                    <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Requisition
-                    </Button>
+                    <div className="flex gap-2">
+                      {hasFormConfigPermission && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSection('H');
+                            setShowAddFieldModal(true);
+                          }}
+                          className="text-[#52baf3] hover:text-[#52baf3]"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Add field
+                        </Button>
+                      )}
+                      <Button size="sm" className="bg-[#52baf3] hover:bg-[#4aa3d9] text-white">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Requisition
+                      </Button>
+                    </div>
                   </div>
                   <div className="border border-gray-200 rounded">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -1542,6 +1752,46 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                     </div>
                   </div>
                 </div>
+                
+                {/* Render Custom Sections */}
+                {customSections.map((section) => (
+                  <div key={section.id}>
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-lg font-semibold text-[#52baf3]">{section.title}</h4>
+                      {hasFormConfigPermission && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSection(section.id);
+                            setShowAddFieldModal(true);
+                          }}
+                          className="text-[#52baf3] hover:text-[#52baf3]"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Add field
+                        </Button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {section.fields?.map((field: any) => renderCustomField(field))}
+                      {customFields[section.id]?.map((field: any) => renderCustomField(field))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Add New Section Button - Only for admins */}
+                {hasFormConfigPermission && (
+                  <div className="mt-6 pt-6 border-t">
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto sm:float-right text-[#52baf3] hover:text-[#52baf3] border-[#52baf3]"
+                      onClick={() => setShowAddSectionModal(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add new section
+                    </Button>
+                  </div>
+                )}
 
                 {/* Submit Button */}
                 <div className="flex justify-end pt-6">
@@ -1576,6 +1826,60 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add Field Modal */}
+      <AddFieldModal
+        isOpen={showAddFieldModal}
+        onClose={() => {
+          setShowAddFieldModal(false);
+          setCurrentSection('');
+        }}
+        onSave={(fieldData) => {
+          // Add field to the appropriate section
+          setCustomFields(prev => ({
+            ...prev,
+            [currentSection]: [...(prev[currentSection] || []), fieldData]
+          }));
+          
+          // Mark field as newly added
+          setSessionAddedFields(prev => new Set([...Array.from(prev), fieldData.key]));
+          
+          // Increment form version
+          setFormVersion(prev => prev + 1);
+          
+          toast({
+            title: "Field Added",
+            description: `Field "${fieldData.label}" has been added to Section ${currentSection}.`,
+          });
+          
+          setShowAddFieldModal(false);
+          setCurrentSection('');
+        }}
+        section={currentSection}
+        existingKeys={Object.keys(fieldLabels)}
+        isAdmin={hasFormConfigPermission}
+      />
+
+      {/* Add Section Modal */}
+      <AddSectionModal
+        isOpen={showAddSectionModal}
+        onClose={() => setShowAddSectionModal(false)}
+        onSave={(sectionData) => {
+          // Add new section
+          setCustomSections(prev => [...prev, sectionData]);
+          
+          // Increment form version
+          setFormVersion(prev => prev + 1);
+          
+          toast({
+            title: "Section Added",
+            description: `Section "${sectionData.title}" has been added to the form.`,
+          });
+          
+          setShowAddSectionModal(false);
+        }}
+        nextSectionLetter={String.fromCharCode(72 + customSections.length + 1)} // Start from I (H=72, I=73)
+      />
     </Dialog>
   );
 };
