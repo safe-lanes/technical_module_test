@@ -526,6 +526,35 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
     commissionedDate: "",
     installationDate: "",
     eqptSystemDept: "",
+    // Section B: Running Hours & Condition Monitoring
+    runningHours: "20000",
+    dateUpdated: "",
+    metric: "",
+    alertsThresholds: "",
+    // Section C: Work Orders
+    woTitle: "",
+    assignedTo: "",
+    maintenanceType: "",
+    frequency: "",
+    initialNextDue: "",
+    // Section D: Maintenance History
+    workOrderNo: "WO-2025-01", 
+    performedBy: "Kane",
+    totalTimeHrs: "3",
+    completionDate: "08-Jan-2025",
+    status: "Completed",
+    // Section E: Spare Parts
+    partCode: "SP-306-001",
+    partName: "Fuel Injection",
+    minQty: "5",
+    criticalQty: "5",
+    locationStore: "Engine Room R-3",
+    // Section H: Requisitions  
+    reqNo: "REQ-2025-089",
+    reqPart: "Fuel Injection Pump",
+    reqQty: "2",
+    reqDate: "15-Jan-2025",
+    reqStatus: "Pending",
     conditionMonitoringMetrics: {
       metric: "",
       interval: "",
@@ -1071,6 +1100,8 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                     <DeletableField fieldKey="runningHours">
                       <EditableLabel fieldKey="runningHours" />
                       <Input 
+                        value={componentData.runningHours}
+                        onChange={(e) => handleInputChange('runningHours', e.target.value)}
                         placeholder="20000"
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
@@ -1078,6 +1109,8 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                     <DeletableField fieldKey="dateUpdated">
                       <EditableLabel fieldKey="dateUpdated" />
                       <Input 
+                        value={componentData.dateUpdated}
+                        onChange={(e) => handleInputChange('dateUpdated', e.target.value)}
                         placeholder="dd-mm-yyyy"
                         className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                       />
@@ -1095,12 +1128,16 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       <DeletableField fieldKey="metric">
                         <EditableLabel fieldKey="metric" />
                         <Input 
+                          value={componentData.metric}
+                          onChange={(e) => handleInputChange('metric', e.target.value)}
                           className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                         />
                       </DeletableField>
                       <DeletableField fieldKey="alertsThresholds">
                         <EditableLabel fieldKey="alertsThresholds" />
                         <Input 
+                          value={componentData.alertsThresholds}
+                          onChange={(e) => handleInputChange('alertsThresholds', e.target.value)}
                           className="border-[#52baf3] border-2 focus:border-[#52baf3]"
                         />
                       </DeletableField>
@@ -1217,31 +1254,36 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                         <div className="grid grid-cols-5 gap-4 text-sm items-center">
                           <div>
                             <Input 
-                              defaultValue="WO-2025-01"
+                              value={componentData.workOrderNo}
+                              onChange={(e) => handleInputChange('workOrderNo', e.target.value)}
                               className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                             />
                           </div>
                           <div>
                             <Input 
-                              defaultValue="Kane"
+                              value={componentData.performedBy}
+                              onChange={(e) => handleInputChange('performedBy', e.target.value)}
                               className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                             />
                           </div>
                           <div>
                             <Input 
-                              defaultValue="3"
+                              value={componentData.totalTimeHrs}
+                              onChange={(e) => handleInputChange('totalTimeHrs', e.target.value)}
                               className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                             />
                           </div>
                           <div>
                             <Input 
-                              defaultValue="08-Jan-2025"
+                              value={componentData.completionDate}
+                              onChange={(e) => handleInputChange('completionDate', e.target.value)}
                               className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                             />
                           </div>
                           <div>
                             <Input 
-                              defaultValue="Completed"
+                              value={componentData.status}
+                              onChange={(e) => handleInputChange('status', e.target.value)}
                               className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                             />
                           </div>
@@ -1284,31 +1326,36 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       <div className="grid grid-cols-5 gap-4 text-sm items-center">
                         <div>
                           <Input 
-                            defaultValue="SP-306-001"
+                            value={componentData.partCode}
+                            onChange={(e) => handleInputChange('partCode', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="Fuel Injection"
+                            value={componentData.partName}
+                            onChange={(e) => handleInputChange('partName', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="5"
+                            value={componentData.minQty}
+                            onChange={(e) => handleInputChange('minQty', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="5"
+                            value={componentData.criticalQty}
+                            onChange={(e) => handleInputChange('criticalQty', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="Engine Room R-3"
+                            value={componentData.locationStore}
+                            onChange={(e) => handleInputChange('locationStore', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
@@ -1458,31 +1505,36 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
                       <div className="grid grid-cols-5 gap-4 text-sm items-center">
                         <div>
                           <Input 
-                            defaultValue="REQ-2025-089"
+                            value={componentData.reqNo}
+                            onChange={(e) => handleInputChange('reqNo', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="Fuel Injection Pump"
+                            value={componentData.reqPart}
+                            onChange={(e) => handleInputChange('reqPart', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="2"
+                            value={componentData.reqQty}
+                            onChange={(e) => handleInputChange('reqQty', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="15-Jan-2025"
+                            value={componentData.reqDate}
+                            onChange={(e) => handleInputChange('reqDate', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
                         <div>
                           <Input 
-                            defaultValue="Pending"
+                            value={componentData.reqStatus}
+                            onChange={(e) => handleInputChange('reqStatus', e.target.value)}
                             className="border-[#52baf3] border-2 focus:border-[#52baf3] text-sm"
                           />
                         </div>
