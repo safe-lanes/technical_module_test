@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,6 +19,13 @@ import { getComponentCategory } from '@/utils/componentUtils';
 import { useModifyMode } from '@/hooks/useModifyMode';
 import { ModifyFieldWrapper } from '@/components/modify/ModifyFieldWrapper';
 import { ModifyStickyFooter } from '@/components/modify/ModifyStickyFooter';
+import AgGridTable from '@/components/common/AgGridTable';
+import { 
+  RunningHoursActionsCellRenderer, 
+  UtilizationRateCellRenderer, 
+  DateCellRenderer,
+  NumberCellRenderer
+} from '@/components/common/AgGridCellRenderers';
 
 interface RunningHoursData {
   id: string;
@@ -64,6 +72,7 @@ const RunningHours = () => {
   const [bulkUpdateErrors, setBulkUpdateErrors] = useState<{
     [key: string]: string;
   }>({});
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   const { toast } = useToast();
   const vesselId = 'V001'; // Default vessel ID
@@ -625,6 +634,74 @@ const RunningHours = () => {
     bulkUpdateRunningHours.mutate({ updates });
   };
 
+  // Filtered data for AG Grid
+  const filteredData = useMemo(() => {
+    return runningHoursData.filter(
+      item =>
+        !searchTerm ||
+        item.component.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [runningHoursData, searchTerm]);
+
+  // AG Grid column definitions
+  const columnDefs = useMemo((): ColDef[] => [
+    {
+      headerName: 'Component',
+      field: 'component',
+      width: 200,
+      pinned: 'left'
+    },
+    {
+      headerName: 'Component Code',
+      field: 'componentCode',
+      width: 150
+    },
+    {
+      headerName: 'Component Category',
+      field: 'componentCategory',
+      width: 180
+    },
+    {
+      headerName: 'Running Hours',
+      field: 'runningHours',
+      width: 150,
+      cellRenderer: (params) => {
+        return <span className="font-medium">{params.value}</span>;
+      }
+    },
+    {
+      headerName: 'Last Updated',
+      field: 'lastUpdated',
+      width: 140,
+      cellRenderer: DateCellRenderer
+    },
+    {
+      headerName: 'Utilization Rate',
+      field: 'utilizationRate',
+      width: 150,
+      cellRenderer: UtilizationRateCellRenderer,
+      tooltip: 'Computed from last 30 days of RH entries'
+    },
+    {
+      headerName: 'Update RH',
+      field: 'actions',
+      width: 140,
+      cellRenderer: RunningHoursActionsCellRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right'
+    }
+  ], []);
+
+  // AG Grid context for action handlers
+  const gridContext = useMemo(() => ({
+    onUpdate: openUpdateDialog
+  }), []);
+
+  const onGridReady = (params: GridReadyEvent) => {
+    setGridApi(params.api);
+  };
+
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -670,78 +747,23 @@ const RunningHours = () => {
       </div>
 
       {/* Table */}
-      <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
-        {/* Table Header */}
-        <div className='bg-[#52baf3] text-white px-4 py-3'>
-          <div className='grid grid-cols-7 gap-4 text-sm font-medium'>
-            <div>Component</div>
-            <div>Component Category</div>
-            <div>Running Hours</div>
-            <div>last Updated</div>
-            <div>Utilization Rate</div>
-            <div className='col-span-2'>Update RH</div>
-          </div>
-        </div>
-
-        {/* Table Body */}
-        <div className='divide-y divide-gray-200'>
-          {(() => {
-            const filteredData = runningHoursData.filter(
-              item =>
-                !searchTerm ||
-                item.component.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            if (filteredData.length === 0 && searchTerm) {
-              return (
-                <div className='px-4 py-8 text-center text-gray-500'>
-                  No results found.{' '}
-                  <button
-                    onClick={clearFilters}
-                    className='text-blue-600 underline'
-                  >
-                    Reset
-                  </button>
-                </div>
-              );
-            }
-
-            return filteredData.map(item => (
-              <div key={item.id} className='px-4 py-3 hover:bg-gray-50'>
-                <div className='grid grid-cols-7 gap-4 text-sm items-center'>
-                  <div className='text-gray-900'>{item.component}</div>
-                  <div className='text-gray-700'>{item.componentCategory}</div>
-                  <div className='text-gray-900 font-medium'>
-                    {item.runningHours}
-                  </div>
-                  <div className='text-gray-700'>{item.lastUpdated}</div>
-                  <div
-                    className='text-gray-700'
-                    title='Computed from last 30 days of RH entries'
-                  >
-                    {item.utilizationRate !== null
-                      ? `${item.utilizationRate} hrs/day`
-                      : '—'}
-                  </div>
-                  <div className='col-span-2'>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      className='h-8 w-8 p-0'
-                      onClick={() => openUpdateDialog(item)}
-                    >
-                      <span className='text-gray-600'>⚙</span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ));
-          })()}
-        </div>
+      <div className='bg-white rounded-lg'>
+        <AgGridTable
+          rowData={filteredData}
+          columnDefs={columnDefs}
+          onGridReady={onGridReady}
+          context={gridContext}
+          height="calc(100vh - 320px)"
+          enableExport={true}
+          enableSideBar={true}
+          enableStatusBar={true}
+          pagination={true}
+          paginationPageSize={50}
+          animateRows={true}
+          suppressRowClickSelection={true}
+          className="rounded-lg shadow-sm"
+        />
       </div>
-
-      {/* Pagination */}
-      <div className='flex justify-end text-sm text-gray-500'>Page 6 of 6</div>
 
       {/* Update Running Hours Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>

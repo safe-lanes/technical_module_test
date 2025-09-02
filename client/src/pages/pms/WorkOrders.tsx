@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Pen, Timer } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import AgGridTable from '@/components/common/AgGridTable';
+import { 
+  StatusCellRenderer, 
+  WorkOrderActionsCellRenderer, 
+  DateCellRenderer 
+} from '@/components/common/AgGridCellRenderers';
 import PostponeWorkOrderDialog from '@/components/PostponeWorkOrderDialog';
 import WorkOrderForm from '@/components/WorkOrderForm';
 import UnplannedWorkOrderForm from '@/components/UnplannedWorkOrderForm';
@@ -312,6 +319,7 @@ const WorkOrders: React.FC = () => {
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(
     null
   );
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   // Modify mode integration
   const { isModifyMode, targetId, fieldChanges } = useModifyMode();
@@ -546,6 +554,112 @@ const WorkOrders: React.FC = () => {
     setPostponeDialogOpen(true);
   };
 
+  // AG Grid column definitions
+  const columnDefs = useMemo((): ColDef[] => {
+    const baseColumns: ColDef[] = [
+      {
+        headerName: 'Component',
+        field: 'component',
+        width: 200,
+        cellRenderer: (params) => {
+          return (
+            <span 
+              className="text-blue-600 hover:text-blue-800 cursor-pointer"
+              onClick={() => handleWorkOrderClick(params.data)}
+            >
+              {params.value}
+            </span>
+          );
+        }
+      },
+      {
+        headerName: activeTab === 'Pending Approval' ? 'WO Execution ID' : 'Work Order No',
+        field: activeTab === 'Pending Approval' ? 'executionId' : 'workOrderNo',
+        width: 180,
+        valueGetter: (params) => {
+          if (activeTab === 'Pending Approval' && params.data.executionId) {
+            return params.data.executionId;
+          }
+          return params.data.templateCode || params.data.workOrderNo;
+        }
+      }
+    ];
+
+    // Add template code column for pending approval
+    if (activeTab === 'Pending Approval') {
+      baseColumns.push({
+        headerName: 'WO Template Code',
+        field: 'templateCode',
+        width: 180
+      });
+    }
+
+    // Add remaining columns
+    baseColumns.push(
+      {
+        headerName: 'Job Title',
+        field: 'jobTitle',
+        width: 250
+      },
+      {
+        headerName: 'Assigned to',
+        field: 'assignedTo',
+        width: 150
+      },
+      {
+        headerName: activeTab === 'Pending Approval' ? 'Submitted Date' : 'Due Date',
+        field: activeTab === 'Pending Approval' ? 'submittedDate' : 'dueDate',
+        width: 150,
+        cellRenderer: DateCellRenderer
+      },
+      {
+        headerName: 'Status',
+        field: 'status',
+        width: 150,
+        cellRenderer: StatusCellRenderer
+      }
+    );
+
+    // Add date completed column for non-pending approval tabs
+    if (activeTab !== 'Pending Approval') {
+      baseColumns.push({
+        headerName: 'Date Completed',
+        field: 'dateCompleted',
+        width: 150,
+        cellRenderer: DateCellRenderer
+      });
+    }
+
+    // Add actions column
+    baseColumns.push({
+      headerName: 'Actions',
+      field: 'actions',
+      width: 150,
+      cellRenderer: WorkOrderActionsCellRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right'
+    });
+
+    return baseColumns;
+  }, [activeTab]);
+
+  // AG Grid context for action handlers
+  const gridContext = useMemo(() => ({
+    onEdit: handlePencilClick,
+    onPostpone: handleTimerClick,
+    onApprove: (workOrder: WorkOrder) => {
+      handleApprove(workOrder.id || workOrder.executionId || '');
+    },
+    onReject: (workOrder: WorkOrder) => {
+      handleReject(workOrder.id || workOrder.executionId || '', 'Rejected from grid');
+    }
+  }), []);
+
+  const onGridReady = (params: GridReadyEvent) => {
+    setGridApi(params.api);
+  };
+
   const handleApprove = (workOrderId: string, approverRemarks?: string) => {
     setWorkOrdersList(prev =>
       prev.map(wo => {
@@ -758,108 +872,22 @@ const WorkOrders: React.FC = () => {
       </div>
 
       {/* Work Orders Table */}
-      <div className='flex-1 overflow-auto bg-white'>
-        <table className='w-full text-sm'>
-          <thead className='bg-[#52baf3] text-white sticky top-0'>
-            <tr>
-              <th className='text-left py-3 px-4 font-medium'>Component</th>
-              <th className='text-left py-3 px-4 font-medium'>
-                {activeTab === 'Pending Approval'
-                  ? 'WO Execution ID'
-                  : 'Work Order No'}
-              </th>
-              {activeTab === 'Pending Approval' && (
-                <th className='text-left py-3 px-4 font-medium'>
-                  WO Template Code
-                </th>
-              )}
-              <th className='text-left py-3 px-4 font-medium'>Job Title</th>
-              <th className='text-left py-3 px-4 font-medium'>Assigned to</th>
-              <th className='text-left py-3 px-4 font-medium'>
-                {activeTab === 'Pending Approval'
-                  ? 'Submitted Date'
-                  : 'Due Date'}
-              </th>
-              <th className='text-left py-3 px-4 font-medium'>Status</th>
-              {activeTab !== 'Pending Approval' && (
-                <th className='text-left py-3 px-4 font-medium'>
-                  Date Completed
-                </th>
-              )}
-              <th className='text-center py-3 px-4 font-medium'>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredWorkOrders.map((workOrder, index) => (
-              <tr
-                key={workOrder.id}
-                className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} cursor-pointer hover:bg-gray-100`}
-                onClick={() => handleWorkOrderClick(workOrder)}
-              >
-                <td className='py-3 px-4 text-gray-900'>
-                  {workOrder.component}
-                </td>
-                <td className='py-3 px-4 text-blue-600 hover:text-blue-800'>
-                  {activeTab === 'Pending Approval' && workOrder.executionId
-                    ? workOrder.executionId
-                    : workOrder.templateCode || workOrder.workOrderNo}
-                </td>
-                {activeTab === 'Pending Approval' && (
-                  <td className='py-3 px-4 text-gray-900'>
-                    {workOrder.templateCode}
-                  </td>
-                )}
-                <td className='py-3 px-4 text-gray-900'>
-                  {workOrder.jobTitle}
-                </td>
-                <td className='py-3 px-4 text-gray-900'>
-                  {workOrder.assignedTo}
-                </td>
-                <td className='py-3 px-4 text-gray-900'>
-                  {activeTab === 'Pending Approval' && workOrder.submittedDate
-                    ? workOrder.submittedDate
-                    : workOrder.dueDate}
-                </td>
-                <td className='py-3 px-4'>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(workOrder.status)}`}
-                  >
-                    {workOrder.status}
-                  </span>
-                </td>
-                {activeTab !== 'Pending Approval' && (
-                  <td className='py-3 px-4 text-gray-900'>
-                    {workOrder.dateCompleted || ''}
-                  </td>
-                )}
-                <td className='py-3 px-4'>
-                  <div className='flex items-center justify-center gap-2'>
-                    <button
-                      className='p-1 hover:bg-gray-200 rounded'
-                      onClick={e => {
-                        e.stopPropagation();
-                        handlePencilClick(workOrder);
-                      }}
-                      title='Edit Template'
-                    >
-                      <Pen className='h-4 w-4 text-gray-600' />
-                    </button>
-                    <button
-                      className='p-1 hover:bg-gray-200 rounded'
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleTimerClick(workOrder);
-                      }}
-                      title='Postpone Work Order'
-                    >
-                      <Timer className='h-4 w-4 text-gray-600' />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className='flex-1 bg-white'>
+        <AgGridTable
+          rowData={filteredWorkOrders}
+          columnDefs={columnDefs}
+          onGridReady={onGridReady}
+          context={gridContext}
+          height="calc(100vh - 320px)"
+          enableExport={true}
+          enableSideBar={true}
+          enableStatusBar={true}
+          pagination={true}
+          paginationPageSize={50}
+          animateRows={true}
+          suppressRowClickSelection={true}
+          className="rounded-lg shadow-sm"
+        />
       </div>
 
       {/* Footer */}

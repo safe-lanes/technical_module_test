@@ -1,0 +1,57 @@
+# Replace Custom Tables with AG Grid Common Component
+
+Based on the attached AG Grid documentation, implement the following changes to the Maritime PMS system:
+
+## 1. Create Common AG Grid Component
+- Create `client/src/components/common/AgGridTable.tsx` following the exact structure from the documentation
+- Include all the default configurations, styling, and enterprise features as specified
+- Ensure proper TypeScript interfaces and module registration
+
+## 2. Replace Existing Tables in Three Modules
+
+### Work Orders Module
+- Replace the existing custom table in the work orders page with AgGridTable
+- Keep all current column definitions (ID, Title, Component, Priority, Status, Due Date, etc.)
+- Maintain existing functionality: sorting, filtering, row actions
+- Preserve the current data structure and API calls
+
+### Running Hours Module  
+- Replace the existing table/grid in running hours tracking with AgGridTable
+- Keep current columns (Component, Current Hours, Last Updated, etc.)
+- Maintain bulk update functionality and audit history display
+- Preserve all existing data validation and update logic
+
+### Stores Module
+- Replace the existing spares inventory table with AgGridTable  
+- Keep current columns (Part Code, Part Name, Component, ROB, Min Stock, etc.)
+- Maintain consume/receive functionality and transaction history
+- Preserve all existing inventory management features
+
+## 3. Implementation Requirements
+- Import and use the AgGridTable component in each module
+- Convert existing column configurations to AG Grid column definitions format
+- Maintain all current row actions (edit, delete, consume, receive, etc.) using cell renderers
+- Keep existing data fetching and state management logic
+- Preserve all current filtering and search capabilities
+- Ensure responsive behavior and consistent styling
+
+## 4. Key Implementation Details
+- Use the same blue header styling (#52baf3) as shown in documentation
+- Enable sidebar with columns and filters panels
+- Set up proper cell renderers for action buttons and status badges
+- Maintain existing export functionality where present
+- Use autoHeight with appropriate maxHeight settings
+- Keep all current validation and error handling
+
+## Files to Update
+- `client/src/pages/pms/work-orders/index.tsx` - Work Orders page
+- `client/src/pages/pms/running-hrs/index.tsx` - Running Hours page  
+- `client/src/pages/spares/index.tsx` - Stores/Spares page
+- Create `client/src/components/common/AgGridTable.tsx` - New common component
+
+## Success Criteria
+- All three modules use the same AgGridTable component
+- Existing functionality is preserved completely
+- Tables have consistent professional appearance
+- Enterprise features (export, sidebar, filtering) work properly
+- No regression in current user workflows

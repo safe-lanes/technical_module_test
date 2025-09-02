@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -34,6 +35,12 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import AgGridTable from '@/components/common/AgGridTable';
+import { 
+  StockStatusCellRenderer, 
+  CriticalCellRenderer, 
+  SparesActionsCellRenderer 
+} from '@/components/common/AgGridCellRenderers';
 
 // Component tree is now imported from shared data
 
@@ -391,6 +398,7 @@ const Spares: React.FC = () => {
   }>({});
   const [placeReceived, setPlaceReceived] = useState('');
   const [dateReceived, setDateReceived] = useState('');
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -513,6 +521,100 @@ const Spares: React.FC = () => {
     console.log('Bulk updates saved:', bulkUpdateData);
     setIsBulkUpdateModalOpen(false);
     setBulkUpdateData({});
+  };
+
+  // Transform spares data to include stock status
+  const sparesWithStock = useMemo(() => {
+    return filteredSpares.map(spare => ({
+      ...spare,
+      stock: getStockStatus(spare.rob, spare.min)
+    }));
+  }, [filteredSpares]);
+
+  // AG Grid column definitions
+  const columnDefs = useMemo((): ColDef[] => [
+    {
+      headerName: 'Part Code',
+      field: 'partCode',
+      width: 140,
+      pinned: 'left'
+    },
+    {
+      headerName: 'Part Name',
+      field: 'partName',
+      width: 200
+    },
+    {
+      headerName: 'Component',
+      field: 'component',
+      width: 250
+    },
+    {
+      headerName: 'Critical',
+      field: 'critical',
+      width: 120,
+      cellRenderer: CriticalCellRenderer
+    },
+    {
+      headerName: 'ROB',
+      field: 'rob',
+      width: 80,
+      cellRenderer: (params) => {
+        return <span className="font-medium">{params.value}</span>;
+      }
+    },
+    {
+      headerName: 'Min',
+      field: 'min',
+      width: 80,
+      cellRenderer: (params) => {
+        return <span className="font-medium">{params.value}</span>;
+      }
+    },
+    {
+      headerName: 'Stock',
+      field: 'stock',
+      width: 100,
+      cellRenderer: StockStatusCellRenderer
+    },
+    {
+      headerName: 'Location',
+      field: 'location',
+      width: 150
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      width: 180,
+      cellRenderer: SparesActionsCellRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right'
+    }
+  ], []);
+
+  // AG Grid context for action handlers
+  const gridContext = useMemo(() => ({
+    onConsume: (spare: any) => {
+      console.log('Consume spare:', spare);
+      // Implement consume functionality
+    },
+    onReceive: (spare: any) => {
+      console.log('Receive spare:', spare);
+      // Implement receive functionality
+    },
+    onEdit: (spare: any) => {
+      console.log('Edit spare:', spare);
+      // Implement edit functionality
+    },
+    onHistory: (spare: any) => {
+      console.log('View history for spare:', spare);
+      // Implement history functionality
+    }
+  }), []);
+
+  const onGridReady = (params: GridReadyEvent) => {
+    setGridApi(params.api);
   };
 
   const renderComponentTree = (nodes: ComponentNode[], level: number = 0) => {
@@ -682,86 +784,22 @@ const Spares: React.FC = () => {
 
           {/* Right Panel - Spares Table */}
           <div className='w-[70%]'>
-            {/* Spares Table */}
-            <div className='bg-white rounded-lg shadow-sm border'>
-              {/* Table Header */}
-              <div className='bg-[#52baf3] text-white px-4 py-3 rounded-t-lg'>
-                <div className='grid grid-cols-9 gap-4 text-sm font-medium'>
-                  <div>Part Code</div>
-                  <div>Part Name</div>
-                  <div>Component</div>
-                  <div>Critical</div>
-                  <div>ROB</div>
-                  <div>Min</div>
-                  <div>Stock</div>
-                  <div>Location</div>
-                  <div>Actions</div>
-                </div>
-              </div>
-
-              {/* Table Body */}
-              <div className='divide-y divide-gray-200'>
-                {filteredSpares.map(spare => {
-                  const stockStatus = getStockStatus(spare.rob, spare.min);
-                  const isCritical =
-                    spare.critical === 'Critical' || spare.critical === 'Yes';
-
-                  return (
-                    <div key={spare.id} className='px-4 py-3'>
-                      <div className='grid grid-cols-9 gap-4 text-sm items-center'>
-                        <div className='text-gray-900'>{spare.partCode}</div>
-                        <div className='text-gray-900'>{spare.partName}</div>
-                        <div className='text-gray-700'>{spare.component}</div>
-                        <div>
-                          {isCritical && (
-                            <span className='bg-red-100 text-red-800 px-2 py-1 rounded text-xs'>
-                              Critical
-                            </span>
-                          )}
-                        </div>
-                        <div className='text-gray-700'>{spare.rob}</div>
-                        <div className='text-gray-700'>{spare.min}</div>
-                        <div>
-                          {stockStatus === 'Low' && (
-                            <span className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs'>
-                              Low
-                            </span>
-                          )}
-                          {stockStatus === 'OK' && (
-                            <span className='bg-green-100 text-green-800 px-2 py-1 rounded text-xs'>
-                              OK
-                            </span>
-                          )}
-                        </div>
-                        <div className='text-gray-700'>{spare.location}</div>
-                        <div className='flex gap-1'>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            className='h-8 w-8 p-0'
-                          >
-                            <Edit className='h-4 w-4' />
-                          </Button>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            className='h-8 w-8 p-0'
-                          >
-                            <Plus className='h-4 w-4' />
-                          </Button>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            className='h-8 w-8 p-0'
-                          >
-                            <Trash2 className='h-4 w-4' />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className='bg-white rounded-lg'>
+              <AgGridTable
+                rowData={sparesWithStock}
+                columnDefs={columnDefs}
+                onGridReady={onGridReady}
+                context={gridContext}
+                height="calc(100vh - 280px)"
+                enableExport={true}
+                enableSideBar={true}
+                enableStatusBar={true}
+                pagination={true}
+                paginationPageSize={50}
+                animateRows={true}
+                suppressRowClickSelection={true}
+                className="rounded-lg shadow-sm"
+              />
             </div>
           </div>
         </div>
