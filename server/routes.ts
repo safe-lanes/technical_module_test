@@ -7,17 +7,46 @@ import bulkRoutes from "./routes/bulk";
 import alertRoutes from "./routes/alerts";
 import formRoutes from "./routes/forms";
 import createChangeRequestsRouter from "./routes/changeRequests";
+import { requestLogger } from "./middleware/logger";
+import { globalErrorHandler, notFoundHandler, asyncHandler } from "./middleware/errorHandler";
+import { requireAuth, requirePermission, authenticateUser } from "./middleware/auth";
+import { Permission } from "../shared/types/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Components API routes (for Target Picker)
-  app.get("/api/components/:vesselId", async (req, res) => {
-    try {
-      const components = await storage.getComponents(req.params.vesselId);
-      res.json(components);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch components" });
+  // Add request logging middleware
+  app.use(requestLogger);
+  
+  // Authentication routes (public)
+  app.post("/api/auth/login", asyncHandler(async (req, res) => {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
     }
+    
+    const result = await authenticateUser(username, password);
+    res.json(result);
+  }));
+  
+  app.post("/api/auth/logout", (req, res) => {
+    // In production, you would invalidate the token
+    res.json({ success: true, message: "Logged out successfully" });
   });
+  
+  // Health check endpoint
+  app.get("/api/health", asyncHandler(async (req, res) => {
+    res.json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV 
+    });
+  }));
+  
+  // Components API routes (for Target Picker) - requires authentication
+  app.get("/api/components/:vesselId", requireAuth, requirePermission(Permission.COMPONENTS_READ), asyncHandler(async (req, res) => {
+    const components = await storage.getComponents(req.params.vesselId);
+    res.json(components);
+  }));
   
   // Work Orders API routes (for Target Picker - placeholder)
   app.get("/api/work-orders", async (req, res) => {
@@ -671,6 +700,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/alerts", alertRoutes);
   app.use("/api", formRoutes);
   app.use("/api/change-requests", createChangeRequestsRouter(storage));
+  
+  // Error handling middleware (must be last)
+  app.use(notFoundHandler);
+  app.use(globalErrorHandler);
 
   const httpServer = createServer(app);
 

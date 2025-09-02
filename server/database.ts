@@ -34,13 +34,51 @@ export class DatabaseStorage implements IStorage {
     
     this.pool = mysql.createPool({
       uri: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      connectionLimit: 20,
+      acquireTimeout: 60000,
+      timeout: 60000,
+      reconnect: true,
+      idleTimeout: 300000,
+      queueLimit: 0
     });
     this.db = drizzle(this.pool);
   }
 
   async close() {
     await this.pool.end();
+  }
+
+  async checkHealth(): Promise<boolean> {
+    try {
+      const connection = await this.pool.getConnection();
+      await connection.ping();
+      connection.release();
+      return true;
+    } catch (error) {
+      console.error("Database health check failed:", error);
+      return false;
+    }
+  }
+
+  async reconnect(): Promise<void> {
+    try {
+      await this.pool.end();
+      this.pool = mysql.createPool({
+        uri: process.env.DATABASE_URL!,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+        connectionLimit: 20,
+        acquireTimeout: 60000,
+        timeout: 60000,
+        reconnect: true,
+        idleTimeout: 300000,
+        queueLimit: 0
+      });
+      this.db = drizzle(this.pool);
+    } catch (error) {
+      console.error("Database reconnection failed:", error);
+      throw error;
+    }
   }
 
   // User methods
