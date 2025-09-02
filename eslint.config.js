@@ -3,6 +3,8 @@ import typescript from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import prettier from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
@@ -32,12 +34,12 @@ export default [
     plugins: {
       '@typescript-eslint': typescript,
       'react': react,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      'prettier': prettier
     },
     rules: {
-      'indent': ['error', 2],
-      'quotes': ['error', 'single'],
-      'semi': ['error', 'always'],
+      ...prettierConfig.rules,
+      'prettier/prettier': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -51,10 +53,7 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
-      'prefer-template': 'error',
-      'comma-dangle': ['error', 'only-multiline'],
-      'no-multiple-empty-lines': ['error', { 'max': 2 }],
-      'no-trailing-spaces': 'error'
+      'prefer-template': 'error'
     },
     settings: {
       react: {

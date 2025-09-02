@@ -13,6 +13,15 @@ try {
     console.log('⚠️  TypeScript issues found (continuing with build for production readiness)');
   }
   
+  // Prettier formatting check (non-blocking)
+  console.log('💄 Checking code formatting...');
+  try {
+    execSync('npx prettier --check .', { stdio: 'inherit' });
+    console.log('✅ Prettier formatting check passed');
+  } catch (error) {
+    console.log('⚠️  Code formatting issues found - run "npx prettier --write ." to fix');
+  }
+  
   // Linting (non-blocking)
   console.log('🧹 Linting code...');
   try {
