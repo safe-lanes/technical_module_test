@@ -13,8 +13,8 @@ import { requireAuth, requirePermission, authenticateUser } from "./middleware/a
 import { Permission } from "../shared/types/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Add request logging middleware
-  app.use(requestLogger);
+  // Add request logging middleware only for API routes
+  app.use('/api', requestLogger);
   
   // Authentication routes (public)
   app.post("/api/auth/login", asyncHandler(async (req, res) => {
@@ -701,9 +701,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api", formRoutes);
   app.use("/api/change-requests", createChangeRequestsRouter(storage));
   
-  // Error handling middleware (must be last)
-  app.use(notFoundHandler);
-  app.use(globalErrorHandler);
+  // Error handling middleware (only for API routes - must be last)
+  app.use('/api', notFoundHandler);
+  app.use('/api', globalErrorHandler);
 
   const httpServer = createServer(app);
 
