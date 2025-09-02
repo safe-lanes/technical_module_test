@@ -444,4 +444,269 @@ toast({
 - TypeScript compilation on the fly
 - Automatic server restart on changes
 
-This documentation provides a comprehensive overview of the Technical Module's architecture, data flow, and implementation details for maritime PMS operations.
+## API Code Locations
+
+### Primary API Routes
+All API endpoints are defined in the following files:
+
+#### Main Routes File
+- **File**: `server/routes.ts` 
+- **Contains**: Core API endpoints for all modules
+  - Components API (`/api/components/`)
+  - Running Hours API (`/api/running-hours/`)
+  - Spares API (`/api/spares/`)
+  - Change Requests API (`/api/modify-pms/`)
+
+#### Modular Route Files
+- **File**: `server/routes/bulk.ts`
+  - Bulk import/export operations
+  - File upload handling
+  - Import history management
+
+- **File**: `server/routes/alerts.ts`
+  - Alert policies management
+  - Alert events handling
+  - Notification acknowledgments
+
+- **File**: `server/routes/forms.ts`
+  - Form configuration APIs
+  - Dynamic form management
+  - Form validation endpoints
+
+- **File**: `server/routes/changeRequests.ts`
+  - Extended change request operations
+  - Advanced workflow management
+  - Approval process handling
+
+### API Entry Point
+- **File**: `server/index.ts`
+  - Express server configuration
+  - Middleware setup
+  - Route registration
+  - Error handling
+
+### Data Access Layer
+- **File**: `server/storage.ts`
+  - Storage interface definition (IStorage)
+  - In-memory storage implementation
+  - Business logic abstraction
+
+- **File**: `server/database.ts`
+  - MySQL database implementation
+  - Database connection management
+  - SQL query implementations
+
+## Database Migration to MySQL
+
+### Prerequisites
+1. MySQL 5.7+ or MariaDB 10.2+ installed
+2. Database admin access
+3. Node.js 18+ with npm
+
+### Step 1: Create MySQL Database
+```sql
+-- Connect to MySQL as root or admin user
+CREATE DATABASE technical_pms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Create dedicated user (recommended)
+CREATE USER 'tech_admin'@'localhost' IDENTIFIED BY 'secure_password_here';
+GRANT ALL PRIVILEGES ON technical_pms.* TO 'tech_admin'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### Step 2: Install MySQL Dependencies
+```bash
+npm install mysql2 drizzle-orm
+```
+
+### Step 3: Configure Environment Variables
+Create `.env` file in project root:
+```env
+DATABASE_URL="mysql://tech_admin:secure_password_here@localhost:3306/technical_pms"
+NODE_ENV="production"
+PORT="5000"
+```
+
+### Step 4: Update Database Configuration
+- **File**: `drizzle.config.ts` - Already configured for MySQL
+- **File**: `server/database.ts` - Contains MySQL implementation
+- **File**: `shared/schema.ts` - Database schema definitions
+
+### Step 5: Initialize Database Schema
+```bash
+# Push schema to database (creates tables)
+npm run db:push
+
+# Alternative: Generate and run migrations
+npm run db:generate
+npm run db:migrate
+```
+
+### Step 6: Update Storage Implementation
+In `server/routes.ts`, the system automatically detects MySQL and uses database storage instead of in-memory storage.
+
+### Step 7: Test Database Connection
+```bash
+npm run dev
+```
+
+Check console for:
+- ✅ "Database connected successfully"
+- ⚠️ "Technical Module using in-memory storage" (indicates connection issue)
+
+### Database Schema Migration
+The system includes automatic schema creation for all tables:
+- `components` - Ship component hierarchy
+- `running_hours_audit` - Running hours tracking
+- `spares` - Spare parts inventory
+- `spares_history` - Transaction history
+- `change_request` - Change request management
+- `change_request_attachment` - File attachments
+- `change_request_comment` - Comments and reviews
+
+## Deployment Instructions
+
+### Development Server Deployment
+
+#### Local Development on Replit
+1. **Environment Setup**:
+   ```bash
+   # No additional setup needed - uses in-memory storage
+   npm run dev
+   ```
+
+2. **With MySQL on Replit**:
+   ```bash
+   # Set environment variables in Replit Secrets
+   # DATABASE_URL=mysql://username:password@host:port/database
+   npm run dev
+   ```
+
+3. **Port Configuration**:
+   - Development server runs on port 5000
+   - Replit automatically forwards port 5000 to public URL
+   - Access via: `https://<repl-name>.<username>.replit.dev`
+
+#### Development Features
+- Hot module replacement (HMR) via Vite
+- Automatic TypeScript compilation
+- In-memory storage (no persistence)
+- Auto-restart on file changes
+- Console logging for API calls
+
+### Production Server Deployment
+
+#### Replit Deployment (Recommended)
+
+1. **Build Application**:
+   ```bash
+   npm run build
+   ```
+
+2. **Configure Deployment**:
+   - Use **Autoscale Deployment** for web applications
+   - Set run command: `npm start`
+   - Set build command: `npm run build`
+   - Configure environment variables in Replit Secrets
+
+3. **Environment Variables for Production**:
+   ```env
+   NODE_ENV=production
+   DATABASE_URL=mysql://username:password@host:port/database
+   PORT=5000
+   ```
+
+4. **Database Setup for Production**:
+   - Use Replit PostgreSQL (recommended) or external MySQL
+   - Configure connection string in secrets
+   - Run database initialization: `npm run db:push`
+
+5. **Deployment Configuration**:
+   ```bash
+   # Build command
+   npm run build
+   
+   # Run command  
+   npm start
+   ```
+
+#### Production Optimization Features
+- Compiled TypeScript to JavaScript
+- Minified frontend assets
+- Static file serving
+- Production error handling
+- Database connection pooling
+- Automatic HTTPS on Replit
+
+#### Database Options for Production
+
+**Option 1: Replit PostgreSQL (Recommended)**
+- Built-in PostgreSQL service
+- Automatic backups
+- High availability
+- Update `drizzle.config.ts` to use PostgreSQL dialect
+
+**Option 2: External MySQL**
+- Cloud MySQL (AWS RDS, Google Cloud SQL)
+- Self-hosted MySQL server
+- Configure DATABASE_URL in secrets
+
+**Option 3: Replit Database (KV Store)**
+- For simple key-value storage needs
+- Limited SQL capabilities
+- Good for caching and sessions
+
+### Deployment Best Practices
+
+1. **Security**:
+   - Store all sensitive data in Replit Secrets
+   - Use strong database passwords
+   - Enable SSL/TLS for database connections
+   - Configure CORS for production domains
+
+2. **Performance**:
+   - Enable database connection pooling
+   - Configure appropriate timeout values
+   - Use indexes on frequently queried columns
+   - Monitor memory usage
+
+3. **Monitoring**:
+   - Check deployment logs regularly
+   - Monitor database performance
+   - Set up error alerts
+   - Track API response times
+
+4. **Backup Strategy**:
+   - Regular database backups
+   - Export critical configuration data
+   - Version control for all code changes
+   - Document deployment procedures
+
+### Troubleshooting Production Issues
+
+1. **Database Connection Issues**:
+   ```bash
+   # Check environment variables
+   echo $DATABASE_URL
+   
+   # Test database connection
+   npm run db:push
+   ```
+
+2. **Build Failures**:
+   ```bash
+   # Check TypeScript compilation
+   npm run check
+   
+   # Clear node_modules and reinstall
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+3. **Runtime Errors**:
+   - Check deployment logs in Replit console
+   - Verify all environment variables are set
+   - Ensure database is accessible
+   - Check API endpoint responses
+
+This documentation provides a comprehensive overview of the Technical Module's architecture, data flow, API locations, database migration steps, and deployment procedures for maritime PMS operations.
