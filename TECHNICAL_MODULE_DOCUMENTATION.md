@@ -122,16 +122,64 @@ interface ChangeModeContextType {
 ### Tech Stack
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
-- **Database**: PostgreSQL (production) / In-memory (development)
+- **Database**: PostgreSQL (production) / MySQL (production) / In-memory (development)
 - **ORM**: Drizzle ORM
 - **Validation**: Zod schemas
+- **Logging**: Winston with daily rotation
+- **Authentication**: JWT-based with role-based permissions
+- **Error Handling**: Global middleware with custom error classes
+- **Build Tools**: Vite + Rollup with quality checks
+
+### Production Features (Enterprise-Grade)
+
+#### Database Connection Pooling
+- **MySQL Connection Pool**: Max 20 connections with health checks
+- **Auto-reconnection**: Automatic reconnection on connection loss
+- **Connection Lifecycle**: Proper connection acquisition and release
+- **Health Monitoring**: Connection status monitoring and logging
+
+#### Winston Logging System
+- **Structured Logging**: JSON format with detailed request information
+- **Daily Rotation**: Automatic log file rotation in `logs/` directory
+- **Request Tracking**: Complete HTTP request/response logging
+- **Error Logging**: Comprehensive error tracking with stack traces
+- **Log Levels**: Configurable logging levels (info, warn, error)
+
+#### Authentication & Authorization
+- **JWT Authentication**: JSON Web Token-based user authentication
+- **Role-Based Access Control**: Admin, Master, Officer permission levels
+- **Permission System**: Granular permissions for different operations
+- **Mock Users**: Development-ready authentication with predefined users
+- **React Context Integration**: Frontend authentication state management
+
+#### Error Handling Middleware
+- **Global Error Handler**: Centralized error processing
+- **Custom Error Classes**: AppError, ValidationError, DatabaseError
+- **Async Error Wrapper**: Automatic async error catching
+- **HTTP Status Mapping**: Proper HTTP status code responses
+- **Error Logging**: All errors logged with Winston
+
+#### Migration System
+- **Drizzle Migrations**: Type-safe database schema migrations
+- **Version Control**: Schema version tracking and management
+- **Automated Execution**: Migration runner with rollback support
+- **Development Safety**: Safe migration execution in development
 
 ### Project Structure
 ```
 server/
 ├── routes/             # API route handlers
+├── middleware/         # Production middleware
+│   ├── logger.ts      # Winston request logging
+│   ├── errorHandler.ts # Global error handling
+│   └── auth.ts        # JWT authentication
+├── migrations/         # Database migration system
+│   ├── migrationRunner.ts    # Migration execution
+│   └── migration_001_*.ts   # Schema migrations
+├── utils/              # Utility functions
+│   └── errors.ts      # Custom error classes
 ├── storage.ts         # Data access layer interface
-├── database.ts        # Database implementation
+├── database.ts        # Database implementation (MySQL pooling)
 ├── db.ts             # Database connection
 ├── index.ts          # Server entry point
 └── vite.ts           # Development server integration
@@ -140,6 +188,13 @@ server/
 ### API Architecture
 
 #### RESTful Endpoints
+
+**Authentication API**
+```
+POST   /api/auth/login                     # User authentication
+POST   /api/auth/logout                    # User logout
+GET    /api/health                         # System health check
+```
 
 **Components API**
 ```
@@ -412,6 +467,52 @@ toast({
 - **Warning**: Yellow styling for warnings
 - **Info**: Blue styling for informational messages
 
+## Build System & Quality Assurance
+
+### Production Build Pipeline
+
+#### Build Commands
+- **Quality Check**: `node quality.js`
+  - TypeScript type checking with `--skipLibCheck`
+  - ESLint validation with React and TypeScript rules
+  - Build configuration validation
+  
+- **Full Production Build**: `node build.js`
+  - Step 1: Quality checks execution
+  - Step 2: Frontend build with Vite (optimized bundles)
+  - Step 3: Backend build with Rollup (with esbuild fallback)
+  - Step 4: Source map generation
+
+- **Build Command Equivalent**: `node npm-run-quality.js && rollup -c`
+
+#### Build Configuration Files
+- **`rollup.config.js`**: Backend bundling configuration
+  - TypeScript compilation with source maps
+  - JSON file support via `@rollup/plugin-json`
+  - Terser compression for production
+  - External dependency handling
+  
+- **`quality.js`**: Code quality validation script
+  - Non-blocking TypeScript checks
+  - ESLint validation with max 50 warnings
+  - Build readiness verification
+
+- **`.eslintrc.json`**: Code quality rules
+  - TypeScript and React-specific rules
+  - Import/export validation
+  - Code style enforcement
+
+#### Build Outputs
+- **Frontend**: `dist/public/` - Optimized Vite build with asset chunking
+- **Backend**: `dist/index.js` - Bundled Express server with source maps
+- **Source Maps**: Generated for both frontend and backend debugging
+
+### Code Quality Features
+- **TypeScript Strict Mode**: Enhanced type safety and error detection
+- **ESLint Integration**: Automated code style and error checking
+- **Path Aliases**: Clean import statements with `@assets/*` support
+- **Build Validation**: Pre-build quality checks ensure deployability
+
 ## Performance Optimizations
 
 ### Frontend
@@ -419,12 +520,14 @@ toast({
 2. **Component Memoization**: useCallback and useMemo for expensive operations
 3. **Lazy Loading**: Route-based code splitting
 4. **Optimistic Updates**: Immediate UI updates before server confirmation
+5. **Asset Optimization**: Vite-powered bundle splitting and compression
 
 ### Backend
 1. **Database Indexing**: Strategic indexes on frequently queried columns
-2. **Connection Pooling**: Efficient database connection management
+2. **Connection Pooling**: MySQL connection pool with max 20 connections
 3. **Request Validation**: Zod schemas for input validation
 4. **Error Handling**: Centralized error handling with proper HTTP status codes
+5. **Request Logging**: Winston-based structured logging with minimal overhead
 
 ## Security Considerations
 
@@ -432,17 +535,86 @@ toast({
 2. **SQL Injection Prevention**: Drizzle ORM with parameterized queries
 3. **CORS Configuration**: Proper cross-origin resource sharing setup
 4. **Error Information**: Sanitized error messages to prevent information leakage
+5. **JWT Authentication**: Token-based authentication with role verification
+6. **Password Security**: Secure password validation (mock implementation)
+7. **Session Management**: JWT token expiration and validation
+8. **Route Protection**: Middleware-based authentication for protected routes
+
+## Authentication System Details
+
+### Mock Authentication Setup
+The system includes a complete authentication implementation for development and testing:
+
+#### User Accounts (Mock)
+- **Admin User**: `admin` / `password123`
+  - Full system access
+  - User management capabilities
+  - All module permissions
+  
+- **Master User**: `master` / `password123`
+  - Senior officer access level
+  - Most operations permitted
+  - Limited administrative functions
+  
+- **Officer User**: `officer` / `password123`
+  - Standard user access
+  - Basic operations only
+  - View and edit permissions
+
+#### JWT Token System
+- **Token Generation**: Issued upon successful login
+- **Token Validation**: Middleware validates tokens on protected routes
+- **Role-Based Access**: Tokens include user role for permission checking
+- **Expiration**: Configurable token expiration (default: 24 hours)
+
+#### Frontend Authentication
+- **AuthContext**: React context for authentication state management
+- **Login Component**: User authentication interface
+- **Protected Routes**: Automatic redirection for unauthenticated users
+- **Permission Checking**: Component-level role-based rendering
+
+## Logging System (Winston)
+
+### Production Logging Features
+The application includes comprehensive logging with Winston:
+
+#### Log Configuration
+- **Format**: Structured JSON logging for production
+- **Rotation**: Daily log rotation with automatic cleanup
+- **Location**: All logs stored in `logs/` directory
+- **Levels**: Configurable log levels (info, warn, error)
+
+#### Log Types
+- **Request Logs**: All HTTP requests with timing and response codes
+- **Error Logs**: Complete error tracking with stack traces
+- **Authentication Logs**: Login attempts and JWT validation
+- **Database Logs**: Connection status and query performance
+- **Application Logs**: Business logic events and system status
+
+#### Log File Structure
+```
+logs/
+├── application-2024-01-01.log    # Daily application logs
+├── error-2024-01-01.log         # Daily error logs
+└── combined-2024-01-01.log      # Combined application logs
+```
+
+#### Development vs Production
+- **Development**: Console output with readable format
+- **Production**: JSON format with structured fields
+- **Debug Mode**: Additional verbose logging when enabled
 
 ## Development Environment
 
 ### Storage Strategy
 - **Development**: In-memory storage for rapid prototyping
-- **Production**: PostgreSQL with Drizzle ORM
+- **Production**: PostgreSQL/MySQL with Drizzle ORM
 
 ### Hot Reload
 - Vite development server with HMR
 - TypeScript compilation on the fly
 - Automatic server restart on changes
+- Winston logging active in development mode
 
 ## API Code Locations
 
