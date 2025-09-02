@@ -250,3 +250,42 @@ export const NumberCellRenderer = (params: ICellRendererParams) => {
     
   return value.toLocaleString();
 };
+
+// Stores actions cell renderer
+export const StoresActionsCellRenderer = (params: ICellRendererParams) => {
+  const { data, context } = params;
+  
+  if (!data || !context) return null;
+
+  const handleEdit = () => {
+    if (context.onEdit) {
+      context.onEdit(data);
+    }
+  };
+
+  const handleConsume = () => {
+    if (context.onConsume) {
+      context.onConsume(data);
+    }
+  };
+
+  const handleReceive = () => {
+    if (context.onReceive) {
+      context.onReceive(data);
+    }
+  };
+
+  return (
+    <div className="flex gap-1 justify-center">
+      <Button size="sm" variant="outline" onClick={handleEdit}>
+        <Edit className="w-3 h-3" />
+      </Button>
+      <Button size="sm" variant="outline" onClick={handleConsume}>
+        <Minus className="w-3 h-3" />
+      </Button>
+      <Button size="sm" variant="outline" onClick={handleReceive}>
+        <Plus className="w-3 h-3" />
+      </Button>
+    </div>
+  );
+};

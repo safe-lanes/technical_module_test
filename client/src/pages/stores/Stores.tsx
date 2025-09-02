@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -34,6 +35,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import * as XLSX from 'xlsx';
+import AgGridTable from '@/components/common/AgGridTable';
+import { 
+  StockStatusCellRenderer, 
+  StoresActionsCellRenderer 
+} from '@/components/common/AgGridCellRenderers';
 
 interface StoreItem {
   id: number;
@@ -671,6 +677,7 @@ const Stores: React.FC = () => {
   const [placeReceived, setPlaceReceived] = useState('');
   const [dateReceived, setDateReceived] = useState('');
   const [items, setItems] = useState<StoreItem[]>(storeItems);
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   // History filters
   const [historyDateFrom, setHistoryDateFrom] = useState('');
@@ -820,6 +827,86 @@ const Stores: React.FC = () => {
       return matchesTab && matchesSearch && matchesCategory && matchesStock;
     });
   }, [activeTab, searchTerm, categoryFilter, stockFilter, items]);
+
+  // AG Grid column definitions
+  const columnDefs = useMemo((): ColDef[] => [
+    {
+      headerName: activeTab === 'lubes' ? 'Lube Grade' : activeTab === 'chemicals' ? 'Chem Code' : 'Item Code',
+      field: 'itemCode',
+      width: 150,
+      pinned: 'left'
+    },
+    {
+      headerName: activeTab === 'lubes' ? 'Lube Type' : activeTab === 'chemicals' ? 'Chemical Name' : 'Item Name',
+      field: 'itemName',
+      width: 200
+    },
+    {
+      headerName: activeTab === 'lubes' ? 'Application' : activeTab === 'chemicals' ? 'Application Area' : 'Stores Category',
+      field: 'storesCategory',
+      width: 200
+    },
+    {
+      headerName: 'UOM',
+      field: 'uom',
+      width: 80
+    },
+    {
+      headerName: 'ROB',
+      field: 'rob',
+      width: 80,
+      cellRenderer: (params) => {
+        return <span className="font-medium">{params.value}</span>;
+      }
+    },
+    {
+      headerName: 'Min',
+      field: 'min',
+      width: 80,
+      cellRenderer: (params) => {
+        return <span className="font-medium">{params.value}</span>;
+      }
+    },
+    {
+      headerName: 'Stock',
+      field: 'stock',
+      width: 100,
+      cellRenderer: StockStatusCellRenderer
+    },
+    {
+      headerName: 'Location',
+      field: 'location',
+      width: 150
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      width: 140,
+      cellRenderer: StoresActionsCellRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right'
+    }
+  ], [activeTab]);
+
+  // AG Grid context for action handlers
+  const gridContext = useMemo(() => ({
+    onEdit: (item: StoreItem) => {
+      openEditModal(item);
+    },
+    onConsume: (item: StoreItem) => {
+      // Implement consume functionality
+      console.log('Consume item:', item);
+    },
+    onReceive: (item: StoreItem) => {
+      // Implement receive functionality
+      console.log('Receive item:', item);
+    }
+  }), []);
+
+  const onGridReady = (params: GridReadyEvent) => {
+    setGridApi(params.api);
+  };
 
   const getStockColor = (stock: string) => {
     if (stock === 'Low') return 'bg-yellow-100 text-yellow-800';
@@ -1398,105 +1485,22 @@ const Stores: React.FC = () => {
 
       {/* Table */}
       {viewMode === 'inventory' ? (
-        <div className='bg-white rounded-lg shadow overflow-hidden'>
-          {/* Table Header */}
-          <div className='bg-[#52baf3] text-white p-4'>
-            <div className='grid grid-cols-12 gap-4 items-center text-sm font-medium'>
-              <div className='col-span-2'>
-                {activeTab === 'lubes'
-                  ? 'Lube Grade'
-                  : activeTab === 'chemicals'
-                    ? 'Chem Code'
-                    : 'Item Code'}
-              </div>
-              <div className='col-span-2'>
-                {activeTab === 'lubes'
-                  ? 'Lube Type'
-                  : activeTab === 'chemicals'
-                    ? 'Chemical Name'
-                    : 'Item Name'}
-              </div>
-              <div className='col-span-2'>
-                {activeTab === 'lubes'
-                  ? 'Application'
-                  : activeTab === 'chemicals'
-                    ? 'Application Area'
-                    : 'Stores Category'}
-              </div>
-              <div className='col-span-1'>UOM</div>
-              <div className='col-span-1'>
-                {activeTab === 'lubes' || activeTab === 'chemicals'
-                  ? 'ROB'
-                  : 'ROB'}
-              </div>
-              <div className='col-span-1'>Min</div>
-              <div className='col-span-1'>Stock</div>
-              <div className='col-span-2'>Location</div>
-            </div>
-          </div>
-
-          {/* Table Body */}
-          <div className='divide-y divide-gray-200'>
-            {filteredItems.map(item => (
-              <div key={item.id} className='p-4 hover:bg-gray-50'>
-                <div className='grid grid-cols-12 gap-4 items-center text-sm'>
-                  <div className='col-span-2 font-medium text-gray-900'>
-                    {item.itemCode}
-                  </div>
-                  <div className='col-span-2 text-gray-700'>
-                    {item.itemName}
-                  </div>
-                  <div className='col-span-2 text-gray-600'>
-                    {item.storesCategory}
-                  </div>
-                  <div className='col-span-1 text-gray-700'>
-                    {item.uom || '-'}
-                  </div>
-                  <div className='col-span-1 text-gray-700'>{item.rob}</div>
-                  <div className='col-span-1 text-gray-700'>{item.min}</div>
-                  <div className='col-span-1'>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${getStockColor(item.stock)}`}
-                    >
-                      {item.stock}
-                    </span>
-                  </div>
-                  <div className='col-span-1 text-gray-600'>
-                    {item.location}
-                  </div>
-                  <div className='col-span-1 flex gap-1'>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='h-8 w-8 p-0'
-                      onClick={() => openEditModal(item)}
-                      title='Edit Item'
-                    >
-                      <Edit className='h-4 w-4 text-gray-500' />
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='h-8 w-8 p-0'
-                      onClick={() => openReceiveModal(item)}
-                      title='Receive'
-                    >
-                      <Plus className='h-4 w-4 text-gray-500' />
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='h-8 w-8 p-0'
-                      onClick={() => handleArchive(item)}
-                      title='Archive'
-                    >
-                      <Archive className='h-4 w-4 text-gray-400' />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className='bg-white rounded-lg'>
+          <AgGridTable
+            rowData={filteredItems}
+            columnDefs={columnDefs}
+            onGridReady={onGridReady}
+            context={gridContext}
+            height="calc(100vh - 280px)"
+            enableExport={true}
+            enableSideBar={true}
+            enableStatusBar={true}
+            pagination={true}
+            paginationPageSize={50}
+            animateRows={true}
+            suppressRowClickSelection={true}
+            className="rounded-lg shadow-sm"
+          />
         </div>
       ) : (
         /* History Table */
