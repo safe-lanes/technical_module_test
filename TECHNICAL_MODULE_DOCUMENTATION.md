@@ -573,6 +573,209 @@ The system includes a complete authentication implementation for development and
 - **Protected Routes**: Automatic redirection for unauthenticated users
 - **Permission Checking**: Component-level role-based rendering
 
+### Converting Mock Authentication to Real Authentication
+
+The current system uses mock authentication for development. To implement real authentication in production:
+
+#### Backend Authentication Changes
+
+**Step 1: Replace Mock User Store**
+```typescript
+// server/middleware/auth.ts - Remove mock users
+// Replace mockUsers Map with database user lookup
+
+// Example implementation:
+export const authenticateUser = async (username: string, password: string): Promise<AuthUser | null> => {
+  // Replace with real database user lookup
+  const user = await db.select().from(users).where(eq(users.username, username));
+  
+  if (!user || !await bcrypt.compare(password, user.passwordHash)) {
+    return null;
+  }
+  
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    permissions: await getUserPermissions(user.id),
+    vesselId: user.vesselId
+  };
+};
+```
+
+**Step 2: Add Password Hashing**
+```bash
+npm install bcryptjs @types/bcryptjs
+```
+
+**Step 3: User Database Schema**
+```typescript
+// shared/schema.ts - Add users table
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  username: text('username').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  role: text('role').notNull(), // 'admin' | 'master' | 'officer'
+  vesselId: text('vessel_id').notNull(),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  lastLogin: timestamp('last_login')
+});
+```
+
+**Step 4: Implement User Registration**
+```typescript
+// Add registration endpoint in routes
+app.post('/api/auth/register', async (req, res) => {
+  const { username, password, role, vesselId } = req.body;
+  
+  const passwordHash = await bcrypt.hash(password, 10);
+  
+  const user = await db.insert(users).values({
+    id: generateId(),
+    username,
+    passwordHash,
+    role,
+    vesselId
+  }).returning();
+  
+  res.json({ success: true, user: omit(user, ['passwordHash']) });
+});
+```
+
+#### Frontend Authentication Changes
+
+**Step 1: Update Login Component**
+- Remove hardcoded password (`password123`)
+- Add proper form validation
+- Handle authentication errors appropriately
+
+**Step 2: Add Registration Component** (if needed)
+```typescript
+// For admin user creation in production
+export function UserRegistration() {
+  // Form for creating new users with proper validation
+}
+```
+
+#### Environment Configuration
+```env
+# Production environment variables
+JWT_SECRET=your-secure-random-secret-key-here
+JWT_EXPIRES_IN=24h
+BCRYPT_ROUNDS=12
+```
+
+### Deployment Architecture Options
+
+The Technical Module can be deployed in two primary configurations:
+
+#### Option 1: Standalone Module Deployment
+
+**Configuration:**
+```javascript
+// For standalone deployment
+const config = {
+  standalone: true,
+  authentication: 'internal', // Uses internal JWT system
+  database: 'dedicated',      // Own database instance
+  port: 5000
+};
+```
+
+**Features:**
+- **Independent Authentication**: Complete JWT-based auth system
+- **Dedicated Database**: Own PostgreSQL/MySQL instance
+- **Full API Surface**: All REST endpoints exposed
+- **Direct Access**: Direct URL access to all functionality
+- **Resource Isolation**: Independent resource management
+
+**Use Case:** Independent vessel management or separate deployment requirements
+
+#### Option 2: Microfrontend Integration
+
+**Configuration:**
+```javascript
+// micro-frontend.config.js
+export const moduleFederationConfig = {
+  name: "technical-module",
+  filename: "remoteEntry.js",
+  exposes: {
+    "./TechnicalModule": "./client/src/App.tsx",
+    "./ComponentsModule": "./client/src/pages/Components.tsx",
+    "./SparesModule": "./client/src/pages/Spares.tsx",
+    "./RunningHoursModule": "./client/src/pages/RunningHours.tsx",
+    "./ChangeRequestsModule": "./client/src/pages/ModifyPMS.tsx"
+  },
+  shared: {
+    react: { singleton: true },
+    "react-dom": { singleton: true },
+    "@tanstack/react-query": { singleton: true }
+  }
+};
+```
+
+**Integration with Host Application:**
+```typescript
+// Host application integration
+import { lazy } from 'react';
+
+const TechnicalModule = lazy(() => import('technical-module/TechnicalModule'));
+const ComponentsModule = lazy(() => import('technical-module/ComponentsModule'));
+
+// In host routing
+<Route path="/technical" element={<TechnicalModule />} />
+<Route path="/technical/components" element={<ComponentsModule />} />
+```
+
+**Features:**
+- **Shared Authentication**: Uses host application authentication
+- **Shared Navigation**: Integrated with main application navigation
+- **Resource Sharing**: Shared React instances and dependencies
+- **Unified Experience**: Seamless integration with other modules
+- **Cross-Module Communication**: Shared state and events
+
+#### Authentication Integration for Microfrontend
+
+**Shared Authentication Context:**
+```typescript
+// Host application provides authentication
+const TechnicalModuleWrapper = () => {
+  const { user, token } = useHostAuth(); // From parent application
+  
+  return (
+    <AuthProvider value={{ user, token, isAuthenticated: !!user }}>
+      <TechnicalModule />
+    </AuthProvider>
+  );
+};
+```
+
+**API Integration:**
+```typescript
+// Technical module uses host authentication
+const apiClient = {
+  baseURL: process.env.TECHNICAL_MODULE_API_URL,
+  headers: {
+    'Authorization': `Bearer ${getHostAuthToken()}`
+  }
+};
+```
+
+#### Production Deployment Considerations
+
+**Standalone Deployment:**
+- **Pros**: Independent scaling, isolated resources, full control
+- **Cons**: Separate authentication, potential UI inconsistency
+- **Best For**: Dedicated vessel systems, independent maritime operations
+
+**Microfrontend Deployment:**
+- **Pros**: Unified UX, shared authentication, consistent branding
+- **Cons**: Deployment coordination, shared dependency management
+- **Best For**: Fleet management systems, integrated maritime platforms
+
+Both deployment options maintain full functionality with the same codebase, differing only in configuration and integration approach.
+
 ## Logging System (Winston)
 
 ### Production Logging Features
