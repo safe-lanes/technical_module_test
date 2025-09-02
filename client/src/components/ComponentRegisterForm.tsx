@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -21,12 +21,8 @@ import {
   Plus,
   Upload,
   Eye,
-  Trash2,
-  Edit3,
-  X,
   ChevronRight,
   ChevronDown,
-  Search,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -39,7 +35,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { getComponentCategory } from '@/utils/componentUtils';
 import AddFieldModal from '@/components/modals/AddFieldModal';
