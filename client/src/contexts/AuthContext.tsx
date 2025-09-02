@@ -1,5 +1,16 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthenticatedUser, LoginRequest, UserRole, Permission } from '../../../shared/types/auth';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import {
+  AuthenticatedUser,
+  LoginRequest,
+  UserRole,
+  Permission,
+} from '../../../shared/types/auth';
 
 interface AuthContextType {
   user: AuthenticatedUser | null;
@@ -96,13 +107,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     hasPermission,
     hasRole,
     hasAnyPermission,
-    token: user?.token || null
+    token: user?.token || null,
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
@@ -121,36 +130,43 @@ export const withAuth = <P extends object>(
   requiredRoles?: UserRole[]
 ) => {
   return function AuthenticatedComponent(props: P) {
-    const { isAuthenticated, hasAnyPermission, hasRole, isLoading, user } = useAuth();
+    const { isAuthenticated, hasAnyPermission, hasRole, isLoading, user } =
+      useAuth();
 
     if (isLoading) {
       return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-lg">Loading...</div>
+        <div className='flex items-center justify-center min-h-screen'>
+          <div className='text-lg'>Loading...</div>
         </div>
       );
     }
 
     if (!isAuthenticated) {
       return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-lg text-red-600">Please log in to access this page.</div>
+        <div className='flex items-center justify-center min-h-screen'>
+          <div className='text-lg text-red-600'>
+            Please log in to access this page.
+          </div>
         </div>
       );
     }
 
     if (requiredPermissions && !hasAnyPermission(requiredPermissions)) {
       return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-lg text-red-600">You don't have permission to access this page.</div>
+        <div className='flex items-center justify-center min-h-screen'>
+          <div className='text-lg text-red-600'>
+            You don't have permission to access this page.
+          </div>
         </div>
       );
     }
 
     if (requiredRoles && !requiredRoles.some(role => hasRole(role))) {
       return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-lg text-red-600">Your role doesn't have access to this page.</div>
+        <div className='flex items-center justify-center min-h-screen'>
+          <div className='text-lg text-red-600'>
+            Your role doesn't have access to this page.
+          </div>
         </div>
       );
     }

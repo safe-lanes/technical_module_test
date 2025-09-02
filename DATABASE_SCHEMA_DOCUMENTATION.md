@@ -1,28 +1,31 @@
 # Database Schema Documentation - Element Crew Appraisals System
 
 ## Overview
+
 The system uses MySQL 5.7+ with Drizzle ORM for type-safe database operations. The schema is designed to support comprehensive crew appraisal management with configurable forms and maritime-specific features.
 
 ## Database Configuration
 
 ### Connection Settings
+
 ```typescript
 // drizzle.config.ts
 export default {
-  schema: "./shared/schema.ts",
-  out: "./migrations",
-  dialect: "mysql",
+  schema: './shared/schema.ts',
+  out: './migrations',
+  dialect: 'mysql',
   dbCredentials: {
-    host: process.env.MYSQL_HOST || "localhost",
-    port: parseInt(process.env.MYSQL_PORT || "3306"),
-    user: process.env.MYSQL_USER || "crew_admin",
-    password: process.env.MYSQL_PASSWORD || "password",
-    database: process.env.MYSQL_DATABASE || "crew_appraisals",
-  }
-}
+    host: process.env.MYSQL_HOST || 'localhost',
+    port: parseInt(process.env.MYSQL_PORT || '3306'),
+    user: process.env.MYSQL_USER || 'crew_admin',
+    password: process.env.MYSQL_PASSWORD || 'password',
+    database: process.env.MYSQL_DATABASE || 'crew_appraisals',
+  },
+};
 ```
 
 ### Environment Variables
+
 ```env
 DATABASE_URL="mysql://crew_admin:password@localhost:3306/crew_appraisals"
 MYSQL_HOST="localhost"
@@ -35,6 +38,7 @@ MYSQL_DATABASE="crew_appraisals"
 ## Database Tables
 
 ### 1. users
+
 User authentication and management.
 
 ```sql
@@ -48,24 +52,27 @@ CREATE TABLE users (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const users = mysqlTable("users", {
-  id: int("id").primaryKey().autoincrement(),
-  username: varchar("username", { length: 50 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+export const users = mysqlTable('users', {
+  id: int('id').primaryKey().autoincrement(),
+  username: varchar('username', { length: 50 }).notNull().unique(),
+  password: varchar('password', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
-INSERT INTO users (username, password) VALUES 
+INSERT INTO users (username, password) VALUES
 ('admin', '$2b$10$hashedpassword1'),
 ('manager', '$2b$10$hashedpassword2');
 ```
 
 ### 2. forms
+
 Form configurations and version control.
 
 ```sql
@@ -81,26 +88,29 @@ CREATE TABLE forms (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const forms = mysqlTable("forms", {
-  id: int("id").primaryKey().autoincrement(),
-  name: varchar("name", { length: 100 }).notNull(),
-  versionNo: int("version_no").notNull().default(1),
-  versionDate: date("version_date").notNull(),
-  rankGroup: json("rank_group").default([]),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+export const forms = mysqlTable('forms', {
+  id: int('id').primaryKey().autoincrement(),
+  name: varchar('name', { length: 100 }).notNull(),
+  versionNo: int('version_no').notNull().default(1),
+  versionDate: date('version_date').notNull(),
+  rankGroup: json('rank_group').default([]),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
-INSERT INTO forms (name, version_no, version_date, rank_group) VALUES 
+INSERT INTO forms (name, version_no, version_date, rank_group) VALUES
 ('Crew Appraisal Form', 1, '2025-01-01', '["All Ranks"]'),
 ('Officer Appraisal Form', 1, '2025-01-01', '["Senior Officers", "Junior Officers"]');
 ```
 
 ### 3. available_ranks
+
 Maritime rank definitions and categories.
 
 ```sql
@@ -113,18 +123,24 @@ CREATE TABLE available_ranks (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const availableRanks = mysqlTable("available_ranks", {
-  id: int("id").primaryKey().autoincrement(),
-  name: varchar("name", { length: 50 }).notNull().unique(),
-  category: mysqlEnum("category", ["Senior Officers", "Junior Officers", "Ratings"]).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+export const availableRanks = mysqlTable('available_ranks', {
+  id: int('id').primaryKey().autoincrement(),
+  name: varchar('name', { length: 50 }).notNull().unique(),
+  category: mysqlEnum('category', [
+    'Senior Officers',
+    'Junior Officers',
+    'Ratings',
+  ]).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
-INSERT INTO available_ranks (name, category) VALUES 
+INSERT INTO available_ranks (name, category) VALUES
 ('Master', 'Senior Officers'),
 ('Chief Officer', 'Senior Officers'),
 ('Second Officer', 'Junior Officers'),
@@ -141,6 +157,7 @@ INSERT INTO available_ranks (name, category) VALUES
 ```
 
 ### 4. rank_groups
+
 Configurable rank groupings per form.
 
 ```sql
@@ -156,26 +173,29 @@ CREATE TABLE rank_groups (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const rankGroups = mysqlTable("rank_groups", {
-  id: int("id").primaryKey().autoincrement(),
-  formId: int("form_id").notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
-  ranks: json("ranks").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+export const rankGroups = mysqlTable('rank_groups', {
+  id: int('id').primaryKey().autoincrement(),
+  formId: int('form_id').notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  ranks: json('ranks').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
-INSERT INTO rank_groups (form_id, name, ranks) VALUES 
+INSERT INTO rank_groups (form_id, name, ranks) VALUES
 (1, 'Senior Officers', '["Master", "Chief Officer", "Chief Engineer"]'),
 (1, 'Junior Officers', '["Second Officer", "Third Officer", "Second Engineer", "Third Engineer"]'),
 (1, 'Ratings', '["Bosun", "Able Seaman", "Ordinary Seaman", "Oiler", "Wiper"]');
 ```
 
 ### 5. crew_members
+
 Crew member profiles and information.
 
 ```sql
@@ -202,33 +222,35 @@ CREATE TABLE crew_members (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const crewMembers = mysqlTable("crew_members", {
-  id: varchar("id", { length: 20 }).primaryKey(),
-  firstName: varchar("first_name", { length: 50 }).notNull(),
-  middleName: varchar("middle_name", { length: 50 }),
-  lastName: varchar("last_name", { length: 50 }).notNull(),
-  rank: varchar("rank", { length: 50 }).notNull(),
-  nationality: varchar("nationality", { length: 50 }).notNull(),
-  vesselType: varchar("vessel_type", { length: 50 }).notNull(),
-  dateOfBirth: date("date_of_birth").notNull(),
-  placeOfBirth: varchar("place_of_birth", { length: 100 }).notNull(),
-  seamanBookNo: varchar("seaman_book_no", { length: 20 }).notNull(),
-  passportNo: varchar("passport_no", { length: 20 }).notNull(),
-  dateOfJoining: date("date_of_joining").notNull(),
-  contractDuration: varchar("contract_duration", { length: 20 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+export const crewMembers = mysqlTable('crew_members', {
+  id: varchar('id', { length: 20 }).primaryKey(),
+  firstName: varchar('first_name', { length: 50 }).notNull(),
+  middleName: varchar('middle_name', { length: 50 }),
+  lastName: varchar('last_name', { length: 50 }).notNull(),
+  rank: varchar('rank', { length: 50 }).notNull(),
+  nationality: varchar('nationality', { length: 50 }).notNull(),
+  vesselType: varchar('vessel_type', { length: 50 }).notNull(),
+  dateOfBirth: date('date_of_birth').notNull(),
+  placeOfBirth: varchar('place_of_birth', { length: 100 }).notNull(),
+  seamanBookNo: varchar('seaman_book_no', { length: 20 }).notNull(),
+  passportNo: varchar('passport_no', { length: 20 }).notNull(),
+  dateOfJoining: date('date_of_joining').notNull(),
+  contractDuration: varchar('contract_duration', { length: 20 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
 INSERT INTO crew_members (
   id, first_name, middle_name, last_name, rank, nationality, vessel_type,
   date_of_birth, place_of_birth, seaman_book_no, passport_no,
   date_of_joining, contract_duration
-) VALUES 
+) VALUES
 ('2025-05-14', 'James', 'Robert', 'Wilson', 'Chief Officer', 'British', 'Container Ship',
  '1985-03-15', 'London, UK', 'UK123456', 'GB987654321', '2024-01-15', '6 months'),
 ('2025-05-15', 'Maria', 'Elena', 'Rodriguez', 'Second Engineer', 'Spanish', 'Tanker',
@@ -238,6 +260,7 @@ INSERT INTO crew_members (
 ```
 
 ### 6. appraisal_results
+
 Completed appraisal evaluations and ratings.
 
 ```sql
@@ -268,32 +291,37 @@ CREATE TABLE appraisal_results (
 ```
 
 **Drizzle Schema:**
+
 ```typescript
-export const appraisalResults = mysqlTable("appraisal_results", {
-  id: int("id").primaryKey().autoincrement(),
-  crewMemberId: varchar("crew_member_id", { length: 20 }).notNull(),
-  formId: int("form_id").notNull(),
-  appraisalType: varchar("appraisal_type", { length: 50 }).notNull(),
-  vesselType: varchar("vessel_type", { length: 50 }).notNull(),
-  overallRating: decimal("overall_rating", { precision: 3, scale: 2 }).notNull(),
-  partAData: json("part_a_data"),
-  partBData: json("part_b_data"),
-  partCData: json("part_c_data"),
-  partDData: json("part_d_data"),
-  partEData: json("part_e_data"),
-  partFData: json("part_f_data"),
-  partGData: json("part_g_data"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
+export const appraisalResults = mysqlTable('appraisal_results', {
+  id: int('id').primaryKey().autoincrement(),
+  crewMemberId: varchar('crew_member_id', { length: 20 }).notNull(),
+  formId: int('form_id').notNull(),
+  appraisalType: varchar('appraisal_type', { length: 50 }).notNull(),
+  vesselType: varchar('vessel_type', { length: 50 }).notNull(),
+  overallRating: decimal('overall_rating', {
+    precision: 3,
+    scale: 2,
+  }).notNull(),
+  partAData: json('part_a_data'),
+  partBData: json('part_b_data'),
+  partCData: json('part_c_data'),
+  partDData: json('part_d_data'),
+  partEData: json('part_e_data'),
+  partFData: json('part_f_data'),
+  partGData: json('part_g_data'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
 });
 ```
 
 **Sample Data:**
+
 ```sql
 INSERT INTO appraisal_results (
   crew_member_id, form_id, appraisal_type, vessel_type, overall_rating,
   part_a_data, part_b_data, part_c_data, part_d_data, part_e_data, part_f_data, part_g_data
-) VALUES 
+) VALUES
 ('2025-05-14', 1, 'Annual', 'Container Ship', 3.80,
  '{"personalInfo": {"firstName": "James", "lastName": "Wilson", "rank": "Chief Officer"}}',
  '{"trainingRecords": [{"type": "BRM", "completed": "2024-02-01"}]}',
@@ -307,21 +335,23 @@ INSERT INTO appraisal_results (
 ## Relationships
 
 ### Foreign Key Constraints
+
 ```sql
 -- rank_groups references forms
-ALTER TABLE rank_groups ADD CONSTRAINT fk_rank_groups_form_id 
+ALTER TABLE rank_groups ADD CONSTRAINT fk_rank_groups_form_id
 FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE;
 
 -- appraisal_results references crew_members
-ALTER TABLE appraisal_results ADD CONSTRAINT fk_appraisal_results_crew_member_id 
+ALTER TABLE appraisal_results ADD CONSTRAINT fk_appraisal_results_crew_member_id
 FOREIGN KEY (crew_member_id) REFERENCES crew_members(id) ON DELETE CASCADE;
 
 -- appraisal_results references forms
-ALTER TABLE appraisal_results ADD CONSTRAINT fk_appraisal_results_form_id 
+ALTER TABLE appraisal_results ADD CONSTRAINT fk_appraisal_results_form_id
 FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE;
 ```
 
 ### Drizzle Relations
+
 ```typescript
 export const formsRelations = relations(forms, ({ many }) => ({
   rankGroups: many(rankGroups),
@@ -332,21 +362,25 @@ export const crewMembersRelations = relations(crewMembers, ({ many }) => ({
   appraisalResults: many(appraisalResults),
 }));
 
-export const appraisalResultsRelations = relations(appraisalResults, ({ one }) => ({
-  crewMember: one(crewMembers, {
-    fields: [appraisalResults.crewMemberId],
-    references: [crewMembers.id],
-  }),
-  form: one(forms, {
-    fields: [appraisalResults.formId],
-    references: [forms.id],
-  }),
-}));
+export const appraisalResultsRelations = relations(
+  appraisalResults,
+  ({ one }) => ({
+    crewMember: one(crewMembers, {
+      fields: [appraisalResults.crewMemberId],
+      references: [crewMembers.id],
+    }),
+    form: one(forms, {
+      fields: [appraisalResults.formId],
+      references: [forms.id],
+    }),
+  })
+);
 ```
 
 ## Indexes for Performance
 
 ### Recommended Indexes
+
 ```sql
 -- Crew Members
 CREATE INDEX idx_crew_members_rank ON crew_members(rank);
@@ -369,6 +403,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ## JSON Field Structures
 
 ### Part A Data (Personal Information)
+
 ```json
 {
   "personalInfo": {
@@ -399,6 +434,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part B Data (Start of Appraisal Period)
+
 ```json
 {
   "startInfo": {
@@ -421,6 +457,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part C Data (Competence Assessment)
+
 ```json
 {
   "competenceAssessment": [
@@ -445,6 +482,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part D Data (Behavioral Assessment)
+
 ```json
 {
   "behaviouralAssessment": [
@@ -469,6 +507,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part E Data (Training Needs)
+
 ```json
 {
   "trainingNeeds": [
@@ -485,6 +524,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part F Data (Summary & Recommendations)
+
 ```json
 {
   "recommendations": [
@@ -512,6 +552,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ```
 
 ### Part G Data (Office Review)
+
 ```json
 {
   "officeReview": {
@@ -537,6 +578,7 @@ CREATE INDEX idx_appraisal_crew_type ON appraisal_results(crew_member_id, apprai
 ## Database Maintenance
 
 ### Regular Maintenance Tasks
+
 ```sql
 -- Optimize tables
 OPTIMIZE TABLE crew_members, appraisal_results, forms;
@@ -545,12 +587,13 @@ OPTIMIZE TABLE crew_members, appraisal_results, forms;
 ANALYZE TABLE crew_members, appraisal_results, forms;
 
 -- Check for fragmentation
-SELECT TABLE_NAME, DATA_FREE, DATA_LENGTH 
-FROM information_schema.TABLES 
+SELECT TABLE_NAME, DATA_FREE, DATA_LENGTH
+FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = 'crew_appraisals';
 ```
 
 ### Backup Strategy
+
 ```bash
 # Daily backup
 mysqldump --single-transaction --routines --triggers \
@@ -562,16 +605,17 @@ mysqldump --single-transaction --routines --triggers \
 ```
 
 ### Performance Monitoring
+
 ```sql
 -- Monitor slow queries
-SELECT * FROM mysql.slow_log 
+SELECT * FROM mysql.slow_log
 WHERE start_time > DATE_SUB(NOW(), INTERVAL 24 HOUR);
 
 -- Check table sizes
-SELECT 
+SELECT
   TABLE_NAME,
   ROUND(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024), 2) AS 'SIZE_MB'
-FROM information_schema.TABLES 
+FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = 'crew_appraisals'
 ORDER BY SIZE_MB DESC;
 ```

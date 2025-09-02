@@ -1,5 +1,4 @@
-
-#!/usr/bin/env node
+// Node.js setup script for Module Federation
 
 const fs = require('fs');
 const path = require('path');
@@ -412,8 +411,11 @@ const files = [
   { path: 'src/bootstrap.ts', content: bootstrapTs },
   { path: 'src/main.ts', content: mainTs },
   { path: 'src/app/micro-frontend-wrapper.component.ts', content: componentTs },
-  { path: 'src/app/micro-frontend-wrapper.component.css', content: componentCss },
-  { path: 'README-MICROFRONTEND.md', content: readmeMd }
+  {
+    path: 'src/app/micro-frontend-wrapper.component.css',
+    content: componentCss,
+  },
+  { path: 'README-MICROFRONTEND.md', content: readmeMd },
 ];
 
 console.log('📁 Creating configuration files...\n');
@@ -425,7 +427,7 @@ files.forEach(file => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     // Write file
     fs.writeFileSync(file.path, file.content);
     console.log(`✅ Created: ${file.path}`);

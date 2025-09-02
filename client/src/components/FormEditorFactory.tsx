@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormEditor } from '@/pages/FormEditor';
 import { Form } from '@shared/schema';
@@ -22,22 +21,23 @@ export const FormEditorFactory: React.FC<FormEditorFactoryProps> = ({
   form,
   rankGroupName,
   onClose,
-  onSave
+  onSave,
 }) => {
   // Get the appropriate editor component
   const EditorComponent = formEditors[formName];
-  
+
   if (!EditorComponent) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-          <h3 className="text-lg font-semibold mb-4">Form Editor Not Found</h3>
-          <p className="text-gray-600 mb-4">
-            No form editor is available for "{formName}". Please create one using the Form Editor Generator.
+      <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
+        <div className='bg-white rounded-lg shadow-lg p-6 max-w-md w-full'>
+          <h3 className='text-lg font-semibold mb-4'>Form Editor Not Found</h3>
+          <p className='text-gray-600 mb-4'>
+            No form editor is available for "{formName}". Please create one
+            using the Form Editor Generator.
           </p>
           <button
             onClick={onClose}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700'
           >
             Close
           </button>
@@ -57,7 +57,10 @@ export const FormEditorFactory: React.FC<FormEditorFactoryProps> = ({
 };
 
 // Function to register a new form editor
-export const registerFormEditor = (formName: string, component: React.ComponentType<any>) => {
+export const registerFormEditor = (
+  formName: string,
+  component: React.ComponentType<any>
+) => {
   formEditors[formName] = component;
 };
 

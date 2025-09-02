@@ -16,8 +16,8 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true
-        }
+          jsx: true,
+        },
       },
       globals: {
         console: 'readonly',
@@ -28,20 +28,23 @@ export default [
         module: 'readonly',
         require: 'readonly',
         exports: 'readonly',
-        global: 'readonly'
-      }
+        global: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': typescript,
-      'react': react,
+      react: react,
       'react-hooks': reactHooks,
-      'prettier': prettier
+      prettier: prettier,
     },
     rules: {
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -53,20 +56,15 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
-      'prefer-template': 'error'
+      'prefer-template': 'error',
     },
     settings: {
       react: {
-        version: 'detect'
-      }
-    }
+        version: 'detect',
+      },
+    },
   },
   {
-    ignores: [
-      'dist/**',
-      'build/**',
-      'node_modules/**',
-      '*.min.js'
-    ]
-  }
+    ignores: ['dist/**', 'build/**', 'node_modules/**', '*.min.js'],
+  },
 ];

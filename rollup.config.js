@@ -9,16 +9,16 @@ export default {
   output: {
     file: 'dist/index.js',
     format: 'esm',
-    sourcemap: true
+    sourcemap: true,
   },
   plugins: [
     json(),
     nodeResolve({
       preferBuiltins: true,
-      exportConditions: ['node']
+      exportConditions: ['node'],
     }),
     commonjs({
-      ignoreDynamicRequires: true
+      ignoreDynamicRequires: true,
     }),
     typescript({
       tsconfig: './tsconfig.json',
@@ -29,14 +29,14 @@ export default {
         skipLibCheck: true,
         noUnusedLocals: false,
         noUnusedParameters: false,
-        exactOptionalPropertyTypes: false
-      }
+        exactOptionalPropertyTypes: false,
+      },
     }),
     terser({
       compress: {
-        drop_console: process.env.NODE_ENV === 'production'
-      }
-    })
+        drop_console: process.env.NODE_ENV === 'production',
+      },
+    }),
   ],
   external: [
     // Node.js built-ins
@@ -74,6 +74,6 @@ export default {
     'ws',
     'papaparse',
     'xlsx',
-    'mysql2'
-  ]
+    'mysql2',
+  ],
 };

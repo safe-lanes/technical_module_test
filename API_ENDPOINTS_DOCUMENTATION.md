@@ -1,15 +1,19 @@
 # API Endpoints Documentation - Element Crew Appraisals System
 
 ## Base URL
+
 ```
 http://localhost:5000/api
 ```
 
 ## Authentication
+
 The API uses session-based authentication. All endpoints require authentication except for login/register.
 
 ## Response Format
+
 All API responses follow this format:
+
 ```json
 {
   "success": true,
@@ -19,6 +23,7 @@ All API responses follow this format:
 ```
 
 Error responses:
+
 ```json
 {
   "success": false,
@@ -32,9 +37,11 @@ Error responses:
 ### 1. Crew Members
 
 #### GET /api/crew-members
+
 Get all crew members with their basic information.
 
 **Response:**
+
 ```json
 [
   {
@@ -56,12 +63,15 @@ Get all crew members with their basic information.
 ```
 
 #### GET /api/crew-members/:id
+
 Get specific crew member details.
 
 **Parameters:**
+
 - `id` (string): Crew member ID
 
 **Response:**
+
 ```json
 {
   "id": "2025-05-14",
@@ -81,9 +91,11 @@ Get specific crew member details.
 ```
 
 #### POST /api/crew-members
+
 Create a new crew member.
 
 **Request Body:**
+
 ```json
 {
   "id": "2025-07-11",
@@ -103,6 +115,7 @@ Create a new crew member.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -125,12 +138,15 @@ Create a new crew member.
 ```
 
 #### PUT /api/crew-members/:id
+
 Update existing crew member.
 
 **Parameters:**
+
 - `id` (string): Crew member ID
 
 **Request Body:** (Partial update supported)
+
 ```json
 {
   "rank": "Captain",
@@ -140,12 +156,15 @@ Update existing crew member.
 ```
 
 #### DELETE /api/crew-members/:id
+
 Delete crew member.
 
 **Parameters:**
+
 - `id` (string): Crew member ID
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -156,9 +175,11 @@ Delete crew member.
 ### 2. Appraisal Results
 
 #### GET /api/appraisals
+
 Get all appraisal results.
 
 **Response:**
+
 ```json
 [
   {
@@ -199,21 +220,27 @@ Get all appraisal results.
 ```
 
 #### GET /api/appraisals/:id
+
 Get specific appraisal result.
 
 **Parameters:**
+
 - `id` (number): Appraisal result ID
 
 #### GET /api/appraisals/crew-member/:crewMemberId
+
 Get all appraisal results for a specific crew member.
 
 **Parameters:**
+
 - `crewMemberId` (string): Crew member ID
 
 #### POST /api/appraisals
+
 Create new appraisal result.
 
 **Request Body:**
+
 ```json
 {
   "crewMemberId": "2025-05-14",
@@ -304,17 +331,21 @@ Create new appraisal result.
 ```
 
 #### PUT /api/appraisals/:id
+
 Update existing appraisal result.
 
 #### DELETE /api/appraisals/:id
+
 Delete appraisal result.
 
 ### 3. Forms Configuration
 
 #### GET /api/forms
+
 Get all available forms.
 
 **Response:**
+
 ```json
 [
   {
@@ -328,12 +359,15 @@ Get all available forms.
 ```
 
 #### GET /api/forms/:id
+
 Get specific form configuration.
 
 #### POST /api/forms
+
 Create new form configuration.
 
 **Request Body:**
+
 ```json
 {
   "name": "Officer Appraisal Form",
@@ -344,17 +378,21 @@ Create new form configuration.
 ```
 
 #### PUT /api/forms/:id
+
 Update form configuration.
 
 #### DELETE /api/forms/:id
+
 Delete form configuration.
 
 ### 4. Available Ranks
 
 #### GET /api/available-ranks
+
 Get all available maritime ranks.
 
 **Response:**
+
 ```json
 [
   {
@@ -426,9 +464,11 @@ Get all available maritime ranks.
 ```
 
 #### POST /api/available-ranks
+
 Create new rank.
 
 **Request Body:**
+
 ```json
 {
   "name": "Cadet",
@@ -439,9 +479,11 @@ Create new rank.
 ### 5. Rank Groups
 
 #### GET /api/rank-groups
+
 Get all rank groups.
 
 **Response:**
+
 ```json
 [
   {
@@ -454,21 +496,30 @@ Get all rank groups.
     "id": 2,
     "formId": 1,
     "name": "Junior Officers",
-    "ranks": ["Second Officer", "Third Officer", "Second Engineer", "Third Engineer"]
+    "ranks": [
+      "Second Officer",
+      "Third Officer",
+      "Second Engineer",
+      "Third Engineer"
+    ]
   }
 ]
 ```
 
 #### GET /api/rank-groups/:formId
+
 Get rank groups for specific form.
 
 **Parameters:**
+
 - `formId` (number): Form ID
 
 #### POST /api/rank-groups
+
 Create new rank group.
 
 **Request Body:**
+
 ```json
 {
   "formId": 1,
@@ -478,28 +529,32 @@ Create new rank group.
 ```
 
 #### PUT /api/rank-groups/:id
+
 Update rank group.
 
 #### DELETE /api/rank-groups/:id
+
 Delete rank group.
 
 ## Error Codes
 
-| Code | Description |
-|------|-------------|
-| 400 | Bad Request - Invalid request data |
-| 401 | Unauthorized - Authentication required |
-| 403 | Forbidden - Access denied |
-| 404 | Not Found - Resource not found |
-| 409 | Conflict - Resource already exists |
-| 422 | Unprocessable Entity - Validation error |
-| 500 | Internal Server Error - Server error |
+| Code | Description                             |
+| ---- | --------------------------------------- |
+| 400  | Bad Request - Invalid request data      |
+| 401  | Unauthorized - Authentication required  |
+| 403  | Forbidden - Access denied               |
+| 404  | Not Found - Resource not found          |
+| 409  | Conflict - Resource already exists      |
+| 422  | Unprocessable Entity - Validation error |
+| 500  | Internal Server Error - Server error    |
 
 ## Rate Limiting
+
 - **Limit:** 100 requests per minute per IP
 - **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
 
 ## CORS Configuration
+
 ```javascript
 {
   origin: ['http://localhost:3000', 'http://localhost:4200'],
@@ -512,6 +567,7 @@ Delete rank group.
 ## Sample cURL Commands
 
 ### Get all crew members
+
 ```bash
 curl -X GET http://localhost:5000/api/crew-members \
   -H "Content-Type: application/json" \
@@ -519,6 +575,7 @@ curl -X GET http://localhost:5000/api/crew-members \
 ```
 
 ### Create new crew member
+
 ```bash
 curl -X POST http://localhost:5000/api/crew-members \
   -H "Content-Type: application/json" \
@@ -534,6 +591,7 @@ curl -X POST http://localhost:5000/api/crew-members \
 ```
 
 ### Get appraisal results
+
 ```bash
 curl -X GET http://localhost:5000/api/appraisals \
   -H "Content-Type: application/json" \
@@ -541,6 +599,7 @@ curl -X GET http://localhost:5000/api/appraisals \
 ```
 
 ### Create appraisal result
+
 ```bash
 curl -X POST http://localhost:5000/api/appraisals \
   -H "Content-Type: application/json" \
@@ -555,18 +614,20 @@ curl -X POST http://localhost:5000/api/appraisals \
 ```
 
 ## WebSocket Events (Future Enhancement)
+
 ```javascript
 // Real-time notifications
-socket.on('appraisal_updated', (data) => {
+socket.on('appraisal_updated', data => {
   console.log('Appraisal updated:', data);
 });
 
-socket.on('crew_member_added', (data) => {
+socket.on('crew_member_added', data => {
   console.log('New crew member:', data);
 });
 ```
 
 ## API Testing with Postman
+
 Import the following collection for comprehensive API testing:
 
 ```json

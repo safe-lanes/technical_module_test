@@ -1,7 +1,5 @@
-
 // Form creation commands interface
 export class FormCommands {
-  
   /**
    * Create a Form Editor for a specific form using a simple command
    * Usage: FormCommands.createFormEditor("Crew Promotion Form")
@@ -11,7 +9,9 @@ export class FormCommands {
       const { createFormEditor } = require('./formEditorGenerator');
       createFormEditor(formName);
       console.log(`✅ Form Editor created successfully for: ${formName}`);
-      console.log(`📝 You can now edit this form in Admin > Forms Configuration`);
+      console.log(
+        `📝 You can now edit this form in Admin > Forms Configuration`
+      );
     } catch (error) {
       console.error(`❌ Error creating Form Editor for ${formName}:`, error);
     }
@@ -23,7 +23,7 @@ export class FormCommands {
   static listTemplates(): string[] {
     const { formTemplates } = require('./formEditorGenerator');
     const templates = Object.keys(formTemplates);
-    console.log("📋 Available form templates:");
+    console.log('📋 Available form templates:');
     templates.forEach((template, index) => {
       console.log(`  ${index + 1}. ${template}`);
     });
@@ -33,7 +33,10 @@ export class FormCommands {
   /**
    * Create a new form in the database and generate its editor
    */
-  static async createFormWithEditor(formName: string, templateName?: string): Promise<void> {
+  static async createFormWithEditor(
+    formName: string,
+    templateName?: string
+  ): Promise<void> {
     try {
       // Create form in database
       const response = await fetch('/api/forms', {
@@ -43,12 +46,14 @@ export class FormCommands {
         },
         body: JSON.stringify({
           name: formName,
-          versionNo: "00",
-          versionDate: new Date().toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          }).replace(/ /g, '-')
+          versionNo: '00',
+          versionDate: new Date()
+            .toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
+            .replace(/ /g, '-'),
         }),
       });
 
@@ -74,7 +79,7 @@ export class FormCommands {
    */
   static quickCreate(formName: string): void {
     console.log(`🚀 Creating Form Editor for: ${formName}`);
-    
+
     // Check if template exists
     const { formTemplates } = require('./formEditorGenerator');
     if (formTemplates[formName]) {

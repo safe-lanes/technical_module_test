@@ -18,57 +18,68 @@ declare global {
 
 // Mock user data for development
 const mockUsers = new Map([
-  ['admin', {
-    id: 'user-admin',
-    username: 'admin',
-    role: UserRole.ADMIN,
-    permissions: Object.values(Permission),
-    vesselId: 'MV Test Vessel'
-  }],
-  ['master', {
-    id: 'user-master',
-    username: 'master',
-    role: UserRole.MASTER,
-    permissions: [
-      Permission.COMPONENTS_READ,
-      Permission.COMPONENTS_WRITE,
-      Permission.WORK_ORDERS_READ,
-      Permission.WORK_ORDERS_WRITE,
-      Permission.WORK_ORDERS_APPROVE,
-      Permission.SPARES_READ,
-      Permission.SPARES_WRITE,
-      Permission.SPARES_CONSUME,
-      Permission.RUNNING_HOURS_READ,
-      Permission.RUNNING_HOURS_WRITE,
-      Permission.REPORTS_READ,
-      Permission.REPORTS_GENERATE,
-      Permission.CHANGE_REQUESTS_READ,
-      Permission.CHANGE_REQUESTS_WRITE,
-      Permission.CHANGE_REQUESTS_APPROVE
-    ],
-    vesselId: 'MV Test Vessel'
-  }],
-  ['officer', {
-    id: 'user-officer',
-    username: 'officer',
-    role: UserRole.OFFICER,
-    permissions: [
-      Permission.COMPONENTS_READ,
-      Permission.WORK_ORDERS_READ,
-      Permission.WORK_ORDERS_WRITE,
-      Permission.SPARES_READ,
-      Permission.SPARES_WRITE,
-      Permission.RUNNING_HOURS_READ,
-      Permission.RUNNING_HOURS_WRITE,
-      Permission.REPORTS_READ,
-      Permission.CHANGE_REQUESTS_READ,
-      Permission.CHANGE_REQUESTS_WRITE
-    ],
-    vesselId: 'MV Test Vessel'
-  }]
+  [
+    'admin',
+    {
+      id: 'user-admin',
+      username: 'admin',
+      role: UserRole.ADMIN,
+      permissions: Object.values(Permission),
+      vesselId: 'MV Test Vessel',
+    },
+  ],
+  [
+    'master',
+    {
+      id: 'user-master',
+      username: 'master',
+      role: UserRole.MASTER,
+      permissions: [
+        Permission.COMPONENTS_READ,
+        Permission.COMPONENTS_WRITE,
+        Permission.WORK_ORDERS_READ,
+        Permission.WORK_ORDERS_WRITE,
+        Permission.WORK_ORDERS_APPROVE,
+        Permission.SPARES_READ,
+        Permission.SPARES_WRITE,
+        Permission.SPARES_CONSUME,
+        Permission.RUNNING_HOURS_READ,
+        Permission.RUNNING_HOURS_WRITE,
+        Permission.REPORTS_READ,
+        Permission.REPORTS_GENERATE,
+        Permission.CHANGE_REQUESTS_READ,
+        Permission.CHANGE_REQUESTS_WRITE,
+        Permission.CHANGE_REQUESTS_APPROVE,
+      ],
+      vesselId: 'MV Test Vessel',
+    },
+  ],
+  [
+    'officer',
+    {
+      id: 'user-officer',
+      username: 'officer',
+      role: UserRole.OFFICER,
+      permissions: [
+        Permission.COMPONENTS_READ,
+        Permission.WORK_ORDERS_READ,
+        Permission.WORK_ORDERS_WRITE,
+        Permission.SPARES_READ,
+        Permission.SPARES_WRITE,
+        Permission.RUNNING_HOURS_READ,
+        Permission.RUNNING_HOURS_WRITE,
+        Permission.REPORTS_READ,
+        Permission.CHANGE_REQUESTS_READ,
+        Permission.CHANGE_REQUESTS_WRITE,
+      ],
+      vesselId: 'MV Test Vessel',
+    },
+  ],
 ]);
 
-export const generateToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
+export const generateToken = (
+  payload: Omit<JWTPayload, 'iat' | 'exp'>
+): string => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
@@ -98,21 +109,31 @@ export const authenticateUser = async (username: string, password: string) => {
     username: user.username,
     role: user.role,
     permissions: user.permissions,
-    vesselId: user.vesselId
+    vesselId: user.vesselId,
   });
 
   return {
     user: {
       ...user,
       token,
-      refreshToken: generateToken({ userId: user.id, username: user.username, role: user.role, permissions: [], vesselId: user.vesselId })
+      refreshToken: generateToken({
+        userId: user.id,
+        username: user.username,
+        role: user.role,
+        permissions: [],
+        vesselId: user.vesselId,
+      }),
     },
-    token
+    token,
   };
 };
 
 // Authentication middleware
-export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -121,13 +142,13 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
     const token = authHeader.substring(7);
     const payload = verifyToken(token);
-    
+
     req.user = payload;
-    
+
     logger.info('User authenticated', {
       userId: payload.userId,
       username: payload.username,
-      role: payload.role
+      role: payload.role,
     });
 
     next();
@@ -163,7 +184,9 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
-      return next(new AuthorizationError(`Role ${req.user.role} not authorized`));
+      return next(
+        new AuthorizationError(`Role ${req.user.role} not authorized`)
+      );
     }
 
     next();
@@ -171,7 +194,11 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
 };
 
 // Optional authentication (doesn't fail if no token)
-export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
+export const optionalAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {

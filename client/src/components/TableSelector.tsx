@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -9,15 +9,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 interface TableSelectorProps {
   category: 'work_orders' | 'spares' | 'stores';
@@ -34,14 +34,14 @@ export function TableSelector({
   selectedItem,
   onSelect,
   searchQuery,
-  onSearchChange
+  onSearchChange,
 }: TableSelectorProps) {
-  const [criticalityFilter, setCriticalityFilter] = useState<string>("all");
-  const [stockFilter, setStockFilter] = useState<string>("all");
+  const [criticalityFilter, setCriticalityFilter] = useState<string>('all');
+  const [stockFilter, setStockFilter] = useState<string>('all');
 
   const filterItems = () => {
     if (!items) return [];
-    
+
     let filtered = items;
     const lowerQuery = searchQuery.toLowerCase();
 
@@ -72,7 +72,10 @@ export function TableSelector({
     }
 
     // Apply criticality filter for work orders and spares
-    if (criticalityFilter !== 'all' && (category === 'work_orders' || category === 'spares')) {
+    if (
+      criticalityFilter !== 'all' &&
+      (category === 'work_orders' || category === 'spares')
+    ) {
       filtered = filtered.filter(item => {
         if (criticalityFilter === 'critical') {
           return item.critical === true || item.critical === 'Critical';
@@ -83,7 +86,10 @@ export function TableSelector({
     }
 
     // Apply stock filter for spares and stores
-    if (stockFilter !== 'all' && (category === 'spares' || category === 'stores')) {
+    if (
+      stockFilter !== 'all' &&
+      (category === 'spares' || category === 'stores')
+    ) {
       filtered = filtered.filter(item => {
         const stockStatus = getStockStatus(item.rob, item.min);
         return stockStatus === stockFilter;
@@ -104,13 +110,13 @@ export function TableSelector({
     const status = getStockStatus(rob, min);
     switch (status) {
       case 'out':
-        return <Badge variant="destructive">Out of Stock</Badge>;
+        return <Badge variant='destructive'>Out of Stock</Badge>;
       case 'minimum':
-        return <Badge variant="destructive">Minimum</Badge>;
+        return <Badge variant='destructive'>Minimum</Badge>;
       case 'low':
-        return <Badge className="bg-orange-500 text-white">Low</Badge>;
+        return <Badge className='bg-orange-500 text-white'>Low</Badge>;
       case 'ok':
-        return <Badge className="bg-green-500 text-white">OK</Badge>;
+        return <Badge className='bg-green-500 text-white'>OK</Badge>;
       default:
         return null;
     }
@@ -119,51 +125,54 @@ export function TableSelector({
   const filteredItems = filterItems();
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+    <div className='h-full flex flex-col'>
+      <div className='p-4 border-b space-y-3'>
+        <div className='relative'>
+          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4' />
           <Input
-            type="text"
+            type='text'
             placeholder={`Search ${category.replace('_', ' ')}...`}
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10"
+            onChange={e => onSearchChange(e.target.value)}
+            className='pl-10'
           />
         </div>
-        
-        <div className="flex gap-2">
+
+        <div className='flex gap-2'>
           {(category === 'work_orders' || category === 'spares') && (
-            <Select value={criticalityFilter} onValueChange={setCriticalityFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Criticality" />
+            <Select
+              value={criticalityFilter}
+              onValueChange={setCriticalityFilter}
+            >
+              <SelectTrigger className='w-[150px]'>
+                <SelectValue placeholder='Criticality' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="non-critical">Non-Critical</SelectItem>
+                <SelectItem value='all'>All</SelectItem>
+                <SelectItem value='critical'>Critical</SelectItem>
+                <SelectItem value='non-critical'>Non-Critical</SelectItem>
               </SelectContent>
             </Select>
           )}
-          
+
           {(category === 'spares' || category === 'stores') && (
             <Select value={stockFilter} onValueChange={setStockFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Stock Status" />
+              <SelectTrigger className='w-[150px]'>
+                <SelectValue placeholder='Stock Status' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="ok">OK</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="minimum">Minimum</SelectItem>
-                <SelectItem value="out">Out of Stock</SelectItem>
+                <SelectItem value='all'>All</SelectItem>
+                <SelectItem value='ok'>OK</SelectItem>
+                <SelectItem value='low'>Low</SelectItem>
+                <SelectItem value='minimum'>Minimum</SelectItem>
+                <SelectItem value='out'>Out of Stock</SelectItem>
               </SelectContent>
             </Select>
           )}
         </div>
       </div>
-      
-      <ScrollArea className="flex-1">
+
+      <ScrollArea className='flex-1'>
         {filteredItems.length > 0 ? (
           <Table>
             <TableHeader>
@@ -205,33 +214,44 @@ export function TableSelector({
                 <TableRow
                   key={item.id || item.woNo || item.partCode || item.itemCode}
                   className={`cursor-pointer hover:bg-gray-50 ${
-                    selectedItem?.id === item.id || 
+                    selectedItem?.id === item.id ||
                     selectedItem?.woNo === item.woNo ||
                     selectedItem?.partCode === item.partCode ||
                     selectedItem?.itemCode === item.itemCode
-                      ? "bg-blue-50"
-                      : ""
+                      ? 'bg-blue-50'
+                      : ''
                   }`}
                   onClick={() => onSelect(item)}
                 >
                   {category === 'work_orders' && (
                     <>
-                      <TableCell className="font-mono">{item.woNo}</TableCell>
+                      <TableCell className='font-mono'>{item.woNo}</TableCell>
                       <TableCell>{item.jobTitle}</TableCell>
                       <TableCell>
                         {item.componentName ? (
                           <div>
-                            <div className="text-sm">{item.componentName}</div>
-                            <div className="text-xs text-gray-500">{item.componentCode}</div>
+                            <div className='text-sm'>{item.componentName}</div>
+                            <div className='text-xs text-gray-500'>
+                              {item.componentCode}
+                            </div>
                           </div>
-                        ) : '-'}
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
-                        {item.frequencyType} {item.frequencyValue} {item.frequencyUnit}
+                        {item.frequencyType} {item.frequencyValue}{' '}
+                        {item.frequencyUnit}
                       </TableCell>
                       <TableCell>{item.assignedTo || '-'}</TableCell>
                       <TableCell>
-                        <Badge variant={item.priority === 'High' ? 'destructive' : 'secondary'}>
+                        <Badge
+                          variant={
+                            item.priority === 'High'
+                              ? 'destructive'
+                              : 'secondary'
+                          }
+                        >
                           {item.priority}
                         </Badge>
                       </TableCell>
@@ -239,28 +259,40 @@ export function TableSelector({
                   )}
                   {category === 'spares' && (
                     <>
-                      <TableCell className="font-mono">{item.partCode}</TableCell>
+                      <TableCell className='font-mono'>
+                        {item.partCode}
+                      </TableCell>
                       <TableCell>{item.partName}</TableCell>
                       <TableCell>
                         {item.componentName ? (
                           <div>
-                            <div className="text-sm">{item.componentName}</div>
-                            <div className="text-xs text-gray-500">{item.componentCode}</div>
+                            <div className='text-sm'>{item.componentName}</div>
+                            <div className='text-xs text-gray-500'>
+                              {item.componentCode}
+                            </div>
                           </div>
-                        ) : '-'}
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>{item.uom || '-'}</TableCell>
-                      <TableCell>{item.min}/{item.rob}</TableCell>
+                      <TableCell>
+                        {item.min}/{item.rob}
+                      </TableCell>
                       <TableCell>{getStockBadge(item.rob, item.min)}</TableCell>
                     </>
                   )}
                   {category === 'stores' && (
                     <>
-                      <TableCell className="font-mono">{item.itemCode}</TableCell>
+                      <TableCell className='font-mono'>
+                        {item.itemCode}
+                      </TableCell>
                       <TableCell>{item.itemName}</TableCell>
                       <TableCell>{item.storesCategory || '-'}</TableCell>
                       <TableCell>{item.uom || '-'}</TableCell>
-                      <TableCell>{item.min}/{item.rob}</TableCell>
+                      <TableCell>
+                        {item.min}/{item.rob}
+                      </TableCell>
                       <TableCell>{getStockBadge(item.rob, item.min)}</TableCell>
                     </>
                   )}
@@ -269,9 +301,7 @@ export function TableSelector({
             </TableBody>
           </Table>
         ) : (
-          <div className="text-center text-gray-500 py-8">
-            No items found
-          </div>
+          <div className='text-center text-gray-500 py-8'>No items found</div>
         )}
       </ScrollArea>
     </div>

@@ -2,7 +2,7 @@
 export const getComponentCategory = (componentId: string): string => {
   // Extract the first level from the component ID
   const topLevelId = componentId.split('.')[0];
-  
+
   // Map top-level ID to category name
   const categoryMap: Record<string, string> = {
     '1': 'Ship General',
@@ -12,15 +12,15 @@ export const getComponentCategory = (componentId: string): string => {
     '5': 'Equipment for Crew & Passengers',
     '6': 'Machinery Main Components',
     '7': 'Systems for Machinery Main Components',
-    '8': 'Ship Common Systems'
+    '8': 'Ship Common Systems',
   };
-  
+
   return categoryMap[topLevelId] || '';
 };
 
 // Find a component node by ID in the tree
 export const findComponentNode = (
-  nodes: any[], 
+  nodes: any[],
   targetId: string
 ): any | null => {
   for (const node of nodes) {
@@ -38,15 +38,15 @@ export const findComponentNode = (
 // Build component tree from flat list
 export const buildComponentTree = (components: any[]): any[] => {
   if (!components || components.length === 0) return [];
-  
+
   // Create a map for quick lookup
   const componentMap = new Map();
   components.forEach(comp => {
     componentMap.set(comp.id || comp.componentId, { ...comp, children: [] });
   });
-  
+
   const tree: any[] = [];
-  
+
   // Build the tree structure
   components.forEach(comp => {
     const node = componentMap.get(comp.id || comp.componentId);
@@ -63,7 +63,7 @@ export const buildComponentTree = (components: any[]): any[] => {
       tree.push(node);
     }
   });
-  
+
   // Sort nodes at each level by code
   const sortTree = (nodes: any[]) => {
     nodes.sort((a, b) => {
@@ -77,7 +77,7 @@ export const buildComponentTree = (components: any[]): any[] => {
       }
     });
   };
-  
+
   sortTree(tree);
   return tree;
 };

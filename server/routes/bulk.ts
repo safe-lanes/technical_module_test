@@ -8,9 +8,9 @@ import fs from 'fs';
 import { storage } from '../storage';
 
 const router = Router();
-const upload = multer({ 
+const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 20 * 1024 * 1024 } // 20MB limit
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
 });
 
 // Store dry-run results temporarily (in production, use Redis or similar)
@@ -19,17 +19,28 @@ const dryRunCache = new Map<string, any>();
 // Component categories from existing system
 const COMPONENT_CATEGORIES = [
   "Ship's Structure",
-  "Deck Machinery", 
-  "Engine Department",
-  "Safety Equipment",
-  "Accommodation",
-  "Hull",
-  "Equipment for Cargo",
-  "Ship General"
+  'Deck Machinery',
+  'Engine Department',
+  'Safety Equipment',
+  'Accommodation',
+  'Hull',
+  'Equipment for Cargo',
+  'Ship General',
 ];
 
 // UOM list
-const UOM_LIST = ['pcs', 'set', 'ltr', 'kg', 'm', 'box', 'roll', 'pack', 'kit', 'other'];
+const UOM_LIST = [
+  'pcs',
+  'set',
+  'ltr',
+  'kg',
+  'm',
+  'box',
+  'roll',
+  'pack',
+  'kit',
+  'other',
+];
 
 // Stores categories
 const STORES_CATEGORIES = [
@@ -37,13 +48,13 @@ const STORES_CATEGORIES = [
   'Electrical',
   'Mechanical',
   'Safety',
-  'Consumables'
+  'Consumables',
 ];
 
 // Generate template based on type
 router.get('/template', (req, res) => {
   const { type } = req.query;
-  
+
   if (!['components', 'spares', 'stores'].includes(type as string)) {
     return res.status(400).json({ error: 'Invalid template type' });
   }
@@ -57,19 +68,32 @@ router.get('/template', (req, res) => {
     case 'components':
       headers = [
         // Section A
-        'Component Code', 'Component Name', 'Component Category',
-        'Maker', 'Model', 'Serial No', 'Drawing No', 'Location',
-        'Critical (Yes/No)', 'Condition Based (Yes/No)',
-        'Installation Date', 'Commissioned Date', 'Rating', 'No of Units',
-        'Eqpt / System Department', 'Parent Component Code',
-        'Dimensions/Size', 'Notes',
+        'Component Code',
+        'Component Name',
+        'Component Category',
+        'Maker',
+        'Model',
+        'Serial No',
+        'Drawing No',
+        'Location',
+        'Critical (Yes/No)',
+        'Condition Based (Yes/No)',
+        'Installation Date',
+        'Commissioned Date',
+        'Rating',
+        'No of Units',
+        'Eqpt / System Department',
+        'Parent Component Code',
+        'Dimensions/Size',
+        'Notes',
         // Section B
-        'Running Hours', 'Date Updated',
+        'Running Hours',
+        'Date Updated',
         // Metrics (up to 5)
         ...Array.from({ length: 5 }, (_, i) => [
           `Metric${i + 1} Name`,
           `Metric${i + 1} Value`,
-          `Metric${i + 1} Unit`
+          `Metric${i + 1} Unit`,
         ]).flat(),
         // Work Orders (up to 10)
         ...Array.from({ length: 10 }, (_, i) => [
@@ -77,7 +101,7 @@ router.get('/template', (req, res) => {
           `WO${i + 1} Frequency Type (Calendar/Running Hours)`,
           `WO${i + 1} Frequency Value`,
           `WO${i + 1} Initial Next Due (Date)`,
-          `WO${i + 1} Assigned To (Rank)`
+          `WO${i + 1} Assigned To (Rank)`,
         ]).flat(),
         // Spares (up to 10)
         ...Array.from({ length: 10 }, (_, i) => [
@@ -85,81 +109,167 @@ router.get('/template', (req, res) => {
           `SP${i + 1} Part Name`,
           `SP${i + 1} Min`,
           `SP${i + 1} Critical (Yes/No)`,
-          `SP${i + 1} Location`
-        ]).flat()
+          `SP${i + 1} Location`,
+        ]).flat(),
       ];
 
       validValues = [
-        'Required, Unique', 'Text', COMPONENT_CATEGORIES.join('|'),
-        'Text', 'Text', 'Text', 'Text', 'Text',
-        'Yes/No', 'Yes/No',
-        'DD-MM-YYYY', 'DD-MM-YYYY', 'Text', 'Number >= 0',
-        'Text', 'Existing Code or blank',
-        'Text', 'Text',
-        'Number >= 0', 'DD-MM-YYYY',
+        'Required, Unique',
+        'Text',
+        COMPONENT_CATEGORIES.join('|'),
+        'Text',
+        'Text',
+        'Text',
+        'Text',
+        'Text',
+        'Yes/No',
+        'Yes/No',
+        'DD-MM-YYYY',
+        'DD-MM-YYYY',
+        'Text',
+        'Number >= 0',
+        'Text',
+        'Existing Code or blank',
+        'Text',
+        'Text',
+        'Number >= 0',
+        'DD-MM-YYYY',
         ...Array.from({ length: 5 }, () => ['Text', 'Number', 'Text']).flat(),
         ...Array.from({ length: 10 }, () => [
-          'Text', 'Calendar/Running Hours', 'Number > 0', 'DD-MM-YYYY', 'Text'
+          'Text',
+          'Calendar/Running Hours',
+          'Number > 0',
+          'DD-MM-YYYY',
+          'Text',
         ]).flat(),
         ...Array.from({ length: 10 }, () => [
-          'Text', 'Text', 'Number >= 0', 'Yes/No', 'Text'
-        ]).flat()
+          'Text',
+          'Text',
+          'Number >= 0',
+          'Yes/No',
+          'Text',
+        ]).flat(),
       ];
 
       example = [
-        '1.1.1', 'Main Engine', 'Engine Department',
-        'MAN B&W', 'S60MC-C', '12345', 'DRW-001', 'Engine Room',
-        'Yes', 'Yes',
-        '01-01-2020', '15-03-2020', '15000 kW', '1',
-        'Engineering', '',
-        '10m x 5m x 8m', 'Main propulsion engine',
-        '25000', '15-01-2024',
+        '1.1.1',
+        'Main Engine',
+        'Engine Department',
+        'MAN B&W',
+        'S60MC-C',
+        '12345',
+        'DRW-001',
+        'Engine Room',
+        'Yes',
+        'Yes',
+        '01-01-2020',
+        '15-03-2020',
+        '15000 kW',
+        '1',
+        'Engineering',
+        '',
+        '10m x 5m x 8m',
+        'Main propulsion engine',
+        '25000',
+        '15-01-2024',
         ...Array.from({ length: 5 }, () => ['', '', '']).flat(),
-        'Cylinder Head Overhaul', 'Running Hours', '8000', '01-06-2024', 'Chief Engineer',
+        'Cylinder Head Overhaul',
+        'Running Hours',
+        '8000',
+        '01-06-2024',
+        'Chief Engineer',
         ...Array.from({ length: 9 }, () => ['', '', '', '', '']).flat(),
-        'SP-001', 'Cylinder Head Gasket', '2', 'Yes', 'Store Room A',
-        ...Array.from({ length: 9 }, () => ['', '', '', '', '']).flat()
+        'SP-001',
+        'Cylinder Head Gasket',
+        '2',
+        'Yes',
+        'Store Room A',
+        ...Array.from({ length: 9 }, () => ['', '', '', '', '']).flat(),
       ];
       break;
 
     case 'spares':
       headers = [
-        'Part Code', 'Part Name', 'Component Code',
-        'UOM', 'Min', 'Critical (Yes/No)', 'ROB', 'Location',
-        'Maker', 'Model', 'Remarks'
+        'Part Code',
+        'Part Name',
+        'Component Code',
+        'UOM',
+        'Min',
+        'Critical (Yes/No)',
+        'ROB',
+        'Location',
+        'Maker',
+        'Model',
+        'Remarks',
       ];
 
       validValues = [
-        'Required, Unique', 'Required', 'Required, Must exist',
-        UOM_LIST.join('|'), 'Number >= 0', 'Yes/No', 'Number >= 0', 'Text',
-        'Text', 'Text', 'Text'
+        'Required, Unique',
+        'Required',
+        'Required, Must exist',
+        UOM_LIST.join('|'),
+        'Number >= 0',
+        'Yes/No',
+        'Number >= 0',
+        'Text',
+        'Text',
+        'Text',
+        'Text',
       ];
 
       example = [
-        'SP-001', 'Cylinder Head Gasket', '1.1.1',
-        'pcs', '2', 'Yes', '5', 'Store Room A',
-        'MAN B&W', 'GS-12345', 'For main engine only'
+        'SP-001',
+        'Cylinder Head Gasket',
+        '1.1.1',
+        'pcs',
+        '2',
+        'Yes',
+        '5',
+        'Store Room A',
+        'MAN B&W',
+        'GS-12345',
+        'For main engine only',
       ];
       break;
 
     case 'stores':
       headers = [
-        'Item Code', 'Item Name', 'Type',
-        'Stores Category', 'UOM', 'ROB', 'Min', 'Location',
-        'Application Area', 'Remarks'
+        'Item Code',
+        'Item Name',
+        'Type',
+        'Stores Category',
+        'UOM',
+        'ROB',
+        'Min',
+        'Location',
+        'Application Area',
+        'Remarks',
       ];
 
       validValues = [
-        'Required, Unique', 'Required', 'Stores|Lubes|Chemicals|Others',
-        STORES_CATEGORIES.join('|'), UOM_LIST.join('|'), 
-        'Number >= 0', 'Number >= 0', 'Text',
-        'Text', 'Text'
+        'Required, Unique',
+        'Required',
+        'Stores|Lubes|Chemicals|Others',
+        STORES_CATEGORIES.join('|'),
+        UOM_LIST.join('|'),
+        'Number >= 0',
+        'Number >= 0',
+        'Text',
+        'Text',
+        'Text',
       ];
 
       example = [
-        'ST-001', 'Welding Electrodes', 'Stores',
-        'General Stores', 'kg', '50', '20', 'Workshop Store',
-        'Deck & Engine', 'AWS E6013 specification'
+        'ST-001',
+        'Welding Electrodes',
+        'Stores',
+        'General Stores',
+        'kg',
+        '50',
+        '20',
+        'Workshop Store',
+        'Deck & Engine',
+        'AWS E6013 specification',
       ];
       break;
   }
@@ -176,15 +286,21 @@ router.get('/template', (req, res) => {
     [''],
     ['Component Categories', ...COMPONENT_CATEGORIES],
     ['UOM List', ...UOM_LIST],
-    ['Stores Categories', ...STORES_CATEGORIES]
+    ['Stores Categories', ...STORES_CATEGORIES],
   ];
   const metaSheet = XLSX.utils.aoa_to_sheet(metaData);
   XLSX.utils.book_append_sheet(workbook, metaSheet, 'Meta');
 
   // Send file
   const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', `attachment; filename="${type}_template.xlsx"`);
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${type}_template.xlsx"`
+  );
   res.send(buffer);
 });
 
@@ -212,7 +328,10 @@ router.post('/dry-run', upload.single('file'), async (req, res) => {
 
     if (ext === '.csv') {
       const csvText = file.buffer.toString('utf-8');
-      const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+      const parsed = Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+      });
       data = parsed.data;
     } else if (['.xlsx', '.xls'].includes(ext)) {
       const workbook = XLSX.read(file.buffer);
@@ -224,10 +343,10 @@ router.post('/dry-run', upload.single('file'), async (req, res) => {
 
     // Validate data
     const results = await validateData(type, data, mode, vesselId);
-    
+
     // Generate file token
     const fileToken = uuidv4();
-    
+
     // Cache the results and file for import
     dryRunCache.set(fileToken, {
       type,
@@ -238,7 +357,7 @@ router.post('/dry-run', upload.single('file'), async (req, res) => {
       results,
       file: file.buffer,
       originalName: file.originalname,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Clean up old cache entries (older than 1 hour)
@@ -254,7 +373,10 @@ router.post('/dry-run', upload.single('file'), async (req, res) => {
       columns: results.columns,
       summary: results.summary,
       rows: results.rows.slice(0, 100), // Limit preview to 100 rows
-      errorReportUrl: results.summary.errors > 0 ? `/api/bulk/history/tmp/${fileToken}/errors.csv` : undefined
+      errorReportUrl:
+        results.summary.errors > 0
+          ? `/api/bulk/history/tmp/${fileToken}/errors.csv`
+          : undefined,
     });
   } catch (error) {
     console.error('Dry-run error:', error);
@@ -301,7 +423,7 @@ router.post('/import', async (req, res) => {
       finishedAt: new Date(),
       status: 'success',
       originalFile: cachedData.file,
-      originalName: cachedData.originalName
+      originalName: cachedData.originalName,
     });
 
     // Clean up cache
@@ -309,7 +431,7 @@ router.post('/import', async (req, res) => {
 
     res.json({
       ...importResult,
-      historyId
+      historyId,
     });
   } catch (error) {
     console.error('Import error:', error);
@@ -321,7 +443,7 @@ router.post('/import', async (req, res) => {
 router.get('/history', async (req, res) => {
   try {
     const { type, limit = 20, offset = 0 } = req.query;
-    
+
     const history = await getImportHistory(
       type as string,
       parseInt(limit as string),
@@ -339,7 +461,7 @@ router.get('/history', async (req, res) => {
 router.get('/history/:id/:fileType', async (req, res) => {
   try {
     const { id, fileType } = req.params;
-    
+
     const file = await getHistoryFile(id, fileType);
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
@@ -355,11 +477,16 @@ router.get('/history/:id/:fileType', async (req, res) => {
 });
 
 // Validation function
-async function validateData(type: string, data: any[], mode: string, vesselId?: string) {
+async function validateData(
+  type: string,
+  data: any[],
+  mode: string,
+  vesselId?: string
+) {
   const results = {
     columns: [] as string[],
     summary: { ok: 0, warnings: 0, errors: 0 },
-    rows: [] as any[]
+    rows: [] as any[],
   };
 
   if (data.length === 0) {
@@ -389,7 +516,9 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
       if (!row['Component Category']) {
         errors.push(`Row ${rowNum}: Component Category is required`);
       } else if (!COMPONENT_CATEGORIES.includes(row['Component Category'])) {
-        errors.push(`Row ${rowNum}: Invalid Component Category. Allowed: ${COMPONENT_CATEGORIES.join(', ')}`);
+        errors.push(
+          `Row ${rowNum}: Invalid Component Category. Allowed: ${COMPONENT_CATEGORIES.join(', ')}`
+        );
       } else {
         normalized['Component Category'] = row['Component Category'];
       }
@@ -411,7 +540,9 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
         if (row[field]) {
           const num = parseFloat(row[field]);
           if (isNaN(num) || num < 0) {
-            errors.push(`Row ${rowNum}: ${field} must be a non-negative number`);
+            errors.push(
+              `Row ${rowNum}: ${field} must be a non-negative number`
+            );
           } else {
             normalized[field] = num;
           }
@@ -446,7 +577,9 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
       }
 
       if (row['UOM'] && !UOM_LIST.includes(row['UOM'].toLowerCase())) {
-        errors.push(`Row ${rowNum}: Invalid UOM. Allowed: ${UOM_LIST.join(', ')}`);
+        errors.push(
+          `Row ${rowNum}: Invalid UOM. Allowed: ${UOM_LIST.join(', ')}`
+        );
       } else if (row['UOM']) {
         normalized['UOM'] = row['UOM'].toLowerCase();
       }
@@ -456,7 +589,9 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
         if (row[field]) {
           const num = parseFloat(row[field]);
           if (isNaN(num) || num < 0) {
-            errors.push(`Row ${rowNum}: ${field} must be a non-negative number`);
+            errors.push(
+              `Row ${rowNum}: ${field} must be a non-negative number`
+            );
           } else {
             normalized[field] = num;
           }
@@ -493,14 +628,21 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
         normalized['Item Name'] = row['Item Name'].trim();
       }
 
-      if (row['Type'] && !['Stores', 'Lubes', 'Chemicals', 'Others'].includes(row['Type'])) {
-        errors.push(`Row ${rowNum}: Invalid Type. Allowed: Stores, Lubes, Chemicals, Others`);
+      if (
+        row['Type'] &&
+        !['Stores', 'Lubes', 'Chemicals', 'Others'].includes(row['Type'])
+      ) {
+        errors.push(
+          `Row ${rowNum}: Invalid Type. Allowed: Stores, Lubes, Chemicals, Others`
+        );
       } else if (row['Type']) {
         normalized['Type'] = row['Type'];
       }
 
       if (row['UOM'] && !UOM_LIST.includes(row['UOM'].toLowerCase())) {
-        errors.push(`Row ${rowNum}: Invalid UOM. Allowed: ${UOM_LIST.join(', ')}`);
+        errors.push(
+          `Row ${rowNum}: Invalid UOM. Allowed: ${UOM_LIST.join(', ')}`
+        );
       } else if (row['UOM']) {
         normalized['UOM'] = row['UOM'].toLowerCase();
       }
@@ -510,7 +652,9 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
         if (row[field]) {
           const num = parseFloat(row[field]);
           if (isNaN(num) || num < 0) {
-            errors.push(`Row ${rowNum}: ${field} must be a non-negative number`);
+            errors.push(
+              `Row ${rowNum}: ${field} must be a non-negative number`
+            );
           } else {
             normalized[field] = num;
           }
@@ -541,7 +685,7 @@ async function validateData(type: string, data: any[], mode: string, vesselId?: 
       row: rowNum,
       status,
       errors: [...errors, ...warnings],
-      normalized
+      normalized,
     });
   }
 
@@ -561,7 +705,7 @@ async function performImport(
     created: 0,
     updated: 0,
     skipped: 0,
-    archived: 0
+    archived: 0,
   };
 
   // TODO: Implement actual database operations
@@ -603,10 +747,14 @@ async function storeImportHistory(data: any) {
 }
 
 // Get import history
-async function getImportHistory(type: string | undefined, limit: number, offset: number) {
+async function getImportHistory(
+  type: string | undefined,
+  limit: number,
+  offset: number
+) {
   // TODO: Fetch from database
   const history = global.importHistory || [];
-  
+
   let filtered = history;
   if (type) {
     filtered = history.filter((h: any) => h.type === type);
@@ -621,9 +769,9 @@ async function getImportHistory(type: string | undefined, limit: number, offset:
       created: h.created,
       updated: h.updated,
       skipped: h.skipped,
-      archived: h.archived
+      archived: h.archived,
     })),
-    total: filtered.length
+    total: filtered.length,
   };
 }
 
@@ -631,14 +779,14 @@ async function getImportHistory(type: string | undefined, limit: number, offset:
 async function getHistoryFile(id: string, fileType: string) {
   // TODO: Fetch from file storage
   const history = (global.importHistory || []).find((h: any) => h.id === id);
-  
+
   if (!history) return null;
 
   if (fileType === 'file') {
     return {
       data: history.originalFile,
       mimeType: 'application/octet-stream',
-      name: history.originalName
+      name: history.originalName,
     };
   }
 

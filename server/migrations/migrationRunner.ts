@@ -1,6 +1,6 @@
-import { DatabaseStorage } from "../database";
-import { readdir } from "fs/promises";
-import { join } from "path";
+import { DatabaseStorage } from '../database';
+import { readdir } from 'fs/promises';
+import { join } from 'path';
 
 export interface Migration {
   id: string;
@@ -19,7 +19,7 @@ export class MigrationRunner {
   async runMigrations(): Promise<void> {
     const migrationsPath = join(__dirname, '.');
     const migrationFiles = await readdir(migrationsPath);
-    
+
     // Filter for migration files (exclude this runner)
     const migrations = migrationFiles
       .filter(file => file.startsWith('migration_') && file.endsWith('.ts'))
@@ -33,7 +33,9 @@ export class MigrationRunner {
 
       try {
         await migration.up();
-        console.log(`✓ Migration ${migration.id} (${migration.name}) completed`);
+        console.log(
+          `✓ Migration ${migration.id} (${migration.name}) completed`
+        );
       } catch (error) {
         console.error(`✗ Migration ${migration.id} failed:`, error);
         throw error;
@@ -44,9 +46,9 @@ export class MigrationRunner {
   async rollbackMigration(migrationId: string): Promise<void> {
     const migrationsPath = join(__dirname, '.');
     const migrationFiles = await readdir(migrationsPath);
-    
-    const migrationFile = migrationFiles.find(file => 
-      file.includes(migrationId) && file.endsWith('.ts')
+
+    const migrationFile = migrationFiles.find(
+      file => file.includes(migrationId) && file.endsWith('.ts')
     );
 
     if (!migrationFile) {
@@ -58,7 +60,9 @@ export class MigrationRunner {
 
     try {
       await migration.down();
-      console.log(`✓ Migration ${migration.id} (${migration.name}) rolled back`);
+      console.log(
+        `✓ Migration ${migration.id} (${migration.name}) rolled back`
+      );
     } catch (error) {
       console.error(`✗ Migration rollback ${migration.id} failed:`, error);
       throw error;

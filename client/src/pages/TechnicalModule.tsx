@@ -1,40 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { TopMenuBar } from "@/components/TopMenuBar";
-import { SideMenuBar } from "@/components/SideMenuBar";
-import Components from "./pms/Components";
-import WorkOrders from "./pms/WorkOrders";
-import RunningHours from "./pms/RunningHours";
-import { ModifyPMS } from "@/components/modifyPms/ModifyPMS";
-import Spares from "./spares/SparesNew";
-import Stores from "./stores/Stores";
-import AdminPanel from "./admin/AdminPanel";
-import Alerts from "./admin/Alerts";
-import { useLocation, useParams } from "wouter";
+import React, { useState, useEffect } from 'react';
+import { TopMenuBar } from '@/components/TopMenuBar';
+import { SideMenuBar } from '@/components/SideMenuBar';
+import Components from './pms/Components';
+import WorkOrders from './pms/WorkOrders';
+import RunningHours from './pms/RunningHours';
+import { ModifyPMS } from '@/components/modifyPms/ModifyPMS';
+import Spares from './spares/SparesNew';
+import Stores from './stores/Stores';
+import AdminPanel from './admin/AdminPanel';
+import Alerts from './admin/Alerts';
+import { useLocation, useParams } from 'wouter';
 
 export const TechnicalModule: React.FC = () => {
   const [location] = useLocation();
   const params = useParams();
-  
+
   // Derive state from URL
   const getStateFromUrl = () => {
-    if (location.startsWith("/admin/")) {
-      const subpage = location.replace("/admin/", "");
-      return { subModule: "admin", menuItem: subpage };
-    } else if (location.startsWith("/pms/")) {
-      const subpage = location.replace("/pms/", "");
-      return { subModule: "pms", menuItem: subpage };
-    } else if (location.startsWith("/spares")) {
-      return { subModule: "pms", menuItem: "spares" };
-    } else if (location.startsWith("/stores")) {
-      return { subModule: "pms", menuItem: "stores" };
+    if (location.startsWith('/admin/')) {
+      const subpage = location.replace('/admin/', '');
+      return { subModule: 'admin', menuItem: subpage };
+    } else if (location.startsWith('/pms/')) {
+      const subpage = location.replace('/pms/', '');
+      return { subModule: 'pms', menuItem: subpage };
+    } else if (location.startsWith('/spares')) {
+      return { subModule: 'pms', menuItem: 'spares' };
+    } else if (location.startsWith('/stores')) {
+      return { subModule: 'pms', menuItem: 'stores' };
     }
-    return { subModule: "pms", menuItem: "dashboard" };
+    return { subModule: 'pms', menuItem: 'dashboard' };
   };
-  
+
   const { subModule, menuItem } = getStateFromUrl();
   const [selectedSubModule, setSelectedSubModule] = useState(subModule);
   const [selectedMenuItem, setSelectedMenuItem] = useState(menuItem);
-  
+
   // Update state when URL changes
   useEffect(() => {
     const { subModule, menuItem } = getStateFromUrl();
@@ -45,10 +45,10 @@ export const TechnicalModule: React.FC = () => {
   const handleSubModuleChange = (subModule: string) => {
     setSelectedSubModule(subModule);
     // Set default menu item based on submodule
-    if (subModule === "admin") {
-      setSelectedMenuItem("alerts"); // Default to alerts for admin
+    if (subModule === 'admin') {
+      setSelectedMenuItem('alerts'); // Default to alerts for admin
     } else {
-      setSelectedMenuItem("dashboard"); // Default to dashboard for other modules
+      setSelectedMenuItem('dashboard'); // Default to dashboard for other modules
     }
   };
 
@@ -57,47 +57,52 @@ export const TechnicalModule: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className='min-h-screen bg-gray-50'>
       {/* Top Menu Bar */}
-      <TopMenuBar 
+      <TopMenuBar
         selectedSubModule={selectedSubModule}
         onSubModuleChange={handleSubModuleChange}
       />
-      
-      <div className="flex">
+
+      <div className='flex'>
         {/* Side Menu Bar */}
-        <SideMenuBar 
+        <SideMenuBar
           subModule={selectedSubModule}
           selectedItem={selectedMenuItem}
           onItemSelect={handleMenuItemSelect}
         />
-        
+
         {/* Main Content Area */}
-        <div className="flex-1">
-          {selectedSubModule === "pms" && selectedMenuItem === "components" ? (
+        <div className='flex-1'>
+          {selectedSubModule === 'pms' && selectedMenuItem === 'components' ? (
             <Components />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "work-orders" ? (
+          ) : selectedSubModule === 'pms' &&
+            selectedMenuItem === 'work-orders' ? (
             <WorkOrders />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "running-hrs" ? (
+          ) : selectedSubModule === 'pms' &&
+            selectedMenuItem === 'running-hrs' ? (
             <RunningHours />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "spares" ? (
+          ) : selectedSubModule === 'pms' && selectedMenuItem === 'spares' ? (
             <Spares />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "stores" ? (
+          ) : selectedSubModule === 'pms' && selectedMenuItem === 'stores' ? (
             <Stores />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "modify-pms" ? (
+          ) : selectedSubModule === 'pms' &&
+            selectedMenuItem === 'modify-pms' ? (
             <ModifyPMS />
-          ) : selectedSubModule === "pms" && selectedMenuItem === "admin" ? (
+          ) : selectedSubModule === 'pms' && selectedMenuItem === 'admin' ? (
             <AdminPanel />
-          ) : selectedSubModule === "admin" && selectedMenuItem === "alerts" ? (
+          ) : selectedSubModule === 'admin' && selectedMenuItem === 'alerts' ? (
             <Alerts />
           ) : (
-            <div className="p-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  {selectedSubModule.toUpperCase()} - {selectedMenuItem.replace(/-/g, ' ').toUpperCase()}
+            <div className='p-6'>
+              <div className='bg-white rounded-lg shadow-sm p-6'>
+                <h2 className='text-2xl font-semibold text-gray-800 mb-4'>
+                  {selectedSubModule.toUpperCase()} -{' '}
+                  {selectedMenuItem.replace(/-/g, ' ').toUpperCase()}
                 </h2>
-                <p className="text-gray-600">
-                  Content for {selectedSubModule} module, {selectedMenuItem} section will be displayed here.
+                <p className='text-gray-600'>
+                  Content for {selectedSubModule} module, {selectedMenuItem}{' '}
+                  section will be displayed here.
                 </p>
               </div>
             </div>

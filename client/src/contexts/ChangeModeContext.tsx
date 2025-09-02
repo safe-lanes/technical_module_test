@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 
 interface Diff {
   path: string;
@@ -21,9 +21,13 @@ interface ChangeModeContextType {
   exitChangeMode: () => void;
 }
 
-const ChangeModeContext = createContext<ChangeModeContextType | undefined>(undefined);
+const ChangeModeContext = createContext<ChangeModeContextType | undefined>(
+  undefined
+);
 
-export const ChangeModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ChangeModeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [location] = useLocation();
   const [isChangeMode, setIsChangeMode] = useState(false);
   const [changeRequestTitle, setChangeRequestTitle] = useState<string>();
@@ -37,7 +41,7 @@ export const ChangeModeProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const editAsChangeRequest = params.get('editAsChangeRequest');
     const crTitle = params.get('crTitle');
     const crCategory = params.get('crCategory');
-    
+
     if (editAsChangeRequest === '1') {
       setIsChangeMode(true);
       setChangeRequestTitle(crTitle || undefined);
@@ -90,19 +94,21 @@ export const ChangeModeProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   return (
-    <ChangeModeContext.Provider value={{
-      isChangeMode,
-      changeRequestTitle,
-      changeRequestCategory,
-      originalSnapshot,
-      diffs,
-      setOriginalSnapshot,
-      collectDiff,
-      getDiffs,
-      reset,
-      enterChangeMode,
-      exitChangeMode
-    }}>
+    <ChangeModeContext.Provider
+      value={{
+        isChangeMode,
+        changeRequestTitle,
+        changeRequestCategory,
+        originalSnapshot,
+        diffs,
+        setOriginalSnapshot,
+        collectDiff,
+        getDiffs,
+        reset,
+        enterChangeMode,
+        exitChangeMode,
+      }}
+    >
       {children}
     </ChangeModeContext.Provider>
   );
@@ -123,7 +129,8 @@ export const useChangeModeField = (fieldPath: string, originalValue: any) => {
 
   const handleChange = (newValue: any) => {
     if (isChangeMode) {
-      const changed = JSON.stringify(originalValue) !== JSON.stringify(newValue);
+      const changed =
+        JSON.stringify(originalValue) !== JSON.stringify(newValue);
       setHasChanged(changed);
       collectDiff(fieldPath, originalValue, newValue);
     }
@@ -133,6 +140,6 @@ export const useChangeModeField = (fieldPath: string, originalValue: any) => {
     isChangeMode,
     hasChanged,
     originalValue,
-    handleChange
+    handleChange,
   };
 };

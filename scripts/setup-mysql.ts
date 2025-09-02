@@ -1,31 +1,39 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
 
 async function setupMySQL() {
   if (!process.env.DATABASE_URL) {
-    console.error("❌ DATABASE_URL environment variable is required");
-    console.log("\nPlease set your MySQL connection string in the environment:");
-    console.log("DATABASE_URL=mysql://username:password@host:port/database_name");
-    console.log("\nExample for local MySQL:");
-    console.log("DATABASE_URL=mysql://root:password@localhost:3306/element_crew_appraisals");
-    console.log("\nExample for cloud MySQL:");
-    console.log("DATABASE_URL=mysql://username:password@hostname.com:3306/database_name");
+    console.error('❌ DATABASE_URL environment variable is required');
+    console.log(
+      '\nPlease set your MySQL connection string in the environment:'
+    );
+    console.log(
+      'DATABASE_URL=mysql://username:password@host:port/database_name'
+    );
+    console.log('\nExample for local MySQL:');
+    console.log(
+      'DATABASE_URL=mysql://root:password@localhost:3306/element_crew_appraisals'
+    );
+    console.log('\nExample for cloud MySQL:');
+    console.log(
+      'DATABASE_URL=mysql://username:password@hostname.com:3306/database_name'
+    );
     process.exit(1);
   }
 
-  console.log("🔧 Setting up MySQL database...");
-  
+  console.log('🔧 Setting up MySQL database...');
+
   let connection;
   try {
     // Test connection
     connection = await mysql.createConnection({
       uri: process.env.DATABASE_URL,
     });
-    console.log("✅ Database connection successful");
+    console.log('✅ Database connection successful');
 
     // Create tables
-    console.log("📋 Creating database tables...");
-    
+    console.log('📋 Creating database tables...');
+
     const tables = [
       `CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,40 +88,43 @@ async function setupMySQL() {
         status TEXT NOT NULL DEFAULT 'draft',
         FOREIGN KEY (crew_member_id) REFERENCES crew_members(id),
         FOREIGN KEY (form_id) REFERENCES forms(id)
-      )`
+      )`,
     ];
 
     for (const table of tables) {
       await connection.execute(table);
     }
 
-    console.log("✅ Database tables created successfully");
-    
+    console.log('✅ Database tables created successfully');
+
     // Check if data exists
-    const [rows] = await connection.execute("SELECT COUNT(*) as count FROM forms");
+    const [rows] = await connection.execute(
+      'SELECT COUNT(*) as count FROM forms'
+    );
     const formCount = (rows as any)[0].count;
-    
+
     if (formCount === 0) {
-      console.log("🌱 Database is empty, seeding will happen automatically on first run");
+      console.log(
+        '🌱 Database is empty, seeding will happen automatically on first run'
+      );
     } else {
       console.log(`📊 Database already contains ${formCount} forms`);
     }
-    
-    console.log("\n🎉 MySQL setup complete!");
-    console.log("✅ All functionality maintained:");
-    console.log("  - Data persistence across restarts");
-    console.log("  - All API endpoints functional");
-    console.log("  - Complete CRUD operations");
-    console.log("  - Automatic database seeding");
-    console.log("  - Micro frontend compatibility");
-    
+
+    console.log('\n🎉 MySQL setup complete!');
+    console.log('✅ All functionality maintained:');
+    console.log('  - Data persistence across restarts');
+    console.log('  - All API endpoints functional');
+    console.log('  - Complete CRUD operations');
+    console.log('  - Automatic database seeding');
+    console.log('  - Micro frontend compatibility');
   } catch (error) {
-    console.error("❌ MySQL setup failed:", error);
-    console.log("\nTroubleshooting:");
-    console.log("1. Verify your MySQL server is running");
-    console.log("2. Check your DATABASE_URL format");
-    console.log("3. Ensure the database exists");
-    console.log("4. Verify user permissions");
+    console.error('❌ MySQL setup failed:', error);
+    console.log('\nTroubleshooting:');
+    console.log('1. Verify your MySQL server is running');
+    console.log('2. Check your DATABASE_URL format');
+    console.log('3. Ensure the database exists');
+    console.log('4. Verify user permissions');
     process.exit(1);
   } finally {
     if (connection) {

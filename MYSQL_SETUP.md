@@ -1,12 +1,14 @@
 # MySQL Database Setup Guide
 
 ## Prerequisites
+
 - MySQL 5.7+ or MariaDB 10.2+
 - Node.js 18+ with npm
 
 ## Database Setup Steps
 
 ### 1. Create MySQL Database
+
 ```sql
 -- Connect to MySQL as root or admin user
 CREATE DATABASE crew_appraisals CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -18,12 +20,15 @@ FLUSH PRIVILEGES;
 ```
 
 ### 2. Configure Environment Variables
+
 Copy `environment.example` to `.env` and update:
+
 ```bash
 cp environment.example .env
 ```
 
 Edit `.env`:
+
 ```env
 DATABASE_URL="mysql://crew_admin:secure_password_here@localhost:3306/crew_appraisals"
 SESSION_SECRET="your-unique-session-secret"
@@ -32,11 +37,13 @@ PORT="5000"
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 4. Initialize Database Schema
+
 ```bash
 # Push schema to database (creates tables)
 npm run db:push
@@ -47,20 +54,24 @@ npm run db:migrate
 ```
 
 ### 5. Seed Database (Optional)
+
 The application automatically seeds with sample data on first run.
 
 ### 6. Test Database Connection
+
 ```bash
 npm run dev
 ```
 
 Check console for:
+
 - ✅ "Database connected successfully"
 - ⚠️ "Falling back to in-memory storage" (indicates connection issue)
 
 ## Database Schema Overview
 
 ### Tables Created
+
 1. **users** - User authentication
    - id (auto-increment)
    - username (unique)
@@ -103,7 +114,9 @@ Check console for:
 ## Troubleshooting
 
 ### Connection Issues
+
 1. **Check MySQL service status:**
+
    ```bash
    sudo service mysql status
    # or
@@ -111,6 +124,7 @@ Check console for:
    ```
 
 2. **Test connection manually:**
+
    ```bash
    mysql -u crew_admin -p crew_appraisals
    ```
@@ -122,7 +136,9 @@ Check console for:
    - `ETIMEDOUT`: Network/firewall issues
 
 ### Schema Issues
+
 1. **Reset database:**
+
    ```bash
    npm run db:drop
    npm run db:push
@@ -136,7 +152,9 @@ Check console for:
    ```
 
 ### Performance Optimization
+
 1. **Add indexes for frequently queried columns:**
+
    ```sql
    ALTER TABLE crew_members ADD INDEX idx_rank (rank);
    ALTER TABLE appraisal_results ADD INDEX idx_crew_member (crewMemberId);
@@ -161,6 +179,7 @@ Check console for:
 5. **Regular database backups**
 
 ## Backup Strategy
+
 ```bash
 # Create backup
 mysqldump -u crew_admin -p crew_appraisals > crew_appraisals_backup.sql
@@ -172,11 +191,13 @@ mysql -u crew_admin -p crew_appraisals < crew_appraisals_backup.sql
 ## Integration with Existing Systems
 
 ### Using Existing MySQL Database
+
 1. Update `shared/schema.ts` to match your table structure
 2. Modify `server/database.ts` connection settings
 3. Update API routes in `server/routes.ts` as needed
 
 ### Using Different Database
+
 1. Install appropriate database driver
 2. Update `drizzle.config.ts` with new database dialect
 3. Modify `server/database.ts` implementation

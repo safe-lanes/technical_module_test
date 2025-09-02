@@ -1,6 +1,4 @@
-
 export class FormHelp {
-  
   static showHelp(): void {
     console.log(`
 🛠️  SAIL Form Editor Generator - Help Guide

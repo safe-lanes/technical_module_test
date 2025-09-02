@@ -1,5 +1,4 @@
-
-import { z } from "zod";
+import { z } from 'zod';
 
 // Base form section interface
 export interface FormSection {
@@ -12,7 +11,15 @@ export interface FormSection {
 // Form field interface
 export interface FormField {
   id: string;
-  type: 'text' | 'select' | 'textarea' | 'date' | 'number' | 'checkbox' | 'radio' | 'table';
+  type:
+    | 'text'
+    | 'select'
+    | 'textarea'
+    | 'date'
+    | 'number'
+    | 'checkbox'
+    | 'radio'
+    | 'table';
   label: string;
   placeholder?: string;
   required?: boolean;
@@ -46,34 +53,52 @@ export const formTemplates: Record<string, FormTemplate> = {
             placeholder: 'Enter full name',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'currentRank',
             type: 'select',
             label: 'Current Rank',
             required: true,
-            options: ['Third Officer', 'Second Officer', 'Chief Officer', 'Third Engineer', 'Second Engineer', 'Chief Engineer'],
+            options: [
+              'Third Officer',
+              'Second Officer',
+              'Chief Officer',
+              'Third Engineer',
+              'Second Engineer',
+              'Chief Engineer',
+            ],
             configurable: true,
-            visible: true
+            visible: true,
           },
           {
             id: 'proposedRank',
             type: 'select',
             label: 'Proposed Rank',
             required: true,
-            options: ['Second Officer', 'Chief Officer', 'Master', 'Second Engineer', 'Chief Engineer'],
+            options: [
+              'Second Officer',
+              'Chief Officer',
+              'Master',
+              'Second Engineer',
+              'Chief Engineer',
+            ],
             configurable: true,
-            visible: true
+            visible: true,
           },
           {
             id: 'vessel',
             type: 'select',
             label: 'Current Vessel',
             required: true,
-            options: ['MT Sail One', 'MT Sail Two', 'MT Sail Three', 'MV Sail Seven'],
+            options: [
+              'MT Sail One',
+              'MT Sail Two',
+              'MT Sail Three',
+              'MV Sail Seven',
+            ],
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'joinDate',
@@ -81,9 +106,9 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Date Joined Current Rank',
             required: true,
             configurable: false,
-            visible: true
-          }
-        ]
+            visible: true,
+          },
+        ],
       },
       {
         id: 'B',
@@ -96,7 +121,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Qualifications & Certificates',
             required: true,
             configurable: true,
-            visible: true
+            visible: true,
           },
           {
             id: 'experience',
@@ -105,18 +130,24 @@ export const formTemplates: Record<string, FormTemplate> = {
             placeholder: 'Describe relevant experience...',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'performanceRating',
             type: 'select',
             label: 'Overall Performance Rating',
             required: true,
-            options: ['5- Excellent', '4- Very Good', '3- Good', '2- Satisfactory', '1- Needs Improvement'],
+            options: [
+              '5- Excellent',
+              '4- Very Good',
+              '3- Good',
+              '2- Satisfactory',
+              '1- Needs Improvement',
+            ],
             configurable: true,
-            visible: true
-          }
-        ]
+            visible: true,
+          },
+        ],
       },
       {
         id: 'C',
@@ -130,7 +161,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             required: true,
             options: ['Strongly Recommended', 'Recommended', 'Not Recommended'],
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'comments',
@@ -139,7 +170,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             placeholder: 'Add any additional comments...',
             required: false,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'approverName',
@@ -147,7 +178,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Approver Name',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'approvalDate',
@@ -155,31 +186,35 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Approval Date',
             required: true,
             configurable: false,
-            visible: true
-          }
-        ]
-      }
+            visible: true,
+          },
+        ],
+      },
     ],
     schema: z.object({
-      candidateName: z.string().min(1, "Candidate name is required"),
-      currentRank: z.string().min(1, "Current rank is required"),
-      proposedRank: z.string().min(1, "Proposed rank is required"),
-      vessel: z.string().min(1, "Vessel is required"),
-      joinDate: z.string().min(1, "Join date is required"),
-      qualifications: z.array(z.object({
-        id: z.string(),
-        qualification: z.string(),
-        issueDate: z.string(),
-        expiryDate: z.string(),
-        status: z.string()
-      })).default([]),
-      experience: z.string().min(1, "Experience is required"),
-      performanceRating: z.string().min(1, "Performance rating is required"),
-      recommendation: z.string().min(1, "Recommendation is required"),
+      candidateName: z.string().min(1, 'Candidate name is required'),
+      currentRank: z.string().min(1, 'Current rank is required'),
+      proposedRank: z.string().min(1, 'Proposed rank is required'),
+      vessel: z.string().min(1, 'Vessel is required'),
+      joinDate: z.string().min(1, 'Join date is required'),
+      qualifications: z
+        .array(
+          z.object({
+            id: z.string(),
+            qualification: z.string(),
+            issueDate: z.string(),
+            expiryDate: z.string(),
+            status: z.string(),
+          })
+        )
+        .default([]),
+      experience: z.string().min(1, 'Experience is required'),
+      performanceRating: z.string().min(1, 'Performance rating is required'),
+      recommendation: z.string().min(1, 'Recommendation is required'),
       comments: z.string().optional(),
-      approverName: z.string().min(1, "Approver name is required"),
-      approvalDate: z.string().min(1, "Approval date is required")
-    })
+      approverName: z.string().min(1, 'Approver name is required'),
+      approvalDate: z.string().min(1, 'Approval date is required'),
+    }),
   },
 
   'Crew Training Form': {
@@ -196,7 +231,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Training Course Name',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'trainingProvider',
@@ -204,16 +239,22 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Training Provider',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'trainingType',
             type: 'select',
             label: 'Training Type',
             required: true,
-            options: ['STCW', 'Company Specific', 'Technical', 'Safety', 'Management'],
+            options: [
+              'STCW',
+              'Company Specific',
+              'Technical',
+              'Safety',
+              'Management',
+            ],
             configurable: true,
-            visible: true
+            visible: true,
           },
           {
             id: 'startDate',
@@ -221,7 +262,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Start Date',
             required: true,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'endDate',
@@ -229,9 +270,9 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'End Date',
             required: true,
             configurable: false,
-            visible: true
-          }
-        ]
+            visible: true,
+          },
+        ],
       },
       {
         id: 'B',
@@ -244,9 +285,9 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Training Participants',
             required: true,
             configurable: true,
-            visible: true
-          }
-        ]
+            visible: true,
+          },
+        ],
       },
       {
         id: 'C',
@@ -260,7 +301,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             required: true,
             options: ['Completed', 'In Progress', 'Failed', 'Cancelled'],
             configurable: true,
-            visible: true
+            visible: true,
           },
           {
             id: 'certificateIssued',
@@ -268,7 +309,7 @@ export const formTemplates: Record<string, FormTemplate> = {
             label: 'Certificate Issued',
             required: false,
             configurable: false,
-            visible: true
+            visible: true,
           },
           {
             id: 'remarks',
@@ -277,28 +318,32 @@ export const formTemplates: Record<string, FormTemplate> = {
             placeholder: 'Add training remarks...',
             required: false,
             configurable: false,
-            visible: true
-          }
-        ]
-      }
+            visible: true,
+          },
+        ],
+      },
     ],
     schema: z.object({
-      trainingName: z.string().min(1, "Training name is required"),
-      trainingProvider: z.string().min(1, "Training provider is required"),
-      trainingType: z.string().min(1, "Training type is required"),
-      startDate: z.string().min(1, "Start date is required"),
-      endDate: z.string().min(1, "End date is required"),
-      participants: z.array(z.object({
-        id: z.string(),
-        name: z.string(),
-        rank: z.string(),
-        result: z.string()
-      })).default([]),
-      completionStatus: z.string().min(1, "Completion status is required"),
+      trainingName: z.string().min(1, 'Training name is required'),
+      trainingProvider: z.string().min(1, 'Training provider is required'),
+      trainingType: z.string().min(1, 'Training type is required'),
+      startDate: z.string().min(1, 'Start date is required'),
+      endDate: z.string().min(1, 'End date is required'),
+      participants: z
+        .array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            rank: z.string(),
+            result: z.string(),
+          })
+        )
+        .default([]),
+      completionStatus: z.string().min(1, 'Completion status is required'),
       certificateIssued: z.boolean().default(false),
-      remarks: z.string().optional()
-    })
-  }
+      remarks: z.string().optional(),
+    }),
+  },
 };
 
 // Function to generate form editor component
@@ -359,11 +404,15 @@ export const ${formName.replace(/\s+/g, '')}Editor: React.FC<${formName.replace(
     onClose();
   };
 
-  const sections = ${JSON.stringify(template.sections.map(section => ({
-    id: section.id,
-    title: section.title,
-    active: false
-  })), null, 2)};
+  const sections = ${JSON.stringify(
+    template.sections.map(section => ({
+      id: section.id,
+      title: section.title,
+      active: false,
+    })),
+    null,
+    2
+  )};
 
   const renderSection = (sectionId: string) => {
     const section = ${JSON.stringify(template.sections, null, 2)}.find(s => s.id === sectionId);
@@ -542,10 +591,10 @@ export const createFormEditor = (formName: string): void => {
   }
 
   console.log(`Creating Form Editor for: ${formName}`);
-  
+
   // Generate the form editor component code
   const editorCode = generateFormEditor(formName);
-  
+
   // You can save this to a file or use it programmatically
-  console.log("Generated Form Editor Component:", editorCode);
+  console.log('Generated Form Editor Component:', editorCode);
 };

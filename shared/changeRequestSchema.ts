@@ -1,14 +1,14 @@
-import { z } from "zod";
-import { createInsertSchema } from "drizzle-zod";
+import { z } from 'zod';
+import { createInsertSchema } from 'drizzle-zod';
 
 // Change Request interface and schema
 export interface ChangeRequest {
   id: number;
-  category: "components" | "work-orders" | "spares" | "stores";
+  category: 'components' | 'work-orders' | 'spares' | 'stores';
   requestTitle: string;
   requestedBy: string;
   requestDate: string;
-  status: "Pending Approval" | "Approved" | "Rejected";
+  status: 'Pending Approval' | 'Approved' | 'Rejected';
   originalData: Record<string, any>;
   newData: Record<string, any>;
   changedFields: string[];
@@ -19,7 +19,7 @@ export interface ChangeRequest {
 }
 
 // User roles for permission system
-export type UserRole = "requestor" | "approver";
+export type UserRole = 'requestor' | 'approver';
 
 export interface User {
   id: string;
@@ -32,7 +32,7 @@ export interface User {
 export interface ChangeLog {
   id: number;
   changeRequestId: number;
-  action: "created" | "approved" | "rejected";
+  action: 'created' | 'approved' | 'rejected';
   performedBy: string;
   performedDate: string;
   oldValues: Record<string, any>;

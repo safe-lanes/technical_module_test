@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MicroFrontendWrapper } from './MicroFrontendWrapper';
 import ElementCrewAppraisals from '../pages/ElementCrewAppraisals';
@@ -18,7 +17,10 @@ export { default as AdminModule } from '../pages/AdminModule';
 export { default as FormEditor } from '../pages/FormEditor';
 
 // Wrapper export
-export { MicroFrontendWrapper, useMicroFrontendConfig } from './MicroFrontendWrapper';
+export {
+  MicroFrontendWrapper,
+  useMicroFrontendConfig,
+} from './MicroFrontendWrapper';
 
 // Micro frontend bootstrap function
 export const bootstrap = (config?: any) => {
@@ -26,47 +28,55 @@ export const bootstrap = (config?: any) => {
     mount: (element: HTMLElement, mountConfig?: any) => {
       const React = require('react');
       const ReactDOM = require('react-dom/client');
-      
+
       const root = ReactDOM.createRoot(element);
       const finalConfig = { ...config, ...mountConfig, standalone: false };
-      
+
       root.render(
-        React.createElement(MicroFrontendWrapper, { config: finalConfig },
+        React.createElement(
+          MicroFrontendWrapper,
+          { config: finalConfig },
           React.createElement(App)
         )
       );
-      
+
       return () => root.unmount();
     },
-    
+
     // Individual component mounting
-    mountComponent: (component: string, element: HTMLElement, componentConfig?: any) => {
+    mountComponent: (
+      component: string,
+      element: HTMLElement,
+      componentConfig?: any
+    ) => {
       const React = require('react');
       const ReactDOM = require('react-dom/client');
-      
+
       const components = {
         ElementCrewAppraisals,
         AppraisalForm,
         AdminModule,
-        FormEditor
+        FormEditor,
       };
-      
+
       const Component = components[component as keyof typeof components];
       if (!Component) {
         throw new Error(`Component ${component} not found`);
       }
-      
+
       const root = ReactDOM.createRoot(element);
       const finalConfig = { ...config, ...componentConfig, standalone: false };
-      
+
       root.render(
-        React.createElement(MicroFrontendWrapper, { config: finalConfig },
+        React.createElement(
+          MicroFrontendWrapper,
+          { config: finalConfig },
           React.createElement(Component)
         )
       );
-      
+
       return () => root.unmount();
-    }
+    },
   };
 };
 
@@ -80,7 +90,7 @@ if (typeof window !== 'undefined') {
       AppraisalForm,
       AdminModule,
       FormEditor,
-      App
-    }
+      App,
+    },
   };
 }

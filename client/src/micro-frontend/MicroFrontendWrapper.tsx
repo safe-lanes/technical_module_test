@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -15,12 +14,16 @@ interface MicroFrontendContextType {
   updateConfig: (newConfig: Partial<MicroFrontendConfig>) => void;
 }
 
-const MicroFrontendContext = createContext<MicroFrontendContextType | null>(null);
+const MicroFrontendContext = createContext<MicroFrontendContextType | null>(
+  null
+);
 
 export const useMicroFrontendConfig = () => {
   const context = useContext(MicroFrontendContext);
   if (!context) {
-    throw new Error('useMicroFrontendConfig must be used within MicroFrontendWrapper');
+    throw new Error(
+      'useMicroFrontendConfig must be used within MicroFrontendWrapper'
+    );
   }
   return context;
 };
@@ -30,27 +33,30 @@ interface MicroFrontendWrapperProps {
   config?: MicroFrontendConfig;
 }
 
-export const MicroFrontendWrapper: React.FC<MicroFrontendWrapperProps> = ({ 
-  children, 
-  config: initialConfig = {} 
+export const MicroFrontendWrapper: React.FC<MicroFrontendWrapperProps> = ({
+  children,
+  config: initialConfig = {},
 }) => {
   const [config, setConfig] = useState<MicroFrontendConfig>({
     standalone: true,
     apiBaseUrl: '/api',
-    ...initialConfig
+    ...initialConfig,
   });
 
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        refetchOnWindowFocus: false,
-      },
-      mutations: {
-        retry: false,
-      },
-    },
-  }));
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+            refetchOnWindowFocus: false,
+          },
+          mutations: {
+            retry: false,
+          },
+        },
+      })
+  );
 
   const updateConfig = (newConfig: Partial<MicroFrontendConfig>) => {
     setConfig(prev => ({ ...prev, ...newConfig }));
@@ -63,10 +69,10 @@ export const MicroFrontendWrapper: React.FC<MicroFrontendWrapperProps> = ({
       window.fetch = async (input, init) => {
         const headers = new Headers(init?.headers);
         headers.set('Authorization', `Bearer ${config.authToken}`);
-        
+
         return originalFetch(input, {
           ...init,
-          headers
+          headers,
         });
       };
 
@@ -93,19 +99,24 @@ export const MicroFrontendWrapper: React.FC<MicroFrontendWrapperProps> = ({
               throw new Error('Network response was not ok');
             }
             return response.json();
-          }
-        }
+          },
+        },
       });
     }
-  }, [config.apiBaseUrl, config.standalone, config.onAuthRequired, queryClient]);
+  }, [
+    config.apiBaseUrl,
+    config.standalone,
+    config.onAuthRequired,
+    queryClient,
+  ]);
 
   return (
     <MicroFrontendContext.Provider value={{ config, updateConfig }}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <div 
+          <div
             className={`micro-frontend-app ${!config.standalone ? 'micro-frontend-isolated' : ''}`}
-            data-micro-frontend="element-crew-appraisals"
+            data-micro-frontend='element-crew-appraisals'
           >
             {children}
           </div>

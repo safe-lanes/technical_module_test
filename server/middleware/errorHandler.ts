@@ -40,7 +40,7 @@ export const globalErrorHandler = (
     method: req.method,
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   if (error instanceof AppError && error.isOperational) {
@@ -54,7 +54,7 @@ export const globalErrorHandler = (
     const validationErrors = error.errors.map(err => ({
       field: err.path.join('.'),
       message: err.message,
-      code: err.code
+      code: err.code,
     }));
 
     error = new ValidationError('Validation failed');
@@ -66,7 +66,10 @@ export const globalErrorHandler = (
     error = new DatabaseError('Duplicate entry found');
   }
 
-  if (error.name === 'ER_NO_REFERENCED_ROW' || error.message.includes('foreign key')) {
+  if (
+    error.name === 'ER_NO_REFERENCED_ROW' ||
+    error.message.includes('foreign key')
+  ) {
     error = new DatabaseError('Referenced record not found');
   }
 
@@ -85,15 +88,19 @@ export const globalErrorHandler = (
       code: appError.code,
       status: statusCode,
       ...(isDevelopment && { stack: appError.stack }),
-      ...((appError as any).details && { details: (appError as any).details })
-    }
+      ...((appError as any).details && { details: (appError as any).details }),
+    },
   };
 
   res.status(statusCode).json(errorResponse);
 };
 
 // 404 handler for unmatched routes
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+export const notFoundHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const error = new AppError(`Route ${req.originalUrl} not found`, 404);
   next(error);
 };
