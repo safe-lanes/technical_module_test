@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Pen, Timer } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 import AgGridTable from '@/components/common/AgGridTable';
 import { 
   StatusCellRenderer, 
@@ -80,7 +83,8 @@ const generateTemplateCode = (
   return `WO-${componentCode}-${taskCode}${freqTag}`.toUpperCase();
 };
 
-const initialWorkOrders: WorkOrder[] = [
+// Sample data for seeding if database is empty
+const sampleWorkOrders: WorkOrder[] = [
   {
     id: '1',
     component: 'Main Engine',
@@ -321,12 +325,73 @@ const WorkOrders: React.FC = () => {
   );
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
+  // Database integration
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const vesselId = 'V001'; // Default vessel
+
+  // Fetch work orders from database
+  const { data: workOrdersFromDB = [], isLoading } = useQuery({
+    queryKey: ['/api/work-orders', vesselId],
+    queryFn: () => fetch(`/api/work-orders/${vesselId}`).then(res => res.json()),
+  });
+
+  // Create work order mutation
+  const createWorkOrderMutation = useMutation({
+    mutationFn: (workOrderData: Omit<WorkOrder, 'createdAt' | 'updatedAt'>) => 
+      apiRequest(`/api/work-orders/${vesselId}`, {
+        method: 'POST',
+        body: JSON.stringify(workOrderData),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
+      toast({ title: 'Success', description: 'Work order created successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to create work order', variant: 'destructive' });
+    },
+  });
+
+  // Update work order mutation
+  const updateWorkOrderMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<WorkOrder> }) => 
+      apiRequest(`/api/work-orders/${vesselId}/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
+      toast({ title: 'Success', description: 'Work order updated successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to update work order', variant: 'destructive' });
+    },
+  });
+
+  // Delete work order mutation
+  const deleteWorkOrderMutation = useMutation({
+    mutationFn: (id: string) => 
+      apiRequest(`/api/work-orders/${vesselId}/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
+      toast({ title: 'Success', description: 'Work order deleted successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to delete work order', variant: 'destructive' });
+    },
+  });
+
   // Modify mode integration
   const { isModifyMode, targetId, fieldChanges } = useModifyMode();
   const [location] = useLocation();
 
+  // Use database data if available, otherwise fallback to sample data for demo
+  const workOrdersToUse = workOrdersFromDB.length > 0 ? workOrdersFromDB : sampleWorkOrders;
+
   // Backfill templateCode for existing work orders if missing
-  const backfilledWorkOrders = initialWorkOrders.map(wo => {
+  const backfilledWorkOrders = workOrdersToUse.map(wo => {
     if (!wo.templateCode && wo.componentCode && wo.taskType) {
       const templateCode = generateTemplateCode(
         wo.componentCode,
@@ -340,8 +405,7 @@ const WorkOrders: React.FC = () => {
     return wo;
   });
 
-  const [workOrdersList, setWorkOrdersList] =
-    useState<WorkOrder[]>(backfilledWorkOrders);
+  const workOrdersList = backfilledWorkOrders;
 
   // Handle preview mode from "View Changes" button
   useEffect(() => {
@@ -402,24 +466,23 @@ const WorkOrders: React.FC = () => {
         templateId: workOrderId,
       };
 
-      setWorkOrdersList(prev => [...prev, executionRecord]);
+      createWorkOrderMutation.mutate(executionRecord);
       setActiveTab('Pending Approval');
     } else if (formData?.type === 'template') {
       // Update template
-      setWorkOrdersList(prev =>
-        prev.map(wo =>
-          wo.id === workOrderId
-            ? {
-                ...wo,
-                ...formData.data,
-                templateCode:
-                  formData.data.woTemplateCode ||
-                  formData.data.templateCode ||
-                  wo.templateCode,
-              }
-            : wo
-        )
-      );
+      const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
+      if (workOrder) {
+        updateWorkOrderMutation.mutate({
+          id: workOrderId,
+          data: {
+            ...formData.data,
+            templateCode:
+              formData.data.woTemplateCode ||
+              formData.data.templateCode ||
+              workOrder.templateCode,
+          }
+        });
+      }
     }
   };
 
@@ -661,78 +724,72 @@ const WorkOrders: React.FC = () => {
   };
 
   const handleApprove = (workOrderId: string, approverRemarks?: string) => {
-    setWorkOrdersList(prev =>
-      prev.map(wo => {
-        if (wo.executionId === workOrderId || wo.id === workOrderId) {
-          // Update execution status to Approved
-          const updatedWO = {
-            ...wo,
-            status: 'Approved',
-            dateCompleted: new Date().toISOString().split('T')[0],
-            approver: 'Current User', // Replace with actual user
-            approverRemarks,
-            approvalDate: new Date().toISOString(),
-          };
+    const workOrder = workOrdersList.find(wo => wo.executionId === workOrderId || wo.id === workOrderId);
+    if (workOrder) {
+      const updatedData: Partial<WorkOrder> = {
+        status: 'Approved',
+        dateCompleted: new Date().toISOString().split('T')[0],
+        approver: 'Current User',
+        approverRemarks,
+        approvalDate: new Date().toISOString(),
+      };
 
-          // Reset maintenance cycle on the template
-          if (wo.maintenanceBasis === 'Calendar') {
-            const completionDate = new Date();
-            const freq = parseInt(wo.frequencyValue || '0');
-            if (wo.frequencyUnit === 'Days') {
-              completionDate.setDate(completionDate.getDate() + freq);
-            } else if (wo.frequencyUnit === 'Weeks') {
-              completionDate.setDate(completionDate.getDate() + freq * 7);
-            } else if (wo.frequencyUnit === 'Months') {
-              completionDate.setMonth(completionDate.getMonth() + freq);
-            } else if (wo.frequencyUnit === 'Years') {
-              completionDate.setFullYear(completionDate.getFullYear() + freq);
-            }
-            updatedWO.nextDueDate = completionDate.toISOString().split('T')[0];
-          } else if (
-            wo.maintenanceBasis === 'Running Hours' &&
-            wo.currentReading
-          ) {
-            updatedWO.nextDueReading = (
-              parseInt(wo.currentReading) + parseInt(wo.frequencyValue || '0')
-            ).toString();
-          }
-
-          return updatedWO;
+      // Reset maintenance cycle on the template
+      if (workOrder.maintenanceBasis === 'Calendar') {
+        const completionDate = new Date();
+        const freq = parseInt(workOrder.frequencyValue || '0');
+        if (workOrder.frequencyUnit === 'Days') {
+          completionDate.setDate(completionDate.getDate() + freq);
+        } else if (workOrder.frequencyUnit === 'Weeks') {
+          completionDate.setDate(completionDate.getDate() + freq * 7);
+        } else if (workOrder.frequencyUnit === 'Months') {
+          completionDate.setMonth(completionDate.getMonth() + freq);
+        } else if (workOrder.frequencyUnit === 'Years') {
+          completionDate.setFullYear(completionDate.getFullYear() + freq);
         }
-        return wo;
-      })
-    );
+        updatedData.nextDueDate = completionDate.toISOString().split('T')[0];
+      } else if (
+        workOrder.maintenanceBasis === 'Running Hours' &&
+        workOrder.currentReading
+      ) {
+        updatedData.nextDueReading = (
+          parseInt(workOrder.currentReading) + parseInt(workOrder.frequencyValue || '0')
+        ).toString();
+      }
+
+      updateWorkOrderMutation.mutate({
+        id: workOrder.id,
+        data: updatedData
+      });
+    }
   };
 
   const handleReject = (workOrderId: string, rejectionComments: string) => {
-    setWorkOrdersList(prev =>
-      prev.map(wo => {
-        if (wo.executionId === workOrderId || wo.id === workOrderId) {
-          return {
-            ...wo,
-            status: 'Rejected',
-            approver: 'Current User', // Replace with actual user
-            approverRemarks: rejectionComments,
-            rejectionDate: new Date().toISOString(),
-          };
+    const workOrder = workOrdersList.find(wo => wo.executionId === workOrderId || wo.id === workOrderId);
+    if (workOrder) {
+      updateWorkOrderMutation.mutate({
+        id: workOrder.id,
+        data: {
+          status: 'Rejected',
+          approver: 'Current User',
+          approverRemarks: rejectionComments,
+          rejectionDate: new Date().toISOString(),
         }
-        return wo;
-      })
-    );
+      });
+    }
   };
 
   const handlePostponeConfirm = (workOrderId: string, postponeData: any) => {
-    setWorkOrdersList(prev =>
-      prev.map(wo =>
-        wo.id === workOrderId
-          ? {
-              ...wo,
-              status: 'Postponed',
-              dueDate: postponeData.nextDueDate || wo.dueDate,
-            }
-          : wo
-      )
-    );
+    const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
+    if (workOrder) {
+      updateWorkOrderMutation.mutate({
+        id: workOrderId,
+        data: {
+          status: 'Postponed',
+          dueDate: postponeData.nextDueDate || workOrder.dueDate,
+        }
+      });
+    }
   };
 
   const handleAddWorkOrderClick = () => {
@@ -750,6 +807,18 @@ const WorkOrders: React.FC = () => {
     setSelectedWorkOrder(newWorkOrder);
     setWorkOrderFormOpen(true);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className='flex flex-col h-full items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Loading work orders from database...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='flex flex-col h-full'>

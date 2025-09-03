@@ -9,6 +9,7 @@ import {
   json,
   varchar,
 } from 'drizzle-orm/mysql-core';
+import { sql } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -275,6 +276,56 @@ export const insertStoresLedgerSchema = createInsertSchema(storesLedger).omit({
 
 export type InsertStoresLedger = z.infer<typeof insertStoresLedgerSchema>;
 export type StoresLedger = typeof storesLedger.$inferSelect;
+
+// Work Orders Table
+export const workOrders = mysqlTable(
+  'work_orders',
+  {
+    id: varchar('id', { length: 100 }).primaryKey(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
+    component: varchar('component', { length: 255 }).notNull(),
+    componentCode: varchar('component_code', { length: 100 }),
+    workOrderNo: varchar('work_order_no', { length: 50 }).notNull(),
+    templateCode: varchar('template_code', { length: 100 }),
+    executionId: varchar('execution_id', { length: 100 }),
+    jobTitle: varchar('job_title', { length: 500 }).notNull(),
+    assignedTo: varchar('assigned_to', { length: 255 }).notNull(),
+    dueDate: varchar('due_date', { length: 50 }).notNull(),
+    status: varchar('status', { length: 50 }).notNull(),
+    dateCompleted: varchar('date_completed', { length: 50 }),
+    submittedDate: varchar('submitted_date', { length: 50 }),
+    formData: json('form_data'),
+    taskType: varchar('task_type', { length: 100 }),
+    maintenanceBasis: varchar('maintenance_basis', { length: 50 }),
+    frequencyValue: varchar('frequency_value', { length: 50 }),
+    frequencyUnit: varchar('frequency_unit', { length: 50 }),
+    approverRemarks: text('approver_remarks'),
+    isExecution: boolean('is_execution').default(false),
+    templateId: varchar('template_id', { length: 100 }),
+    approver: varchar('approver', { length: 255 }),
+    approvalDate: varchar('approval_date', { length: 50 }),
+    rejectionDate: varchar('rejection_date', { length: 50 }),
+    nextDueDate: varchar('next_due_date', { length: 50 }),
+    nextDueReading: varchar('next_due_reading', { length: 50 }),
+    currentReading: varchar('current_reading', { length: 50 }),
+    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`),
+  },
+  table => ({
+    vesselIdIdx: index('idx_wo_vessel').on(table.vesselId),
+    statusIdx: index('idx_wo_status').on(table.status),
+    componentIdx: index('idx_wo_component').on(table.componentCode),
+    dueDateIdx: index('idx_wo_due_date').on(table.dueDate),
+  })
+);
+
+export const insertWorkOrderSchema = createInsertSchema(workOrders).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertWorkOrder = z.infer<typeof insertWorkOrderSchema>;
+export type WorkOrder = typeof workOrders.$inferSelect;
 
 // Change Request Table
 export const changeRequest = mysqlTable(

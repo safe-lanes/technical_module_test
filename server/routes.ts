@@ -84,12 +84,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );
 
-  // Work Orders API routes (for Target Picker - placeholder)
+  // Work Orders API routes
+  app.get('/api/work-orders/:vesselId', async (req, res) => {
+    try {
+      const { vesselId } = req.params;
+      console.log('🔄 MySQL DB Operation: getWorkOrders', { vesselId });
+      
+      const workOrdersData = await storage.getWorkOrders(vesselId);
+      res.json(workOrdersData);
+    } catch (error) {
+      console.error('❌ Failed to fetch work orders:', error);
+      res.status(500).json({ error: 'Failed to fetch work orders' });
+    }
+  });
+
+  app.post('/api/work-orders/:vesselId', async (req, res) => {
+    try {
+      const { vesselId } = req.params;
+      const workOrderData = req.body;
+      
+      // Add vesselId to the data
+      workOrderData.vesselId = vesselId;
+      
+      console.log('🔄 MySQL DB Operation: createWorkOrder', workOrderData);
+      
+      const newWorkOrder = await storage.createWorkOrder(workOrderData);
+      res.json(newWorkOrder);
+    } catch (error) {
+      console.error('❌ Failed to create work order:', error);
+      res.status(500).json({ error: 'Failed to create work order' });
+    }
+  });
+
+  app.put('/api/work-orders/:vesselId/:workOrderId', async (req, res) => {
+    try {
+      const { vesselId, workOrderId } = req.params;
+      const workOrderData = req.body;
+      
+      console.log('🔄 MySQL DB Operation: updateWorkOrder', { vesselId, workOrderId, ...workOrderData });
+      
+      const updatedWorkOrder = await storage.updateWorkOrder(workOrderId, workOrderData);
+      res.json(updatedWorkOrder);
+    } catch (error) {
+      console.error('❌ Failed to update work order:', error);
+      res.status(500).json({ error: 'Failed to update work order' });
+    }
+  });
+
+  app.delete('/api/work-orders/:vesselId/:workOrderId', async (req, res) => {
+    try {
+      const { vesselId, workOrderId } = req.params;
+      
+      console.log('🔄 MySQL DB Operation: deleteWorkOrder', { vesselId, workOrderId });
+      
+      await storage.deleteWorkOrder(workOrderId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('❌ Failed to delete work order:', error);
+      res.status(500).json({ error: 'Failed to delete work order' });
+    }
+  });
+
+  // Legacy route for Target Picker compatibility
   app.get('/api/work-orders', async (req, res) => {
     try {
-      // Return empty array for now - will be implemented when Work Orders module is built
-      res.json([]);
+      // Default to vessel V001 for legacy compatibility
+      const workOrdersData = await storage.getWorkOrders('V001');
+      res.json(workOrdersData);
     } catch (error) {
+      console.error('❌ Failed to fetch work orders (legacy route):', error);
       res.status(500).json({ error: 'Failed to fetch work orders' });
     }
   });

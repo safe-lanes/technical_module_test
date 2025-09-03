@@ -24,6 +24,9 @@ import {
   type InsertStoresLedger,
   type ChangeRequest,
   type InsertChangeRequest,
+  workOrders,
+  type WorkOrder,
+  type InsertWorkOrder,
 } from '@shared/schema';
 import { desc, max } from 'drizzle-orm';
 import { eq, sql } from 'drizzle-orm';
@@ -514,6 +517,71 @@ export class DatabaseStorage implements IStorage {
   async returnChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
   async createChangeRequestAttachment(): Promise<any> { throw new Error('Not implemented'); }
   async createChangeRequestComment(): Promise<any> { throw new Error('Not implemented'); }
+
+  // Work Orders methods
+  async getWorkOrders(vesselId: string): Promise<WorkOrder[]> {
+    logDbOperation('getWorkOrders', { vesselId });
+    
+    try {
+      return await this.db.select()
+        .from(workOrders)
+        .where(eq(workOrders.vesselId, vesselId))
+        .orderBy(desc(workOrders.createdAt));
+    } catch (error) {
+      console.error('Failed to get work orders:', error);
+      
+      // If table doesn't exist, return empty array
+      if (error instanceof Error && error.message.includes("doesn't exist")) {
+        logDbOperation('getWorkOrders - table not found, returning empty array', {});
+        return [];
+      }
+      
+      throw error;
+    }
+  }
+
+  async createWorkOrder(workOrderData: InsertWorkOrder): Promise<WorkOrder> {
+    logDbOperation('createWorkOrder', workOrderData);
+    
+    try {
+      const [newWorkOrder] = await this.db.insert(workOrders)
+        .values(workOrderData)
+        .returning();
+      
+      return newWorkOrder;
+    } catch (error) {
+      console.error('Failed to create work order:', error);
+      throw error;
+    }
+  }
+
+  async updateWorkOrder(workOrderId: string, workOrderData: Partial<InsertWorkOrder>): Promise<WorkOrder> {
+    logDbOperation('updateWorkOrder', { workOrderId, ...workOrderData });
+    
+    try {
+      const [updatedWorkOrder] = await this.db.update(workOrders)
+        .set(workOrderData)
+        .where(eq(workOrders.id, workOrderId))
+        .returning();
+      
+      return updatedWorkOrder;
+    } catch (error) {
+      console.error('Failed to update work order:', error);
+      throw error;
+    }
+  }
+
+  async deleteWorkOrder(workOrderId: string): Promise<void> {
+    logDbOperation('deleteWorkOrder', { workOrderId });
+    
+    try {
+      await this.db.delete(workOrders)
+        .where(eq(workOrders.id, workOrderId));
+    } catch (error) {
+      console.error('Failed to delete work order:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance
