@@ -494,6 +494,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stores API routes
+  app.get('/api/stores/:vesselId', async (req, res) => {
+    try {
+      const { vesselId } = req.params;
+      const items = await storage.getStoreItems(vesselId);
+      res.json(items);
+    } catch (error) {
+      console.error('Error fetching store items:', error);
+      res.status(500).json({ error: 'Failed to fetch store items' });
+    }
+  });
+
+  app.post('/api/stores/:vesselId/transaction', async (req, res) => {
+    try {
+      const { vesselId } = req.params;
+      const transaction = {
+        ...req.body,
+        vesselId,
+        timestampUTC: new Date(),
+        userId: (req as any).user?.id || 'system'
+      };
+      const result = await storage.createStoreTransaction(transaction);
+      res.json(result);
+    } catch (error) {
+      console.error('Error creating store transaction:', error);
+      res.status(500).json({ error: 'Failed to create transaction' });
+    }
+  });
+
+  app.get('/api/stores/:vesselId/history', async (req, res) => {
+    try {
+      const { vesselId } = req.params;
+      const history = await storage.getStoreHistory(vesselId);
+      res.json(history);
+    } catch (error) {
+      console.error('Error fetching store history:', error);
+      res.status(500).json({ error: 'Failed to fetch store history' });
+    }
+  });
+
   // Change Request API routes
 
   // Get change requests with filters

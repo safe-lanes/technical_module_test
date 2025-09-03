@@ -25,6 +25,7 @@ import {
   type ChangeRequest,
   type InsertChangeRequest,
 } from '@shared/schema';
+import { desc, max } from 'drizzle-orm';
 import { eq, sql } from 'drizzle-orm';
 import { type IStorage } from './storage';
 
@@ -371,6 +372,50 @@ export class DatabaseStorage implements IStorage {
     return await this.db.select().from(sparesHistory).where(eq(sparesHistory.spareId, spareId));
   }
 
+  // Store Ledger methods
+  async getStoreItems(vesselId: string): Promise<any[]> {
+    logDbOperation('getStoreItems', { vesselId });
+    // Get current ROB for each item by finding the latest transaction
+    try {
+      const result = await this.db.select({
+        item_code: storesLedger.itemCode,
+        item_name: storesLedger.itemName,
+        uom: storesLedger.unit,
+        rob: storesLedger.robAfter,
+        min_stock: sql`1`,
+        location: storesLedger.place,
+        category: sql`'stores'`,
+        stock: sql`CASE 
+          WHEN ${storesLedger.robAfter} <= 1 THEN 'Minimum'
+          WHEN ${storesLedger.robAfter} <= 2 THEN 'Low'
+          ELSE 'OK'
+        END`
+      })
+      .from(storesLedger)
+      .where(eq(storesLedger.vesselId, vesselId))
+      .groupBy(storesLedger.itemCode, storesLedger.itemName, storesLedger.unit, storesLedger.robAfter)
+      .orderBy(storesLedger.itemCode);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching store items:', error);
+      return [];
+    }
+  }
+
+  async createStoreTransaction(transaction: any): Promise<any> {
+    logDbOperation('createStoreTransaction', transaction);
+    await this.db.insert(storesLedger).values(transaction);
+    return transaction; // MySQL doesn't support returning, so return the original transaction
+  }
+
+  async getStoreHistory(vesselId: string): Promise<any[]> {
+    logDbOperation('getStoreHistory', { vesselId });
+    return await this.db.select().from(storesLedger)
+      .where(eq(storesLedger.vesselId, vesselId))
+      .orderBy(desc(storesLedger.timestampUTC));
+  }
+
   // Placeholder implementations for remaining IStorage methods
   async getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]> {
     let query = this.db.select().from(changeRequest);
@@ -399,3 +444,71 @@ export class DatabaseStorage implements IStorage {
 // Export singleton instance
 export const storage = new DatabaseStorage();
 console.log('✅ Technical Module using MySQL RDS database for persistent storage');
+
+// Seed some test store data if tables are empty
+(async () => {
+  try {
+    // Check if we have any store data
+    const existingStores = await storage.getStoreItems('V001');
+    if (existingStores.length === 0) {
+      console.log('🌱 Seeding test store data into MySQL...');
+      
+      // Add some initial store transactions
+      const sampleStoreTransactions = [
+        {
+          vesselId: 'V001',
+          itemCode: 'ST-TOOL-001',
+          itemName: 'Torque Wrench',
+          unit: 'pcs',
+          eventType: 'INITIAL',
+          quantity: 2,
+          robAfter: 2,
+          place: 'Store Room A',
+          dateLocal: '2025-09-03 05:00:00',
+          tz: 'UTC',
+          timestampUTC: new Date(),
+          userId: 'system',
+          remarks: 'Initial stock'
+        },
+        {
+          vesselId: 'V001',
+          itemCode: 'ST-CONS-001', 
+          itemName: 'Cotton Rags',
+          unit: 'kg',
+          eventType: 'INITIAL',
+          quantity: 5,
+          robAfter: 5,
+          place: 'Store Room B',
+          dateLocal: '2025-09-03 05:00:00',
+          tz: 'UTC',
+          timestampUTC: new Date(),
+          userId: 'system',
+          remarks: 'Initial stock'
+        },
+        {
+          vesselId: 'V001',
+          itemCode: 'ST-SEAL-001',
+          itemName: 'O-Ring Set',
+          unit: 'set',
+          eventType: 'INITIAL',
+          quantity: 3,
+          robAfter: 3,
+          place: 'Store Room B',
+          dateLocal: '2025-09-03 05:00:00',
+          tz: 'UTC',
+          timestampUTC: new Date(),
+          userId: 'system',
+          remarks: 'Initial stock'
+        }
+      ];
+
+      for (const transaction of sampleStoreTransactions) {
+        await storage.createStoreTransaction(transaction);
+      }
+      
+      console.log('✅ Test store data seeded successfully');
+    }
+  } catch (error) {
+    console.error('Error seeding store data:', error);
+  }
+})();

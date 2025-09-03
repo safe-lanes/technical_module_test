@@ -94,7 +94,7 @@ const UOM_OPTIONS = [
   'Other',
 ];
 
-const storeItems: StoreItem[] = [
+const hardcodedStoreItems: StoreItem[] = [
   {
     id: 1,
     itemCode: 'ST-TOOL-001',
@@ -654,6 +654,12 @@ const storeItems: StoreItem[] = [
 
 const Stores: React.FC = () => {
   const { toast } = useToast();
+  
+  // API query to fetch stores data from MySQL
+  const { data: apiStoreItems = [], isLoading: storeItemsLoading } = useQuery({
+    queryKey: ['/api/stores', 'V001'],
+    queryFn: () => fetch('/api/stores/V001').then(res => res.json())
+  });
   const [activeTab, setActiveTab] = useState<
     'stores' | 'lubes' | 'chemicals' | 'others'
   >('stores');
@@ -676,8 +682,33 @@ const Stores: React.FC = () => {
   }>({});
   const [placeReceived, setPlaceReceived] = useState('');
   const [dateReceived, setDateReceived] = useState('');
-  const [items, setItems] = useState<StoreItem[]>(storeItems);
+  const [items, setItems] = useState<StoreItem[]>([]);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
+
+  // Transform API data when it loads
+  useEffect(() => {
+    if (apiStoreItems && apiStoreItems.length > 0) {
+      console.log('🔄 Loading store items from MySQL database:', apiStoreItems);
+      // Transform API data to match component interface
+      const transformedItems = apiStoreItems.map((item: any, index: number) => ({
+        id: index + 1,
+        itemCode: item.item_code || item.itemCode,
+        itemName: item.item_name || item.itemName,
+        storesCategory: 'General Stores', // Default category
+        uom: item.uom,
+        rob: parseFloat(item.rob) || 0,
+        min: parseFloat(item.min_stock) || 1,
+        stock: item.stock || 'OK',
+        location: item.location || 'Store Room',
+        category: 'stores' as const,
+      }));
+      setItems(transformedItems);
+    } else {
+      console.log('📋 Using fallback hardcoded store data');
+      // Fallback to hardcoded data if no API data
+      setItems(hardcodedStoreItems);
+    }
+  }, [apiStoreItems]);
 
   // History filters
   const [historyDateFrom, setHistoryDateFrom] = useState('');

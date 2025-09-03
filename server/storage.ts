@@ -222,6 +222,11 @@ export interface IStorage {
   getAlertConfig(vesselId: string): Promise<AlertConfig | undefined>;
   createOrUpdateAlertConfig(config: InsertAlertConfig): Promise<AlertConfig>;
 
+  // Store methods
+  getStoreItems(vesselId: string): Promise<any[]>;
+  createStoreTransaction(transaction: any): Promise<any>;
+  getStoreHistory(vesselId: string): Promise<any[]>;
+
   // Form Definition methods
   getFormDefinitions(): Promise<FormDefinition[]>;
   getFormDefinition(id: number): Promise<FormDefinition | undefined>;
