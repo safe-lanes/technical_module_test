@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
+import { ColDef } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -562,9 +562,6 @@ const RunningHours = () => {
     onUpdate: openUpdateDialog
   }), []);
 
-  const onGridReady = (params: GridReadyEvent) => {
-    setGridApi(params.api);
-  };
 
   return (
     <div className='space-y-6'>
@@ -620,7 +617,6 @@ const RunningHours = () => {
           <AgGridTable
             rowData={filteredData}
             columnDefs={columnDefs}
-            onGridReady={onGridReady}
             context={gridContext}
             height="calc(100vh - 320px)"
             enableExport={true}
