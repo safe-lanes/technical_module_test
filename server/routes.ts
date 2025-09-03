@@ -175,8 +175,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { componentId } = req.params;
       const updateData = req.body;
 
+      console.log('🔍 Update data received:', JSON.stringify(updateData, null, 2));
+
+      // Ensure numeric values are converted to strings for MySQL decimal fields
+      const auditData = {
+        ...updateData.audit,
+        previousRH: updateData.audit.previousRH.toString(),
+        newRH: updateData.audit.newRH.toString(),
+        cumulativeRH: updateData.audit.cumulativeRH.toString(),
+        oldMeterFinal: updateData.audit.oldMeterFinal ? updateData.audit.oldMeterFinal.toString() : null,
+        newMeterStart: updateData.audit.newMeterStart ? updateData.audit.newMeterStart.toString() : null,
+      };
+
       // Create audit entry
-      const audit = await storage.createRunningHoursAudit(updateData.audit);
+      const audit = await storage.createRunningHoursAudit(auditData);
 
       // Update component
       const component = await storage.updateComponent(componentId, {
@@ -186,7 +198,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ component, audit });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to update running hours' });
+      console.error('❌ Failed to update running hours:', error);
+      res.status(500).json({ error: 'Failed to update running hours', details: error.message });
     }
   });
 
