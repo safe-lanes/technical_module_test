@@ -98,13 +98,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     setOriginalSnapshot,
   } = useModifyMode();
 
-  // Debug logging
-  console.log('WorkOrderForm Debug:', {
-    isModifyMode,
-    targetId,
-    fieldChanges,
-    isOpen,
-  });
+  // Debug logging (moved after all variables are defined)
 
   // Preview mode detection from URL parameters
   useEffect(() => {
@@ -222,6 +216,17 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     (workOrder?.status === 'Pending Approval' ||
       workOrder?.status === 'Approved' ||
       isApprovalMode);
+
+  // Debug logging
+  console.log('🔍 WorkOrderForm State:', {
+    isModifyMode,
+    isReadOnly,
+    isApprovalMode,
+    activeSection,
+    workOrderStatus: workOrder?.status,
+    buttonVisible: !isModifyMode,
+    buttonDisabled: isReadOnly && !isApprovalMode,
+  });
 
   // Template data (Part A)
   const [templateData, setTemplateData] = useState({

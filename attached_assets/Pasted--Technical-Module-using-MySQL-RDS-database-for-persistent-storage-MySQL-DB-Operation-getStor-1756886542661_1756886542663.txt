@@ -1,0 +1,59 @@
+
+✅ Technical Module using MySQL RDS database for persistent storage
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+8:01:52 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Error fetching store items: PostgresError: relation "stores_ledger" does not exist
+    at ErrorResponse (file:///home/runner/workspace/node_modules/postgres/src/connection.js:794:26)
+    at handle (file:///home/runner/workspace/node_modules/postgres/src/connection.js:480:6)
+    at TLSSocket.data (file:///home/runner/workspace/node_modules/postgres/src/connection.js:315:9)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:191:23) {
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '219',
+  file: 'parse_relation.c',
+  line: '1449',
+  routine: 'parserOpenTable'
+}
+🌱 Seeding test store data into MySQL...
+🔄 MySQL DB Operation: createStoreTransaction {"vesselId":"V001","itemCode":"ST-TOOL-001","itemName":"Torque Wrench","unit":"pcs","eventType":"INI...
+🔄 MySQL DB Operation: getWorkOrders { vesselId: 'V001' }
+🔄 MySQL DB Operation: getWorkOrders {"vesselId":"V001"}...
+🔄 MySQL DB Operation: getWorkOrders { vesselId: 'V001' }
+🔄 MySQL DB Operation: getWorkOrders {"vesselId":"V001"}...
+8:02:00 AM [express] GET /api/work-orders/V001 304 in 497ms :: [{"id":"test-wo","vesselId":"V001","c…
+warn: HTTP Redirect {"duration":"497ms","ip":"172.31.80.130","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-03 08:02:00","url":"/api/work-orders/V001","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+Error seeding store data: PostgresError: relation "stores_ledger" does not exist
+    at ErrorResponse (file:///home/runner/workspace/node_modules/postgres/src/connection.js:794:26)
+    at handle (file:///home/runner/workspace/node_modules/postgres/src/connection.js:480:6)
+    at TLSSocket.data (file:///home/runner/workspace/node_modules/postgres/src/connection.js:315:9)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:191:23) {
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '13',
+  file: 'parse_relation.c',
+  line: '1449',
+  routine: 'parserOpenTable'
+}
+8:02:03 AM [express] GET /api/work-orders/V001 304 in 4400ms :: [{"id":"test-wo","vesselId":"V001","…
+warn: HTTP Redirect {"duration":"4399ms","ip":"172.31.80.130","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-03 08:02:03","url":"/api/work-orders/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getWorkOrders { vesselId: 'V001' }
+🔄 MySQL DB Operation: getWorkOrders {"vesselId":"V001"}...
+8:02:22 AM [express] GET /api/work-orders/V001 304 in 473ms :: [{"id":"test-wo","vesselId":"V001","c…
+warn: HTTP Redirect {"duration":"474ms","ip":"172.31.80.130","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-03 08:02:22","url":"/api/work-orders/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getWorkOrders { vesselId: 'V001' }
+🔄 MySQL DB Operation: getWorkOrders {"vesselId":"V001"}...
+8:03:34 AM [express] GET /api/work-orders/V001 304 in 480ms :: [{"id":"test-wo","vesselId":"V001","c…
+warn: HTTP Redirect {"duration":"479ms","ip":"172.31.80.130","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-03 08:03:34","url":"/api/work-orders/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
