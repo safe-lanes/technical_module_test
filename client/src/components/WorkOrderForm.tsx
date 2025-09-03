@@ -427,6 +427,75 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     }));
   };
 
+  // Function to add a new spare part
+  const handleAddSparePart = () => {
+    const newSparePart = {
+      id: Date.now().toString(),
+      partNo: '',
+      description: '',
+      quantityRequired: '',
+      rob: '',
+      status: 'Available',
+    };
+    
+    setTemplateData(prev => ({
+      ...prev,
+      requiredSpareParts: [...prev.requiredSpareParts, newSparePart],
+    }));
+  };
+
+  // Function to remove a spare part
+  const handleRemoveSparePart = (id: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      requiredSpareParts: prev.requiredSpareParts.filter((part: any) => part.id !== id),
+    }));
+  };
+
+  // Function to update a spare part
+  const handleUpdateSparePart = (id: string, field: string, value: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      requiredSpareParts: prev.requiredSpareParts.map((part: any) =>
+        part.id === id ? { ...part, [field]: value } : part
+      ),
+    }));
+  };
+
+  // Function to add a new tool
+  const handleAddTool = () => {
+    const newTool = {
+      id: Date.now().toString(),
+      name: '',
+      quantityRequired: '',
+      currentROB: '',
+      status: 'Available',
+    };
+    
+    setTemplateData(prev => ({
+      ...prev,
+      requiredTools: [...prev.requiredTools, newTool],
+    }));
+  };
+
+  // Function to remove a tool
+  const handleRemoveTool = (id: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      requiredTools: prev.requiredTools.filter((tool: any) => tool.id !== id),
+    }));
+  };
+
+  // Function to update a tool
+  const handleUpdateTool = (id: string, field: string, value: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      requiredTools: prev.requiredTools.map((tool: any) =>
+        tool.id === id ? { ...tool, [field]: value } : tool
+      ),
+    }));
+  };
+
   const handleSubmit = () => {
     if (activeSection === 'partA') {
       // Validate template data
@@ -1077,7 +1146,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       >
                         A2. Required Spare Parts
                       </h4>
-                      <button className='text-sm text-blue-600 hover:text-blue-800'>
+                      <button 
+                        className='text-sm text-blue-600 hover:text-blue-800'
+                        onClick={handleAddSparePart}
+                        disabled={isReadOnly}
+                      >
                         + Add Spare Part
                       </button>
                     </div>
@@ -1094,48 +1167,80 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         </div>
                       </div>
                       <div className='divide-y divide-gray-200'>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-6 gap-4 text-sm'>
-                            <div className='text-gray-900'>SP-001</div>
-                            <div className='text-gray-900'>O-Ring Seal</div>
-                            <div className='text-gray-900'>2</div>
-                            <div className='text-gray-900'>5</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded'>
-                                Available
-                              </span>
-                            </div>
-                            <div></div>
+                        {templateData.requiredSpareParts.length === 0 ? (
+                          <div className='px-4 py-3 text-center text-gray-500'>
+                            No spare parts added yet. Click "+ Add Spare Part" to add items.
                           </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-6 gap-4 text-sm'>
-                            <div className='text-gray-900'>SP-002</div>
-                            <div className='text-gray-900'>Filter Element</div>
-                            <div className='text-gray-900'>1</div>
-                            <div className='text-gray-900'>0</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded'>
-                                Order Required
-                              </span>
+                        ) : (
+                          templateData.requiredSpareParts.map((part: any) => (
+                            <div key={part.id} className='px-4 py-3'>
+                              <div className='grid grid-cols-6 gap-4 text-sm'>
+                                <div>
+                                  <Input
+                                    value={part.partNo}
+                                    onChange={(e) => handleUpdateSparePart(part.id, 'partNo', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Part No'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Input
+                                    value={part.description}
+                                    onChange={(e) => handleUpdateSparePart(part.id, 'description', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Description'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Input
+                                    value={part.quantityRequired}
+                                    onChange={(e) => handleUpdateSparePart(part.id, 'quantityRequired', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Qty'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Input
+                                    value={part.rob}
+                                    onChange={(e) => handleUpdateSparePart(part.id, 'rob', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='ROB'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Select
+                                    value={part.status}
+                                    onValueChange={(value) => handleUpdateSparePart(part.id, 'status', value)}
+                                    disabled={isReadOnly}
+                                  >
+                                    <SelectTrigger className='text-sm'>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value='Available'>Available</SelectItem>
+                                      <SelectItem value='Order Required'>Order Required</SelectItem>
+                                      <SelectItem value='Low Stock'>Low Stock</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  {!isReadOnly && (
+                                    <button
+                                      onClick={() => handleRemoveSparePart(part.id)}
+                                      className='text-red-600 hover:text-red-800 text-sm'
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <div></div>
-                          </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-6 gap-4 text-sm'>
-                            <div className='text-gray-900'>SP-003</div>
-                            <div className='text-gray-900'>Bearing</div>
-                            <div className='text-gray-900'>2</div>
-                            <div className='text-gray-900'>2</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded'>
-                                Available
-                              </span>
-                            </div>
-                            <div></div>
-                          </div>
-                        </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1149,7 +1254,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       >
                         A3. Required Tools & Equipment
                       </h4>
-                      <button className='text-sm text-blue-600 hover:text-blue-800'>
+                      <button 
+                        className='text-sm text-blue-600 hover:text-blue-800'
+                        onClick={handleAddTool}
+                        disabled={isReadOnly}
+                      >
                         + Add Tool / Eqpt...
                       </button>
                     </div>
@@ -1165,47 +1274,71 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         </div>
                       </div>
                       <div className='divide-y divide-gray-200'>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-5 gap-4 text-sm'>
-                            <div className='text-gray-900'>Hydraulic Jack</div>
-                            <div className='text-gray-900'>2</div>
-                            <div className='text-gray-900'>5</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded'>
-                                Available
-                              </span>
-                            </div>
-                            <div></div>
+                        {templateData.requiredTools.length === 0 ? (
+                          <div className='px-4 py-3 text-center text-gray-500'>
+                            No tools added yet. Click "+ Add Tool / Eqpt..." to add items.
                           </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-5 gap-4 text-sm'>
-                            <div className='text-gray-900'>
-                              Bearing Puller Set
+                        ) : (
+                          templateData.requiredTools.map((tool: any) => (
+                            <div key={tool.id} className='px-4 py-3'>
+                              <div className='grid grid-cols-5 gap-4 text-sm'>
+                                <div>
+                                  <Input
+                                    value={tool.name}
+                                    onChange={(e) => handleUpdateTool(tool.id, 'name', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Tool / Equipment Name'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Input
+                                    value={tool.quantityRequired}
+                                    onChange={(e) => handleUpdateTool(tool.id, 'quantityRequired', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Qty Required'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Input
+                                    value={tool.currentROB}
+                                    onChange={(e) => handleUpdateTool(tool.id, 'currentROB', e.target.value)}
+                                    className='text-sm'
+                                    placeholder='Current ROB'
+                                    disabled={isReadOnly}
+                                  />
+                                </div>
+                                <div>
+                                  <Select
+                                    value={tool.status}
+                                    onValueChange={(value) => handleUpdateTool(tool.id, 'status', value)}
+                                    disabled={isReadOnly}
+                                  >
+                                    <SelectTrigger className='text-sm'>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value='Available'>Available</SelectItem>
+                                      <SelectItem value='Order Required'>Order Required</SelectItem>
+                                      <SelectItem value='Maintenance Required'>Maintenance Required</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  {!isReadOnly && (
+                                    <button
+                                      onClick={() => handleRemoveTool(tool.id)}
+                                      className='text-red-600 hover:text-red-800 text-sm'
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <div className='text-gray-900'>1</div>
-                            <div className='text-gray-900'>0</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded'>
-                                Order Required
-                              </span>
-                            </div>
-                            <div></div>
-                          </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-5 gap-4 text-sm'>
-                            <div className='text-gray-900'>Torque Wrench</div>
-                            <div className='text-gray-900'>2</div>
-                            <div className='text-gray-900'>2</div>
-                            <div>
-                              <span className='inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded'>
-                                Available
-                              </span>
-                            </div>
-                            <div></div>
-                          </div>
-                        </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>

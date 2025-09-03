@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/mysql2';
-import mysql from 'mysql2/promise';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import {
   users,
   components,
@@ -39,42 +39,46 @@ function logDbOperation(operation: string, data?: any) {
 
 export class DatabaseStorage implements IStorage {
   private db: ReturnType<typeof drizzle>;
-  private pool: mysql.Pool;
+  private sql: ReturnType<typeof postgres>;
 
   constructor() {
-    // Use MySQL environment variables
-    const config = {
-      host: process.env.MYSQL_HOST,
-      port: parseInt(process.env.MYSQL_PORT || '3306'),
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      connectionLimit: 20,
-      acquireTimeout: 60000,
-      timeout: 60000,
-      reconnect: true,
-      idleTimeout: 300000,
-      queueLimit: 0,
-    };
-
-    if (!config.host || !config.user || !config.password || !config.database) {
-      throw new Error('MySQL connection environment variables are required: MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE');
+    // Use PostgreSQL environment variables
+    const connectionString = process.env.DATABASE_URL;
+    
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is required');
     }
 
-    this.pool = mysql.createPool(config);
-    this.db = drizzle(this.pool);
+    // Create postgres connection
+    this.sql = postgres(connectionString, {
+      max: 20,
+      idle_timeout: 300,
+    });
+    
+    // Create drizzle instance
+    this.db = drizzle(this.sql, {
+      schema: {
+        users,
+        components,
+        runningHoursAudit,
+        spares,
+        sparesHistory,
+        storesLedger,
+        changeRequest,
+        changeRequestAttachment,
+        changeRequestComment,
+        workOrders,
+      },
+    });
   }
 
   async close() {
-    await this.pool.end();
+    await this.sql.end();
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      const connection = await this.pool.getConnection();
-      await connection.ping();
-      connection.release();
+      await this.sql`SELECT 1`;
       return true;
     } catch (error) {
       console.error('Database health check failed:', error);
