@@ -660,6 +660,23 @@ const Stores: React.FC = () => {
     queryKey: ['/api/stores', 'V001'],
     queryFn: () => fetch('/api/stores/V001').then(res => res.json())
   });
+
+  // Mutation for store transactions (receive, consume)
+  const createTransactionMutation = useMutation({
+    mutationFn: async (transaction: any) => {
+      const response = await fetch('/api/stores/V001/transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(transaction)
+      });
+      if (!response.ok) throw new Error('Failed to create transaction');
+      return response.json();
+    },
+    onSuccess: () => {
+      // Refetch store items to get updated data
+      queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
+    }
+  });
   const [activeTab, setActiveTab] = useState<
     'stores' | 'lubes' | 'chemicals' | 'others'
   >('stores');
@@ -1092,21 +1109,23 @@ const Stores: React.FC = () => {
     setDateReceived(new Date().toISOString().split('T')[0]);
   };
 
-  const saveBulkUpdates = () => {
+  const saveBulkUpdates = async () => {
     let updatedCount = 0;
     let skippedCount = 0;
     let failedCount = 0;
 
-    const updatedItems = items.map(item => {
+    const updatedItems = [...items];
+
+    for (const item of items) {
       const updateData = bulkUpdateData[item.id];
-      if (!updateData) return item;
+      if (!updateData) continue;
 
       const consumed = updateData.consumed || 0;
       const received = updateData.received || 0;
 
       if (consumed === 0 && received === 0) {
         skippedCount++;
-        return item;
+        continue;
       }
 
       const newRob = item.rob - consumed + received;
@@ -1114,51 +1133,93 @@ const Stores: React.FC = () => {
       // Validate
       if (newRob < 0) {
         failedCount++;
-        return item;
+        continue;
       }
 
       if (received > 0 && !dateReceived) {
         failedCount++;
-        return item;
+        continue;
       }
 
-      // Add history entries
-      if (consumed > 0) {
-        addToHistory(
-          item,
-          'CONSUME',
-          -consumed,
-          newRob,
-          '',
-          '',
-          updateData.comments
-        );
-      }
+      try {
+        // Create consume transaction if needed
+        if (consumed > 0) {
+          await createTransactionMutation.mutateAsync({
+            itemCode: item.itemCode,
+            itemName: item.itemName,
+            unit: item.uom,
+            eventType: 'CONSUME',
+            quantity: -consumed,
+            robAfter: item.rob - consumed,
+            place: '',
+            dateLocal: new Date().toISOString().split('T')[0],
+            tz: 'UTC',
+            remarks: updateData.comments
+          });
+        }
 
-      if (received > 0) {
-        addToHistory(
-          item,
-          'RECEIVE',
-          received,
-          newRob,
-          placeReceived,
-          '',
-          updateData.comments
-        );
-      }
+        // Create receive transaction if needed
+        if (received > 0) {
+          await createTransactionMutation.mutateAsync({
+            itemCode: item.itemCode,
+            itemName: item.itemName,
+            unit: item.uom,
+            eventType: 'RECEIVE',
+            quantity: received,
+            robAfter: newRob,
+            place: placeReceived,
+            dateLocal: dateReceived,
+            tz: 'UTC',
+            remarks: updateData.comments
+          });
+        }
 
-      updatedCount++;
-      return {
-        ...item,
-        rob: newRob,
-      };
-    });
+        // Add history entries for local display
+        if (consumed > 0) {
+          addToHistory(
+            item,
+            'CONSUME',
+            -consumed,
+            newRob,
+            '',
+            '',
+            updateData.comments
+          );
+        }
+
+        if (received > 0) {
+          addToHistory(
+            item,
+            'RECEIVE',
+            received,
+            newRob,
+            placeReceived,
+            '',
+            updateData.comments
+          );
+        }
+
+        // Update local item
+        const itemIndex = updatedItems.findIndex(i => i.id === item.id);
+        if (itemIndex >= 0) {
+          updatedItems[itemIndex] = {
+            ...item,
+            rob: newRob,
+          };
+        }
+
+        updatedCount++;
+      } catch (error) {
+        console.error('Failed to save transaction:', error);
+        failedCount++;
+      }
+    }
 
     setItems(updatedItems);
     setIsBulkUpdateModalOpen(false);
     toast({
       title: 'Bulk Update Complete',
-      description: `Updated: ${updatedCount}, Skipped: ${skippedCount}, Failed: ${failedCount}`,
+      description: `Updated: ${updatedCount}, Skipped: ${skippedCount}, Failed: ${failedCount} - saved to database`,
     });
   };
 
@@ -1232,7 +1293,7 @@ const Stores: React.FC = () => {
     setIsReceiveModalOpen(true);
   };
 
-  const saveReceive = () => {
+  const saveReceive = async () => {
     if (!receivingItem) return;
 
     const quantity = parseInt(receiveForm.quantity);
@@ -1256,33 +1317,57 @@ const Stores: React.FC = () => {
 
     const newRob = receivingItem.rob + quantity;
 
-    const updatedItems = items.map(item => {
-      if (item.id === receivingItem.id) {
-        return {
-          ...item,
-          rob: newRob,
-        };
-      }
-      return item;
-    });
+    try {
+      // Create transaction in database
+      await createTransactionMutation.mutateAsync({
+        itemCode: receivingItem.itemCode,
+        itemName: receivingItem.itemName,
+        unit: receivingItem.uom,
+        eventType: 'RECEIVE',
+        quantity: quantity,
+        robAfter: newRob,
+        place: receiveForm.place,
+        reference: receiveForm.supplierPO,
+        dateLocal: receiveForm.dateLocal,
+        tz: 'UTC',
+        remarks: receiveForm.remarks
+      });
 
-    // Add to history
-    addToHistory(
-      receivingItem,
-      'RECEIVE',
-      quantity,
-      newRob,
-      receiveForm.place,
-      receiveForm.supplierPO,
-      receiveForm.remarks
-    );
+      // Update local state immediately for better UX
+      const updatedItems = items.map(item => {
+        if (item.id === receivingItem.id) {
+          return {
+            ...item,
+            rob: newRob,
+          };
+        }
+        return item;
+      });
 
-    setItems(updatedItems);
-    setIsReceiveModalOpen(false);
-    toast({
-      title: 'Success',
-      description: `Received ${quantity} ${receivingItem.uom || 'units'}`,
-    });
+      // Add to history
+      addToHistory(
+        receivingItem,
+        'RECEIVE',
+        quantity,
+        newRob,
+        receiveForm.place,
+        receiveForm.supplierPO,
+        receiveForm.remarks
+      );
+
+      setItems(updatedItems);
+      setIsReceiveModalOpen(false);
+      toast({
+        title: 'Success',
+        description: `Received ${quantity} ${receivingItem.uom || 'units'} - saved to database`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save transaction to database',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Handle Archive
