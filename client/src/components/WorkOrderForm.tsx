@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { ChevronDown, ChevronRight, FileText, ArrowLeft } from 'lucide-react';
 import { useLocation } from 'wouter';
 import WorkInstructionsDialog from './WorkInstructionsDialog';
@@ -1936,15 +1937,15 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Label className='text-sm text-[#8798ad]'>
                             Start Date & Time *
                           </Label>
-                          <Input
-                            type='datetime-local'
+                          <DateTimePicker
                             value={executionData.startDateTime}
-                            onChange={e =>
+                            onChange={value =>
                               handleExecutionChange(
                                 'startDateTime',
-                                e.target.value
+                                value
                               )
                             }
+                            placeholder='Select start date & time'
                             className='w-full'
                           />
                         </div>
@@ -1952,15 +1953,15 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Label className='text-sm text-[#8798ad]'>
                             Completion Date & Time *
                           </Label>
-                          <Input
-                            type='datetime-local'
+                          <DateTimePicker
                             value={executionData.completionDateTime}
-                            onChange={e =>
+                            onChange={value =>
                               handleExecutionChange(
                                 'completionDateTime',
-                                e.target.value
+                                value
                               )
                             }
+                            placeholder='Select completion date & time'
                             className='w-full'
                           />
                         </div>
