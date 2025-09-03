@@ -440,12 +440,20 @@ const WorkOrders: React.FC = () => {
       console.log('💾 Saving template draft...');
       const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
       if (workOrder) {
+        console.log('🔍 About to update existing work order:', workOrderId);
         updateWorkOrderMutation.mutate({
           id: workOrderId,
           data: {
             ...formData.data,
             status: 'Draft',
             templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
+          }
+        }, {
+          onSuccess: (data) => {
+            console.log('✅ Update successful:', data);
+          },
+          onError: (error) => {
+            console.error('❌ Update failed:', error);
           }
         });
       } else {
@@ -463,7 +471,15 @@ const WorkOrders: React.FC = () => {
           formData: formData.data,
           isExecution: false,
         };
-        createWorkOrderMutation.mutate(newWorkOrder);
+        console.log('🔍 About to create new work order:', newWorkOrder);
+        createWorkOrderMutation.mutate(newWorkOrder, {
+          onSuccess: (data) => {
+            console.log('✅ Create successful:', data);
+          },
+          onError: (error) => {
+            console.error('❌ Create failed:', error);
+          }
+        });
       }
     } else if (formData?.type === 'execution_draft') {
       // Save execution as draft (Part B in progress)
