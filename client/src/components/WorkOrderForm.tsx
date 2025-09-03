@@ -402,13 +402,36 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       // If in execution mode, switch to Part B and load execution data
       if (executionMode) {
         setActiveSection('partB');
-        setExecutionData(prev => ({
+        const savedFormData = workOrder.formData || {};
+        console.log('🔍 Loading execution data from workOrder:', {
+          isExecution: workOrder.isExecution,
+          formData: savedFormData,
+          startDateTime: savedFormData.startDateTime,
+          completionDateTime: savedFormData.completionDateTime,
+          performedBy: savedFormData.performedBy,
+          assignedTo: savedFormData.assignedTo
+        });
+        
+        const newExecutionData = {
           ...prev,
-          woExecutionId: generateWOExecutionId(),
-          assignedTo: workOrder.assignedTo || '',
+          // Use saved woExecutionId if available, otherwise generate new one
+          woExecutionId: savedFormData.woExecutionId || generateWOExecutionId(),
+          assignedTo: savedFormData.assignedTo || workOrder.assignedTo || '',
           // Load execution data from formData if available
-          ...(workOrder.formData || {}),
-        }));
+          ...savedFormData,
+        };
+        
+        console.log('🎯 Final executionData being set:', {
+          startDateTime: newExecutionData.startDateTime,
+          completionDateTime: newExecutionData.completionDateTime,
+          performedBy: newExecutionData.performedBy,
+          assignedTo: newExecutionData.assignedTo,
+          noOfPersons: newExecutionData.noOfPersons,
+          totalTimeHours: newExecutionData.totalTimeHours,
+          workCarriedOut: newExecutionData.workCarriedOut
+        });
+        
+        setExecutionData(newExecutionData);
       }
     }
   }, [workOrder, executionMode, isModifyMode, setOriginalSnapshot]);
