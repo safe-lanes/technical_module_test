@@ -1,0 +1,214 @@
+chunk-RPCDYKBN.js?v=2e1d0f04:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-RPCDYKBN.js?v=2e1d0f04:521 Warning: Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+    at style
+    at div
+    at AgGridTable (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/components/common/AgGridTable.tsx:56:3)
+    at div
+    at div
+    at WorkOrders (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/pms/WorkOrders.tsx?t=1756889793638:286:39)
+    at div
+    at div
+    at div
+    at TechnicalModule (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/TechnicalModule.tsx?t=1756889793638:32:22)
+    at Route (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2e1d0f04:323:16)
+    at Switch (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2e1d0f04:379:17)
+    at div
+    at Provider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VFYO4PQK.js?v=2e1d0f04:38:15)
+    at TooltipProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=2e1d0f04:61:5)
+    at ChangeModeProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeModeContext.tsx:24:3)
+    at ChangeRequestProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeRequestContext.tsx:38:3)
+    at QueryClientProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2e1d0f04:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=2e1d0f04:521
+chunk-RPCDYKBN.js?v=2e1d0f04:521 Warning: Received `true` for a non-boolean attribute `global`.
+
+If you want to write it to the DOM, pass a string instead: global="true" or global={value.toString()}.
+    at style
+    at div
+    at AgGridTable (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/components/common/AgGridTable.tsx:56:3)
+    at div
+    at div
+    at WorkOrders (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/pms/WorkOrders.tsx?t=1756889793638:286:39)
+    at div
+    at div
+    at div
+    at TechnicalModule (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/TechnicalModule.tsx?t=1756889793638:32:22)
+    at Route (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2e1d0f04:323:16)
+    at Switch (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2e1d0f04:379:17)
+    at div
+    at Provider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VFYO4PQK.js?v=2e1d0f04:38:15)
+    at TooltipProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=2e1d0f04:61:5)
+    at ChangeModeProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeModeContext.tsx:24:3)
+    at ChangeRequestProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeRequestContext.tsx:38:3)
+    at QueryClientProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2e1d0f04:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=2e1d0f04:521
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+ag-grid-enterprise.js?v=2e1d0f04:812 ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:812
+ag-grid-enterprise.js?v=2e1d0f04:812 ************************************************ AG Grid Enterprise License ************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:812
+ag-grid-enterprise.js?v=2e1d0f04:812 ************************************************** License Key Not Found ***************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:812
+ag-grid-enterprise.js?v=2e1d0f04:815 * All AG Grid Enterprise features are unlocked for trial.                                                                  *
+padAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:815
+ag-grid-enterprise.js?v=2e1d0f04:815 * If you want to hide the watermark please email info@ag-grid.com for a trial license key.                                 *
+padAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:815
+ag-grid-enterprise.js?v=2e1d0f04:812 ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:812
+ag-grid-enterprise.js?v=2e1d0f04:812 ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=2e1d0f04:812
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid gridOptions property 'enableRowGroup' did you mean any of these: enableGroupEdit, enableRowPinning, enableBrowserTooltips, enableRangeHandle, onRowGroupOpened, showOpenedGroup, enableCellSpan, onColumnRowGroupChanged.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid gridOptions property 'enablePivot' did you mean any of these: enableRtl, enableCharts, enableRowPinning, enableGroupEdit, enableFillHandle, enableCellSpan, enableRangeHandle, enableRangeSelection.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid gridOptions property 'enableExport' did you mean any of these: enableCharts, enableRtl, enableCellSpan, enableGroupEdit, enableCellExpressions, enableRangeHandle, enableCellTextSelection, enableRangeSelection.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid gridOptions property 'data-replit-metadata' did you mean any of these: resetRowDataOnUpdate, treeDataParentIdField, detailCellRendererParams, getDataPath, treeDataDisplayType, dataTypeDefinitions, createChartContainer, onRangeDeleteStart.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid gridOptions property 'data-component-name' did you mean any of these: onComponentStateChanged, dragAndDropImageComponentParams, loadingOverlayComponentParams, noRowsOverlayComponentParams, components, navigateToNextHeader, dragAndDropImageComponent, reactiveCustomComponents.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: to see all the valid gridOptions properties please check: https://www.ag-grid.com/react-data-grid/grid-options/
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: As of v32.2, suppressRowClickSelection is deprecated. Use `rowSelection.enableClickSelection` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: As of v32.2, enableRangeSelection is deprecated. Use `cellSelection = true` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: As of v32.2, enableRangeHandle is deprecated. Use `cellSelection.handle` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: As of v32.2, enableFillHandle is deprecated. Use `cellSelection.handle` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: As of v32, suppressLoadingOverlay is deprecated. Use `loading`=false instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: invalid colDef property 'suppressMenu' did you mean any of these: suppressPaste, suppressMovable, suppressAutoSize, suppressSizeToFit, suppressHeaderMenuButton, suppressHeaderContextMenu, suppressFillHandle, suppressNavigable.
+If you are trying to annotate colDef with application data, use the 'colDef.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+chunk-PJXUK7HK.js?v=2e1d0f04:1064 AG Grid: to see all the valid colDef properties please check: https://www.ag-grid.com/react-data-grid/column-properties/
+(anonymous) @ chunk-PJXUK7HK.js?v=2e1d0f04:1064
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+chunk-XG3SMHOQ.js?v=2e1d0f04:337 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-XG3SMHOQ.js?v=2e1d0f04:337
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:506 💾 handleSave called! Object
+WorkOrders.tsx:435 🔄 handleWorkOrderSubmit called: Object
+WorkOrders.tsx:436 🔍 Full formData object: {
+  "type": "template_draft",
+  "data": {
+    "woTitle": "Updated Test Work Order",
+    "component": "Main Engine",
+    "componentCode": "ME-001",
+    "woTemplateCode": "WO-ME-001-INSM1",
+    "maintenanceBasis": "Calendar",
+    "frequencyValue": "10",
+    "frequencyUnit": "Months",
+    "taskType": "Inspection",
+    "assignedTo": "Chief Officer",
+    "approver": "Chief Engineer",
+    "jobPriority": "Medium",
+    "classRelated": "Yes",
+    "briefWorkDescription": "this is a test descp",
+    "nextDueDate": "2025-12-31",
+    "nextDueReading": "",
+    "requiredSpareParts": [
+      {
+        "id": "1756890444717",
+        "partNo": "p1",
+        "description": "p1 desc",
+        "quantityRequired": "10",
+        "rob": "2",
+        "status": "Available"
+      }
+    ],
+    "requiredTools": [
+      {
+        "id": "1756890466130",
+        "name": "T!",
+        "quantityRequired": "T1 desc",
+        "currentROB": "10",
+        "status": "Available"
+      }
+    ],
+    "safetyRequirements": {
+      "ppe": "",
+      "permits": "",
+      "other": ""
+    },
+    "workHistory": [],
+    "templateCode": "WO-ME-001-INSM1",
+    "status": "Draft"
+  }
+}
+WorkOrders.tsx:440 💾 Saving template draft...
+WorkOrders.tsx:443 🔍 About to update existing work order: test-wo-001
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrders.tsx:456 ❌ Update failed: TypeError: Failed to execute 'fetch' on 'Window': '/api/work-orders/V001/test-wo-001' is not a valid HTTP method.
+    at apiRequest (queryClient.ts:15:21)
+    at Object.mutationFn (WorkOrders.tsx:358:7)
+    at Object.fn (@tanstack_react-query.js?v=2e1d0f04:1189:29)
+    at run (@tanstack_react-query.js?v=2e1d0f04:494:49)
+    at Object.start (@tanstack_react-query.js?v=2e1d0f04:536:9)
+    at _a6.execute (@tanstack_react-query.js?v=2e1d0f04:1225:56)
+onError @ WorkOrders.tsx:456
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object

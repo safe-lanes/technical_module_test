@@ -339,10 +339,7 @@ const WorkOrders: React.FC = () => {
   // Create work order mutation
   const createWorkOrderMutation = useMutation({
     mutationFn: (workOrderData: Omit<WorkOrder, 'createdAt' | 'updatedAt'>) => 
-      apiRequest(`/api/work-orders/${vesselId}`, {
-        method: 'POST',
-        body: JSON.stringify(workOrderData),
-      }),
+      apiRequest('POST', `/api/work-orders/${vesselId}`, workOrderData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
       toast({ title: 'Success', description: 'Work order created successfully' });
@@ -355,10 +352,7 @@ const WorkOrders: React.FC = () => {
   // Update work order mutation
   const updateWorkOrderMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<WorkOrder> }) => 
-      apiRequest(`/api/work-orders/${vesselId}/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
+      apiRequest('PUT', `/api/work-orders/${vesselId}/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
       toast({ title: 'Success', description: 'Work order updated successfully' });
@@ -371,9 +365,7 @@ const WorkOrders: React.FC = () => {
   // Delete work order mutation
   const deleteWorkOrderMutation = useMutation({
     mutationFn: (id: string) => 
-      apiRequest(`/api/work-orders/${vesselId}/${id}`, {
-        method: 'DELETE',
-      }),
+      apiRequest('DELETE', `/api/work-orders/${vesselId}/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
       toast({ title: 'Success', description: 'Work order deleted successfully' });
