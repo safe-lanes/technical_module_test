@@ -242,8 +242,18 @@ export const UtilizationRateCellRenderer = (params: ICellRendererParams) => {
 export const DateCellRenderer = (params: ICellRendererParams) => {
   if (!params.value) return '';
   
+  // Handle non-date strings (like 'Never')
+  if (typeof params.value === 'string' && isNaN(Date.parse(params.value))) {
+    return params.value;
+  }
+  
   // Format date consistently
-  return new Date(params.value).toLocaleDateString('en-GB', {
+  const date = new Date(params.value);
+  if (isNaN(date.getTime())) {
+    return params.value;
+  }
+  
+  return date.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric'
