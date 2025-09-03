@@ -547,12 +547,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   // Save as draft (can be called from either Part A or Part B)
   const handleSave = () => {
-    console.log('💾 handleSave called!', { activeSection, templateData, executionData });
     
     if (activeSection === 'partA') {
       // Save Part A data as draft (minimal validation)
       if (!templateData.woTitle) {
-        console.log('❌ Save validation failed: WO Title missing');
         toast({
           title: 'Validation Error',
           description: 'WO Title is required',
@@ -591,6 +589,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           woExecutionId: executionData.woExecutionId || generateWOExecutionId(),
           templateCode: templateData.woTemplateCode || workOrder?.templateCode,
           status: 'In Progress',
+          // Ensure sparePartsConsumed is explicitly included
+          sparePartsConsumed: executionData.sparePartsConsumed || [],
         };
         onSubmit(workOrderId, { type: 'execution_draft', data: executionRecord });
         toast({
@@ -603,12 +603,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   // Final submit (only from Part B with full validation)
   const handleSubmit = () => {
-    console.log('🔥 handleSubmit called!', { activeSection, templateData, executionData, onSubmit: !!onSubmit });
     
     if (activeSection === 'partA') {
       // Validate template data
       if (!templateData.woTitle) {
-        console.log('❌ Validation failed: WO Title missing');
         toast({
           title: 'Validation Error',
           description: 'WO Title is required',
