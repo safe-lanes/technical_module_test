@@ -64,18 +64,23 @@ export function DateTimePicker({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
+        <div
           className={cn(
-            'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+            'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 cursor-pointer',
             !displayValue && 'text-muted-foreground',
+            disabled && 'cursor-not-allowed opacity-50',
             className
           )}
-          disabled={disabled}
+          style={{
+            height: '36px',
+            minHeight: '36px',
+            maxHeight: '36px',
+            boxSizing: 'border-box'
+          }}
         >
           <span>{displayValue || placeholder}</span>
           <Calendar className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <div className="border-b border-border p-3">
