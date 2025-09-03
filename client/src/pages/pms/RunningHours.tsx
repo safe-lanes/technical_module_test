@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,19 +12,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Search, FileSpreadsheet, Calendar } from 'lucide-react';
+import { Search, FileSpreadsheet } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { getComponentCategory } from '@/utils/componentUtils';
 import { useModifyMode } from '@/hooks/useModifyMode';
-import { ModifyFieldWrapper } from '@/components/modify/ModifyFieldWrapper';
 import { ModifyStickyFooter } from '@/components/modify/ModifyStickyFooter';
 import AgGridTable from '@/components/common/AgGridTable';
 import { 
   RunningHoursActionsCellRenderer, 
   UtilizationRateCellRenderer, 
-  DateCellRenderer,
-  NumberCellRenderer
+  DateCellRenderer
 } from '@/components/common/AgGridCellRenderers';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -45,7 +43,7 @@ const RunningHours = () => {
     useState<RunningHoursData | null>(null);
 
   // Modify mode integration
-  const { isModifyMode, targetId, fieldChanges } = useModifyMode();
+  const { isModifyMode, fieldChanges } = useModifyMode();
   const [updateMode, setUpdateMode] = useState<'setTotal' | 'addDelta'>(
     'setTotal'
   );
@@ -73,25 +71,26 @@ const RunningHours = () => {
   const [bulkUpdateErrors, setBulkUpdateErrors] = useState<{
     [key: string]: string;
   }>({});
-  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const vesselId = 'V001'; // Default vessel ID
 
   // Fetch components data from MySQL database
-  const { data: components = [], isLoading, refetch } = useQuery({
+  const { data: components, isLoading } = useQuery<any[]>({
     queryKey: ['/api/running-hours/components', vesselId],
     queryFn: () => apiRequest(`/api/running-hours/components/${vesselId}`, 'GET'),
   });
 
   // Transform components data to RunningHoursData format
   const runningHoursData: RunningHoursData[] = useMemo(() => {
+    if (!components || !Array.isArray(components)) return [];
+    
     return components.map((component: any) => ({
       id: component.id,
       component: component.name,
-      componentCode: component.code,
-      componentCategory: getComponentCategory(component.code || ''),
+      componentCode: component.componentCode,
+      componentCategory: getComponentCategory(component.componentCode || ''),
       runningHours: component.currentCumulativeRH 
         ? `${parseInt(component.currentCumulativeRH).toLocaleString()} hrs`
         : '0 hrs',
@@ -101,9 +100,11 @@ const RunningHours = () => {
   }, [components]);
 
   // Fetch utilization rates from MySQL database
-  const { data: utilizationRates } = useQuery({
+  const { data: utilizationRates } = useQuery<Record<string, number | null>>({
     queryKey: ['/api/running-hours/utilization-rates', vesselId],
     queryFn: async () => {
+      if (!components || !Array.isArray(components)) return {};
+      
       const componentIds = components.map((c: any) => c.id);
       if (componentIds.length === 0) return {};
       
@@ -111,7 +112,7 @@ const RunningHours = () => {
         componentIds
       });
     },
-    enabled: components.length > 0,
+    enabled: !!components && Array.isArray(components) && components.length > 0,
     staleTime: 15 * 60 * 1000, // Cache for 15 minutes
   });
 
@@ -528,7 +529,7 @@ const RunningHours = () => {
       headerName: 'Running Hours',
       field: 'runningHours',
       width: 150,
-      cellRenderer: (params) => {
+      cellRenderer: (params: any) => {
         return <span className="font-medium">{params.value}</span>;
       }
     },
