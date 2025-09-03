@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
 import {
   users,
   components,
@@ -39,24 +39,38 @@ function logDbOperation(operation: string, data?: any) {
 
 export class DatabaseStorage implements IStorage {
   private db: ReturnType<typeof drizzle>;
-  private sql: ReturnType<typeof postgres>;
+  private pool: mysql.Pool;
 
   constructor() {
-    // Use PostgreSQL environment variables
-    const connectionString = process.env.DATABASE_URL;
+    // Use MySQL RDS environment variables
+    const host = process.env.MYSQL_HOST;
+    const database = process.env.MYSQL_DATABASE;
+    const user = process.env.MYSQL_USER;
+    const password = process.env.MYSQL_PASSWORD;
+    const port = parseInt(process.env.MYSQL_PORT || '3306');
     
-    if (!connectionString) {
-      throw new Error('DATABASE_URL environment variable is required');
+    if (!host || !database || !user || !password) {
+      throw new Error('MySQL environment variables are required (MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD)');
     }
 
-    // Create postgres connection
-    this.sql = postgres(connectionString, {
-      max: 20,
-      idle_timeout: 300,
+    console.log('✅ Technical Module using MySQL RDS database for persistent storage');
+
+    // Create MySQL connection pool
+    this.pool = mysql.createPool({
+      host,
+      port,
+      user,
+      password,
+      database,
+      waitForConnections: true,
+      connectionLimit: 20,
+      queueLimit: 0,
+      acquireTimeout: 60000,
+      timeout: 60000,
     });
     
     // Create drizzle instance
-    this.db = drizzle(this.sql, {
+    this.db = drizzle(this.pool, {
       schema: {
         users,
         components,
@@ -69,16 +83,19 @@ export class DatabaseStorage implements IStorage {
         changeRequestComment,
         workOrders,
       },
+      mode: 'default',
     });
   }
 
   async close() {
-    await this.sql.end();
+    await this.pool.end();
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.sql`SELECT 1`;
+      const connection = await this.pool.getConnection();
+      await connection.execute('SELECT 1');
+      connection.release();
       return true;
     } catch (error) {
       console.error('Database health check failed:', error);
@@ -534,13 +551,95 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Failed to get work orders:', error);
       
-      // If table doesn't exist, return empty array
+      // If table doesn't exist, create it and return empty array
       if (error instanceof Error && error.message.includes("doesn't exist")) {
-        logDbOperation('getWorkOrders - table not found, returning empty array', {});
+        logDbOperation('getWorkOrders - table not found, creating table', {});
+        await this.createWorkOrdersTable();
         return [];
       }
       
       throw error;
+    }
+  }
+
+  private async createWorkOrdersTable(): Promise<void> {
+    try {
+      const connection = await this.pool.getConnection();
+      await connection.execute(`
+        CREATE TABLE IF NOT EXISTS work_orders (
+          id VARCHAR(100) PRIMARY KEY,
+          vessel_id VARCHAR(50) NOT NULL DEFAULT 'V001',
+          component VARCHAR(255) NOT NULL,
+          component_code VARCHAR(100),
+          work_order_no VARCHAR(50) NOT NULL,
+          template_code VARCHAR(100),
+          execution_id VARCHAR(100),
+          job_title VARCHAR(500) NOT NULL,
+          assigned_to VARCHAR(255) NOT NULL,
+          due_date VARCHAR(50) NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          date_completed VARCHAR(50),
+          submitted_date VARCHAR(50),
+          form_data JSON,
+          task_type VARCHAR(100),
+          maintenance_basis VARCHAR(50),
+          frequency_value VARCHAR(50),
+          frequency_unit VARCHAR(50),
+          approver_remarks TEXT,
+          is_execution BOOLEAN DEFAULT FALSE,
+          template_id VARCHAR(100),
+          approver VARCHAR(255),
+          approval_date VARCHAR(50),
+          rejection_date VARCHAR(50),
+          next_due_date VARCHAR(50),
+          next_due_reading VARCHAR(50),
+          current_reading VARCHAR(50),
+          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          INDEX idx_wo_vessel (vessel_id),
+          INDEX idx_wo_status (status),
+          INDEX idx_wo_component (component_code),
+          INDEX idx_wo_due_date (due_date)
+        )
+      `);
+      connection.release();
+      console.log('✅ Created work_orders table in MySQL RDS');
+      
+      // Add sample data
+      await this.seedWorkOrdersData();
+    } catch (error) {
+      console.error('❌ Failed to create work_orders table:', error);
+    }
+  }
+
+  private async seedWorkOrdersData(): Promise<void> {
+    try {
+      const sampleWorkOrder = {
+        id: 'test-wo',
+        vesselId: 'V001',
+        component: 'Main Engine',
+        componentCode: 'ME-001',
+        workOrderNo: 'WO-2025-001',
+        templateCode: 'WO-ME-001-INSM1',
+        jobTitle: 'Monthly Engine Inspection',
+        assignedTo: 'Chief Engineer',
+        dueDate: '2025-12-31',
+        status: 'Due',
+        taskType: 'Inspection',
+        maintenanceBasis: 'Calendar',
+        frequencyValue: '1',
+        frequencyUnit: 'Months',
+        formData: {
+          woTitle: 'Monthly Engine Inspection',
+          component: 'Main Engine',
+          componentCode: 'ME-001'
+        }
+      };
+
+      await this.createWorkOrder(sampleWorkOrder);
+      console.log('✅ Seeded sample work order data');
+    } catch (error) {
+      console.error('❌ Failed to seed work order data:', error);
     }
   }
 
