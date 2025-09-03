@@ -108,9 +108,10 @@ const RunningHours = () => {
       const componentIds = components.map((c: any) => c.id);
       if (componentIds.length === 0) return {};
       
-      return await apiRequest('/api/running-hours/utilization-rates', 'POST', {
+      const response = await apiRequest('POST', '/api/running-hours/utilization-rates', {
         componentIds
       });
+      return await response.json();
     },
     enabled: !!components && Array.isArray(components) && components.length > 0,
     staleTime: 15 * 60 * 1000, // Cache for 15 minutes
@@ -130,7 +131,8 @@ const RunningHours = () => {
   // Mutation for single update - Real MySQL API call
   const updateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest(`/api/running-hours/update/${data.componentId}`, 'POST', data);
+      const response = await apiRequest('POST', `/api/running-hours/update/${data.componentId}`, data);
+      return await response.json();
     },
     onSuccess: () => {
       // Invalidate and refetch data
@@ -156,7 +158,8 @@ const RunningHours = () => {
   // Mutation for bulk update - Real MySQL API call
   const bulkUpdateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest('/api/running-hours/bulk-update', 'POST', data);
+      const response = await apiRequest('POST', '/api/running-hours/bulk-update', data);
+      return await response.json();
     },
     onSuccess: () => {
       // Invalidate and refetch data
