@@ -2825,8 +2825,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Use in-memory storage for Technical Module
-const storage: IStorage = new MemStorage();
-console.log('ℹ️  Technical Module using in-memory storage (MySQL schema ready for migration)');
-
-export { storage };
+// Export MySQL database storage from database.ts
+export { storage } from './database';

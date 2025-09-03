@@ -1,6 +1,6 @@
 import type { Express } from 'express';
 import { createServer, type Server } from 'http';
-import { storage } from './database';
+import { storage } from './storage';
 import { insertRunningHoursAuditSchema } from '@shared/schema';
 import { z } from 'zod';
 import bulkRoutes from './routes/bulk';
