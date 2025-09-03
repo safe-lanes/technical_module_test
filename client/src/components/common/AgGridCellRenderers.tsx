@@ -101,14 +101,20 @@ export const WorkOrderActionsCellRenderer = (params: ICellRendererParams) => {
   };
 
   const handleApprove = () => {
+    console.log('🎯 Approve button clicked!', data);
     if (context.onApprove) {
       context.onApprove(data);
+    } else {
+      console.log('❌ context.onApprove not available');
     }
   };
 
   const handleReject = () => {
+    console.log('🎯 Reject button clicked!', data);
     if (context.onReject) {
       context.onReject(data);
+    } else {
+      console.log('❌ context.onReject not available');
     }
   };
 

@@ -781,7 +781,9 @@ const WorkOrders: React.FC = () => {
   };
 
   const handleApprove = (workOrderId: string, approverRemarks?: string) => {
+    console.log('🎯 handleApprove called with:', { workOrderId, approverRemarks });
     const workOrder = workOrdersList.find(wo => wo.executionId === workOrderId || wo.id === workOrderId);
+    console.log('🔍 Found workOrder:', workOrder);
     if (workOrder) {
       const updatedData: Partial<WorkOrder> = {
         status: 'Approved',
@@ -822,7 +824,9 @@ const WorkOrders: React.FC = () => {
   };
 
   const handleReject = (workOrderId: string, rejectionComments: string) => {
+    console.log('🎯 handleReject called with:', { workOrderId, rejectionComments });
     const workOrder = workOrdersList.find(wo => wo.executionId === workOrderId || wo.id === workOrderId);
+    console.log('🔍 Found workOrder:', workOrder);
     if (workOrder) {
       updateWorkOrderMutation.mutate({
         id: workOrder.id,

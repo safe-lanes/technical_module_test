@@ -398,13 +398,15 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         setOriginalSnapshot(initialData);
       }
 
-      // If in execution mode, switch to Part B and generate execution ID
+      // If in execution mode, switch to Part B and load execution data
       if (executionMode) {
         setActiveSection('partB');
         setExecutionData(prev => ({
           ...prev,
           woExecutionId: generateWOExecutionId(),
           assignedTo: workOrder.assignedTo || '',
+          // Load execution data from formData if available
+          ...(workOrder.formData || {}),
         }));
       }
     }
@@ -1943,7 +1945,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 e.target.value
                               )
                             }
-                            className='w-full'
+                            className='w-full h-10'
                           />
                         </div>
                         <div className='space-y-2'>
@@ -1959,7 +1961,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 e.target.value
                               )
                             }
-                            className='w-full'
+                            className='w-full h-10'
                           />
                         </div>
                         <div className='space-y-2'>
@@ -1972,7 +1974,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               handleExecutionChange('assignedTo', value)
                             }
                           >
-                            <SelectTrigger className='w-full'>
+                            <SelectTrigger className='w-full h-10'>
                               <SelectValue placeholder='Select rank' />
                             </SelectTrigger>
                             <SelectContent>
