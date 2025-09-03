@@ -227,7 +227,11 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
 export const UtilizationRateCellRenderer = (params: ICellRendererParams) => {
   const rate = params.value;
   
-  if (rate === null || rate === undefined) {
+  if (rate === null) {
+    return <span className="text-gray-400">N/A</span>;
+  }
+  
+  if (rate === undefined) {
     return <span className="text-gray-400">Loading...</span>;
   }
   
