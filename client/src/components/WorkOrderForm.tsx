@@ -1931,7 +1931,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         B2.1 Work Duration:
                       </h5>
 
-                      <div className='grid grid-cols-3 gap-6 mb-4'>
+                      <div className='grid grid-cols-3 gap-6 mb-4 items-end'>
                         {/* Row 1 */}
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
