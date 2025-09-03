@@ -419,8 +419,15 @@ export class DatabaseStorage implements IStorage {
   async updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any> {
     logDbOperation('updateStoreItem', { vesselId, itemCode, updates });
     
-    // For this simple implementation, we'll create a new transaction to track the edit
-    // In a real system, you might have a separate stores_catalog table
+    // Get current ROB for this item
+    const currentItems = await this.getStoreItems(vesselId);
+    const currentItem = currentItems.find(item => item.item_code === itemCode);
+    
+    if (!currentItem) {
+      throw new Error('Store item not found');
+    }
+
+    // Create a new transaction with updated details
     const editTransaction = {
       vesselId,
       itemCode,
@@ -428,24 +435,24 @@ export class DatabaseStorage implements IStorage {
       unit: updates.uom,
       eventType: 'EDIT',
       quantity: 0,
-      robAfter: 0, // Will need to get current ROB
+      robAfter: currentItem.rob, // Keep same ROB
       place: updates.location || '',
       dateLocal: new Date().toISOString().split('T')[0],
       tz: 'UTC',
       timestampUTC: new Date(),
       userId: 'system',
-      remarks: `Item updated: ${JSON.stringify(updates)}`
+      remarks: `Item updated - Min: ${updates.minStock}, Location: ${updates.location}, Notes: ${updates.notes || 'none'}`
     };
 
-    // Get current ROB for this item
-    const currentItems = await this.getStoreItems(vesselId);
-    const currentItem = currentItems.find(item => item.item_code === itemCode);
-    if (currentItem) {
-      editTransaction.robAfter = currentItem.rob;
-    }
-
     await this.db.insert(storesLedger).values(editTransaction);
-    return editTransaction;
+    
+    // Force cache invalidation by adding a timestamp to response
+    return { 
+      ...editTransaction, 
+      success: true, 
+      timestamp: new Date().getTime(),
+      updatedFields: updates 
+    };
   }
 
   // Placeholder implementations for remaining IStorage methods

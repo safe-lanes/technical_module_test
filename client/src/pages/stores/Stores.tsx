@@ -690,6 +690,8 @@ const Stores: React.FC = () => {
       return response.json();
     },
     onSuccess: () => {
+      // Force refetch by removing cache and fetching fresh data
+      queryClient.removeQueries({ queryKey: ['/api/stores', 'V001'] });
       queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
     }
   });
