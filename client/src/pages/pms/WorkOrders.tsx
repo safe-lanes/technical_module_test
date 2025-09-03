@@ -432,7 +432,53 @@ const WorkOrders: React.FC = () => {
   }, [location, workOrdersList]);
 
   const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
-    if (formData?.type === 'execution') {
+    console.log('🔄 handleWorkOrderSubmit called:', { workOrderId, type: formData?.type, data: formData?.data });
+    
+    if (formData?.type === 'template_draft') {
+      // Save template as draft (Part A)
+      console.log('💾 Saving template draft...');
+      const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
+      if (workOrder) {
+        updateWorkOrderMutation.mutate({
+          id: workOrderId,
+          data: {
+            ...formData.data,
+            status: 'Draft',
+            templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
+          }
+        });
+      } else {
+        // Create new draft work order
+        const newWorkOrder: WorkOrder = {
+          id: workOrderId.startsWith('new-') ? `wo-${Date.now()}` : workOrderId,
+          component: formData.data.component || '',
+          componentCode: formData.data.componentCode || '',
+          workOrderNo: formData.data.woTemplateCode || `WO-${Date.now()}`,
+          templateCode: formData.data.templateCode || formData.data.woTemplateCode,
+          jobTitle: formData.data.woTitle || formData.data.jobTitle,
+          assignedTo: formData.data.assignedTo,
+          dueDate: formData.data.nextDueDate || '',
+          status: 'Draft',
+          formData: formData.data,
+          isExecution: false,
+        };
+        createWorkOrderMutation.mutate(newWorkOrder);
+      }
+    } else if (formData?.type === 'execution_draft') {
+      // Save execution as draft (Part B in progress)
+      console.log('💾 Saving execution draft...');
+      const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
+      if (workOrder) {
+        updateWorkOrderMutation.mutate({
+          id: workOrderId,
+          data: {
+            ...formData.data,
+            status: 'In Progress',
+            templateCode: formData.data.templateCode || workOrder.templateCode,
+          }
+        });
+      }
+    } else if (formData?.type === 'execution') {
       // Generate execution ID
       const year = new Date().getFullYear();
       const templateCode =

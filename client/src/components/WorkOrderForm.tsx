@@ -501,6 +501,63 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     }));
   };
 
+  // Save as draft (can be called from either Part A or Part B)
+  const handleSave = () => {
+    console.log('💾 handleSave called!', { activeSection, templateData, executionData });
+    
+    if (activeSection === 'partA') {
+      // Save Part A data as draft (minimal validation)
+      if (!templateData.woTitle) {
+        console.log('❌ Save validation failed: WO Title missing');
+        toast({
+          title: 'Validation Error',
+          description: 'WO Title is required',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Ensure templateCode is generated
+      if (!templateData.woTemplateCode) {
+        templateData.woTemplateCode = generateWOTemplateCode();
+      }
+
+      if (onSubmit) {
+        const workOrderId = workOrder?.id || `new-${Date.now()}`;
+        onSubmit(workOrderId, {
+          type: 'template_draft',
+          data: {
+            ...templateData,
+            templateCode: templateData.woTemplateCode,
+            status: 'Draft',
+          },
+        });
+        toast({
+          title: 'Saved',
+          description: 'Work Order saved as draft',
+        });
+      }
+    } else {
+      // Save Part B data as draft (minimal validation)
+      if (onSubmit) {
+        const workOrderId = workOrder?.id || `new-${Date.now()}`;
+        const executionRecord = {
+          ...templateData,
+          ...executionData,
+          woExecutionId: executionData.woExecutionId || generateWOExecutionId(),
+          templateCode: templateData.woTemplateCode || workOrder?.templateCode,
+          status: 'In Progress',
+        };
+        onSubmit(workOrderId, { type: 'execution_draft', data: executionRecord });
+        toast({
+          title: 'Saved',
+          description: 'Work completion record saved as draft',
+        });
+      }
+    }
+  };
+
+  // Final submit (only from Part B with full validation)
   const handleSubmit = () => {
     console.log('🔥 handleSubmit called!', { activeSection, templateData, executionData, onSubmit: !!onSubmit });
     
@@ -708,7 +765,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                   <Button
                     size='sm'
                     className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-                    onClick={handleSubmit}
+                    onClick={handleSave}
                   >
                     Save
                   </Button>
