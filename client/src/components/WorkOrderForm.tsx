@@ -497,9 +497,12 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   };
 
   const handleSubmit = () => {
+    console.log('🔥 handleSubmit called!', { activeSection, templateData, executionData, onSubmit: !!onSubmit });
+    
     if (activeSection === 'partA') {
       // Validate template data
       if (!templateData.woTitle) {
+        console.log('❌ Validation failed: WO Title missing');
         toast({
           title: 'Validation Error',
           description: 'WO Title is required',
