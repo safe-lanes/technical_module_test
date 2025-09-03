@@ -1989,7 +1989,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         </div>
                       </div>
 
-                      <div className='grid grid-cols-3 gap-6 mb-4'>
+                      <div className='grid grid-cols-3 gap-6 mb-4 items-end'>
                         {/* Row 2 */}
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
@@ -2034,7 +2034,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 (persons * hours).toString()
                               );
                             }}
-                            className='w-full h-10'
+                            className='w-full'
                           />
                         </div>
                         <div className='space-y-2'>
@@ -2058,7 +2058,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 (persons * hours).toString()
                               );
                             }}
-                            className='w-full h-10'
+                            className='w-full'
                           />
                         </div>
                       </div>
