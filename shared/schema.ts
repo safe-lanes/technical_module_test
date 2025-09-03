@@ -261,8 +261,6 @@ export const storesLedger = mysqlTable(
     timestampUTC: timestamp('timestamp_utc').notNull(),
     userId: varchar('user_id', { length: 100 }).notNull(),
     remarks: text('remarks'),
-    minStock: decimal('min_stock', { precision: 10, scale: 3 }).default('1'),
-    notes: text('notes'),
   },
   table => ({
     vesselItemIdx: index('idx_vessel_item').on(table.vesselId, table.itemCode),
