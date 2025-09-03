@@ -79,7 +79,10 @@ const RunningHours = () => {
   // Fetch components data from MySQL database
   const { data: components, isLoading } = useQuery<any[]>({
     queryKey: ['/api/running-hours/components', vesselId],
-    queryFn: () => apiRequest(`/api/running-hours/components/${vesselId}`, 'GET'),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/running-hours/components/${vesselId}`);
+      return await response.json();
+    },
   });
 
   // Transform components data to RunningHoursData format
