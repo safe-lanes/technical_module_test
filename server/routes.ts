@@ -178,6 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔍 Update data received:', JSON.stringify(updateData, null, 2));
 
       // Ensure numeric values are converted to strings for MySQL decimal fields
+      // and timestamp fields are converted to Date objects
       const auditData = {
         ...updateData.audit,
         previousRH: updateData.audit.previousRH.toString(),
@@ -185,6 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cumulativeRH: updateData.audit.cumulativeRH.toString(),
         oldMeterFinal: updateData.audit.oldMeterFinal ? updateData.audit.oldMeterFinal.toString() : null,
         newMeterStart: updateData.audit.newMeterStart ? updateData.audit.newMeterStart.toString() : null,
+        enteredAtUTC: new Date(updateData.audit.enteredAtUTC), // Convert string to Date object for MySQL timestamp
       };
 
       // Create audit entry
