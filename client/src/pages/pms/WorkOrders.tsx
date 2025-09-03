@@ -437,8 +437,7 @@ const WorkOrders: React.FC = () => {
           id: workOrderId,
           data: {
             ...formData.data,
-            // Use the status from formData (which now preserves original status)
-            status: formData.data.status || 'Draft',
+            status: 'Draft',
             templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
             formData: formData.data, // Save the complete form data to the formData column
           }
@@ -484,8 +483,7 @@ const WorkOrders: React.FC = () => {
           id: workOrderId,
           data: {
             ...formData.data,
-            // Use the status from formData (which now preserves original status)
-            status: formData.data.status || 'In Progress',
+            status: 'In Progress',
             templateCode: formData.data.templateCode || workOrder.templateCode,
             formData: formData.data, // Save the complete form data to the formData column
           }
@@ -552,6 +550,11 @@ const WorkOrders: React.FC = () => {
       count: workOrdersList.filter(wo => !wo.isExecution).length,
     },
     {
+      id: 'Draft',
+      label: 'Draft',
+      count: workOrdersList.filter(wo => wo.status === 'Draft').length,
+    },
+    {
       id: 'Due',
       label: 'Due',
       count: workOrdersList.filter(
@@ -601,10 +604,10 @@ const WorkOrders: React.FC = () => {
         return 'bg-blue-100 text-blue-800';
       case 'pending approval':
         return 'bg-purple-100 text-purple-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
       case 'draft':
         return 'bg-gray-100 text-gray-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -614,6 +617,9 @@ const WorkOrders: React.FC = () => {
     if (activeTab === 'All W.O') {
       // Show templates and rejected executions
       if (wo.isExecution && wo.status !== 'Rejected') return false;
+    } else if (activeTab === 'Draft') {
+      // Show only draft work orders
+      if (wo.status !== 'Draft') return false;
     } else if (activeTab === 'Due') {
       if (wo.isExecution) return false;
       if (wo.status !== 'Due' && !wo.status.includes('Grace')) return false;
