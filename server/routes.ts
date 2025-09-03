@@ -50,10 +50,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get(
     '/api/health',
     asyncHandler(async (req, res) => {
+      let dbStatus = 'unknown';
+      try {
+        // Import MySQL database for health check
+        const { storage: mysqlStorage } = await import('./database');
+        const isHealthy = await mysqlStorage.healthCheck();
+        dbStatus = isHealthy ? 'connected' : 'disconnected';
+      } catch (error) {
+        dbStatus = 'error';
+        console.error('Database health check error:', error);
+      }
+
       res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV,
+        database: {
+          type: 'MySQL RDS',
+          status: dbStatus,
+        },
       });
     })
   );

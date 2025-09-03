@@ -2,23 +2,28 @@ import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise';
 import {
   users,
-  forms,
-  rankGroups,
-  availableRanks,
-  crewMembers,
-  appraisalResults,
+  components,
+  runningHoursAudit,
+  spares,
+  sparesHistory,
+  storesLedger,
+  changeRequest,
+  changeRequestAttachment,
+  changeRequestComment,
   type User,
   type InsertUser,
-  type Form,
-  type InsertForm,
-  type RankGroup,
-  type InsertRankGroup,
-  type AvailableRank,
-  type InsertAvailableRank,
-  type CrewMember,
-  type InsertCrewMember,
-  type AppraisalResult,
-  type InsertAppraisalResult,
+  type Component,
+  type InsertComponent,
+  type RunningHoursAudit,
+  type InsertRunningHoursAudit,
+  type Spare,
+  type InsertSpare,
+  type SpareHistory,
+  type InsertSpareHistory,
+  type StoresLedger,
+  type InsertStoresLedger,
+  type ChangeRequest,
+  type InsertChangeRequest,
 } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { type IStorage } from './storage';
@@ -28,23 +33,27 @@ export class DatabaseStorage implements IStorage {
   private pool: mysql.Pool;
 
   constructor() {
-    if (!process.env.DATABASE_URL) {
-      throw new Error('DATABASE_URL environment variable is required');
-    }
-
-    this.pool = mysql.createPool({
-      uri: process.env.DATABASE_URL,
-      ssl:
-        process.env.NODE_ENV === 'production'
-          ? { rejectUnauthorized: false }
-          : false,
+    // Use MySQL environment variables
+    const config = {
+      host: process.env.MYSQL_HOST,
+      port: parseInt(process.env.MYSQL_PORT || '3306'),
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       connectionLimit: 20,
       acquireTimeout: 60000,
       timeout: 60000,
       reconnect: true,
       idleTimeout: 300000,
       queueLimit: 0,
-    });
+    };
+
+    if (!config.host || !config.user || !config.password || !config.database) {
+      throw new Error('MySQL connection environment variables are required: MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE');
+    }
+
+    this.pool = mysql.createPool(config);
     this.db = drizzle(this.pool);
   }
 
@@ -52,7 +61,7 @@ export class DatabaseStorage implements IStorage {
     await this.pool.end();
   }
 
-  async checkHealth(): Promise<boolean> {
+  async healthCheck(): Promise<boolean> {
     try {
       const connection = await this.pool.getConnection();
       await connection.ping();
@@ -64,358 +73,139 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async reconnect(): Promise<void> {
-    try {
-      await this.pool.end();
-      this.pool = mysql.createPool({
-        uri: process.env.DATABASE_URL!,
-        ssl:
-          process.env.NODE_ENV === 'production'
-            ? { rejectUnauthorized: false }
-            : false,
-        connectionLimit: 20,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
-        idleTimeout: 300000,
-        queueLimit: 0,
-      });
-      this.db = drizzle(this.pool);
-    } catch (error) {
-      console.error('Database reconnection failed:', error);
-      throw error;
-    }
-  }
-
-  // User methods
+  // Basic user operations for authentication
   async getUser(id: number): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(eq(users.id, id));
-    return result[0];
+    const [user] = await this.db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await this.db
+    const [user] = await this.db
       .select()
       .from(users)
       .where(eq(users.username, username));
-    return result[0];
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await this.db.insert(users).values(insertUser).returning();
-    return result[0];
+    const [user] = await this.db.insert(users).values(insertUser).returning();
+    return user;
   }
 
-  // Form methods
-  async getForms(): Promise<Form[]> {
-    return await this.db.select().from(forms);
+  // Components
+  async getComponents(): Promise<Component[]> {
+    return await this.db.select().from(components);
   }
 
-  async getForm(id: number): Promise<Form | undefined> {
-    const result = await this.db.select().from(forms).where(eq(forms.id, id));
-    return result[0];
+  async getComponent(id: string): Promise<Component | undefined> {
+    const [component] = await this.db.select().from(components).where(eq(components.id, id));
+    return component || undefined;
   }
 
-  async createForm(insertForm: InsertForm): Promise<Form> {
-    const result = await this.db.insert(forms).values(insertForm).returning();
-    return result[0];
+  async createComponent(insertComponent: InsertComponent): Promise<Component> {
+    const [component] = await this.db.insert(components).values(insertComponent).returning();
+    return component;
   }
 
-  async updateForm(
-    id: number,
-    formData: Partial<InsertForm>
-  ): Promise<Form | undefined> {
-    const result = await this.db
-      .update(forms)
-      .set(formData)
-      .where(eq(forms.id, id))
+  async updateComponent(id: string, updates: Partial<InsertComponent>): Promise<Component> {
+    const [component] = await this.db
+      .update(components)
+      .set(updates)
+      .where(eq(components.id, id))
       .returning();
-    return result[0];
+    return component;
   }
 
-  async deleteForm(id: number): Promise<boolean> {
-    const result = await this.db.delete(forms).where(eq(forms.id, id));
-    return result.affectedRows > 0;
+  async deleteComponent(id: string): Promise<void> {
+    await this.db.delete(components).where(eq(components.id, id));
   }
 
-  // Rank Group methods
-  async getRankGroups(formId: number): Promise<RankGroup[]> {
-    return await this.db
-      .select()
-      .from(rankGroups)
-      .where(eq(rankGroups.formId, formId));
+  // Running Hours
+  async getRunningHoursAudit(): Promise<RunningHoursAudit[]> {
+    return await this.db.select().from(runningHoursAudit);
   }
 
-  async createRankGroup(insertRankGroup: InsertRankGroup): Promise<RankGroup> {
-    const result = await this.db
-      .insert(rankGroups)
-      .values(insertRankGroup)
+  async createRunningHoursAudit(insertAudit: InsertRunningHoursAudit): Promise<RunningHoursAudit> {
+    const [audit] = await this.db.insert(runningHoursAudit).values(insertAudit).returning();
+    return audit;
+  }
+
+  // Spares
+  async getSpares(): Promise<Spare[]> {
+    return await this.db.select().from(spares);
+  }
+
+  async getSpare(id: number): Promise<Spare | undefined> {
+    const [spare] = await this.db.select().from(spares).where(eq(spares.id, id));
+    return spare || undefined;
+  }
+
+  async createSpare(insertSpare: InsertSpare): Promise<Spare> {
+    const [spare] = await this.db.insert(spares).values(insertSpare).returning();
+    return spare;
+  }
+
+  async updateSpare(id: number, updates: Partial<InsertSpare>): Promise<Spare> {
+    const [spare] = await this.db
+      .update(spares)
+      .set(updates)
+      .where(eq(spares.id, id))
       .returning();
-    return result[0];
+    return spare;
   }
 
-  async updateRankGroup(
-    id: number,
-    rankGroupData: Partial<InsertRankGroup>
-  ): Promise<RankGroup | undefined> {
-    const result = await this.db
-      .update(rankGroups)
-      .set(rankGroupData)
-      .where(eq(rankGroups.id, id))
+  async deleteSpare(id: number): Promise<void> {
+    await this.db.delete(spares).where(eq(spares.id, id));
+  }
+
+  // Spares History
+  async getSparesHistory(): Promise<SpareHistory[]> {
+    return await this.db.select().from(sparesHistory);
+  }
+
+  async createSpareHistory(insertHistory: InsertSpareHistory): Promise<SpareHistory> {
+    const [history] = await this.db.insert(sparesHistory).values(insertHistory).returning();
+    return history;
+  }
+
+  // Stores Ledger
+  async getStoresLedger(): Promise<StoresLedger[]> {
+    return await this.db.select().from(storesLedger);
+  }
+
+  async createStoresLedgerEntry(insertLedger: InsertStoresLedger): Promise<StoresLedger> {
+    const [ledger] = await this.db.insert(storesLedger).values(insertLedger).returning();
+    return ledger;
+  }
+
+  // Change Requests
+  async getChangeRequests(): Promise<ChangeRequest[]> {
+    return await this.db.select().from(changeRequest);
+  }
+
+  async getChangeRequest(id: number): Promise<ChangeRequest | undefined> {
+    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, id));
+    return cr || undefined;
+  }
+
+  async createChangeRequest(insertCR: InsertChangeRequest): Promise<ChangeRequest> {
+    const [cr] = await this.db.insert(changeRequest).values(insertCR).returning();
+    return cr;
+  }
+
+  async updateChangeRequest(id: number, updates: Partial<InsertChangeRequest>): Promise<ChangeRequest> {
+    const [cr] = await this.db
+      .update(changeRequest)
+      .set(updates)
+      .where(eq(changeRequest.id, id))
       .returning();
-    return result[0];
+    return cr;
   }
 
-  async deleteRankGroup(id: number): Promise<boolean> {
-    const result = await this.db
-      .delete(rankGroups)
-      .where(eq(rankGroups.id, id));
-    return result.affectedRows > 0;
-  }
-
-  // Available Rank methods
-  async getAvailableRanks(): Promise<AvailableRank[]> {
-    return await this.db.select().from(availableRanks);
-  }
-
-  async createAvailableRank(
-    insertAvailableRank: InsertAvailableRank
-  ): Promise<AvailableRank> {
-    const result = await this.db
-      .insert(availableRanks)
-      .values(insertAvailableRank)
-      .returning();
-    return result[0];
-  }
-
-  // Crew Member methods
-  async getCrewMembers(): Promise<CrewMember[]> {
-    return await this.db.select().from(crewMembers);
-  }
-
-  async getCrewMember(id: string): Promise<CrewMember | undefined> {
-    const result = await this.db
-      .select()
-      .from(crewMembers)
-      .where(eq(crewMembers.id, id));
-    return result[0];
-  }
-
-  async createCrewMember(
-    insertCrewMember: InsertCrewMember
-  ): Promise<CrewMember> {
-    const result = await this.db
-      .insert(crewMembers)
-      .values(insertCrewMember)
-      .returning();
-    return result[0];
-  }
-
-  async updateCrewMember(
-    id: string,
-    crewMemberData: Partial<InsertCrewMember>
-  ): Promise<CrewMember | undefined> {
-    const result = await this.db
-      .update(crewMembers)
-      .set(crewMemberData)
-      .where(eq(crewMembers.id, id))
-      .returning();
-    return result[0];
-  }
-
-  async deleteCrewMember(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(crewMembers)
-      .where(eq(crewMembers.id, id));
-    return result.affectedRows > 0;
-  }
-
-  // Appraisal Result methods
-  async getAppraisalResults(): Promise<AppraisalResult[]> {
-    return await this.db.select().from(appraisalResults);
-  }
-
-  async getAppraisalResult(id: number): Promise<AppraisalResult | undefined> {
-    const result = await this.db
-      .select()
-      .from(appraisalResults)
-      .where(eq(appraisalResults.id, id));
-    return result[0];
-  }
-
-  async getAppraisalResultsByCrewMember(
-    crewMemberId: string
-  ): Promise<AppraisalResult[]> {
-    return await this.db
-      .select()
-      .from(appraisalResults)
-      .where(eq(appraisalResults.crewMemberId, crewMemberId));
-  }
-
-  async createAppraisalResult(
-    insertAppraisalResult: InsertAppraisalResult
-  ): Promise<AppraisalResult> {
-    const result = await this.db
-      .insert(appraisalResults)
-      .values(insertAppraisalResult)
-      .returning();
-    return result[0];
-  }
-
-  async updateAppraisalResult(
-    id: number,
-    appraisalResultData: Partial<InsertAppraisalResult>
-  ): Promise<AppraisalResult | undefined> {
-    const result = await this.db
-      .update(appraisalResults)
-      .set(appraisalResultData)
-      .where(eq(appraisalResults.id, id))
-      .returning();
-    return result[0];
-  }
-
-  async deleteAppraisalResult(id: number): Promise<boolean> {
-    const result = await this.db
-      .delete(appraisalResults)
-      .where(eq(appraisalResults.id, id));
-    return result.affectedRows > 0;
-  }
-
-  // Seed data for initial setup
-  async seedDatabase(): Promise<void> {
-    try {
-      // Check if data already exists
-      const existingForms = await this.getForms();
-      if (existingForms.length > 0) {
-        console.log('Database already seeded, skipping...');
-        return;
-      }
-
-      // Seed available ranks
-      const rankData: InsertAvailableRank[] = [
-        { name: 'Master', category: 'Senior Officers' },
-        { name: 'Chief Officer', category: 'Senior Officers' },
-        { name: 'Chief Engineer', category: 'Senior Officers' },
-        { name: '2nd Officer', category: 'Junior Officers' },
-        { name: '3rd Officer', category: 'Junior Officers' },
-        { name: '2nd Engineer', category: 'Junior Officers' },
-        { name: '3rd Engineer', category: 'Junior Officers' },
-        { name: 'Bosun', category: 'Ratings' },
-        { name: 'AB', category: 'Ratings' },
-        { name: 'OS', category: 'Ratings' },
-        { name: 'Oiler', category: 'Ratings' },
-        { name: 'Wiper', category: 'Ratings' },
-      ];
-
-      for (const rank of rankData) {
-        await this.createAvailableRank(rank);
-      }
-
-      // Seed forms
-      const form = await this.createForm({
-        name: 'Crew Appraisal Form',
-        rankGroup: 'Senior Officers',
-        versionNo: '01',
-        versionDate: '01-Jan-2025',
-        configuration: null,
-      });
-
-      // Seed rank groups
-      await this.createRankGroup({
-        formId: form.id,
-        name: 'Senior Officers',
-        ranks: JSON.stringify(['Master', 'Chief Officer', 'Chief Engineer']),
-      });
-
-      // Seed crew members
-      const crewMemberData: InsertCrewMember[] = [
-        {
-          id: '2025-05-14',
-          firstName: 'James',
-          middleName: 'Michael',
-          lastName: '',
-          rank: 'Master',
-          nationality: 'British',
-          vessel: 'MT Sail One',
-          vesselType: 'Oil Tanker',
-          signOnDate: '01-Feb-2025',
-        },
-        {
-          id: '2025-03-12',
-          firstName: 'Anna',
-          middleName: 'Marie',
-          lastName: 'Johnson',
-          rank: 'Chief Engineer',
-          nationality: 'British',
-          vessel: 'MT Sail Ten',
-          vesselType: 'LPG Tanker',
-          signOnDate: '01-Jan-2025',
-        },
-        {
-          id: '2025-02-12',
-          firstName: 'David',
-          middleName: 'Lee',
-          lastName: 'Brown',
-          rank: 'Able Seaman',
-          nationality: 'Indian',
-          vessel: 'MT Sail Two',
-          vesselType: 'Container',
-          signOnDate: '01-Feb-2025',
-        },
-      ];
-
-      for (const crewMember of crewMemberData) {
-        await this.createCrewMember(crewMember);
-      }
-
-      // Seed appraisal results
-      const appraisalData: InsertAppraisalResult[] = [
-        {
-          crewMemberId: '2025-05-14',
-          formId: form.id,
-          appraisalType: 'End of Contract',
-          appraisalDate: '06-Jun-2025',
-          appraisalData: '{}',
-          competenceRating: '4.9',
-          behavioralRating: '4.5',
-          overallRating: '4.7',
-          submittedBy: 'admin',
-          status: 'submitted',
-        },
-        {
-          crewMemberId: '2025-03-12',
-          formId: form.id,
-          appraisalType: 'Mid Term',
-          appraisalDate: '07-May-2025',
-          appraisalData: '{}',
-          competenceRating: '3.5',
-          behavioralRating: '4.5',
-          overallRating: '4.0',
-          submittedBy: 'admin',
-          status: 'submitted',
-        },
-        {
-          crewMemberId: '2025-02-12',
-          formId: form.id,
-          appraisalType: 'Special',
-          appraisalDate: '06-Jun-2025',
-          appraisalData: '{}',
-          competenceRating: '2.5',
-          behavioralRating: '3.5',
-          overallRating: '3.0',
-          submittedBy: 'admin',
-          status: 'submitted',
-        },
-      ];
-
-      for (const appraisal of appraisalData) {
-        await this.createAppraisalResult(appraisal);
-      }
-
-      console.log('Database seeded successfully!');
-    } catch (error) {
-      console.error('Error seeding database:', error);
-      throw error;
-    }
+  async deleteChangeRequest(id: number): Promise<void> {
+    await this.db.delete(changeRequest).where(eq(changeRequest.id, id));
   }
 }
+
+// Export singleton instance
+export const storage = new DatabaseStorage();
