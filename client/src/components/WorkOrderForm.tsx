@@ -1936,7 +1936,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Label className='text-sm text-[#8798ad]'>
                             Start Date & Time *
                           </Label>
-                          <div className='relative h-10 w-full'>
+                          <div className='relative h-9 w-full'>
                             <Input
                               type='datetime-local'
                               value={executionData.startDateTime}
@@ -1946,10 +1946,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                   e.target.value
                                 )
                               }
-                              className='absolute inset-0 w-full h-full border border-gray-300 rounded-md px-3 text-sm'
+                              className='flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm'
                               style={{
-                                height: '100%',
-                                lineHeight: 'normal'
+                                height: '36px',
+                                minHeight: '36px'
                               }}
                             />
                           </div>
@@ -1958,7 +1958,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Label className='text-sm text-[#8798ad]'>
                             Completion Date & Time *
                           </Label>
-                          <div className='relative h-10 w-full'>
+                          <div className='relative h-9 w-full'>
                             <Input
                               type='datetime-local'
                               value={executionData.completionDateTime}
@@ -1968,10 +1968,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                   e.target.value
                                 )
                               }
-                              className='absolute inset-0 w-full h-full border border-gray-300 rounded-md px-3 text-sm'
+                              className='flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm'
                               style={{
-                                height: '100%',
-                                lineHeight: 'normal'
+                                height: '36px',
+                                minHeight: '36px'
                               }}
                             />
                           </div>
@@ -1986,7 +1986,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               handleExecutionChange('assignedTo', value)
                             }
                           >
-                            <SelectTrigger className='w-full h-10'>
+                            <SelectTrigger className='w-full'>
                               <SelectValue placeholder='Select rank' />
                             </SelectTrigger>
                             <SelectContent>
@@ -2012,7 +2012,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               handleExecutionChange('performedBy', value)
                             }
                           >
-                            <SelectTrigger className='w-full h-10'>
+                            <SelectTrigger className='w-full'>
                               <SelectValue placeholder='Select rank' />
                             </SelectTrigger>
                             <SelectContent>
