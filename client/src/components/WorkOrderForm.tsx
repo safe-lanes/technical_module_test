@@ -412,26 +412,28 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           assignedTo: savedFormData.assignedTo
         });
         
-        const newExecutionData = {
-          ...prev,
-          // Use saved woExecutionId if available, otherwise generate new one
-          woExecutionId: savedFormData.woExecutionId || generateWOExecutionId(),
-          assignedTo: savedFormData.assignedTo || workOrder.assignedTo || '',
-          // Load execution data from formData if available
-          ...savedFormData,
-        };
-        
-        console.log('🎯 Final executionData being set:', {
-          startDateTime: newExecutionData.startDateTime,
-          completionDateTime: newExecutionData.completionDateTime,
-          performedBy: newExecutionData.performedBy,
-          assignedTo: newExecutionData.assignedTo,
-          noOfPersons: newExecutionData.noOfPersons,
-          totalTimeHours: newExecutionData.totalTimeHours,
-          workCarriedOut: newExecutionData.workCarriedOut
+        setExecutionData(prev => {
+          const newExecutionData = {
+            ...prev,
+            // Use saved woExecutionId if available, otherwise generate new one
+            woExecutionId: savedFormData.woExecutionId || generateWOExecutionId(),
+            assignedTo: savedFormData.assignedTo || workOrder.assignedTo || '',
+            // Load execution data from formData if available
+            ...savedFormData,
+          };
+          
+          console.log('🎯 Final executionData being set:', {
+            startDateTime: newExecutionData.startDateTime,
+            completionDateTime: newExecutionData.completionDateTime,
+            performedBy: newExecutionData.performedBy,
+            assignedTo: newExecutionData.assignedTo,
+            noOfPersons: newExecutionData.noOfPersons,
+            totalTimeHours: newExecutionData.totalTimeHours,
+            workCarriedOut: newExecutionData.workCarriedOut
+          });
+          
+          return newExecutionData;
         });
-        
-        setExecutionData(newExecutionData);
       }
     }
   }, [workOrder, executionMode, isModifyMode, setOriginalSnapshot]);
