@@ -1946,6 +1946,14 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               )
                             }
                             className='w-full h-10'
+                            style={{
+                              height: '40px',
+                              minHeight: '40px',
+                              maxHeight: '40px',
+                              padding: '0.5rem 0.75rem',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
                           />
                         </div>
                         <div className='space-y-2'>
@@ -1962,6 +1970,14 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               )
                             }
                             className='w-full h-10'
+                            style={{
+                              height: '40px',
+                              minHeight: '40px',
+                              maxHeight: '40px',
+                              padding: '0.5rem 0.75rem',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
                           />
                         </div>
                         <div className='space-y-2'>
