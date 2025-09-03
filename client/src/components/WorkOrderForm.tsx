@@ -534,7 +534,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           data: {
             ...templateData,
             templateCode: templateData.woTemplateCode,
-            status: 'Draft',
+            // Preserve original status if work order already exists, otherwise set as Draft
+            status: workOrder?.status || 'Draft',
           },
         });
         toast({
@@ -551,7 +552,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           ...executionData,
           woExecutionId: executionData.woExecutionId || generateWOExecutionId(),
           templateCode: templateData.woTemplateCode || workOrder?.templateCode,
-          status: 'In Progress',
+          // Preserve original status if work order already exists, otherwise set as In Progress
+          status: workOrder?.status || 'In Progress',
         };
         onSubmit(workOrderId, { type: 'execution_draft', data: executionRecord });
         toast({

@@ -437,7 +437,8 @@ const WorkOrders: React.FC = () => {
           id: workOrderId,
           data: {
             ...formData.data,
-            status: 'Draft',
+            // Use the status from formData (which now preserves original status)
+            status: formData.data.status || 'Draft',
             templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
             formData: formData.data, // Save the complete form data to the formData column
           }
@@ -483,7 +484,8 @@ const WorkOrders: React.FC = () => {
           id: workOrderId,
           data: {
             ...formData.data,
-            status: 'In Progress',
+            // Use the status from formData (which now preserves original status)
+            status: formData.data.status || 'In Progress',
             templateCode: formData.data.templateCode || workOrder.templateCode,
             formData: formData.data, // Save the complete form data to the formData column
           }
