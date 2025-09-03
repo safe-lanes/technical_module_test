@@ -375,26 +375,54 @@ export class DatabaseStorage implements IStorage {
   // Store Ledger methods
   async getStoreItems(vesselId: string): Promise<any[]> {
     logDbOperation('getStoreItems', { vesselId });
-    // Get current ROB for each item by finding the latest transaction
+    
     try {
-      const result = await this.db.select({
-        item_code: storesLedger.itemCode,
-        item_name: storesLedger.itemName,
-        uom: storesLedger.unit,
-        rob: storesLedger.robAfter,
-        min_stock: sql`1`,
-        location: storesLedger.place,
-        category: sql`'stores'`,
-        stock: sql`CASE 
-          WHEN ${storesLedger.robAfter} <= 1 THEN 'Minimum'
-          WHEN ${storesLedger.robAfter} <= 2 THEN 'Low'
-          ELSE 'OK'
-        END`
-      })
-      .from(storesLedger)
-      .where(eq(storesLedger.vesselId, vesselId))
-      .groupBy(storesLedger.itemCode, storesLedger.itemName, storesLedger.unit, storesLedger.robAfter)
-      .orderBy(storesLedger.itemCode);
+      // Get all transactions for this vessel
+      const allTransactions = await this.db.select()
+        .from(storesLedger)
+        .where(eq(storesLedger.vesselId, vesselId))
+        .orderBy(desc(storesLedger.timestampUTC));
+
+      // Group by item code to get latest info
+      const itemsMap = new Map();
+      
+      for (const transaction of allTransactions) {
+        const itemCode = transaction.itemCode;
+        
+        if (!itemsMap.has(itemCode)) {
+          // Initialize with basic info
+          itemsMap.set(itemCode, {
+            item_code: transaction.itemCode,
+            item_name: transaction.itemName,
+            uom: transaction.unit,
+            rob: parseFloat(transaction.robAfter.toString()),
+            min_stock: 1, // Default
+            location: transaction.place || 'Store Room',
+            category: 'stores',
+            notes: ''
+          });
+        }
+
+        // Update with latest catalog info if this is a CATALOG_UPDATE
+        if (transaction.eventType === 'CATALOG_UPDATE' && transaction.remarks) {
+          try {
+            const catalogInfo = JSON.parse(transaction.remarks);
+            const item = itemsMap.get(itemCode);
+            item.min_stock = catalogInfo.minStock || 1;
+            item.notes = catalogInfo.notes || '';
+            item.location = catalogInfo.location || item.location;
+          } catch (e) {
+            // Ignore invalid JSON
+          }
+        }
+      }
+
+      // Convert map to array and calculate stock status
+      const result = Array.from(itemsMap.values()).map(item => ({
+        ...item,
+        stock: item.rob <= item.min_stock ? 'Minimum' : 
+               item.rob <= (item.min_stock * 1.5) ? 'Low' : 'OK'
+      }));
       
       return result;
     } catch (error) {
@@ -427,13 +455,21 @@ export class DatabaseStorage implements IStorage {
       throw new Error('Store item not found');
     }
 
+    // Store catalog info as JSON in remarks field until schema is updated
+    const catalogInfo = {
+      minStock: updates.minStock,
+      notes: updates.notes,
+      location: updates.location,
+      updatedAt: new Date().toISOString()
+    };
+
     // Create a new transaction with updated details
     const editTransaction = {
       vesselId,
       itemCode,
       itemName: updates.itemName,
       unit: updates.uom,
-      eventType: 'EDIT',
+      eventType: 'CATALOG_UPDATE',
       quantity: 0,
       robAfter: currentItem.rob, // Keep same ROB
       place: updates.location || '',
@@ -441,7 +477,7 @@ export class DatabaseStorage implements IStorage {
       tz: 'UTC',
       timestampUTC: new Date(),
       userId: 'system',
-      remarks: `Item updated - Min: ${updates.minStock}, Location: ${updates.location}, Notes: ${updates.notes || 'none'}`
+      remarks: JSON.stringify(catalogInfo)
     };
 
     await this.db.insert(storesLedger).values(editTransaction);
