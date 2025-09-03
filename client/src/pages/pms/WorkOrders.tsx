@@ -439,6 +439,7 @@ const WorkOrders: React.FC = () => {
             ...formData.data,
             status: 'Draft',
             templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
+            formData: formData.data, // Save the complete form data to the formData column
           }
         }, {
           onSuccess: (data) => {
@@ -484,6 +485,7 @@ const WorkOrders: React.FC = () => {
             ...formData.data,
             status: 'In Progress',
             templateCode: formData.data.templateCode || workOrder.templateCode,
+            formData: formData.data, // Save the complete form data to the formData column
           }
         });
       }
