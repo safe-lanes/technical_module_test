@@ -386,6 +386,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           other: '',
         },
         workHistory: [],
+        // Load detailed form data from formData field if available
+        ...(workOrder.formData || {}),
       };
 
       setTemplateData(prev => ({ ...prev, ...initialData }));
