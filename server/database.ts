@@ -25,8 +25,13 @@ import {
   type ChangeRequest,
   type InsertChangeRequest,
 } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { type IStorage } from './storage';
+
+// Console logging for database operations
+function logDbOperation(operation: string, data?: any) {
+  console.log(`🔄 MySQL DB Operation: ${operation}`, data ? JSON.stringify(data).slice(0, 100) + '...' : '');
+}
 
 export class DatabaseStorage implements IStorage {
   private db: ReturnType<typeof drizzle>;
@@ -93,7 +98,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Components
-  async getComponents(): Promise<Component[]> {
+  async getComponents(vesselId?: string): Promise<Component[]> {
+    logDbOperation('getComponents', { vesselId });
+    if (vesselId) {
+      return await this.db.select().from(components).where(eq(components.vesselId, vesselId));
+    }
     return await this.db.select().from(components);
   }
 
@@ -125,13 +134,32 @@ export class DatabaseStorage implements IStorage {
     return await this.db.select().from(runningHoursAudit);
   }
 
+  async getRunningHoursAudits(componentId: string, limit?: number): Promise<RunningHoursAudit[]> {
+    let query = this.db.select().from(runningHoursAudit).where(eq(runningHoursAudit.componentId, componentId));
+    if (limit) {
+      query = query.limit(limit);
+    }
+    return await query;
+  }
+
+  async getRunningHoursAuditsInDateRange(componentId: string, startDate: Date, endDate: Date): Promise<RunningHoursAudit[]> {
+    return await this.db.select().from(runningHoursAudit)
+      .where(eq(runningHoursAudit.componentId, componentId))
+      .where(sql`${runningHoursAudit.enteredAtUTC} >= ${startDate}`)
+      .where(sql`${runningHoursAudit.enteredAtUTC} <= ${endDate}`);
+  }
+
   async createRunningHoursAudit(insertAudit: InsertRunningHoursAudit): Promise<RunningHoursAudit> {
     const [audit] = await this.db.insert(runningHoursAudit).values(insertAudit).returning();
     return audit;
   }
 
   // Spares
-  async getSpares(): Promise<Spare[]> {
+  async getSpares(vesselId?: string): Promise<Spare[]> {
+    logDbOperation('getSpares', { vesselId });
+    if (vesselId) {
+      return await this.db.select().from(spares).where(eq(spares.vesselId, vesselId));
+    }
     return await this.db.select().from(spares);
   }
 
@@ -141,11 +169,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSpare(insertSpare: InsertSpare): Promise<Spare> {
+    logDbOperation('createSpare', insertSpare);
     const [spare] = await this.db.insert(spares).values(insertSpare).returning();
     return spare;
   }
 
   async updateSpare(id: number, updates: Partial<InsertSpare>): Promise<Spare> {
+    logDbOperation('updateSpare', { id, updates });
     const [spare] = await this.db
       .update(spares)
       .set(updates)
@@ -205,7 +235,167 @@ export class DatabaseStorage implements IStorage {
   async deleteChangeRequest(id: number): Promise<void> {
     await this.db.delete(changeRequest).where(eq(changeRequest.id, id));
   }
+
+  // Additional methods required by IStorage
+  async consumeSpare(
+    id: number,
+    quantity: number,
+    userId: string,
+    remarks?: string,
+    place?: string,
+    dateLocal?: string,
+    tz?: string
+  ): Promise<Spare> {
+    // Get current spare
+    const spare = await this.getSpare(id);
+    if (!spare) throw new Error('Spare not found');
+
+    // Update ROB
+    const newRob = spare.rob - quantity;
+    const updatedSpare = await this.updateSpare(id, { rob: newRob });
+
+    // Create history entry
+    await this.createSpareHistory({
+      timestampUTC: new Date(),
+      vesselId: spare.vesselId,
+      spareId: id,
+      partCode: spare.partCode,
+      partName: spare.partName,
+      componentId: spare.componentId,
+      componentCode: spare.componentCode,
+      componentName: spare.componentName,
+      componentSpareCode: spare.componentSpareCode,
+      eventType: 'CONSUME',
+      qtyChange: -quantity,
+      robAfter: newRob,
+      userId,
+      remarks: remarks || null,
+      reference: null,
+      dateLocal: dateLocal || null,
+      tz: tz || null,
+      place: place || null,
+    });
+
+    return updatedSpare;
+  }
+
+  async receiveSpare(
+    id: number,
+    quantity: number,
+    userId: string,
+    remarks?: string,
+    supplierPO?: string,
+    place?: string,
+    dateLocal?: string,
+    tz?: string
+  ): Promise<Spare> {
+    // Get current spare
+    const spare = await this.getSpare(id);
+    if (!spare) throw new Error('Spare not found');
+
+    // Update ROB
+    const newRob = spare.rob + quantity;
+    const updatedSpare = await this.updateSpare(id, { rob: newRob });
+
+    // Create history entry
+    await this.createSpareHistory({
+      timestampUTC: new Date(),
+      vesselId: spare.vesselId,
+      spareId: id,
+      partCode: spare.partCode,
+      partName: spare.partName,
+      componentId: spare.componentId,
+      componentCode: spare.componentCode,
+      componentName: spare.componentName,
+      componentSpareCode: spare.componentSpareCode,
+      eventType: 'RECEIVE',
+      qtyChange: quantity,
+      robAfter: newRob,
+      userId,
+      remarks: remarks || null,
+      reference: supplierPO || null,
+      dateLocal: dateLocal || null,
+      tz: tz || null,
+      place: place || null,
+    });
+
+    return updatedSpare;
+  }
+
+  async bulkUpdateSpares(
+    updates: Array<{
+      id: number;
+      consumed?: number;
+      received?: number;
+      receivedDate?: string;
+      receivedPlace?: string;
+    }>,
+    userId: string,
+    remarks?: string
+  ): Promise<Spare[]> {
+    const results: Spare[] = [];
+    
+    for (const update of updates) {
+      if (update.consumed) {
+        const result = await this.consumeSpare(
+          update.id,
+          update.consumed,
+          userId,
+          remarks
+        );
+        results.push(result);
+      }
+      
+      if (update.received) {
+        const result = await this.receiveSpare(
+          update.id,
+          update.received,
+          userId,
+          remarks,
+          undefined,
+          update.receivedPlace,
+          update.receivedDate
+        );
+        results.push(result);
+      }
+    }
+    
+    return results;
+  }
+
+  async getSpareHistory(vesselId: string): Promise<SpareHistory[]> {
+    return await this.db.select().from(sparesHistory).where(eq(sparesHistory.vesselId, vesselId));
+  }
+
+  async getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]> {
+    return await this.db.select().from(sparesHistory).where(eq(sparesHistory.spareId, spareId));
+  }
+
+  // Placeholder implementations for remaining IStorage methods
+  async getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]> {
+    let query = this.db.select().from(changeRequest);
+    if (filters?.vesselId) {
+      query = query.where(eq(changeRequest.vesselId, filters.vesselId));
+    }
+    if (filters?.status) {
+      query = query.where(eq(changeRequest.status, filters.status));
+    }
+    return await query;
+  }
+
+  // Stub methods - will implement as needed
+  async getChangeRequestAttachments(): Promise<any[]> { return []; }
+  async getChangeRequestComments(): Promise<any[]> { return []; }
+  async updateChangeRequestTarget(): Promise<any> { throw new Error('Not implemented'); }
+  async updateChangeRequestProposed(): Promise<any> { throw new Error('Not implemented'); }
+  async submitChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
+  async approveChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
+  async rejectChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
+  async returnChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
+  async createChangeRequestAttachment(): Promise<any> { throw new Error('Not implemented'); }
+  async createChangeRequestComment(): Promise<any> { throw new Error('Not implemented'); }
 }
 
 // Export singleton instance
 export const storage = new DatabaseStorage();
+console.log('✅ Technical Module using MySQL RDS database for persistent storage');
