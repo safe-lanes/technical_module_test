@@ -209,7 +209,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   };
 
   // Check if we're in execution mode (Part B)
-  const executionMode = workOrder?.executionMode === true;
+  const executionMode = workOrder?.isExecution === true;
 
   // Check if form should be read-only - BUT in modify mode, make it editable
   const isReadOnly =
