@@ -211,8 +211,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updates = req.body.updates;
       const results = [];
 
+      console.log('🔍 Bulk update data received:', JSON.stringify(updates, null, 2));
+
       for (const update of updates) {
-        const audit = await storage.createRunningHoursAudit(update.audit);
+        // Apply same data type conversions as single update
+        const auditData = {
+          ...update.audit,
+          previousRH: update.audit.previousRH.toString(),
+          newRH: update.audit.newRH.toString(),
+          cumulativeRH: update.audit.cumulativeRH.toString(),
+          oldMeterFinal: update.audit.oldMeterFinal ? update.audit.oldMeterFinal.toString() : null,
+          newMeterStart: update.audit.newMeterStart ? update.audit.newMeterStart.toString() : null,
+          enteredAtUTC: new Date(update.audit.enteredAtUTC), // Convert string to Date object for MySQL timestamp
+        };
+
+        const audit = await storage.createRunningHoursAudit(auditData);
         const component = await storage.updateComponent(update.componentId, {
           currentCumulativeRH: update.cumulativeRH.toString(),
           lastUpdated: update.dateUpdatedLocal,
@@ -222,7 +235,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ results });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to perform bulk update' });
+      console.error('❌ Failed to perform bulk update:', error);
+      res.status(500).json({ error: 'Failed to perform bulk update', details: error.message });
     }
   });
 
