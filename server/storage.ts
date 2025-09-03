@@ -226,6 +226,7 @@ export interface IStorage {
   getStoreItems(vesselId: string): Promise<any[]>;
   createStoreTransaction(transaction: any): Promise<any>;
   getStoreHistory(vesselId: string): Promise<any[]>;
+  updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any>;
 
   // Form Definition methods
   getFormDefinitions(): Promise<FormDefinition[]>;

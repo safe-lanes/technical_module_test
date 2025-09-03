@@ -677,6 +677,22 @@ const Stores: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
     }
   });
+
+  // Mutation for updating store item details
+  const updateItemMutation = useMutation({
+    mutationFn: async (updateData: any) => {
+      const response = await fetch(`/api/stores/V001/item/${updateData.itemCode}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+      });
+      if (!response.ok) throw new Error('Failed to update store item');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
+    }
+  });
   const [activeTab, setActiveTab] = useState<
     'stores' | 'lubes' | 'chemicals' | 'others'
   >('stores');
@@ -1238,46 +1254,66 @@ const Stores: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const saveEditItem = () => {
+  const saveEditItem = async () => {
     if (!editingItem) return;
 
     const uom = editForm.uom === 'Other' ? editForm.customUom : editForm.uom;
 
-    const updatedItems = items.map(item => {
-      if (item.id === editingItem.id) {
-        const updatedItem = {
-          ...item,
-          itemName: editForm.itemName,
-          uom: uom,
-          min: editForm.min,
-          location: editForm.location,
-          notes: editForm.notes,
-        };
+    try {
+      // Update item in database
+      await updateItemMutation.mutateAsync({
+        itemCode: editingItem.itemCode,
+        itemName: editForm.itemName,
+        uom: uom,
+        minStock: editForm.min,
+        location: editForm.location,
+        notes: editForm.notes
+      });
 
-        // Recalculate stock status
-        const newStock = calculateStockStatus(item.rob, editForm.min);
+      // Update local state for immediate feedback
+      const updatedItems = items.map(item => {
+        if (item.id === editingItem.id) {
+          const updatedItem = {
+            ...item,
+            itemName: editForm.itemName,
+            uom: uom,
+            min: editForm.min,
+            location: editForm.location,
+            notes: editForm.notes,
+          };
 
-        // Add to history if min changed
-        if (item.min !== editForm.min) {
-          addToHistory(
-            updatedItem,
-            'EDIT',
-            0,
-            item.rob,
-            '',
-            '',
-            `Min changed from ${item.min} to ${editForm.min}`
-          );
+          // Recalculate stock status
+          const newStock = calculateStockStatus(item.rob, editForm.min);
+
+          // Add to history if min changed
+          if (item.min !== editForm.min) {
+            addToHistory(
+              updatedItem,
+              'EDIT',
+              0,
+              item.rob,
+              '',
+              '',
+              `Min changed from ${item.min} to ${editForm.min}`
+            );
+          }
+
+          return { ...updatedItem, stock: newStock };
         }
+        return item;
+      });
 
-        return { ...updatedItem, stock: newStock };
-      }
-      return item;
-    });
-
-    setItems(updatedItems);
-    setIsEditModalOpen(false);
-    toast({ title: 'Success', description: 'Item updated successfully' });
+      setItems(updatedItems);
+      setIsEditModalOpen(false);
+      toast({ title: 'Success', description: 'Item updated successfully - saved to database' });
+    } catch (error) {
+      console.error('Failed to update item:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update item in database',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Handle Receive

@@ -534,6 +534,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update store item details
+  app.put('/api/stores/:vesselId/item/:itemCode', async (req, res) => {
+    try {
+      const { vesselId, itemCode } = req.params;
+      const { itemName, uom, minStock, location, notes } = req.body;
+      
+      console.log(`🔄 MySQL DB Operation: updateStoreItem`, { 
+        vesselId, 
+        itemCode, 
+        itemName, 
+        uom, 
+        minStock, 
+        location, 
+        notes 
+      });
+      
+      const result = await storage.updateStoreItem(vesselId, itemCode, {
+        itemName,
+        uom,
+        minStock,
+        location,
+        notes
+      });
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error updating store item:', error);
+      res.status(500).json({ error: 'Failed to update store item' });
+    }
+  });
+
   // Change Request API routes
 
   // Get change requests with filters

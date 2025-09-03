@@ -416,6 +416,38 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(storesLedger.timestampUTC));
   }
 
+  async updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any> {
+    logDbOperation('updateStoreItem', { vesselId, itemCode, updates });
+    
+    // For this simple implementation, we'll create a new transaction to track the edit
+    // In a real system, you might have a separate stores_catalog table
+    const editTransaction = {
+      vesselId,
+      itemCode,
+      itemName: updates.itemName,
+      unit: updates.uom,
+      eventType: 'EDIT',
+      quantity: 0,
+      robAfter: 0, // Will need to get current ROB
+      place: updates.location || '',
+      dateLocal: new Date().toISOString().split('T')[0],
+      tz: 'UTC',
+      timestampUTC: new Date(),
+      userId: 'system',
+      remarks: `Item updated: ${JSON.stringify(updates)}`
+    };
+
+    // Get current ROB for this item
+    const currentItems = await this.getStoreItems(vesselId);
+    const currentItem = currentItems.find(item => item.item_code === itemCode);
+    if (currentItem) {
+      editTransaction.robAfter = currentItem.rob;
+    }
+
+    await this.db.insert(storesLedger).values(editTransaction);
+    return editTransaction;
+  }
+
   // Placeholder implementations for remaining IStorage methods
   async getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]> {
     let query = this.db.select().from(changeRequest);
