@@ -433,6 +433,7 @@ const WorkOrders: React.FC = () => {
 
   const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
     console.log('🔄 handleWorkOrderSubmit called:', { workOrderId, type: formData?.type, data: formData?.data });
+    console.log('🔍 Full formData object:', JSON.stringify(formData, null, 2));
     
     if (formData?.type === 'template_draft') {
       // Save template as draft (Part A)
