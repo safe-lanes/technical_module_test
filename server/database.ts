@@ -605,8 +605,7 @@ export class DatabaseStorage implements IStorage {
       connection.release();
       console.log('✅ Created work_orders table in MySQL RDS');
       
-      // Add sample data
-      await this.seedWorkOrdersData();
+      console.log('✅ Work orders table ready for use');
     } catch (error) {
       console.error('❌ Failed to create work_orders table:', error);
     }
@@ -647,9 +646,13 @@ export class DatabaseStorage implements IStorage {
     logDbOperation('createWorkOrder', workOrderData);
     
     try {
-      const [newWorkOrder] = await this.db.insert(workOrders)
-        .values(workOrderData)
-        .returning();
+      await this.db.insert(workOrders).values(workOrderData);
+      
+      // MySQL doesn't support RETURNING, so we fetch the inserted record
+      const [newWorkOrder] = await this.db.select()
+        .from(workOrders)
+        .where(eq(workOrders.id, workOrderData.id))
+        .limit(1);
       
       return newWorkOrder;
     } catch (error) {
@@ -662,10 +665,15 @@ export class DatabaseStorage implements IStorage {
     logDbOperation('updateWorkOrder', { workOrderId, ...workOrderData });
     
     try {
-      const [updatedWorkOrder] = await this.db.update(workOrders)
+      await this.db.update(workOrders)
         .set(workOrderData)
+        .where(eq(workOrders.id, workOrderId));
+      
+      // MySQL doesn't support RETURNING, so we fetch the updated record
+      const [updatedWorkOrder] = await this.db.select()
+        .from(workOrders)
         .where(eq(workOrders.id, workOrderId))
-        .returning();
+        .limit(1);
       
       return updatedWorkOrder;
     } catch (error) {
