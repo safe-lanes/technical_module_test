@@ -113,6 +113,12 @@ export interface IStorage {
   getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]>;
   createSpareHistory(history: InsertSpareHistory): Promise<SpareHistory>;
 
+  // Work Orders methods
+  getWorkOrders(vesselId: string): Promise<any[]>;
+  createWorkOrder(workOrder: any): Promise<any>;
+  updateWorkOrder(workOrderId: string, data: any): Promise<any>;
+  deleteWorkOrder(workOrderId: string): Promise<void>;
+
   // Change Request methods
   getChangeRequests(filters?: {
     category?: string;
@@ -293,6 +299,8 @@ export class MemStorage implements IStorage {
   private currentFormVersionId: number;
   private formVersionUsages: FormVersionUsage[];
   private currentFormUsageId: number;
+  private workOrders: Map<string, any>;
+  private currentWorkOrderId: number;
 
   constructor() {
     this.users = new Map();
@@ -324,6 +332,8 @@ export class MemStorage implements IStorage {
     this.currentFormVersionId = 1;
     this.formVersionUsages = [];
     this.currentFormUsageId = 1;
+    this.workOrders = new Map();
+    this.currentWorkOrderId = 1;
 
     // Initialize sample components and spares
     this.initializeComponents();
@@ -2817,6 +2827,44 @@ export class MemStorage implements IStorage {
     return this.formVersionUsages.filter(
       u => u.formVersionId === formVersionId
     );
+  }
+
+  // Work Orders methods
+  async getWorkOrders(vesselId: string): Promise<any[]> {
+    return Array.from(this.workOrders.values()).filter(wo => wo.vesselId === vesselId);
+  }
+
+  async createWorkOrder(workOrder: any): Promise<any> {
+    const id = workOrder.id || `wo-${this.currentWorkOrderId++}`;
+    const newWorkOrder = {
+      ...workOrder,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.workOrders.set(id, newWorkOrder);
+    return newWorkOrder;
+  }
+
+  async updateWorkOrder(workOrderId: string, data: any): Promise<any> {
+    const existingWorkOrder = this.workOrders.get(workOrderId);
+    if (!existingWorkOrder) {
+      throw new Error(`Work order with id ${workOrderId} not found`);
+    }
+
+    const updatedWorkOrder = {
+      ...existingWorkOrder,
+      ...data,
+      updatedAt: new Date(),
+    };
+    this.workOrders.set(workOrderId, updatedWorkOrder);
+    return updatedWorkOrder;
+  }
+
+  async deleteWorkOrder(workOrderId: string): Promise<void> {
+    if (!this.workOrders.delete(workOrderId)) {
+      throw new Error(`Work order with id ${workOrderId} not found`);
+    }
   }
 
   // Seed forms method

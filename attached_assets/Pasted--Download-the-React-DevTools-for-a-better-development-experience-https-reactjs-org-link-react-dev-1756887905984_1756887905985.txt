@@ -1,0 +1,180 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Warning: Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+    at style
+    at div
+    at AgGridTable (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/components/common/AgGridTable.tsx:56:3)
+    at div
+    at div
+    at WorkOrders (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/pms/WorkOrders.tsx:286:39)
+    at div
+    at div
+    at div
+    at TechnicalModule (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/TechnicalModule.tsx:32:22)
+    at Route (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=0c41afbf:323:16)
+    at Switch (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=0c41afbf:379:17)
+    at div
+    at Provider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VFYO4PQK.js?v=0c41afbf:38:15)
+    at TooltipProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=0c41afbf:61:5)
+    at ChangeModeProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeModeContext.tsx:24:3)
+    at ChangeRequestProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeRequestContext.tsx:38:3)
+    at QueryClientProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=0c41afbf:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=0c41afbf:521
+ Warning: Received `true` for a non-boolean attribute `global`.
+
+If you want to write it to the DOM, pass a string instead: global="true" or global={value.toString()}.
+    at style
+    at div
+    at AgGridTable (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/components/common/AgGridTable.tsx:56:3)
+    at div
+    at div
+    at WorkOrders (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/pms/WorkOrders.tsx:286:39)
+    at div
+    at div
+    at div
+    at TechnicalModule (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/pages/TechnicalModule.tsx:32:22)
+    at Route (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=0c41afbf:323:16)
+    at Switch (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=0c41afbf:379:17)
+    at div
+    at Provider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VFYO4PQK.js?v=0c41afbf:38:15)
+    at TooltipProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=0c41afbf:61:5)
+    at ChangeModeProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeModeContext.tsx:24:3)
+    at ChangeRequestProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/src/contexts/ChangeRequestContext.tsx:38:3)
+    at QueryClientProvider (https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=0c41afbf:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=0c41afbf:521
+ 🔍 WorkOrderForm State: Object
+ ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=0c41afbf:812
+ ************************************************ AG Grid Enterprise License ************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=0c41afbf:812
+ ************************************************** License Key Not Found ***************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=0c41afbf:812
+ * All AG Grid Enterprise features are unlocked for trial.                                                                  *
+padAndOutput @ ag-grid-enterprise.js?v=0c41afbf:815
+ * If you want to hide the watermark please email info@ag-grid.com for a trial license key.                                 *
+padAndOutput @ ag-grid-enterprise.js?v=0c41afbf:815
+ ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=0c41afbf:812
+ ****************************************************************************************************************************
+centerPadAndOutput @ ag-grid-enterprise.js?v=0c41afbf:812
+ AG Grid: invalid gridOptions property 'enableRowGroup' did you mean any of these: enableGroupEdit, enableRowPinning, enableBrowserTooltips, enableRangeHandle, onRowGroupOpened, showOpenedGroup, enableCellSpan, onColumnRowGroupChanged.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: invalid gridOptions property 'enablePivot' did you mean any of these: enableRtl, enableCharts, enableRowPinning, enableGroupEdit, enableFillHandle, enableCellSpan, enableRangeHandle, enableRangeSelection.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: invalid gridOptions property 'enableExport' did you mean any of these: enableCharts, enableRtl, enableCellSpan, enableGroupEdit, enableCellExpressions, enableRangeHandle, enableCellTextSelection, enableRangeSelection.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: invalid gridOptions property 'data-replit-metadata' did you mean any of these: resetRowDataOnUpdate, treeDataParentIdField, detailCellRendererParams, getDataPath, treeDataDisplayType, dataTypeDefinitions, createChartContainer, onRangeDeleteStart.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: invalid gridOptions property 'data-component-name' did you mean any of these: onComponentStateChanged, dragAndDropImageComponentParams, loadingOverlayComponentParams, noRowsOverlayComponentParams, components, navigateToNextHeader, dragAndDropImageComponent, reactiveCustomComponents.
+If you are trying to annotate gridOptions with application data, use the 'gridOptions.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: to see all the valid gridOptions properties please check: https://www.ag-grid.com/react-data-grid/grid-options/
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: As of v32.2, suppressRowClickSelection is deprecated. Use `rowSelection.enableClickSelection` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: As of v32.2, enableRangeSelection is deprecated. Use `cellSelection = true` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: As of v32.2, enableRangeHandle is deprecated. Use `cellSelection.handle` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: As of v32.2, enableFillHandle is deprecated. Use `cellSelection.handle` instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: As of v32, suppressLoadingOverlay is deprecated. Use `loading`=false instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: invalid colDef property 'suppressMenu' did you mean any of these: suppressPaste, suppressMovable, suppressAutoSize, suppressSizeToFit, suppressHeaderMenuButton, suppressHeaderContextMenu, suppressFillHandle, suppressNavigable.
+If you are trying to annotate colDef with application data, use the 'colDef.context' property instead.
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ AG Grid: to see all the valid colDef properties please check: https://www.ag-grid.com/react-data-grid/column-properties/
+(anonymous) @ chunk-PJXUK7HK.js?v=0c41afbf:1064
+ 🔍 WorkOrderForm State: Object
+ 🔍 WorkOrderForm State: Object
+ 🔍 WorkOrderForm State: Object
+ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-UQPPJ6LS.js?v=0c41afbf:337
+ 🔍 WorkOrderForm State: Object
+ 🔍 WorkOrderForm State: Object
+ 🔥 handleSubmit called! Object
+ 🔍 WorkOrderForm State: Object
+ 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:506 💾 handleSave called! Object
+WorkOrders.tsx:435 🔄 handleWorkOrderSubmit called: Objectdata: {woTitle: 'Monthly Engine Inspection', component: 'Main Engine', componentCode: 'ME-001', woTemplateCode: 'WO-ME-001-INSM1', maintenanceBasis: 'Calendar', …}type: "template_draft"workOrderId: "WO-001"[[Prototype]]: Object
+WorkOrders.tsx:439 💾 Saving template draft...
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:506 💾 handleSave called! Object
+WorkOrders.tsx:435 🔄 handleWorkOrderSubmit called: Object
+WorkOrders.tsx:439 💾 Saving template draft...
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+work-orders:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+work-orders:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+work-orders:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+work-orders:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
+WorkOrderForm.tsx:221 🔍 WorkOrderForm State: Object
