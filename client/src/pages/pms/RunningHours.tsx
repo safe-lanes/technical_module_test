@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Search, FileSpreadsheet, Calendar } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { getComponentCategory } from '@/utils/componentUtils';
 import { useModifyMode } from '@/hooks/useModifyMode';
@@ -26,6 +26,7 @@ import {
   DateCellRenderer,
   NumberCellRenderer
 } from '@/components/common/AgGridCellRenderers';
+import { apiRequest } from '@/lib/queryClient';
 
 interface RunningHoursData {
   id: string;
@@ -75,185 +76,66 @@ const RunningHours = () => {
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const vesselId = 'V001'; // Default vessel ID
 
-  // Utilization rate cache (15 minutes)
-  const [utilizationCache, setUtilizationCache] = useState<{
-    data: Record<string, number | null>;
-    timestamp: number;
-  } | null>(null);
+  // Fetch components data from MySQL database
+  const { data: components = [], isLoading, refetch } = useQuery({
+    queryKey: ['/api/running-hours/components', vesselId],
+    queryFn: () => apiRequest(`/api/running-hours/components/${vesselId}`, 'GET'),
+  });
 
-  // Mock data with Component Category derived from tree structure
-  // These component codes map to tree positions for category derivation
-  const mockData: RunningHoursData[] = [
-    {
-      id: '1',
-      component: 'Radar System',
-      componentCode: '4.1.1',
-      componentCategory: getComponentCategory('4.1.1'),
-      runningHours: '18,560 hrs',
-      lastUpdated: '02-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '2',
-      component: 'Diesel Generator 1',
-      componentCode: '7.2.1',
-      componentCategory: getComponentCategory('7.2.1'),
-      runningHours: '15,670 hrs',
-      lastUpdated: '09-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '3',
-      component: 'Diesel Generator 2',
-      componentCode: '7.2.2',
-      componentCategory: getComponentCategory('7.2.2'),
-      runningHours: '14,980 hrs',
-      lastUpdated: '16-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '4',
-      component: 'Main Cooling Seawater Pump',
-      componentCode: '8.3.1',
-      componentCategory: getComponentCategory('8.3.1'),
-      runningHours: '12,800 hrs',
-      lastUpdated: '23-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '5',
-      component: 'Main Engine',
-      componentCode: '6.1.1',
-      componentCategory: getComponentCategory('6.1.1'),
-      runningHours: '12,580 hrs',
-      lastUpdated: '30-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '6',
-      component: 'Propeller System',
-      componentCode: '6.2.1',
-      componentCategory: getComponentCategory('6.2.1'),
-      runningHours: '12,580 hrs',
-      lastUpdated: '02-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '7',
-      component: 'Main Lubrication Oil Pump',
-      componentCode: '7.3.1',
-      componentCategory: getComponentCategory('7.3.1'),
-      runningHours: '12,450 hrs',
-      lastUpdated: '09-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '8',
-      component: 'Steering Gear',
-      componentCode: '4.3.1',
-      componentCategory: getComponentCategory('4.3.1'),
-      runningHours: '11,240 hrs',
-      lastUpdated: '16-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '9',
-      component: 'Main Air Compressor',
-      componentCode: '8.1.1',
-      componentCategory: getComponentCategory('8.1.1'),
-      runningHours: '10,840 hrs',
-      lastUpdated: '23-Jun-2025',
-      utilizationRate: null,
-    },
-    {
-      id: '10',
-      component: 'Bow Thruster',
-      componentCode: '6.3.1',
-      componentCategory: getComponentCategory('6.3.1'),
-      runningHours: '10,450 hrs',
-      lastUpdated: '30-Jun-2025',
-      utilizationRate: null,
-    },
-  ];
+  // Transform components data to RunningHoursData format
+  const runningHoursData: RunningHoursData[] = useMemo(() => {
+    return components.map((component: any) => ({
+      id: component.id,
+      component: component.name,
+      componentCode: component.code,
+      componentCategory: getComponentCategory(component.code || ''),
+      runningHours: component.currentCumulativeRH 
+        ? `${parseInt(component.currentCumulativeRH).toLocaleString()} hrs`
+        : '0 hrs',
+      lastUpdated: component.lastUpdated || 'Never',
+      utilizationRate: null, // Will be loaded separately
+    }));
+  }, [components]);
 
-  const [runningHoursData, setRunningHoursData] =
-    useState<RunningHoursData[]>(mockData);
+  // Fetch utilization rates from MySQL database
+  const { data: utilizationRates } = useQuery({
+    queryKey: ['/api/running-hours/utilization-rates', vesselId],
+    queryFn: async () => {
+      const componentIds = components.map((c: any) => c.id);
+      if (componentIds.length === 0) return {};
+      
+      return await apiRequest('/api/running-hours/utilization-rates', 'POST', {
+        componentIds
+      });
+    },
+    enabled: components.length > 0,
+    staleTime: 15 * 60 * 1000, // Cache for 15 minutes
+  });
 
-  // Fetch utilization rates asynchronously (non-blocking)
-  useEffect(() => {
-    const fetchUtilizationRates = async () => {
-      // Check cache first
-      if (
-        utilizationCache &&
-        Date.now() - utilizationCache.timestamp < 15 * 60 * 1000
-      ) {
-        // Apply cached rates to data
-        setRunningHoursData(prev =>
-          prev.map(item => ({
-            ...item,
-            utilizationRate: utilizationCache.data[item.id] || null,
-          }))
-        );
-        return;
-      }
+  // Combine data with utilization rates
+  const runningHoursDataWithRates = useMemo(() => {
+    if (!utilizationRates) return runningHoursData;
+    
+    return runningHoursData.map(item => ({
+      ...item,
+      utilizationRate: utilizationRates[item.id] || null,
+    }));
+  }, [runningHoursData, utilizationRates]);
 
-      try {
-        // Simulate async calculation with timeout
-        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Mock utilization rates calculation
-        const rates: Record<string, number> = {};
-        runningHoursData.forEach(item => {
-          // Mock calculation: random rate between 0-24 hrs/day
-          rates[item.id] = Math.round(Math.random() * 24 * 10) / 10;
-        });
-
-        // Update cache
-        setUtilizationCache({
-          data: rates,
-          timestamp: Date.now(),
-        });
-
-        // Apply rates to data
-        setRunningHoursData(prev =>
-          prev.map(item => ({
-            ...item,
-            utilizationRate: rates[item.id] || null,
-          }))
-        );
-      } catch (error) {
-        // Silently fail - utilization rates remain null
-        console.error('Failed to fetch utilization rates:', error);
-      }
-    };
-
-    fetchUtilizationRates();
-  }, []); // Run once on mount
-
-  // Mutation for single update
+  // Mutation for single update - Real MySQL API call
   const updateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { success: true };
+      return await apiRequest(`/api/running-hours/update/${data.componentId}`, 'POST', data);
     },
-    onSuccess: (_, variables) => {
-      // Update local data
-      setRunningHoursData(prev =>
-        prev.map(item =>
-          item.id === variables.componentId
-            ? {
-                ...item,
-                runningHours: `${variables.audit.cumulativeRH.toLocaleString()} hrs`,
-                lastUpdated: variables.dateUpdatedLocal,
-              }
-            : item
-        )
-      );
-      // Bust cache
-      setUtilizationCache(null);
+    onSuccess: () => {
+      // Invalidate and refetch data
+      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/components', vesselId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/utilization-rates', vesselId] });
+      
       toast({
         title: 'Success',
         description: 'Running hours updated successfully',
@@ -270,35 +152,16 @@ const RunningHours = () => {
     },
   });
 
-  // Mutation for bulk update
+  // Mutation for bulk update - Real MySQL API call
   const bulkUpdateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { success: true };
+      return await apiRequest('/api/running-hours/bulk-update', 'POST', data);
     },
-    onSuccess: (_, variables) => {
-      // Update local data for all updated components
-      if (variables.updates) {
-        setRunningHoursData(prev => {
-          const updatedData = [...prev];
-          variables.updates.forEach((update: any) => {
-            const index = updatedData.findIndex(
-              item => item.id === update.componentId
-            );
-            if (index !== -1) {
-              updatedData[index] = {
-                ...updatedData[index],
-                runningHours: `${update.cumulativeRH.toLocaleString()} hrs`,
-                lastUpdated: update.dateUpdatedLocal,
-              };
-            }
-          });
-          return updatedData;
-        });
-      }
-      // Bust cache
-      setUtilizationCache(null);
+    onSuccess: () => {
+      // Invalidate and refetch data
+      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/components', vesselId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/utilization-rates', vesselId] });
+      
       toast({
         title: 'Success',
         description: 'Bulk update completed successfully',
@@ -323,7 +186,7 @@ const RunningHours = () => {
   // Export to CSV function
   const exportToCSV = () => {
     // Filter data based on current filters
-    const filteredData = runningHoursData.filter(item => {
+    const filteredData = runningHoursDataWithRates.filter(item => {
       if (
         searchTerm &&
         !item.component.toLowerCase().includes(searchTerm.toLowerCase())
@@ -636,12 +499,12 @@ const RunningHours = () => {
 
   // Filtered data for AG Grid
   const filteredData = useMemo(() => {
-    return runningHoursData.filter(
+    return runningHoursDataWithRates.filter(
       item =>
         !searchTerm ||
         item.component.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [runningHoursData, searchTerm]);
+  }, [runningHoursDataWithRates, searchTerm]);
 
   // AG Grid column definitions
   const columnDefs = useMemo((): ColDef[] => [
@@ -748,21 +611,27 @@ const RunningHours = () => {
 
       {/* Table */}
       <div className='bg-white rounded-lg'>
-        <AgGridTable
-          rowData={filteredData}
-          columnDefs={columnDefs}
-          onGridReady={onGridReady}
-          context={gridContext}
-          height="calc(100vh - 320px)"
-          enableExport={true}
-          enableSideBar={true}
-          enableStatusBar={true}
-          pagination={true}
-          paginationPageSize={50}
-          animateRows={true}
-          suppressRowClickSelection={true}
-          className="rounded-lg shadow-sm"
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-gray-500">Loading running hours data from database...</div>
+          </div>
+        ) : (
+          <AgGridTable
+            rowData={filteredData}
+            columnDefs={columnDefs}
+            onGridReady={onGridReady}
+            context={gridContext}
+            height="calc(100vh - 320px)"
+            enableExport={true}
+            enableSideBar={true}
+            enableStatusBar={true}
+            pagination={true}
+            paginationPageSize={50}
+            animateRows={true}
+            suppressRowClickSelection={true}
+            className="rounded-lg shadow-sm"
+          />
+        )}
       </div>
 
       {/* Update Running Hours Dialog */}
