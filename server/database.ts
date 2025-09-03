@@ -118,7 +118,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await this.db.insert(users).values(insertUser).returning();
+    const result = await this.db.insert(users).values(insertUser);
+    const insertId = result.insertId;
+    const [user] = await this.db.select().from(users).where(eq(users.id, insertId));
     return user;
   }
 
@@ -137,16 +139,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createComponent(insertComponent: InsertComponent): Promise<Component> {
-    const [component] = await this.db.insert(components).values(insertComponent).returning();
+    await this.db.insert(components).values(insertComponent);
+    const [component] = await this.db.select().from(components).where(eq(components.id, insertComponent.id));
     return component;
   }
 
   async updateComponent(id: string, updates: Partial<InsertComponent>): Promise<Component> {
-    const [component] = await this.db
+    await this.db
       .update(components)
       .set(updates)
-      .where(eq(components.id, id))
-      .returning();
+      .where(eq(components.id, id));
+    const [component] = await this.db.select().from(components).where(eq(components.id, id));
     return component;
   }
 
@@ -175,7 +178,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createRunningHoursAudit(insertAudit: InsertRunningHoursAudit): Promise<RunningHoursAudit> {
-    const [audit] = await this.db.insert(runningHoursAudit).values(insertAudit).returning();
+    const result = await this.db.insert(runningHoursAudit).values(insertAudit);
+    const insertId = result.insertId;
+    const [audit] = await this.db.select().from(runningHoursAudit).where(eq(runningHoursAudit.id, insertId));
     return audit;
   }
 
@@ -195,17 +200,19 @@ export class DatabaseStorage implements IStorage {
 
   async createSpare(insertSpare: InsertSpare): Promise<Spare> {
     logDbOperation('createSpare', insertSpare);
-    const [spare] = await this.db.insert(spares).values(insertSpare).returning();
+    const result = await this.db.insert(spares).values(insertSpare);
+    const insertId = result.insertId;
+    const [spare] = await this.db.select().from(spares).where(eq(spares.id, insertId));
     return spare;
   }
 
   async updateSpare(id: number, updates: Partial<InsertSpare>): Promise<Spare> {
     logDbOperation('updateSpare', { id, updates });
-    const [spare] = await this.db
+    await this.db
       .update(spares)
       .set(updates)
-      .where(eq(spares.id, id))
-      .returning();
+      .where(eq(spares.id, id));
+    const [spare] = await this.db.select().from(spares).where(eq(spares.id, id));
     return spare;
   }
 
@@ -219,7 +226,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSpareHistory(insertHistory: InsertSpareHistory): Promise<SpareHistory> {
-    const [history] = await this.db.insert(sparesHistory).values(insertHistory).returning();
+    const result = await this.db.insert(sparesHistory).values(insertHistory);
+    const insertId = result.insertId;
+    const [history] = await this.db.select().from(sparesHistory).where(eq(sparesHistory.id, insertId));
     return history;
   }
 
@@ -229,7 +238,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createStoresLedgerEntry(insertLedger: InsertStoresLedger): Promise<StoresLedger> {
-    const [ledger] = await this.db.insert(storesLedger).values(insertLedger).returning();
+    const result = await this.db.insert(storesLedger).values(insertLedger);
+    const insertId = result.insertId;
+    const [ledger] = await this.db.select().from(storesLedger).where(eq(storesLedger.id, insertId));
     return ledger;
   }
 
@@ -244,16 +255,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createChangeRequest(insertCR: InsertChangeRequest): Promise<ChangeRequest> {
-    const [cr] = await this.db.insert(changeRequest).values(insertCR).returning();
+    const result = await this.db.insert(changeRequest).values(insertCR);
+    const insertId = result.insertId;
+    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, insertId));
     return cr;
   }
 
   async updateChangeRequest(id: number, updates: Partial<InsertChangeRequest>): Promise<ChangeRequest> {
-    const [cr] = await this.db
+    await this.db
       .update(changeRequest)
       .set(updates)
-      .where(eq(changeRequest.id, id))
-      .returning();
+      .where(eq(changeRequest.id, id));
+    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, id));
     return cr;
   }
 
