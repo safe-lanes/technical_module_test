@@ -403,14 +403,6 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       if (executionMode) {
         setActiveSection('partB');
         const savedFormData = workOrder.formData || {};
-        console.log('🔍 Loading execution data from workOrder:', {
-          isExecution: workOrder.isExecution,
-          formData: savedFormData,
-          startDateTime: savedFormData.startDateTime,
-          completionDateTime: savedFormData.completionDateTime,
-          performedBy: savedFormData.performedBy,
-          assignedTo: savedFormData.assignedTo
-        });
         
         setExecutionData(prev => {
           const newExecutionData = {
@@ -421,16 +413,6 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
             // Load execution data from formData if available
             ...savedFormData,
           };
-          
-          console.log('🎯 Final executionData being set:', {
-            startDateTime: newExecutionData.startDateTime,
-            completionDateTime: newExecutionData.completionDateTime,
-            performedBy: newExecutionData.performedBy,
-            assignedTo: newExecutionData.assignedTo,
-            noOfPersons: newExecutionData.noOfPersons,
-            totalTimeHours: newExecutionData.totalTimeHours,
-            workCarriedOut: newExecutionData.workCarriedOut
-          });
           
           return newExecutionData;
         });
@@ -494,6 +476,38 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       requiredSpareParts: prev.requiredSpareParts.map((part: any) =>
         part.id === id ? { ...part, [field]: value } : part
       ),
+    }));
+  };
+
+  // Functions for managing consumed spare parts (Part B)
+  const handleAddConsumedSparePart = () => {
+    const newConsumedPart = {
+      id: Date.now().toString(),
+      partNo: '',
+      description: '',
+      quantityConsumed: '',
+      comments: '',
+    };
+    
+    setExecutionData(prev => ({
+      ...prev,
+      sparePartsConsumed: [...prev.sparePartsConsumed, newConsumedPart],
+    }));
+  };
+
+  const handleUpdateConsumedSparePart = (id: string, field: string, value: string) => {
+    setExecutionData(prev => ({
+      ...prev,
+      sparePartsConsumed: prev.sparePartsConsumed.map((part: any) =>
+        part.id === id ? { ...part, [field]: value } : part
+      ),
+    }));
+  };
+
+  const handleRemoveConsumedSparePart = (id: string) => {
+    setExecutionData(prev => ({
+      ...prev,
+      sparePartsConsumed: prev.sparePartsConsumed.filter((part: any) => part.id !== id),
     }));
   };
 
@@ -2284,69 +2298,103 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       >
                         B4. Spare Parts Consumed
                       </h4>
-                      <button className='text-sm text-blue-600 hover:text-blue-800'>
-                        + Add Spare Part
-                      </button>
+                      {!isReadOnly && (
+                        <button 
+                          onClick={handleAddConsumedSparePart}
+                          className='text-sm text-blue-600 hover:text-blue-800'
+                          type="button"
+                        >
+                          + Add Spare Part
+                        </button>
+                      )}
                     </div>
 
                     <div className='border border-gray-200 rounded'>
                       <div className='bg-gray-50 px-4 py-3 border-b border-gray-200'>
-                        <div className='grid grid-cols-4 gap-4 text-sm font-medium text-gray-700'>
+                        <div className='grid grid-cols-5 gap-4 text-sm font-medium text-gray-700'>
                           <div>Part No</div>
                           <div>Description</div>
                           <div>Quantity Consumed</div>
                           <div>Comments (if any)</div>
+                          {!isReadOnly && <div>Action</div>}
                         </div>
                       </div>
                       <div className='divide-y divide-gray-200'>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-4 gap-4 text-sm items-center'>
-                            <div className='text-gray-900'>SP -001</div>
-                            <div className='text-gray-900'>O-Ring Seal</div>
-                            <div>
-                              <Input
-                                type='text'
-                                className='w-full'
-                                defaultValue='2'
-                              />
+                        {executionData.sparePartsConsumed?.length > 0 ? (
+                          executionData.sparePartsConsumed.map((part: any) => (
+                            <div key={part.id} className='px-4 py-3'>
+                              <div className={`grid gap-4 text-sm items-center ${isReadOnly ? 'grid-cols-4' : 'grid-cols-5'}`}>
+                                <div>
+                                  {isReadOnly ? (
+                                    <div className='text-gray-900'>{part.partNo || ''}</div>
+                                  ) : (
+                                    <Input
+                                      type='text'
+                                      value={part.partNo || ''}
+                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'partNo', e.target.value)}
+                                      placeholder='Part No'
+                                      className='w-full'
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  {isReadOnly ? (
+                                    <div className='text-gray-900'>{part.description || ''}</div>
+                                  ) : (
+                                    <Input
+                                      type='text'
+                                      value={part.description || ''}
+                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'description', e.target.value)}
+                                      placeholder='Description'
+                                      className='w-full'
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  {isReadOnly ? (
+                                    <div className='text-gray-900'>{part.quantityConsumed || ''}</div>
+                                  ) : (
+                                    <Input
+                                      type='number'
+                                      value={part.quantityConsumed || ''}
+                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'quantityConsumed', e.target.value)}
+                                      placeholder='Quantity'
+                                      className='w-full'
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  {isReadOnly ? (
+                                    <div className='text-gray-900'>{part.comments || ''}</div>
+                                  ) : (
+                                    <Input
+                                      type='text'
+                                      value={part.comments || ''}
+                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'comments', e.target.value)}
+                                      placeholder='Comments'
+                                      className='w-full'
+                                    />
+                                  )}
+                                </div>
+                                {!isReadOnly && (
+                                  <div>
+                                    <button
+                                      onClick={() => handleRemoveConsumedSparePart(part.id)}
+                                      className='text-red-600 hover:text-red-800 text-sm'
+                                      type="button"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div>
-                              <Input type='text' className='w-full' />
-                            </div>
+                          ))
+                        ) : (
+                          <div className='px-4 py-8 text-center text-gray-500'>
+                            {isReadOnly ? 'No spare parts were consumed for this work order.' : 'No spare parts added yet. Click "Add Spare Part" to add consumed parts.'}
                           </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-4 gap-4 text-sm items-center'>
-                            <div className='text-gray-900'>SP-002</div>
-                            <div className='text-gray-900'>Filter Element</div>
-                            <div>
-                              <Input
-                                type='text'
-                                className='w-full'
-                                defaultValue='1'
-                              />
-                            </div>
-                            <div>
-                              <Input type='text' className='w-full' />
-                            </div>
-                          </div>
-                        </div>
-                        <div className='px-4 py-3'>
-                          <div className='grid grid-cols-4 gap-4 text-sm items-center'>
-                            <div className='text-gray-900'>SP -003</div>
-                            <div className='text-gray-900'>Bearing</div>
-                            <div>
-                              <Input
-                                type='text'
-                                className='w-full'
-                                defaultValue='2'
-                              />
-                            </div>
-                            <div>
-                              <Input type='text' className='w-full' />
-                            </div>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
