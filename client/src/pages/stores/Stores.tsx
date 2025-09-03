@@ -818,6 +818,19 @@ const Stores: React.FC = () => {
     remarks: '',
   });
 
+  // Add item modal state
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [addItemForm, setAddItemForm] = useState({
+    itemCode: '',
+    itemName: '',
+    uom: 'pcs',
+    customUom: '',
+    initialQty: '',
+    minStock: '1',
+    location: 'Store Room',
+    notes: '',
+  });
+
   // Add to history function
   const addToHistory = (
     item: StoreItem,
@@ -961,12 +974,14 @@ const Stores: React.FC = () => {
       openEditModal(item);
     },
     onConsume: (item: StoreItem) => {
-      // Implement consume functionality
-      console.log('Consume item:', item);
+      // Quick consume - open a simple prompt
+      const quantity = prompt(`How much ${item.uom || 'units'} of ${item.itemName} to consume?`, '1');
+      if (quantity && !isNaN(Number(quantity))) {
+        handleQuickConsume(item, Number(quantity));
+      }
     },
     onReceive: (item: StoreItem) => {
-      // Implement receive functionality
-      console.log('Receive item:', item);
+      openReceiveModal(item);
     }
   }), []);
 
@@ -1408,6 +1423,150 @@ const Stores: React.FC = () => {
     }
   };
 
+  // Handle Add New Item
+  const handleAddNewItem = async () => {
+    if (!addItemForm.itemCode || !addItemForm.itemName || !addItemForm.initialQty) {
+      toast({
+        title: 'Error',
+        description: 'Item code, name, and initial quantity are required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const initialQty = parseInt(addItemForm.initialQty);
+    if (isNaN(initialQty) || initialQty < 0) {
+      toast({
+        title: 'Error',
+        description: 'Initial quantity must be a valid number',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const uom = addItemForm.uom === 'Other' ? addItemForm.customUom : addItemForm.uom;
+      
+      // Create initial transaction for new item
+      await createTransactionMutation.mutateAsync({
+        itemCode: addItemForm.itemCode,
+        itemName: addItemForm.itemName,
+        unit: uom,
+        eventType: 'INITIAL',
+        quantity: initialQty,
+        robAfter: initialQty,
+        place: addItemForm.location,
+        dateLocal: new Date().toISOString().split('T')[0],
+        tz: 'UTC',
+        remarks: `Initial stock - ${addItemForm.notes || 'New item added'}`
+      });
+
+      // Create catalog update transaction with min stock and notes
+      if (addItemForm.minStock !== '1' || addItemForm.notes) {
+        await createTransactionMutation.mutateAsync({
+          itemCode: addItemForm.itemCode,
+          itemName: addItemForm.itemName,
+          unit: uom,
+          eventType: 'CATALOG_UPDATE',
+          quantity: 0,
+          robAfter: initialQty,
+          place: addItemForm.location,
+          dateLocal: new Date().toISOString().split('T')[0],
+          tz: 'UTC',
+          remarks: JSON.stringify({
+            minStock: parseInt(addItemForm.minStock),
+            notes: addItemForm.notes,
+            location: addItemForm.location,
+            updatedAt: new Date().toISOString()
+          })
+        });
+      }
+
+      // Reset form and close modal
+      setAddItemForm({
+        itemCode: '',
+        itemName: '',
+        uom: 'pcs',
+        customUom: '',
+        initialQty: '',
+        minStock: '1',
+        location: 'Store Room',
+        notes: '',
+      });
+      setIsAddItemModalOpen(false);
+      
+      toast({
+        title: 'Success',
+        description: `Added new item: ${addItemForm.itemName} - saved to database`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to add new item to database',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Handle Quick Consume
+  const handleQuickConsume = async (item: StoreItem, quantity: number) => {
+    if (quantity <= 0) {
+      toast({
+        title: 'Error',
+        description: 'Quantity must be greater than 0',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (quantity > item.rob) {
+      toast({
+        title: 'Error',
+        description: 'Insufficient stock available',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const newRob = item.rob - quantity;
+      
+      // Create consume transaction in database
+      await createTransactionMutation.mutateAsync({
+        itemCode: item.itemCode,
+        itemName: item.itemName,
+        unit: item.uom,
+        eventType: 'CONSUME',
+        quantity: -quantity,
+        robAfter: newRob,
+        place: '',
+        dateLocal: new Date().toISOString().split('T')[0],
+        tz: 'UTC',
+        remarks: `Quick consume: ${quantity} ${item.uom || 'units'}`
+      });
+
+      // Update local state
+      const updatedItems = items.map(i =>
+        i.id === item.id ? { ...i, rob: newRob } : i
+      );
+
+      // Add to history
+      addToHistory(item, 'CONSUME', -quantity, newRob, '', '', `Quick consume: ${quantity} ${item.uom || 'units'}`);
+
+      setItems(updatedItems);
+      toast({
+        title: 'Success',
+        description: `Consumed ${quantity} ${item.uom || 'units'} of ${item.itemName} - saved to database`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save consume transaction to database',
+        variant: 'destructive',
+      });
+    }
+  };
+
   // Handle Archive
   const handleArchive = (item: StoreItem) => {
     const confirmMessage =
@@ -1441,12 +1600,20 @@ const Stores: React.FC = () => {
                 ? 'Chemicals Inventory'
                 : 'Others Inventory'}
         </h1>
-        <Button
-          className='bg-[#52baf3] hover:bg-[#40a8e0] text-white'
-          onClick={openBulkUpdateModal}
-        >
-          + Bulk Update {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        </Button>
+        <div className='flex gap-2'>
+          <Button
+            className='bg-blue-600 hover:bg-blue-700 text-white'
+            onClick={() => setIsAddItemModalOpen(true)}
+          >
+            + Add New Item
+          </Button>
+          <Button
+            className='bg-[#52baf3] hover:bg-[#40a8e0] text-white'
+            onClick={openBulkUpdateModal}
+          >
+            + Bulk Update {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
