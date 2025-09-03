@@ -1936,49 +1936,45 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <Label className='text-sm text-[#8798ad]'>
                             Start Date & Time *
                           </Label>
-                          <Input
-                            type='datetime-local'
-                            value={executionData.startDateTime}
-                            onChange={e =>
-                              handleExecutionChange(
-                                'startDateTime',
-                                e.target.value
-                              )
-                            }
-                            className='w-full h-10'
-                            style={{
-                              height: '40px',
-                              minHeight: '40px',
-                              maxHeight: '40px',
-                              padding: '0.5rem 0.75rem',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}
-                          />
+                          <div className='relative h-10 w-full'>
+                            <Input
+                              type='datetime-local'
+                              value={executionData.startDateTime}
+                              onChange={e =>
+                                handleExecutionChange(
+                                  'startDateTime',
+                                  e.target.value
+                                )
+                              }
+                              className='absolute inset-0 w-full h-full border border-gray-300 rounded-md px-3 text-sm'
+                              style={{
+                                height: '100%',
+                                lineHeight: 'normal'
+                              }}
+                            />
+                          </div>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Completion Date & Time *
                           </Label>
-                          <Input
-                            type='datetime-local'
-                            value={executionData.completionDateTime}
-                            onChange={e =>
-                              handleExecutionChange(
-                                'completionDateTime',
-                                e.target.value
-                              )
-                            }
-                            className='w-full h-10'
-                            style={{
-                              height: '40px',
-                              minHeight: '40px',
-                              maxHeight: '40px',
-                              padding: '0.5rem 0.75rem',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}
-                          />
+                          <div className='relative h-10 w-full'>
+                            <Input
+                              type='datetime-local'
+                              value={executionData.completionDateTime}
+                              onChange={e =>
+                                handleExecutionChange(
+                                  'completionDateTime',
+                                  e.target.value
+                                )
+                              }
+                              className='absolute inset-0 w-full h-full border border-gray-300 rounded-md px-3 text-sm'
+                              style={{
+                                height: '100%',
+                                lineHeight: 'normal'
+                              }}
+                            />
+                          </div>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
