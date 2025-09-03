@@ -2000,7 +2000,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                               handleExecutionChange('performedBy', value)
                             }
                           >
-                            <SelectTrigger className='w-full'>
+                            <SelectTrigger className='w-full h-10'>
                               <SelectValue placeholder='Select rank' />
                             </SelectTrigger>
                             <SelectContent>
@@ -2033,7 +2033,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 (persons * hours).toString()
                               );
                             }}
-                            className='w-full'
+                            className='w-full h-10'
                           />
                         </div>
                         <div className='space-y-2'>
@@ -2057,7 +2057,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 (persons * hours).toString()
                               );
                             }}
-                            className='w-full'
+                            className='w-full h-10'
                           />
                         </div>
                       </div>
