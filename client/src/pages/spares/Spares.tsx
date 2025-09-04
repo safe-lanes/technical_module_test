@@ -37,6 +37,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import AgGridTable from '@/components/common/AgGridTable';
+import { AgGridReact } from 'ag-grid-react';
 import {
   StockStatusCellRenderer,
   CriticalCellRenderer,
@@ -974,30 +975,32 @@ const Spares: React.FC = () => {
           {/* Right Panel - Spares Table */}
           <div className='w-[70%]'>
             <div className='bg-white rounded-lg'>
-              <AgGridTable
-                key={`spares-grid-ihm-${columnDefs.length}`}
-                rowData={sparesWithStock}
-                columnDefs={columnDefs}
-                onGridReady={onGridReady}
-                context={gridContext}
-                height='calc(100vh - 280px)'
-                enableExport={true}
-                enableSideBar={true}
-                enableStatusBar={true}
-                pagination={true}
-                paginationPageSize={50}
-                animateRows={true}
-                suppressRowClickSelection={true}
-                className='rounded-lg shadow-sm'
-                gridOptions={{
-                  suppressColumnVirtualisation: true,
-                  suppressAutoSize: true,
-                  skipHeaderOnAutoSize: true,
-                  suppressColumnMoveAnimation: true,
-                  suppressMovableColumns: true,
-                  suppressHorizontalScroll: false,
-                }}
-              />
+              <div className="ag-theme-alpine rounded-lg shadow-sm" style={{ height: 'calc(100vh - 280px)', width: '100%' }}>
+                <AgGridReact
+                  key={`spares-direct-${columnDefs.length}`}
+                  rowData={sparesWithStock}
+                  columnDefs={columnDefs}
+                  onGridReady={onGridReady}
+                  context={gridContext}
+                  pagination={true}
+                  paginationPageSize={50}
+                  animateRows={true}
+                  suppressRowClickSelection={true}
+                  defaultColDef={{
+                    sortable: true,
+                    filter: true,
+                    resizable: true,
+                    flex: 0,
+                    minWidth: 50,
+                  }}
+                  suppressColumnVirtualisation={true}
+                  suppressAutoSize={true}
+                  skipHeaderOnAutoSize={true}
+                  suppressColumnMoveAnimation={true}
+                  suppressMovableColumns={true}
+                  suppressHorizontalScroll={false}
+                />
+              </div>
             </div>
           </div>
         </div>
