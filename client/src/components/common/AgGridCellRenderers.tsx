@@ -186,10 +186,11 @@ export const RunningHoursActionsCellRenderer = (
 
 // IHM cell renderer - Contains only the edit button
 export const IHMCellRenderer = (params: ICellRendererParams) => {
+  console.log('IHM Cell Renderer called:', params.data?.partCode);
   const { data, context } = params;
 
   if (!data || !context) {
-    return null;
+    return <div className='bg-red-100 p-2 text-xs'>No data</div>;
   }
 
   const handleEdit = () => {
@@ -199,7 +200,7 @@ export const IHMCellRenderer = (params: ICellRendererParams) => {
   };
 
   return (
-    <div className='flex justify-center items-center w-full h-full'>
+    <div className='flex justify-center items-center w-full h-full bg-yellow-100'>
       <Button 
         size='sm' 
         variant='outline' 

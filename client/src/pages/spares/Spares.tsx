@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -707,9 +707,9 @@ const Spares: React.FC = () => {
       {
         headerName: 'IHM',
         field: 'ihm',
-        width: 80,
-        minWidth: 80,
-        maxWidth: 80,
+        width: 100,
+        minWidth: 100,
+        maxWidth: 100,
         cellRenderer: IHMCellRenderer,
         sortable: false,
         filter: false,
@@ -717,6 +717,7 @@ const Spares: React.FC = () => {
         suppressSizeToFit: true,
         suppressAutoSize: true,
         flex: 0,
+        cellClass: 'ihm-column',
       },
       {
         headerName: 'Actions',
