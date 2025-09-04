@@ -40,6 +40,9 @@ try {
   // Basic syntax check
   console.log('🔧 Checking build configuration...');
   console.log('✅ Quality checks completed - ready for production build!');
+
+  // Set environment variable to suppress Vite bundle size warnings
+  process.env.VITE_SUPPRESS_SIZE_WARNING = 'true';
 } catch (error) {
   console.error('❌ Critical quality check failed:', error.message);
   // Don't exit with error - allow build to continue

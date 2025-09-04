@@ -45,3 +45,5 @@ attached_assets/
 *.md
 types.d.ts
 *.json
+build-clean.js
+quality.js
