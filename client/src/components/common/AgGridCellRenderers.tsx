@@ -201,9 +201,9 @@ export const IHMCellRenderer = (params: ICellRendererParams) => {
 
   return (
     <div className='flex justify-center items-center w-full h-full bg-yellow-100'>
-      <Button 
-        size='sm' 
-        variant='outline' 
+      <Button
+        size='sm'
+        variant='outline'
         onClick={handleEdit}
         className='h-8 w-8 p-0 border-blue-200 hover:bg-blue-50'
         title='Edit spare'
@@ -236,18 +236,18 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
 
   return (
     <div className='flex gap-2 justify-center items-center w-full px-2'>
-      <Button 
-        size='sm' 
-        variant='outline' 
+      <Button
+        size='sm'
+        variant='outline'
         onClick={handleConsume}
         className='h-8 w-8 p-0 border-red-200 hover:bg-red-50'
         title='Consume spare'
       >
         <Minus className='w-3 h-3 text-red-600' />
       </Button>
-      <Button 
-        size='sm' 
-        variant='outline' 
+      <Button
+        size='sm'
+        variant='outline'
         onClick={handleReceive}
         className='h-8 w-8 p-0 border-green-200 hover:bg-green-50'
         title='Receive spare'

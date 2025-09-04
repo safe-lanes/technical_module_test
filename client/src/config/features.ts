@@ -6,12 +6,7 @@ export const FEATURES = {
   ADVANCED_REPORTING: true,
 } as const;
 
-export const IHM_PRESENCE = [
-  'Yes',
-  'No', 
-  'Unknown',
-  'Partial'
-] as const;
+export const IHM_PRESENCE = ['Yes', 'No', 'Unknown', 'Partial'] as const;
 
 export const IHM_EVIDENCE_TYPES = [
   'None',
@@ -20,8 +15,8 @@ export const IHM_EVIDENCE_TYPES = [
   'Test Report',
   'Visual Inspection',
   'Documentation',
-  'Other'
+  'Other',
 ] as const;
 
-export type IHMPresence = typeof IHM_PRESENCE[number];
-export type IHMEvidenceType = typeof IHM_EVIDENCE_TYPES[number];
+export type IHMPresence = (typeof IHM_PRESENCE)[number];
+export type IHMEvidenceType = (typeof IHM_EVIDENCE_TYPES)[number];

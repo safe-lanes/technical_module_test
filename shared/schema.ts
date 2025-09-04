@@ -185,8 +185,12 @@ export const spares = mysqlTable(
     vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
     deleted: boolean('deleted').notNull().default(false),
     // IHM fields
-    ihmPresence: varchar('ihm_presence', { length: 20 }).notNull().default('Unknown'),
-    ihmEvidenceType: varchar('ihm_evidence_type', { length: 50 }).notNull().default('None'),
+    ihmPresence: varchar('ihm_presence', { length: 20 })
+      .notNull()
+      .default('Unknown'),
+    ihmEvidenceType: varchar('ihm_evidence_type', { length: 50 })
+      .notNull()
+      .default('None'),
   },
   table => ({
     componentIdIdx: index('idx_spare_component').on(table.componentId),

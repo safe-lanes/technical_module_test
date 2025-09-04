@@ -182,11 +182,11 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(spares)
       .where(eq(spares.vesselId, vesselId));
-    
+
     // Add default ihm field for backwards compatibility
     return result.map(spare => ({
       ...spare,
-      ihm: spare.ihm !== undefined ? spare.ihm : false
+      ihm: spare.ihm !== undefined ? spare.ihm : false,
     }));
   }
 
@@ -201,12 +201,16 @@ export class DatabaseStorage implements IStorage {
 
   async createSpare(insertSpare: any): Promise<any> {
     logDbOperation('createSpare', { partCode: insertSpare.partCode });
-    
+
     // Generate component spare code if not provided
-    const componentSpareCode = insertSpare.componentSpareCode || 
-      (insertSpare.componentCode ? 
-        await this.generateComponentSpareCode(insertSpare.vesselId || 'V001', insertSpare.componentCode) : 
-        null);
+    const componentSpareCode =
+      insertSpare.componentSpareCode ||
+      (insertSpare.componentCode
+        ? await this.generateComponentSpareCode(
+            insertSpare.vesselId || 'V001',
+            insertSpare.componentCode
+          )
+        : null);
 
     const spareData = {
       ...insertSpare,
@@ -253,7 +257,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateSpare(id: any, data: any): Promise<any> {
     logDbOperation('updateSpare', { id, data });
-    
+
     // Get current spare for history tracking
     const currentSpare = await this.getSpare(id);
     if (!currentSpare) {
@@ -307,7 +311,7 @@ export class DatabaseStorage implements IStorage {
     tz?: any
   ): Promise<any> {
     logDbOperation('consumeSpare', { id, quantity });
-    
+
     const spare = await this.getSpare(id);
     if (!spare) {
       throw new Error(`Spare ${id} not found`);
@@ -356,7 +360,7 @@ export class DatabaseStorage implements IStorage {
     tz?: any
   ): Promise<any> {
     logDbOperation('receiveSpare', { id, quantity });
-    
+
     const spare = await this.getSpare(id);
     if (!spare) {
       throw new Error(`Spare ${id} not found`);
@@ -396,7 +400,7 @@ export class DatabaseStorage implements IStorage {
     remarks?: any
   ): Promise<any[]> {
     logDbOperation('bulkUpdateSpares', { count: updates.length });
-    
+
     const updatedSpares: any[] = [];
 
     for (const update of updates) {
@@ -416,7 +420,10 @@ export class DatabaseStorage implements IStorage {
 
       if (netChange !== 0) {
         const newRob = spare.rob + netChange;
-        await this.db.update(spares).set({ rob: newRob }).where(eq(spares.id, update.id));
+        await this.db
+          .update(spares)
+          .set({ rob: newRob })
+          .where(eq(spares.id, update.id));
 
         // Create history entry
         await this.createSpareHistory({
@@ -437,7 +444,9 @@ export class DatabaseStorage implements IStorage {
           reference: null,
           dateLocal: update.receivedDate || null,
           place: update.receivedPlace || null,
-          tz: update.receivedDate ? Intl.DateTimeFormat().resolvedOptions().timeZone : null,
+          tz: update.receivedDate
+            ? Intl.DateTimeFormat().resolvedOptions().timeZone
+            : null,
         });
 
         const updatedSpare = await this.getSpare(update.id);
@@ -449,7 +458,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Helper method to generate component spare codes
-  private async generateComponentSpareCode(vesselId: any, componentCode: any): Promise<any> {
+  private async generateComponentSpareCode(
+    vesselId: any,
+    componentCode: any
+  ): Promise<any> {
     // Get all existing spares for this component in this vessel
     const existingSpares = await this.db
       .select()
@@ -472,7 +484,8 @@ export class DatabaseStorage implements IStorage {
       .filter(n => !isNaN(n));
 
     // Find the next available number
-    const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    const nextNumber =
+      existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
 
     // Format with zero padding
     const nnn = String(nextNumber).padStart(3, '0');
@@ -549,16 +562,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSpareHistory(history: any): Promise<any> {
-    logDbOperation('createSpareHistory', { spareId: history.spareId, eventType: history.eventType });
-    
+    logDbOperation('createSpareHistory', {
+      spareId: history.spareId,
+      eventType: history.eventType,
+    });
+
     const result = await this.db.insert(sparesHistory).values(history);
     const insertId = (result as any).insertId;
-    
+
     const [createdHistory] = await this.db
       .select()
       .from(sparesHistory)
       .where(eq(sparesHistory.id, insertId));
-      
+
     return createdHistory;
   }
   async getStoresLedger(): Promise<any[]> {
@@ -579,7 +595,7 @@ export class DatabaseStorage implements IStorage {
   // Bulk spares operations
   async bulkCreateSpares(sparesData: any[]): Promise<any[]> {
     logDbOperation('bulkCreateSpares', { count: sparesData.length });
-    
+
     const createdSpares: any[] = [];
     for (const spareData of sparesData) {
       const created = await this.createSpare(spareData);
@@ -590,7 +606,7 @@ export class DatabaseStorage implements IStorage {
 
   async bulkUpdateSparesByROB(updates: any[]): Promise<any[]> {
     logDbOperation('bulkUpdateSparesByROB', { count: updates.length });
-    
+
     const updatedSpares: any[] = [];
     for (const { robId, data } of updates) {
       // Find spare by componentSpareCode (robId)
@@ -598,7 +614,7 @@ export class DatabaseStorage implements IStorage {
         .select()
         .from(spares)
         .where(eq(spares.componentSpareCode, robId));
-        
+
       if (spare) {
         const updated = await this.updateSpare(spare.id, data);
         updatedSpares.push(updated);
@@ -609,7 +625,7 @@ export class DatabaseStorage implements IStorage {
 
   async bulkUpsertSpares(sparesData: any[]): Promise<any> {
     logDbOperation('bulkUpsertSpares', { count: sparesData.length });
-    
+
     let created = 0;
     let updated = 0;
 
@@ -634,12 +650,12 @@ export class DatabaseStorage implements IStorage {
 
   async archiveSparesByIds(ids: any[]): Promise<any> {
     logDbOperation('archiveSparesByIds', { ids });
-    
+
     await this.db
       .update(spares)
       .set({ deleted: true })
       .where(sql`${spares.id} IN (${ids.join(',')})`);
-      
+
     return ids.length;
   }
   async bulkCreateStoreItems(): Promise<any[]> {

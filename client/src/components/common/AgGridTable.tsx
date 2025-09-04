@@ -230,10 +230,10 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
       onGridReady: (params: GridReadyEvent) => {
         // Don't auto-size columns to fit - respect fixed widths
         // Only auto-size if no pinned columns exist
-        const hasFixedWidthColumns = columnDefs.some(col => 
-          col.pinned === 'right' && col.width && col.suppressSizeToFit
+        const hasFixedWidthColumns = columnDefs.some(
+          col => col.pinned === 'right' && col.width && col.suppressSizeToFit
         );
-        
+
         if (!hasFixedWidthColumns) {
           params.api.sizeColumnsToFit();
         }

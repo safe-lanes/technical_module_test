@@ -124,8 +124,8 @@ const Spares: React.FC = () => {
     min: '',
     location: '',
     // IHM fields
-    ihmPresence: 'Unknown' as typeof IHM_PRESENCE[number],
-    ihmEvidenceType: 'None' as typeof IHM_EVIDENCE_TYPES[number]
+    ihmPresence: 'Unknown' as (typeof IHM_PRESENCE)[number],
+    ihmEvidenceType: 'None' as (typeof IHM_EVIDENCE_TYPES)[number],
   });
 
   const { toast } = useToast();
@@ -266,8 +266,8 @@ const Spares: React.FC = () => {
         min: '',
         location: '',
         // IHM fields
-        ihmPresence: 'Unknown' as typeof IHM_PRESENCE[number],
-        ihmEvidenceType: 'None' as typeof IHM_EVIDENCE_TYPES[number]
+        ihmPresence: 'Unknown' as (typeof IHM_PRESENCE)[number],
+        ihmEvidenceType: 'None' as (typeof IHM_EVIDENCE_TYPES)[number],
       });
     },
     onError: (error: any) => {
@@ -1533,14 +1533,19 @@ const Spares: React.FC = () => {
 
             {/* IHM Fields Section */}
             <div className='border-t pt-4'>
-              <h4 className='font-medium text-gray-900 mb-3'>IHM Information</h4>
+              <h4 className='font-medium text-gray-900 mb-3'>
+                IHM Information
+              </h4>
               <div className='grid grid-cols-2 gap-4'>
                 <div>
                   <Label htmlFor='ihm-presence'>IHM Presence</Label>
                   <Select
                     value={addSpareForm.ihmPresence}
                     onValueChange={value =>
-                      setAddSpareForm({ ...addSpareForm, ihmPresence: value as typeof IHM_PRESENCE[number] })
+                      setAddSpareForm({
+                        ...addSpareForm,
+                        ihmPresence: value as (typeof IHM_PRESENCE)[number],
+                      })
                     }
                   >
                     <SelectTrigger id='ihm-presence'>
@@ -1560,7 +1565,11 @@ const Spares: React.FC = () => {
                   <Select
                     value={addSpareForm.ihmEvidenceType}
                     onValueChange={value =>
-                      setAddSpareForm({ ...addSpareForm, ihmEvidenceType: value as typeof IHM_EVIDENCE_TYPES[number] })
+                      setAddSpareForm({
+                        ...addSpareForm,
+                        ihmEvidenceType:
+                          value as (typeof IHM_EVIDENCE_TYPES)[number],
+                      })
                     }
                   >
                     <SelectTrigger id='ihm-evidence'>

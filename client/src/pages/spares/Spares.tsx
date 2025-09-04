@@ -450,7 +450,7 @@ const Spares: React.FC = () => {
     remarks: '',
     place: '',
     dateLocal: new Date().toISOString().split('T')[0],
-    tz: 'UTC'
+    tz: 'UTC',
   });
   const [receiveData, setReceiveData] = useState<ReceiveSpareData>({
     qty: 1,
@@ -459,7 +459,7 @@ const Spares: React.FC = () => {
     supplierPO: '',
     place: '',
     dateLocal: new Date().toISOString().split('T')[0],
-    tz: 'UTC'
+    tz: 'UTC',
   });
   const { toast } = useToast();
 
@@ -489,51 +489,65 @@ const Spares: React.FC = () => {
   };
 
   // API call to fetch spares
-  const { data: rawSparesData = [], isLoading, error } = useQuery({
+  const {
+    data: rawSparesData = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['/api/spares', 'V001'],
     queryFn: () => apiRequest('/api/spares/V001', 'GET'),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Add IHM field to spares data for display  
+  // Add IHM field to spares data for display
   const sparesData = (rawSparesData as any[]).map(spare => ({
     ...spare,
-    ihm: false // Default value for IHM column
+    ihm: false, // Default value for IHM column
   }));
 
   // Mutations for consume and receive
   const consumeMutation = useMutation({
-    mutationFn: ({ spareId, data }: { spareId: number; data: ConsumeSpareData }) => 
-      apiRequest(`/api/spares/${spareId}/consume`, 'POST', data),
+    mutationFn: ({
+      spareId,
+      data,
+    }: {
+      spareId: number;
+      data: ConsumeSpareData;
+    }) => apiRequest(`/api/spares/${spareId}/consume`, 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
       setIsConsumeModalOpen(false);
       toast({ title: 'Success', description: 'Spare consumed successfully' });
     },
     onError: (error: any) => {
-      toast({ 
-        title: 'Error', 
+      toast({
+        title: 'Error',
         description: error.message || 'Failed to consume spare',
-        variant: 'destructive' 
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   const receiveMutation = useMutation({
-    mutationFn: ({ spareId, data }: { spareId: number; data: ReceiveSpareData }) => 
-      apiRequest(`/api/spares/${spareId}/receive`, 'POST', data),
+    mutationFn: ({
+      spareId,
+      data,
+    }: {
+      spareId: number;
+      data: ReceiveSpareData;
+    }) => apiRequest(`/api/spares/${spareId}/receive`, 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/spares'] });
       setIsReceiveModalOpen(false);
       toast({ title: 'Success', description: 'Spare received successfully' });
     },
     onError: (error: any) => {
-      toast({ 
-        title: 'Error', 
+      toast({
+        title: 'Error',
         description: error.message || 'Failed to receive spare',
-        variant: 'destructive' 
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   // Filter spares based on all criteria
@@ -648,98 +662,97 @@ const Spares: React.FC = () => {
 
   // AG Grid column definitions
   const columnDefs: ColDef[] = [
-      {
-        headerName: 'Part Code',
-        field: 'partCode',
-        width: 140,
-        pinned: 'left',
+    {
+      headerName: 'Part Code',
+      field: 'partCode',
+      width: 140,
+      pinned: 'left',
+    },
+    {
+      headerName: 'Part Name',
+      field: 'partName',
+      width: 180,
+      maxWidth: 180,
+    },
+    {
+      headerName: 'Component',
+      field: 'component',
+      width: 200,
+      maxWidth: 200,
+    },
+    {
+      headerName: 'Critical',
+      field: 'critical',
+      width: 120,
+      cellRenderer: CriticalCellRenderer,
+    },
+    {
+      headerName: 'ROB',
+      field: 'rob',
+      width: 80,
+      cellRenderer: params => {
+        return <span className='font-medium'>{params.value}</span>;
       },
-      {
-        headerName: 'Part Name',
-        field: 'partName',
-        width: 180,
-        maxWidth: 180,
+    },
+    {
+      headerName: 'Min',
+      field: 'min',
+      width: 80,
+      cellRenderer: params => {
+        return <span className='font-medium'>{params.value}</span>;
       },
-      {
-        headerName: 'Component',
-        field: 'component',
-        width: 200,
-        maxWidth: 200,
-      },
-      {
-        headerName: 'Critical',
-        field: 'critical',
-        width: 120,
-        cellRenderer: CriticalCellRenderer,
-      },
-      {
-        headerName: 'ROB',
-        field: 'rob',
-        width: 80,
-        cellRenderer: params => {
-          return <span className='font-medium'>{params.value}</span>;
-        },
-      },
-      {
-        headerName: 'Min',
-        field: 'min',
-        width: 80,
-        cellRenderer: params => {
-          return <span className='font-medium'>{params.value}</span>;
-        },
-      },
-      {
-        headerName: 'Stock',
-        field: 'stock',
-        width: 100,
-        cellRenderer: StockStatusCellRenderer,
-      },
-      {
-        headerName: 'Location',
-        field: 'location',
-        width: 120,
-        minWidth: 120,
-        maxWidth: 120,
-        flex: 0,
-        resizable: false,
-        suppressSizeToFit: true,
-        suppressAutoSize: true,
-      },
-      {
-        headerName: 'IHM',
-        field: 'ihm',
-        width: 100,
-        minWidth: 100,
-        maxWidth: 100,
-        cellRenderer: IHMCellRenderer,
-        sortable: false,
-        filter: false,
-        resizable: false,
-        suppressSizeToFit: true,
-        suppressAutoSize: true,
-        flex: 0,
-        cellClass: 'ihm-column',
-        pinned: false,
-        hide: false,
-        lockPosition: true,
-      },
-      {
-        headerName: 'Actions',
-        field: 'actions',
-        width: 120,
-        minWidth: 120,
-        maxWidth: 120,
-        cellRenderer: SparesActionsCellRenderer,
-        sortable: false,
-        filter: false,
-        pinned: 'right',
-        resizable: false,
-        suppressSizeToFit: true,
-        suppressAutoSize: true,
-        flex: 0,
-      },
-    ];
-
+    },
+    {
+      headerName: 'Stock',
+      field: 'stock',
+      width: 100,
+      cellRenderer: StockStatusCellRenderer,
+    },
+    {
+      headerName: 'Location',
+      field: 'location',
+      width: 120,
+      minWidth: 120,
+      maxWidth: 120,
+      flex: 0,
+      resizable: false,
+      suppressSizeToFit: true,
+      suppressAutoSize: true,
+    },
+    {
+      headerName: 'IHM',
+      field: 'ihm',
+      width: 100,
+      minWidth: 100,
+      maxWidth: 100,
+      cellRenderer: IHMCellRenderer,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      suppressSizeToFit: true,
+      suppressAutoSize: true,
+      flex: 0,
+      cellClass: 'ihm-column',
+      pinned: false,
+      hide: false,
+      lockPosition: true,
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      width: 120,
+      minWidth: 120,
+      maxWidth: 120,
+      cellRenderer: SparesActionsCellRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right',
+      resizable: false,
+      suppressSizeToFit: true,
+      suppressAutoSize: true,
+      flex: 0,
+    },
+  ];
 
   // Handle modal actions
   const handleConsume = (spare: Spare) => {
@@ -750,7 +763,7 @@ const Spares: React.FC = () => {
       remarks: '',
       place: '',
       dateLocal: new Date().toISOString().split('T')[0],
-      tz: 'UTC'
+      tz: 'UTC',
     });
     setIsConsumeModalOpen(true);
   };
@@ -764,7 +777,7 @@ const Spares: React.FC = () => {
       supplierPO: '',
       place: '',
       dateLocal: new Date().toISOString().split('T')[0],
-      tz: 'UTC'
+      tz: 'UTC',
     });
     setIsReceiveModalOpen(true);
   };
@@ -972,7 +985,10 @@ const Spares: React.FC = () => {
           {/* Right Panel - Spares Table */}
           <div className='w-[70%]'>
             <div className='bg-white rounded-lg'>
-              <div className="ag-theme-alpine rounded-lg shadow-sm" style={{ height: 'calc(100vh - 280px)', width: '100%' }}>
+              <div
+                className='ag-theme-alpine rounded-lg shadow-sm'
+                style={{ height: 'calc(100vh - 280px)', width: '100%' }}
+              >
                 <AgGridReact
                   key={`spares-direct-${columnDefs.length}`}
                   rowData={sparesWithStock}
@@ -1426,56 +1442,74 @@ const Spares: React.FC = () => {
 
       {/* Consume Modal */}
       <Dialog open={isConsumeModalOpen} onOpenChange={setIsConsumeModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Consume Spare - {selectedSpare?.partName}</DialogTitle>
             <DialogDescription>
               Remove inventory from stock when spare is used.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className='space-y-4'>
             <div>
-              <Label htmlFor="consume-qty">Quantity to Consume</Label>
+              <Label htmlFor='consume-qty'>Quantity to Consume</Label>
               <Input
-                id="consume-qty"
-                type="number"
-                min="1"
+                id='consume-qty'
+                type='number'
+                min='1'
                 max={selectedSpare?.rob || 0}
                 value={consumeData.qty}
-                onChange={(e) => setConsumeData({...consumeData, qty: parseInt(e.target.value) || 1})}
-                className="mt-1"
+                onChange={e =>
+                  setConsumeData({
+                    ...consumeData,
+                    qty: parseInt(e.target.value) || 1,
+                  })
+                }
+                className='mt-1'
               />
-              <p className="text-sm text-gray-500 mt-1">Available: {selectedSpare?.rob}</p>
+              <p className='text-sm text-gray-500 mt-1'>
+                Available: {selectedSpare?.rob}
+              </p>
             </div>
             <div>
-              <Label htmlFor="consume-place">Place/Location</Label>
+              <Label htmlFor='consume-place'>Place/Location</Label>
               <Input
-                id="consume-place"
+                id='consume-place'
                 value={consumeData.place}
-                onChange={(e) => setConsumeData({...consumeData, place: e.target.value})}
-                placeholder="Engine Room, Workshop, etc."
-                className="mt-1"
+                onChange={e =>
+                  setConsumeData({ ...consumeData, place: e.target.value })
+                }
+                placeholder='Engine Room, Workshop, etc.'
+                className='mt-1'
               />
             </div>
             <div>
-              <Label htmlFor="consume-remarks">Remarks</Label>
+              <Label htmlFor='consume-remarks'>Remarks</Label>
               <Input
-                id="consume-remarks"
+                id='consume-remarks'
                 value={consumeData.remarks}
-                onChange={(e) => setConsumeData({...consumeData, remarks: e.target.value})}
-                placeholder="Maintenance work, repair, etc."
-                className="mt-1"
+                onChange={e =>
+                  setConsumeData({ ...consumeData, remarks: e.target.value })
+                }
+                placeholder='Maintenance work, repair, etc.'
+                className='mt-1'
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConsumeModalOpen(false)}>
+            <Button
+              variant='outline'
+              onClick={() => setIsConsumeModalOpen(false)}
+            >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleConsumeSubmit}
-              disabled={consumeMutation.isPending || !consumeData.qty || consumeData.qty > (selectedSpare?.rob || 0)}
-              className="bg-red-600 hover:bg-red-700"
+              disabled={
+                consumeMutation.isPending ||
+                !consumeData.qty ||
+                consumeData.qty > (selectedSpare?.rob || 0)
+              }
+              className='bg-red-600 hover:bg-red-700'
             >
               {consumeMutation.isPending ? 'Processing...' : 'Consume'}
             </Button>
@@ -1485,64 +1519,78 @@ const Spares: React.FC = () => {
 
       {/* Receive Modal */}
       <Dialog open={isReceiveModalOpen} onOpenChange={setIsReceiveModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Receive Spare - {selectedSpare?.partName}</DialogTitle>
             <DialogDescription>
               Add inventory to stock when spare is received.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className='space-y-4'>
             <div>
-              <Label htmlFor="receive-qty">Quantity to Receive</Label>
+              <Label htmlFor='receive-qty'>Quantity to Receive</Label>
               <Input
-                id="receive-qty"
-                type="number"
-                min="1"
+                id='receive-qty'
+                type='number'
+                min='1'
                 value={receiveData.qty}
-                onChange={(e) => setReceiveData({...receiveData, qty: parseInt(e.target.value) || 1})}
-                className="mt-1"
+                onChange={e =>
+                  setReceiveData({
+                    ...receiveData,
+                    qty: parseInt(e.target.value) || 1,
+                  })
+                }
+                className='mt-1'
               />
             </div>
             <div>
-              <Label htmlFor="receive-place">Place/Location</Label>
+              <Label htmlFor='receive-place'>Place/Location</Label>
               <Input
-                id="receive-place"
+                id='receive-place'
                 value={receiveData.place}
-                onChange={(e) => setReceiveData({...receiveData, place: e.target.value})}
-                placeholder="Store Room, Warehouse, etc."
-                className="mt-1"
+                onChange={e =>
+                  setReceiveData({ ...receiveData, place: e.target.value })
+                }
+                placeholder='Store Room, Warehouse, etc.'
+                className='mt-1'
               />
             </div>
             <div>
-              <Label htmlFor="supplier-po">Supplier/PO Number</Label>
+              <Label htmlFor='supplier-po'>Supplier/PO Number</Label>
               <Input
-                id="supplier-po"
+                id='supplier-po'
                 value={receiveData.supplierPO}
-                onChange={(e) => setReceiveData({...receiveData, supplierPO: e.target.value})}
-                placeholder="PO-2025-001, Supplier name, etc."
-                className="mt-1"
+                onChange={e =>
+                  setReceiveData({ ...receiveData, supplierPO: e.target.value })
+                }
+                placeholder='PO-2025-001, Supplier name, etc.'
+                className='mt-1'
               />
             </div>
             <div>
-              <Label htmlFor="receive-remarks">Remarks</Label>
+              <Label htmlFor='receive-remarks'>Remarks</Label>
               <Input
-                id="receive-remarks"
+                id='receive-remarks'
                 value={receiveData.remarks}
-                onChange={(e) => setReceiveData({...receiveData, remarks: e.target.value})}
-                placeholder="Delivery details, condition, etc."
-                className="mt-1"
+                onChange={e =>
+                  setReceiveData({ ...receiveData, remarks: e.target.value })
+                }
+                placeholder='Delivery details, condition, etc.'
+                className='mt-1'
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsReceiveModalOpen(false)}>
+            <Button
+              variant='outline'
+              onClick={() => setIsReceiveModalOpen(false)}
+            >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleReceiveSubmit}
               disabled={receiveMutation.isPending || !receiveData.qty}
-              className="bg-green-600 hover:bg-green-700"
+              className='bg-green-600 hover:bg-green-700'
             >
               {receiveMutation.isPending ? 'Processing...' : 'Receive'}
             </Button>
@@ -1552,24 +1600,32 @@ const Spares: React.FC = () => {
 
       {/* Edit Modal - Basic implementation */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Edit Spare - {selectedSpare?.partName}</DialogTitle>
             <DialogDescription>
               Modify spare part details and stock information.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-gray-600">Edit functionality coming soon...</p>
-            <div className="space-y-2">
-              <p><strong>Part Code:</strong> {selectedSpare?.partCode}</p>
-              <p><strong>Current ROB:</strong> {selectedSpare?.rob}</p>
-              <p><strong>Min Stock:</strong> {selectedSpare?.min}</p>
-              <p><strong>Location:</strong> {selectedSpare?.location}</p>
+          <div className='space-y-4'>
+            <p className='text-gray-600'>Edit functionality coming soon...</p>
+            <div className='space-y-2'>
+              <p>
+                <strong>Part Code:</strong> {selectedSpare?.partCode}
+              </p>
+              <p>
+                <strong>Current ROB:</strong> {selectedSpare?.rob}
+              </p>
+              <p>
+                <strong>Min Stock:</strong> {selectedSpare?.min}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedSpare?.location}
+              </p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+            <Button variant='outline' onClick={() => setIsEditModalOpen(false)}>
               Close
             </Button>
           </DialogFooter>
