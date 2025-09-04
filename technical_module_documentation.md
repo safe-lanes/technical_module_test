@@ -110,14 +110,18 @@ CREATE TABLE spares (
   component_code VARCHAR(50),
   component_name VARCHAR(255),
   component_spare_code VARCHAR(100),
+  critical ENUM('Critical', 'No', 'Non-Critical') DEFAULT 'No',
   rob INT NOT NULL DEFAULT 0,
-  min_qty INT NOT NULL DEFAULT 0,
-  max_qty INT NOT NULL DEFAULT 0,
-  unit VARCHAR(50),
+  min INT NOT NULL DEFAULT 0,
   location VARCHAR(100),
-  supplier VARCHAR(255),
+  deleted BOOLEAN DEFAULT FALSE,
+  ihm_presence ENUM('Yes', 'No', 'Unknown', 'Partial') DEFAULT 'Unknown',
+  ihm_evidence_type ENUM('Certificate', 'Test Report', 'Visual Inspection', 'None') DEFAULT 'None',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_vessel_deleted (vessel_id, deleted),
+  INDEX idx_component_id (component_id),
+  INDEX idx_part_code (part_code)
 );
 ```
 
@@ -170,10 +174,100 @@ CREATE TABLE change_request (
 
 ## API Architecture
 
+### Authentication Endpoints
+
+**Location:** `server/routes.ts` (Lines 30-52)
+
+#### POST `/api/auth/login`
+Authenticates user and returns JWT token.
+
+**Request Body:**
+```json
+{
+  "username": "admin",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "user": {
+    "id": "admin",
+    "username": "admin",
+    "role": "admin",
+    "permissions": ["read", "write", "admin"]
+  },
+  "token": "jwt_token_here"
+}
+```
+
+#### POST `/api/auth/logout`
+Logs out current user.
+
+### Component Management Endpoints
+
+**Location:** `server/routes.ts` (Lines 52-79)
+
+#### GET `/api/components/:vesselId`
+Fetches all components for vessel with hierarchical structure.
+
+**Response:**
+```json
+[
+  {
+    "id": "1",
+    "vesselId": "V001",
+    "name": "Ship General", 
+    "componentCode": "SG",
+    "parentId": null,
+    "category": "Root",
+    "currentCumulativeRH": "100.00",
+    "lastUpdated": "03 Sept 2025 15:30"
+  }
+]
+```
+
+#### GET `/api/components/vessel/:vesselId`
+Alternative endpoint for component fetching.
+
+### Work Orders Endpoints
+
+**Location:** `server/routes.ts` (Lines 90-175)
+
+#### GET `/api/work-orders/:vesselId`
+Fetches all work orders for a vessel.
+
+#### POST `/api/work-orders/:vesselId`
+Creates new work order.
+
+**Request Body:**
+```json
+{
+  "componentId": "6.1",
+  "title": "Engine Maintenance",
+  "description": "Regular engine inspection",
+  "priority": "High",
+  "plannedDate": "2025-09-05",
+  "estimatedHours": 4
+}
+```
+
+#### PUT `/api/work-orders/:vesselId/:workOrderId`
+Updates existing work order.
+
+#### DELETE `/api/work-orders/:vesselId/:workOrderId`
+Deletes work order.
+
+#### GET `/api/work-orders`
+Gets all work orders across vessels.
+
 ### Running Hours Endpoints
 
+**Location:** `server/routes.ts` (Lines 175-343)
+
 #### GET `/api/running-hours/components/:vesselId`
-Fetches all components for a vessel with their current running hours.
+Fetches all components with current running hours.
 
 **Response:**
 ```json
@@ -190,7 +284,7 @@ Fetches all components for a vessel with their current running hours.
 ```
 
 #### POST `/api/running-hours/update/:componentId`
-Updates running hours for a single component.
+Updates running hours for single component.
 
 **Request Body:**
 ```json
@@ -234,10 +328,267 @@ Bulk update running hours for multiple components.
 ```
 
 #### GET `/api/running-hours/audits/:componentId`
-Retrieves audit history for a component.
+Retrieves audit history for component with pagination.
+
+**Query Parameters:**
+- `limit`: Number of records (default: 10)
 
 #### POST `/api/running-hours/utilization-rates`
-Calculates utilization rates for components.
+Calculates utilization rates for components over date range.
+
+### Spares Management Endpoints
+
+**Location:** `server/routes.ts` (Lines 343-622)
+
+#### GET `/api/spares/:vesselId`
+Fetches all spares for vessel with IHM information.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "partCode": "SP-ME-001",
+    "partName": "Fuel Injector",
+    "componentId": "6.1",
+    "componentCode": "6.1",
+    "componentName": "Main Engine",
+    "componentSpareCode": "SP-6.1-001",
+    "critical": "Critical",
+    "rob": 2,
+    "min": 1,
+    "location": "Store Room A",
+    "vesselId": "V001",
+    "deleted": false,
+    "ihmPresence": "Yes",
+    "ihmEvidenceType": "Certificate",
+    "stockStatus": "OK"
+  }
+]
+```
+
+#### GET `/api/spares/item/:id`
+Fetches single spare by ID.
+
+#### POST `/api/spares`
+Creates new spare part.
+
+**Request Body:**
+```json
+{
+  "partCode": "SP-NEW-001",
+  "partName": "New Spare Part",
+  "componentId": "6.1",
+  "critical": "No",
+  "rob": 5,
+  "min": 2,
+  "location": "Store Room A",
+  "vesselId": "V001",
+  "ihmPresence": "Unknown",
+  "ihmEvidenceType": "None"
+}
+```
+
+#### PUT `/api/spares/:id`
+Updates existing spare part.
+
+#### DELETE `/api/spares/:id`
+Soft deletes spare part.
+
+#### POST `/api/spares/:id/consume`
+Consumes quantity from spare inventory.
+
+**Request Body:**
+```json
+{
+  "qty": 1,
+  "dateLocal": "04 Sept 2025 13:00",
+  "tz": "Asia/Singapore",
+  "place": "Engine Room",
+  "remarks": "Used for maintenance",
+  "userId": "officer1",
+  "vesselId": "V001"
+}
+```
+
+#### POST `/api/spares/:id/receive`
+Receives quantity into spare inventory.
+
+**Request Body:**
+```json
+{
+  "qty": 5,
+  "dateLocal": "04 Sept 2025 13:00", 
+  "tz": "Asia/Singapore",
+  "place": "Port Singapore",
+  "remarks": "Supply delivery",
+  "userId": "officer1",
+  "vesselId": "V001"
+}
+```
+
+#### POST `/api/spares/bulk-update`
+Bulk update multiple spares for consume/receive operations.
+
+**Request Body:**
+```json
+{
+  "updates": [
+    {
+      "componentSpareId": 1,
+      "consumed": 2,
+      "received": 5,
+      "receivedDate": "04 Sept 2025 13:00",
+      "receivedPlace": "Port Singapore"
+    }
+  ],
+  "vesselId": "V001"
+}
+```
+
+#### GET `/api/spares/history/:vesselId`
+Fetches transaction history for all spares in vessel.
+
+#### GET `/api/spares/history/spare/:spareId`
+Fetches transaction history for specific spare.
+
+### Stores Management Endpoints
+
+**Location:** `server/routes.ts` (Lines 622-695)
+
+#### GET `/api/stores/:vesselId`
+Fetches all store items for vessel.
+
+#### POST `/api/stores/:vesselId/transaction`
+Records store transaction (consume/receive).
+
+**Request Body:**
+```json
+{
+  "itemCode": "ST-001",
+  "type": "consume",
+  "quantity": 2,
+  "dateLocal": "04 Sept 2025 13:00",
+  "reference": "Work Order 123",
+  "remarks": "Used for deck maintenance"
+}
+```
+
+#### GET `/api/stores/:vesselId/history`
+Fetches store transaction history.
+
+#### PUT `/api/stores/:vesselId/item/:itemCode`
+Updates store item details.
+
+### Change Request (Modify PMS) Endpoints
+
+**Location:** `server/routes.ts` (Lines 695-989)
+
+#### GET `/api/modify-pms/requests`
+Fetches all change requests with filtering.
+
+**Query Parameters:**
+- `status`: Filter by status (draft, submitted, approved, etc.)
+- `category`: Filter by category (component, work_order, spare, store)
+- `vesselId`: Filter by vessel
+
+#### GET `/api/modify-pms/requests/:id`
+Fetches single change request by ID.
+
+#### POST `/api/modify-pms/requests`
+Creates new change request.
+
+**Request Body:**
+```json
+{
+  "vesselId": "V001",
+  "category": "spare",
+  "title": "Update Spare Part Details",
+  "description": "Request to update spare part information",
+  "justification": "Incorrect supplier information needs correction"
+}
+```
+
+#### PUT `/api/modify-pms/requests/:id`
+Updates change request details.
+
+#### PUT `/api/modify-pms/requests/:id/target`
+Sets target for change request (what item to modify).
+
+**Request Body:**
+```json
+{
+  "targetId": "1",
+  "targetSnapshot": {
+    "id": 1,
+    "partCode": "SP-ME-001", 
+    "partName": "Fuel Injector",
+    "location": "Store Room A"
+  }
+}
+```
+
+#### PUT `/api/modify-pms/requests/:id/proposed`
+Sets proposed changes for request.
+
+**Request Body:**
+```json
+{
+  "proposedChanges": {
+    "location": {
+      "old": "Store Room A",
+      "new": "Store Room B"
+    },
+    "min": {
+      "old": 1,
+      "new": 2
+    }
+  }
+}
+```
+
+#### PUT `/api/modify-pms/requests/:id/submit`
+Submits change request for review.
+
+#### PUT `/api/modify-pms/requests/:id/approve`
+Approves change request.
+
+#### PUT `/api/modify-pms/requests/:id/reject`
+Rejects change request.
+
+**Request Body:**
+```json
+{
+  "reason": "Insufficient justification provided"
+}
+```
+
+#### PUT `/api/modify-pms/requests/:id/return`
+Returns change request for modifications.
+
+**Request Body:**
+```json
+{
+  "reason": "Please provide more detailed justification"
+}
+```
+
+#### DELETE `/api/modify-pms/requests/:id`
+Deletes change request (draft only).
+
+#### POST `/api/modify-pms/requests/:id/attachments`
+Adds attachment to change request.
+
+#### POST `/api/modify-pms/requests/:id/comments`
+Adds comment to change request.
+
+**Request Body:**
+```json
+{
+  "comment": "Please review the updated specifications",
+  "userId": "admin"
+}
+```
 
 ### Data Type Conversions
 
@@ -249,22 +600,67 @@ Calculates utilization rates for components.
 
 ## Frontend Architecture
 
-### Component Structure
+### File Structure & Implementation
 
 ```
 client/src/
-├── pages/pms/
-│   ├── RunningHours.tsx      # Main running hours management
-│   ├── Components.tsx        # Component hierarchy management
-│   ├── Spares.tsx           # Spares inventory management
-│   └── ModifyPMS/           # Change request system
+├── pages/
+│   ├── TechnicalModule.tsx               # Main module entry point
+│   ├── pms/
+│   │   ├── RunningHours.tsx             # Running hours management
+│   │   ├── Components.tsx               # Component hierarchy 
+│   │   ├── WorkOrders.tsx               # Work order management
+│   │   └── ModifyPMS/                   # Change request system
+│   │       ├── ModifyPMS.tsx
+│   │       ├── ChangeRequestModal.tsx
+│   │       └── ProposeChanges.tsx
+│   └── spares/
+│       ├── SparesNew.tsx               # Primary spares module (Active)
+│       └── Spares.tsx                  # Alternative AG Grid implementation
 ├── components/
-│   ├── common/              # Shared components
-│   └── ui/                  # shadcn/ui components
-└── lib/
-    ├── queryClient.ts       # TanStack Query configuration
-    └── utils.ts             # Utility functions
+│   ├── common/
+│   │   ├── AgGridTable.tsx             # Enterprise AG Grid wrapper
+│   │   ├── AgGridCellRenderers.tsx     # Custom cell renderers
+│   │   └── ComponentTreeSelector.tsx    # Hierarchical component picker
+│   ├── modify/
+│   │   ├── ModifyFieldWrapper.tsx      # Field-level change tracking
+│   │   └── ModifyStickyFooter.tsx      # Change request controls
+│   ├── change-request-forms/           # Module-specific change forms
+│   │   ├── ComponentChangeRequestForm.tsx
+│   │   ├── SparesChangeRequestForm.tsx
+│   │   ├── StoresChangeRequestForm.tsx
+│   │   └── WorkOrdersChangeRequestForm.tsx
+│   └── ui/                             # shadcn/ui components
+├── lib/
+│   ├── queryClient.ts                  # TanStack Query configuration
+│   └── utils.ts                        # Utility functions
+└── config/
+    └── features.ts                     # Feature flags and configuration
 ```
+
+### Key Implementation Files
+
+**Server Architecture:**
+```
+server/
+├── index.ts                  # Express server setup
+├── routes.ts                 # All API endpoints (30+ routes)
+├── database.ts               # MySQL connection & DatabaseStorage class
+├── storage.ts                # IStorage interface & MemStorage fallback
+└── middleware/               # Authentication, logging, error handling
+```
+
+**Database Layer:**
+- **Location:** `server/database.ts` 
+- **Class:** `DatabaseStorage implements IStorage`
+- **Connection:** MySQL RDS with connection pooling
+- **Features:** Transaction logging, error handling, type conversion
+
+**API Layer:**
+- **Location:** `server/routes.ts`
+- **Routes:** 30+ RESTful endpoints across all modules
+- **Middleware:** Authentication, request logging, global error handling
+- **Validation:** Zod schema validation for all inputs
 
 ### State Management
 
@@ -452,6 +848,187 @@ export const globalErrorHandler = (
 - Automatic retry mechanisms for failed requests
 - Graceful degradation for offline scenarios
 
+## Implementation Guidelines for Developers
+
+### Quick Start Setup
+
+1. **Environment Setup:**
+```bash
+# Required MySQL environment variables
+MYSQL_HOST=your-rds-endpoint
+MYSQL_PORT=3306
+MYSQL_USER=your-username
+MYSQL_PASSWORD=your-password
+MYSQL_DATABASE=technical_pms
+```
+
+2. **Database Initialization:**
+```bash
+# Database schema will be auto-created on first connection
+# IHM fields added via manual migration for compatibility
+npm run dev  # Starts development server
+```
+
+3. **Key Development Commands:**
+```bash
+npm run dev              # Development server with hot reload
+npm run build           # Production build with quality checks
+node quality.js         # TypeScript + ESLint validation
+npx prettier --write .  # Code formatting
+```
+
+### Development Patterns
+
+#### Adding New API Endpoints
+**File:** `server/routes.ts`
+```typescript
+// Pattern for new endpoint
+app.get('/api/new-module/:vesselId', async (req, res) => {
+  try {
+    const result = await storage.getNewModuleData(req.params.vesselId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+```
+
+#### Adding Database Methods
+**File:** `server/database.ts` (DatabaseStorage class)
+```typescript
+async getNewModuleData(vesselId: string): Promise<any[]> {
+  logDbOperation('getNewModuleData', { vesselId });
+  try {
+    const result = await this.db
+      .select()
+      .from(newTable)
+      .where(eq(newTable.vesselId, vesselId));
+    return result;
+  } catch (error) {
+    console.error('MySQL Error:', error);
+    throw new Error('Failed to fetch new module data');
+  }
+}
+```
+
+#### Frontend Data Fetching
+**Pattern:** TanStack Query with React
+```typescript
+const { data, isLoading } = useQuery({
+  queryKey: ['/api/new-module', vesselId],
+  queryFn: async () => {
+    const response = await fetch(`/api/new-module/${vesselId}`);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return response.json();
+  },
+});
+```
+
+### Testing & Quality Assurance
+
+#### Production Build Pipeline
+```bash
+# Complete quality & build process
+node quality.js && npm run build
+
+# Output validation
+✅ TypeScript check passed
+✅ ESLint check passed  
+✅ Code formatting validated
+✅ Production build successful
+```
+
+#### Database Testing
+```bash
+# Test MySQL connection
+node -e "require('./server/database.ts')"
+
+# Verify data persistence
+curl http://localhost:5000/api/spares/V001
+```
+
+### Security Considerations
+
+#### Authentication Flow
+1. User submits credentials to `/api/auth/login`
+2. Server validates and returns JWT token
+3. Frontend stores token in memory (not localStorage)
+4. All API calls include Authorization header
+5. Server validates JWT on protected routes
+
+#### Data Validation
+- All inputs validated with Zod schemas
+- SQL injection prevented with parameterized queries
+- XSS protection via input sanitization
+- CORS configured for production domains
+
+### Performance Optimization
+
+#### Database Performance
+- Connection pooling (20 concurrent connections)
+- Indexed queries on primary lookup fields
+- Audit trail optimized for time-based queries
+- Soft deletes instead of hard deletes
+
+#### Frontend Performance  
+- Code splitting with dynamic imports
+- Memoized calculations for heavy operations
+- Debounced search inputs (300ms delay)
+- Virtual scrolling for large datasets
+- Optimistic UI updates with rollback
+
+### Deployment Architecture
+
+#### Production Environment
+```bash
+# Build for production
+node build.js
+
+# Generated output
+dist/
+├── public/           # Static frontend assets
+├── index.js         # Bundled Node.js server
+└── logs/            # Winston structured logs
+```
+
+#### Health Checks
+- Database connection monitoring
+- API endpoint health validation
+- Log rotation and cleanup
+- Memory usage tracking
+
+### Troubleshooting Guide
+
+#### Common Issues
+
+**Database Connection Failed:**
+```bash
+# Check environment variables
+echo $MYSQL_HOST $MYSQL_DATABASE
+
+# Test connection manually  
+node -e "const mysql = require('mysql2/promise'); /* connection test */"
+```
+
+**API 500 Errors:**
+```bash
+# Check server logs
+tail -f logs/maritime-pms-$(date +%Y-%m-%d).log
+
+# Verify database schema
+DESCRIBE spares; # Should include ihm_presence, ihm_evidence_type
+```
+
+**Frontend Build Issues:**
+```bash
+# Clean and rebuild
+rm -rf node_modules dist && npm install && npm run build
+
+# Check for TypeScript errors
+npx tsc --noEmit
+```
+
 ## Future Enhancements
 
 ### Planned Features
@@ -472,4 +1049,4 @@ export const globalErrorHandler = (
 
 ---
 
-*This documentation reflects the current production-ready implementation with MySQL RDS integration, enterprise-grade features, and comprehensive maritime PMS functionality.*
+*This documentation reflects the current production-ready implementation with MySQL RDS integration, enterprise-grade features, and comprehensive maritime PMS functionality. Last updated: September 2025.*
