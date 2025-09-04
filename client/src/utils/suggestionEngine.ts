@@ -274,7 +274,7 @@ export function generateSuggestions(context: WorkOrderContext): string[] {
       if (processedText.length > 20) {
         suggestions.push({
           text: processedText,
-          score: score,
+          score,
         });
       }
     }

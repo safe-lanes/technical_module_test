@@ -402,8 +402,8 @@ const getComponentMockData = (code: string) => {
 
     return {
       maker: getMaker(),
-      model: model,
-      serialNo: serialNo,
+      model,
+      serialNo,
       drawingNo: `DWG-${code.replace(/\./g, '-')}`,
       department: departmentMap[topLevel] || 'General',
       critical: isCritical ? 'Yes' : 'No',

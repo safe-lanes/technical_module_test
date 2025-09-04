@@ -344,7 +344,7 @@ const Spares: React.FC = () => {
   const isComponentMatch = (spare: Spare, selectedId: string): boolean => {
     if (spare.componentId === selectedId) return true;
     // Check if spare's componentId starts with selected (hierarchical match)
-    return spare.componentId.startsWith(selectedId + '.');
+    return spare.componentId.startsWith(`${selectedId}.`);
   };
 
   // Filter spares based on all criteria
@@ -1277,7 +1277,7 @@ const Spares: React.FC = () => {
                       Object.keys(updated).forEach(id => {
                         updated[Number(id)] = {
                           ...updated[Number(id)],
-                          comments: comments,
+                          comments,
                         };
                       });
                       return updated;

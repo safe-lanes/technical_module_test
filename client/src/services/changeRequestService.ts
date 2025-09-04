@@ -27,7 +27,7 @@ export interface ChangeLog {
 }
 
 // In-memory storage for change requests (in production this would be a proper database)
-let changeRequests: ChangeRequest[] = [
+const changeRequests: ChangeRequest[] = [
   {
     id: 1,
     category: 'components',
@@ -67,7 +67,7 @@ let changeRequests: ChangeRequest[] = [
   },
 ];
 
-let changeLogs: ChangeLog[] = [];
+const changeLogs: ChangeLog[] = [];
 let nextId = 4;
 
 export const changeRequestService = {

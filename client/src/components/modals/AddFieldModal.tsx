@@ -93,7 +93,7 @@ const AddFieldModal: React.FC<AddFieldModalProps> = ({
     }
 
     if (existingKeys.includes(fieldData.key)) {
-      alert('Field key must be unique within the form');
+      window.alert('Field key must be unique within the form');
       return;
     }
 

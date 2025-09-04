@@ -1310,7 +1310,7 @@ const Stores: React.FC = () => {
       await updateItemMutation.mutateAsync({
         itemCode: editingItem.itemCode,
         itemName: editForm.itemName,
-        uom: uom,
+        uom,
         minStock: editForm.min,
         location: editForm.location,
         notes: editForm.notes,
@@ -1322,7 +1322,7 @@ const Stores: React.FC = () => {
           const updatedItem = {
             ...item,
             itemName: editForm.itemName,
-            uom: uom,
+            uom,
             min: editForm.min,
             location: editForm.location,
             notes: editForm.notes,
@@ -1409,7 +1409,7 @@ const Stores: React.FC = () => {
         itemName: receivingItem.itemName,
         unit: receivingItem.uom,
         eventType: 'RECEIVE',
-        quantity: quantity,
+        quantity,
         robAfter: newRob,
         place: receiveForm.place,
         reference: receiveForm.supplierPO,

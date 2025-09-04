@@ -146,7 +146,7 @@ export function TargetPicker({
     const now = new Date().toISOString();
     const snapshot: any = {
       capturedAtUtc: now,
-      vesselId: vesselId,
+      vesselId,
       displayKey: getItemCode(item, cat),
       displayName: getItemName(item, cat),
       fields: {},

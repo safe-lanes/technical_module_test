@@ -39,7 +39,7 @@ export class FormCommands {
   ): Promise<void> {
     try {
       // Create form in database
-      const response = await fetch('/api/forms', {
+      const response = await window.fetch('/api/forms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

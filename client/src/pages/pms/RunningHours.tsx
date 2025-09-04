@@ -335,22 +335,19 @@ const RunningHours = () => {
     }
 
     // Format date in vessel local time
-    const dateLocal =
-      selectedDate.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }) +
-      ' ' +
-      selectedDate.toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
+    const dateLocal = `${selectedDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })} ${selectedDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })}`;
 
     // Prepare audit data
     const auditData = {
-      vesselId: vesselId,
+      vesselId,
       componentId: selectedComponent.id,
       previousRH: previousValue,
       newRH: newTotal,
@@ -364,7 +361,7 @@ const RunningHours = () => {
       userId: 'current-user', // Placeholder
       source: 'single' as const,
       notes: updateForm.comments,
-      meterReplaced: meterReplaced,
+      meterReplaced,
       oldMeterFinal: meterReplaced
         ? parseFloat(updateForm.oldMeterFinal)
         : null,
@@ -463,22 +460,19 @@ const RunningHours = () => {
       }
 
       // Format date in vessel local time
-      const dateLocal =
-        today.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        }) +
-        ' ' +
-        today.toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        });
+      const dateLocal = `${today.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })} ${today.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })}`;
 
       // Prepare audit data
       const auditData = {
-        vesselId: vesselId,
+        vesselId,
         componentId: component.id,
         previousRH: previousValue,
         newRH: newTotal,

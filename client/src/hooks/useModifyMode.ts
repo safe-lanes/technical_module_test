@@ -121,7 +121,7 @@ export function useModifyMode() {
     return {
       hasChanges: changes.length > 0,
       changedFieldsCount: changes.length,
-      changes: changes,
+      changes,
     };
   }, [state.fieldChanges]);
 
