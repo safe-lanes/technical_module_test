@@ -28,7 +28,7 @@ interface NewWorkOrderFormProps {
 const NewWorkOrderForm: React.FC<NewWorkOrderFormProps> = ({
   isOpen,
   onClose,
-  onSubmit,
+  // onSubmit,
 }) => {
   const [activeSection, setActiveSection] = useState<'partA' | 'partB'>(
     'partA'

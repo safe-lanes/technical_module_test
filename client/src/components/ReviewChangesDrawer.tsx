@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, Upload } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';

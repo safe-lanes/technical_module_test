@@ -17,17 +17,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DateTimePicker } from '@/components/ui/datetime-picker';
-import { ChevronDown, ChevronRight, FileText, ArrowLeft } from 'lucide-react';
+import { FileText, ArrowLeft } from 'lucide-react';
 import { useLocation } from 'wouter';
 import WorkInstructionsDialog from './WorkInstructionsDialog';
 import { useToast } from '@/hooks/use-toast';
 import { useModifyMode } from '@/hooks/useModifyMode';
 import { ModifyFieldWrapper } from '@/components/modify/ModifyFieldWrapper';
-import { ModifyStickyFooter } from '@/components/modify/ModifyStickyFooter';
+// import { ModifyStickyFooter } from '@/components/modify/ModifyStickyFooter';
 import {
   generateSuggestions,
   extractContextFromWorkOrder,
-  type WorkOrderContext,
+  // type WorkOrderContext,
 } from '@/utils/suggestionEngine';
 
 interface WorkOrderFormProps {
@@ -60,7 +60,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   );
   const [isWorkInstructionsOpen, setIsWorkInstructionsOpen] = useState(false);
   const [rejectionComments, setRejectionComments] = useState('');
-  const [showRejectionComments, setShowRejectionComments] = useState(false);
+  // const [showRejectionComments, setShowRejectionComments] = useState(false);
   const [location, setLocation] = useLocation();
 
   // Preview mode state
@@ -93,7 +93,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   // Modify mode integration
   const {
     isModifyMode,
-    targetId,
+    // targetId,
     fieldChanges,
     trackFieldChange,
     setOriginalSnapshot,
@@ -107,7 +107,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     const previewChanges = urlParams.get('previewChanges');
     const changeRequestId = urlParams.get('changeRequestId');
     const targetType = urlParams.get('targetType');
-    const previewTargetId = urlParams.get('targetId');
+    // const previewTargetId = urlParams.get('targetId');
 
     if (
       previewChanges === '1' &&
