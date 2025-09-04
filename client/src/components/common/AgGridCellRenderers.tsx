@@ -215,18 +215,42 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
   };
 
   return (
-    <div className='flex gap-1 justify-center'>
-      <Button size='sm' variant='outline' onClick={handleConsume}>
-        <Minus className='w-3 h-3' />
+    <div className='flex gap-2 justify-center items-center w-full px-2'>
+      <Button 
+        size='sm' 
+        variant='outline' 
+        onClick={handleConsume}
+        className='h-8 w-8 p-0 border-red-200 hover:bg-red-50'
+        title='Consume spare'
+      >
+        <Minus className='w-3 h-3 text-red-600' />
       </Button>
-      <Button size='sm' variant='outline' onClick={handleReceive}>
-        <Plus className='w-3 h-3' />
+      <Button 
+        size='sm' 
+        variant='outline' 
+        onClick={handleReceive}
+        className='h-8 w-8 p-0 border-green-200 hover:bg-green-50'
+        title='Receive spare'
+      >
+        <Plus className='w-3 h-3 text-green-600' />
       </Button>
-      <Button size='sm' variant='outline' onClick={handleEdit}>
-        <Edit className='w-3 h-3' />
+      <Button 
+        size='sm' 
+        variant='outline' 
+        onClick={handleEdit}
+        className='h-8 w-8 p-0 border-blue-200 hover:bg-blue-50'
+        title='Edit spare'
+      >
+        <Edit className='w-3 h-3 text-blue-600' />
       </Button>
-      <Button size='sm' variant='outline' onClick={handleHistory}>
-        <Eye className='w-3 h-3' />
+      <Button 
+        size='sm' 
+        variant='outline' 
+        onClick={handleHistory}
+        className='h-8 w-8 p-0 border-gray-200 hover:bg-gray-50'
+        title='View history'
+      >
+        <Eye className='w-3 h-3 text-gray-600' />
       </Button>
     </div>
   );

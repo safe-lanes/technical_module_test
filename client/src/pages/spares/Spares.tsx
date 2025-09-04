@@ -687,17 +687,19 @@ const Spares: React.FC = () => {
       {
         headerName: 'Location',
         field: 'location',
-        width: 150,
+        width: 120,
+        resizable: true,
       },
       {
         headerName: 'Actions',
         field: 'actions',
-        width: 200,
+        width: 220,
         cellRenderer: SparesActionsCellRenderer,
         sortable: false,
         filter: false,
         pinned: 'right',
         resizable: false,
+        suppressSizeToFit: true,
       },
     ],
     []
@@ -759,7 +761,7 @@ const Spares: React.FC = () => {
       onEdit: handleEdit,
       onHistory: handleHistory,
     }),
-    []
+    [handleConsume, handleReceive, handleEdit, handleHistory]
   );
 
   const onGridReady = (params: GridReadyEvent) => {
