@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-enterprise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -646,8 +646,7 @@ const Spares: React.FC = () => {
   }, [filteredSpares]);
 
   // AG Grid column definitions
-  const columnDefs = useMemo(
-    (): ColDef[] => [
+  const columnDefs: ColDef[] = [
       {
         headerName: 'Part Code',
         field: 'partCode',
@@ -734,9 +733,7 @@ const Spares: React.FC = () => {
         suppressAutoSize: true,
         flex: 0,
       },
-    ],
-    []
-  );
+    ];
 
   // Handle modal actions
   const handleConsume = (spare: Spare) => {
