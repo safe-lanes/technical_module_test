@@ -567,6 +567,7 @@ const RunningHours = () => {
         field: 'utilizationRate',
         width: 150,
         cellRenderer: UtilizationRateCellRenderer,
+        // @ts-ignore
         tooltip: 'Computed from last 30 days of RH entries',
       },
       {

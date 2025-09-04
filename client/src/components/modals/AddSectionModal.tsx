@@ -49,7 +49,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
     const sectionData = {
       id: `section-${nextSectionLetter}`,
       title: `${nextSectionLetter}. ${sectionTitle}`,
-      fields: [],
+      fields: [] as any[],
     };
 
     // Add first field if specified

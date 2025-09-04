@@ -288,6 +288,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
           defaultColDef={defaultColDef}
           // @ts-ignore
           sideBar={sideBar}
+          // @ts-ignore
           statusBar={statusBar}
           gridOptions={defaultGridOptions}
           suppressScrollOnNewData={true}

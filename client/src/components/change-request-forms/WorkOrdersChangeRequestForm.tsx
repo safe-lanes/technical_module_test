@@ -86,7 +86,6 @@ const WorkOrdersChangeRequestForm: React.FC<
       : 'border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]';
   };
 
-
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
       <div className='bg-white rounded-lg w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden'>

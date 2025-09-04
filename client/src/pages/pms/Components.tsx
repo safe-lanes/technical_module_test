@@ -2835,6 +2835,7 @@ const Components: React.FC = () => {
                   proposedChangesJson: [
                     {
                       field: 'New Component',
+                      // @ts-ignore
                       oldValue: null,
                       newValue: componentData.componentName,
                       description: `Create new component ${componentData.componentCode} - ${componentData.componentName}`,
