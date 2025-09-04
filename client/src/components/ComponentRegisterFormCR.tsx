@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,14 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+// import { Checkbox } from '@/components/ui/checkbox'; // Unused import
 import {
-  ArrowLeft,
+  // ArrowLeft, // Unused
   Plus,
-  Upload,
-  Eye,
+  // Upload, // Unused
+  // Eye, // Unused
   Trash2,
-  Edit3,
+  // Edit3, // Unused
   X,
   ChevronRight,
   ChevronDown,
@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getComponentCategory } from '@/utils/componentUtils';
-import { useChangeMode } from '@/contexts/ChangeModeContext';
+// import { useChangeMode } from '@/contexts/ChangeModeContext'; // Unused
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useLocation } from 'wouter';
@@ -184,7 +184,7 @@ const generateMockComponentData = (component: ComponentNode): ComponentData => {
   const isEngine = component.code.startsWith('6');
   const isDeck = component.code.startsWith('4');
   const isHull = component.code.startsWith('2');
-  const isAccommodation = component.code.startsWith('3');
+  // const isAccommodation = component.code.startsWith('3'); // Unused
 
   const baseData: ComponentData = {
     code: component.code,
@@ -455,7 +455,7 @@ export default function ComponentRegisterFormCR({
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const { isChangeMode } = useChangeMode();
+  // const { isChangeMode } = useChangeMode(); // Unused
 
   // State for component data
   const [componentData, setComponentData] = useState<ComponentData | null>(
@@ -470,9 +470,9 @@ export default function ComponentRegisterFormCR({
   >({});
 
   // State for Work Orders
-  const [editingWorkOrders, setEditingWorkOrders] = useState<Set<string>>(
-    new Set()
-  );
+  // const [editingWorkOrders, setEditingWorkOrders] = useState<Set<string>>(
+  //   new Set()
+  // ); // Unused
   const [workOrderErrors, setWorkOrderErrors] = useState<
     Record<string, string>
   >({});
@@ -572,7 +572,7 @@ export default function ComponentRegisterFormCR({
   // Work Order functions
   const handleEditWorkOrder = (woId: string) => {
     console.log('Edit Work Order clicked:', woId);
-    setEditingWorkOrders(prev => new Set(prev).add(woId));
+    // // setEditingWorkOrders // Unused(prev => new Set(prev).add(woId)); // Unused
     setComponentData(prev => ({
       ...prev!,
       workOrders: prev!.workOrders.map(wo =>
@@ -598,11 +598,11 @@ export default function ComponentRegisterFormCR({
       return;
     }
 
-    setEditingWorkOrders(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(woId);
-      return newSet;
-    });
+    // setEditingWorkOrders(prev => {
+    //   const newSet = new Set(prev);
+    //   newSet.delete(woId);
+    //   return newSet;
+    // }); // Unused
 
     setComponentData(prev => ({
       ...prev!,
@@ -616,11 +616,11 @@ export default function ComponentRegisterFormCR({
   };
 
   const handleCancelWorkOrderEdit = (woId: string) => {
-    setEditingWorkOrders(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(woId);
-      return newSet;
-    });
+    // setEditingWorkOrders(prev => {
+    //   const newSet = new Set(prev);
+    //   newSet.delete(woId);
+    //   return newSet;
+    // }); // Unused
 
     setComponentData(prev => ({
       ...prev!,
@@ -665,7 +665,7 @@ export default function ComponentRegisterFormCR({
       workOrders: [...prev!.workOrders, newWO],
     }));
 
-    setEditingWorkOrders(prev => new Set(prev).add(newWO.id!));
+    // setEditingWorkOrders(prev => new Set(prev).add(newWO.id!)); // Unused
     updateSectionChangeCount();
   };
 
@@ -1959,7 +1959,7 @@ export default function ComponentRegisterFormCR({
                                 )
                               }
                               className={`h-8 w-20 ${spare.isEditing ? 'cr-changed' : ''}`}
-                              disabled={spare.pendingUnlink}
+                              disabled={spare.pendingUnlink || false}
                             />
                           </td>
                           <td className='px-4 py-2'>
@@ -1968,7 +1968,7 @@ export default function ComponentRegisterFormCR({
                               onValueChange={value =>
                                 handleEditSpare(spare.id!, 'critical', value)
                               }
-                              disabled={spare.pendingUnlink}
+                              disabled={spare.pendingUnlink || false}
                             >
                               <SelectTrigger
                                 className={`h-8 w-24 ${spare.isEditing ? 'cr-changed' : ''}`}
@@ -1992,7 +1992,7 @@ export default function ComponentRegisterFormCR({
                                 )
                               }
                               className={`h-8 ${spare.isEditing ? 'cr-changed' : ''}`}
-                              disabled={spare.pendingUnlink}
+                              disabled={spare.pendingUnlink || false}
                             />
                           </td>
                           <td className='px-4 py-2'>

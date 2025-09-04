@@ -323,7 +323,7 @@ const dummyComponents: ComponentNode[] = [
 // Function to get mock data for a component based on its code
 const getComponentMockData = (code: string) => {
   // Generate realistic mock data based on component code and type
-  const getComponentDetails = (code: string, name?: string) => {
+  const getComponentDetails = (code: string) => {
     // Parse component hierarchy from code
     const levels = code.split('.');
     const topLevel = levels[0];
@@ -479,7 +479,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  parentComponent,
+  // parentComponent, // Unused prop
 }) => {
   const { toast } = useToast();
   const [selectedNode, setSelectedNode] = useState<ComponentNode | null>(null);
@@ -500,15 +500,11 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
   // New fields and sections tracking
   const [customFields, setCustomFields] = useState<Record<string, any[]>>({});
   const [customSections, setCustomSections] = useState<any[]>([]);
-  const [formVersion, setFormVersion] = useState(1);
+  // const [formVersion, setFormVersion] = useState(1); // Unused
 
   // Track newly added fields for session
-  const [sessionAddedFields, setSessionAddedFields] = useState<Set<string>>(
-    new Set()
-  );
-  const [sessionModifiedFields, setSessionModifiedFields] = useState<
-    Set<string>
-  >(new Set());
+  // const [sessionAddedFields] = useState<Set<string>>(new Set()); // Unused
+  const [sessionModifiedFields] = useState<Set<string>>(new Set());
 
   // Auto-generate component code based on parent
   const generateComponentCode = (parent: ComponentNode | null) => {
@@ -690,13 +686,60 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
       componentCode: newCode,
       equipmentCategory: '',
       location: '',
-      critical: 'No',
-      conditionBased: 'No',
-      department: '',
       installation: '',
+      componentType: '',
+      rating: '',
       noOfUnits: '',
       equipmentDepartment: '',
       parentComponent: selectedNode.name,
+      facility: '',
+      runningHoursUnit1: '',
+      runningHoursUnit2: '',
+      maker: '',
+      model: '',
+      department: '',
+      critical: 'No',
+      classItem: 'No',
+      conditionBased: 'No',
+      dimensionsSize: '',
+      notes: '',
+      commissionedDate: '',
+      installationDate: '',
+      eqptSystemDept: '',
+      runningHours: '20000',
+      dateUpdated: '',
+      metric: '',
+      alertsThresholds: '',
+      woTitle: '',
+      assignedTo: '',
+      maintenanceType: '',
+      frequency: '',
+      initialNextDue: '',
+      workOrderNo: 'WO-2025-01',
+      performedBy: 'Kane',
+      totalTimeHrs: '3',
+      completionDate: '08-Jan-2025',
+      status: 'Completed',
+      partCode: 'SP-306-001',
+      partName: 'Fuel Injection',
+      minQty: '5',
+      criticalQty: '5',
+      locationStore: 'Engine Room R-3',
+      reqNo: 'REQ-2025-089',
+      reqPart: 'Fuel Injection Pump',
+      reqQty: '2',
+      reqDate: '15-Jan-2025',
+      reqStatus: 'Pending',
+      conditionMonitoringMetrics: {
+        metric: '',
+        interval: '',
+        temperature: '',
+        pressure: '',
+      },
+      workOrders: [],
+      maintenanceHistory: [],
+      spares: [],
+      drawings: [],
       classificationData: {
         classificationProvider: '',
         certificateNo: '',
@@ -906,7 +949,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
 
   // Render custom field based on type
   const renderCustomField = (field: any) => {
-    const isNewField = sessionAddedFields.has(field.key);
+    // const isNewField = sessionAddedFields.has(field.key); // Unused variable
     const isModified = sessionModifiedFields.has(field.key);
     const borderColor = isModified ? '#FF3B30' : '#52baf3';
 
@@ -2183,12 +2226,12 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
           }));
 
           // Mark field as newly added
-          setSessionAddedFields(
-            prev => new Set([...Array.from(prev), fieldData.key])
-          );
+          // setSessionAddedFields(
+          //   prev => new Set([...Array.from(prev), fieldData.key])
+          // ); // Unused
 
           // Increment form version
-          setFormVersion(prev => prev + 1);
+          // setFormVersion(prev => prev + 1); // Unused
 
           toast({
             title: 'Field Added',
@@ -2212,7 +2255,7 @@ const ComponentRegisterForm: React.FC<ComponentRegisterFormProps> = ({
           setCustomSections(prev => [...prev, sectionData]);
 
           // Increment form version
-          setFormVersion(prev => prev + 1);
+          // setFormVersion(prev => prev + 1); // Unused
 
           toast({
             title: 'Section Added',
