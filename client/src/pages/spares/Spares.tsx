@@ -975,6 +975,7 @@ const Spares: React.FC = () => {
           <div className='w-[70%]'>
             <div className='bg-white rounded-lg'>
               <AgGridTable
+                key={`spares-grid-ihm-${columnDefs.length}`}
                 rowData={sparesWithStock}
                 columnDefs={columnDefs}
                 onGridReady={onGridReady}
