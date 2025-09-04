@@ -687,19 +687,22 @@ const Spares: React.FC = () => {
       {
         headerName: 'Location',
         field: 'location',
-        width: 120,
+        width: 100,
         resizable: true,
+        suppressSizeToFit: false,
       },
       {
         headerName: 'Actions',
         field: 'actions',
-        width: 220,
+        width: 240,
         cellRenderer: SparesActionsCellRenderer,
         sortable: false,
         filter: false,
         pinned: 'right',
         resizable: false,
         suppressSizeToFit: true,
+        minWidth: 240,
+        maxWidth: 240,
       },
     ],
     []
@@ -950,6 +953,15 @@ const Spares: React.FC = () => {
                 animateRows={true}
                 suppressRowClickSelection={true}
                 className='rounded-lg shadow-sm'
+                gridOptions={{
+                  suppressColumnVirtualisation: true,
+                  suppressAutoSize: true,
+                  skipHeaderOnAutoSize: true,
+                  autoSizeStrategy: {
+                    type: 'fitCellContents',
+                    skipHeader: true
+                  }
+                }}
               />
             </div>
           </div>

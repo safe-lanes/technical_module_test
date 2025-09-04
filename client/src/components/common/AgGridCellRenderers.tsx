@@ -188,7 +188,18 @@ export const RunningHoursActionsCellRenderer = (
 export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
   const { data, context } = params;
 
-  if (!data || !context) return null;
+  // Debug logging
+  console.log('🔍 SparesActionsCellRenderer:', {
+    hasData: !!data,
+    hasContext: !!context,
+    contextKeys: context ? Object.keys(context) : [],
+    data: data ? { id: data.id, partName: data.partName } : null
+  });
+
+  if (!data || !context) {
+    console.log('❌ Missing data or context in SparesActionsCellRenderer');
+    return null;
+  }
 
   const handleConsume = () => {
     if (context.onConsume) {
@@ -203,8 +214,11 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
   };
 
   const handleEdit = () => {
+    console.log('🎯 Edit button clicked!', { data: data.partName, hasOnEdit: !!context.onEdit });
     if (context.onEdit) {
       context.onEdit(data);
+    } else {
+      console.log('❌ context.onEdit is not available');
     }
   };
 
