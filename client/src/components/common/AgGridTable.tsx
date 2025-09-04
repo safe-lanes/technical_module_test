@@ -5,8 +5,8 @@ import {
   GridReadyEvent,
   GridOptions,
   ModuleRegistry,
-  GridApi,
-  ColumnApi
+  // GridApi,
+  // ColumnApi
 } from 'ag-grid-enterprise';
 import { AllCommunityModule } from 'ag-grid-community';
 import {
@@ -106,7 +106,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
   onSelectionChanged,
   getRowId,
   suppressHorizontalScroll = false,
-  suppressVerticalScroll = false
+  // suppressVerticalScroll = false
 }) => {
   // Default column definition
   const defaultColDef = useMemo(() => ({
@@ -117,7 +117,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
     minWidth: 100,
     floatingFilter: false, // Disabled for cleaner appearance
     suppressMenu: false,
-    menuTabs: ['filterMenuTab', 'generalMenuTab', 'columnsMenuTab']
+    menuTabs: ['filterMenuTab' as any, 'generalMenuTab' as any, 'columnsMenuTab' as any]
   }), []);
 
   // Side bar configuration
@@ -190,7 +190,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
     
     // Row grouping
     enableRowGroup: enableRowGrouping,
-    groupDefaultExpanded: enableRowGrouping ? 1 : undefined,
+    groupDefaultExpanded: enableRowGrouping ? 1 : -1,
     
     // Pivoting
     enablePivot: enablePivoting,

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Save,
@@ -28,8 +28,8 @@ import {
   Settings,
   Plus,
   Trash2,
-  Copy,
-  Move,
+  // Copy,
+  // Move,
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -85,7 +85,7 @@ export default function FormSchemaEditor({
 }: FormSchemaEditorProps) {
   const [activeTab, setActiveTab] = useState('visual');
   const [schema, setSchema] = useState<FormSchema>({ title: '', sections: [] });
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  // const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [changelog, setChangelog] = useState('');
 
@@ -105,13 +105,11 @@ export default function FormSchemaEditor({
   // Update schema mutation
   const updateSchemaMutation = useMutation({
     mutationFn: (schemaJson: any) =>
-      apiRequest(
-        `/api/admin/forms/${version.formId}/versions/${version.id}/schema`,
-        {
-          method: 'PUT',
-          body: JSON.stringify({ schemaJson }),
-        }
-      ),
+      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/schema`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schemaJson }),
+      }).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',
@@ -131,13 +129,11 @@ export default function FormSchemaEditor({
   // Publish version mutation
   const publishMutation = useMutation({
     mutationFn: (changelog: string) =>
-      apiRequest(
-        `/api/admin/forms/${version.formId}/versions/${version.id}/publish`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ userId: 'admin', changelog }),
-        }
-      ),
+      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: 'admin', changelog }),
+      }).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',
@@ -159,12 +155,10 @@ export default function FormSchemaEditor({
   // Discard draft mutation
   const discardMutation = useMutation({
     mutationFn: () =>
-      apiRequest(
-        `/api/admin/forms/${version.formId}/versions/${version.id}/discard`,
-        {
-          method: 'POST',
-        }
-      ),
+      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/discard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',

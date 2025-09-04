@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function Forms() {
   const [activeTab, setActiveTab] = useState('add-component');

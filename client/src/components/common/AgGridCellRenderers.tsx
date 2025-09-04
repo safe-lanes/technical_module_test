@@ -2,7 +2,7 @@ import React from 'react';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pen, Timer, Eye, Edit, Trash2, Plus, Minus } from 'lucide-react';
+import { Pen, Timer, Eye, Edit, Plus, Minus } from 'lucide-react';
 
 // Status badge renderer
 export const StatusCellRenderer = (params: ICellRendererParams) => {
@@ -79,7 +79,7 @@ export const StockStatusCellRenderer = (params: ICellRendererParams) => {
   // Use provided stock status if available, otherwise calculated
   const status = data.stock || stockStatus;
   
-  return <StatusCellRenderer value={status} />;
+  return <StatusCellRenderer value={status} data={data} node={params.node} colDef={params.colDef} column={params.column} rowIndex={params.rowIndex} api={params.api} columnApi={params.columnApi} context={params.context} />;
 };
 
 // Work Orders actions cell renderer
