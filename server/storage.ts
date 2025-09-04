@@ -1518,6 +1518,8 @@ export class MemStorage implements IStorage {
         location: 'Store Room A',
         vesselId: 'V001',
         deleted: false,
+        ihmPresence: 'Yes',
+        ihmEvidenceType: 'Certificate',
       },
       {
         id: 2,
@@ -1533,6 +1535,8 @@ export class MemStorage implements IStorage {
         location: 'Store Room B',
         vesselId: 'V001',
         deleted: false,
+        ihmPresence: 'No',
+        ihmEvidenceType: 'None',
       },
       {
         id: 3,
@@ -1548,6 +1552,8 @@ export class MemStorage implements IStorage {
         location: 'Store Room B',
         vesselId: 'V001',
         deleted: false,
+        ihmPresence: 'Unknown',
+        ihmEvidenceType: 'Visual Inspection',
       },
       {
         id: 4,
@@ -1563,6 +1569,8 @@ export class MemStorage implements IStorage {
         location: 'Store Room C',
         vesselId: 'V001',
         deleted: false,
+        ihmPresence: 'Partial',
+        ihmEvidenceType: 'Test Report',
       },
       {
         id: 5,
