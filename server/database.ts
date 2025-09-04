@@ -695,5 +695,18 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Temporarily use MemStorage due to database connection issues
-export const storage = new DatabaseStorage();
+// Use MemStorage instead of DatabaseStorage for now
+// Avoid circular import by creating MemStorage directly here
+let _memStorage: any = null;
+function getMemStorage() {
+  if (!_memStorage) {
+    const { MemStorage } = require('./storage');
+    _memStorage = new MemStorage();
+  }
+  return _memStorage;
+}
+export const storage = new Proxy({}, {
+  get(target, prop) {
+    return getMemStorage()[prop];
+  }
+}) as IStorage;
