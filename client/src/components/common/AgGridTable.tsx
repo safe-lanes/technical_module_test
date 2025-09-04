@@ -114,10 +114,11 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
       sortable: true,
       filter: true,
       resizable: true,
-      flex: 1,
-      minWidth: 100,
+      flex: 0, // Disable flex to respect fixed widths
+      minWidth: 50,
       floatingFilter: false, // Disabled for cleaner appearance
       suppressMenu: false,
+      suppressSizeToFit: false,
       menuTabs: [
         'filterMenuTab' as any,
         'generalMenuTab' as any,

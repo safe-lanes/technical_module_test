@@ -649,12 +649,14 @@ const Spares: React.FC = () => {
       {
         headerName: 'Part Name',
         field: 'partName',
-        width: 200,
+        width: 180,
+        maxWidth: 180,
       },
       {
         headerName: 'Component',
         field: 'component',
-        width: 250,
+        width: 200,
+        maxWidth: 200,
       },
       {
         headerName: 'Critical',
@@ -687,22 +689,24 @@ const Spares: React.FC = () => {
       {
         headerName: 'Location',
         field: 'location',
-        width: 100,
-        resizable: true,
-        suppressSizeToFit: false,
+        width: 80,
+        maxWidth: 80,
+        resizable: false,
+        suppressSizeToFit: true,
       },
       {
         headerName: 'Actions',
         field: 'actions',
-        width: 240,
+        width: 250,
         cellRenderer: SparesActionsCellRenderer,
         sortable: false,
         filter: false,
         pinned: 'right',
         resizable: false,
         suppressSizeToFit: true,
-        minWidth: 240,
-        maxWidth: 240,
+        minWidth: 250,
+        maxWidth: 250,
+        flex: 0,
       },
     ],
     []
@@ -737,6 +741,7 @@ const Spares: React.FC = () => {
   };
 
   const handleEdit = (spare: Spare) => {
+    console.log('🎯 handleEdit called in main component!', spare.partName);
     setSelectedSpare(spare);
     setIsEditModalOpen(true);
   };
@@ -758,13 +763,16 @@ const Spares: React.FC = () => {
 
   // AG Grid context for action handlers
   const gridContext = useMemo(
-    () => ({
-      onConsume: handleConsume,
-      onReceive: handleReceive,
-      onEdit: handleEdit,
-      onHistory: handleHistory,
-    }),
-    [handleConsume, handleReceive, handleEdit, handleHistory]
+    () => {
+      console.log('🔄 Creating grid context');
+      return {
+        onConsume: handleConsume,
+        onReceive: handleReceive,
+        onEdit: handleEdit,
+        onHistory: handleHistory,
+      };
+    },
+    [] // Remove dependencies to prevent recreation issues
   );
 
   const onGridReady = (params: GridReadyEvent) => {
