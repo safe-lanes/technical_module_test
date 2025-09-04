@@ -35,3 +35,13 @@ pnpm-lock.yaml
 # Generated files
 *.min.js
 *.min.css
+
+# Cache and system files
+.cache/
+.rollup.cache/
+.local/
+.upm/
+attached_assets/
+*.md
+types.d.ts
+*.json

@@ -1,6 +1,4 @@
 // @ts-nocheck
-// @ts-nocheck
-/* eslint-disable */
 import mysql from 'mysql2/promise';
 import { drizzle } from 'drizzle-orm/mysql2';
 import {
