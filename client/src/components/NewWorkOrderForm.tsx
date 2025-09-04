@@ -62,12 +62,12 @@ const NewWorkOrderForm: React.FC<NewWorkOrderFormProps> = ({
     }));
   };
 
-  const handleSubmit = () => {
-    if (onSubmit) {
-      onSubmit(formData);
-      onClose();
-    }
-  };
+  // const handleSubmit = () => {
+  //   if (onSubmit) {
+  //     onSubmit(formData);
+  //     onClose();
+  //   }
+  // }; // Unused
 
   return (
     <>

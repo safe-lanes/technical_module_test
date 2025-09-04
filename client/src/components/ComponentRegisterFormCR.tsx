@@ -502,7 +502,7 @@ export default function ComponentRegisterFormCR({
 
   // Track field changes
   const trackFieldChange = useCallback(
-    (path: string, newValue: any, section: string) => {
+    (path: string, newValue: any, _section: string) => {
       if (!originalData || !componentData) return;
 
       const originalValue = path
@@ -529,7 +529,7 @@ export default function ComponentRegisterFormCR({
   const updateSectionChangeCount = useCallback(() => {
     const counts: Record<string, number> = {};
 
-    changeTracking.forEach((change, path) => {
+    changeTracking.forEach((_change, path) => {
       const section = path.charAt(0); // Get first character as section
       counts[section] = (counts[section] || 0) + 1;
     });
@@ -626,7 +626,7 @@ export default function ComponentRegisterFormCR({
       ...prev!,
       workOrders: prev!.workOrders.map(wo => {
         if (wo.id === woId && wo.originalData) {
-          const { originalData, isEditing, ...rest } = wo;
+          const { originalData } = wo;
           return { ...originalData, id: wo.id };
         }
         return wo;
@@ -996,7 +996,7 @@ export default function ComponentRegisterFormCR({
       onClose();
       setLocation('/pms/modify-pms');
     },
-    onError: error => {
+    onError: (_error) => {
       toast({
         title: 'Error',
         description: 'Failed to submit change request',

@@ -1,16 +1,16 @@
 import React from 'react';
-import { FormEditor } from '@/pages/FormEditor';
-import { Form } from '@shared/schema';
+// import { FormEditor } from '@/pages/FormEditor'; // Not implemented yet
+import { FormVersion } from '@shared/schema';
 
 // Dynamic form editor mapping
 const formEditors: Record<string, React.ComponentType<any>> = {
-  'Crew Appraisal Form': FormEditor,
+  // 'Crew Appraisal Form': FormEditor, // Not implemented yet
   // Add more form editors as they are created
 };
 
 interface FormEditorFactoryProps {
   formName: string;
-  form: Form;
+  form: FormVersion;
   rankGroupName?: string;
   onClose: () => void;
   onSave: (data: any) => void;

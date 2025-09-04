@@ -246,8 +246,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     briefWorkDescription: '',
     nextDueDate: '',
     nextDueReading: '',
-    requiredSpareParts: [],
-    requiredTools: [],
+    requiredSpareParts: [] as any[],
+    requiredTools: [] as any[],
     safetyRequirements: {
       ppe: '',
       permits: '',
@@ -273,7 +273,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     jobExperienceNotes: '',
     previousReading: '',
     currentReading: '',
-    sparePartsConsumed: [],
+    sparePartsConsumed: [] as any[],
   });
 
   // Ranks for dropdowns
@@ -457,7 +457,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     
     setTemplateData(prev => ({
       ...prev,
-      requiredSpareParts: [...prev.requiredSpareParts, newSparePart],
+      requiredSpareParts: [...(prev.requiredSpareParts as any[]), newSparePart],
     }));
   };
 
