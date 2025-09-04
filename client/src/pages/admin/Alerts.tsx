@@ -101,7 +101,7 @@ export default function Alerts() {
   const { data: policies, isLoading: policiesLoading } = useQuery({
     queryKey: ['/api/alerts/policies'],
     queryFn: async () => {
-      const response = await fetch('/api/alerts/policies');
+      const response = await window.fetch('/api/alerts/policies');
       if (!response.ok) throw new Error('Failed to fetch policies');
       const data = await response.json();
       setLocalPolicies(data);
@@ -113,7 +113,7 @@ export default function Alerts() {
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ['/api/alerts/config/V001'],
     queryFn: async () => {
-      const response = await fetch('/api/alerts/config/V001');
+      const response = await window.fetch('/api/alerts/config/V001');
       if (!response.ok) throw new Error('Failed to fetch config');
       const data = await response.json();
       setLocalConfig(data);
@@ -124,7 +124,7 @@ export default function Alerts() {
   // Batch update policies mutation
   const updatePoliciesMutation = useMutation({
     mutationFn: async (policies: AlertPolicy[]) => {
-      const response = await fetch('/api/alerts/policies/batch-update', {
+      const response = await window.fetch('/api/alerts/policies/batch-update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ policies }),
@@ -151,7 +151,7 @@ export default function Alerts() {
   // Update config mutation
   const updateConfigMutation = useMutation({
     mutationFn: async (config: AlertConfig) => {
-      const response = await fetch('/api/alerts/config', {
+      const response = await window.fetch('/api/alerts/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),

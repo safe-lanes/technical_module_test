@@ -302,10 +302,7 @@ export class DatabaseStorage implements IStorage {
     return ledger;
   }
 
-  // Change Requests
-  async getChangeRequests(): Promise<ChangeRequest[]> {
-    return await this.db.select().from(changeRequest);
-  }
+  // Change Requests - using filtered version below
 
   async getChangeRequest(id: number): Promise<ChangeRequest | undefined> {
     const [cr] = await this.db

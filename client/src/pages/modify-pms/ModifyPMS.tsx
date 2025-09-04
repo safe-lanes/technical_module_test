@@ -51,7 +51,7 @@ const ModifyPMS: React.FC = () => {
 
   const handleNewChangeRequest = () => {
     if (!selectedCategory) {
-      alert('Please select a category first');
+      window.alert('Please select a category first');
       return;
     }
 
@@ -84,7 +84,7 @@ const ModifyPMS: React.FC = () => {
 
   const handleReject = () => {
     if (!selectedRequest || !approvalComment.trim()) {
-      alert('Please provide a reason for rejection');
+      window.alert('Please provide a reason for rejection');
       return;
     }
 
