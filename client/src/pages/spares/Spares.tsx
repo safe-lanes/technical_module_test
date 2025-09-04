@@ -690,23 +690,23 @@ const Spares: React.FC = () => {
       {
         headerName: 'Location',
         field: 'location',
-        width: 80,
-        maxWidth: 80,
+        width: 140,
+        maxWidth: 140,
         resizable: false,
         suppressSizeToFit: true,
       },
       {
         headerName: 'Actions',
         field: 'actions',
-        width: 250,
+        width: 160,
         cellRenderer: SparesActionsCellRenderer,
         sortable: false,
         filter: false,
         pinned: 'right',
         resizable: false,
         suppressSizeToFit: true,
-        minWidth: 250,
-        maxWidth: 250,
+        minWidth: 160,
+        maxWidth: 160,
         flex: 0,
       },
     ],
@@ -742,7 +742,6 @@ const Spares: React.FC = () => {
   };
 
   const handleEdit = (spare: Spare) => {
-    console.log('🎯 handleEdit called in main component!', spare.partName);
     setSelectedSpare(spare);
     setIsEditModalOpen(true);
   };
@@ -764,18 +763,13 @@ const Spares: React.FC = () => {
 
   // AG Grid context for action handlers
   const gridContext = useMemo(
-    () => {
-      const context = {
-        onConsume: handleConsume,
-        onReceive: handleReceive,
-        onEdit: handleEdit,
-        onHistory: handleHistory,
-      };
-      console.log('🔄 Grid context created:', context);
-      console.log('🔄 handleEdit function:', typeof handleEdit, handleEdit.toString().substring(0, 100));
-      return context;
-    },
-    [handleConsume, handleReceive, handleEdit, handleHistory] // Add back dependencies
+    () => ({
+      onConsume: handleConsume,
+      onReceive: handleReceive,
+      onEdit: handleEdit,
+      onHistory: handleHistory,
+    }),
+    [handleConsume, handleReceive, handleEdit, handleHistory]
   );
 
   const onGridReady = (params: GridReadyEvent) => {
