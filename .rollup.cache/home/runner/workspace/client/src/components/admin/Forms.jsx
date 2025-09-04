@@ -5,22 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus } from 'lucide-react';
 export default function Forms() {
-  var _a = useState('add-component'),
-    activeTab = _a[0],
-    setActiveTab = _a[1];
-  return (
-    <div className='space-y-6'>
+    var _a = useState('add-component'), activeTab = _a[0], setActiveTab = _a[1];
+    return (<div className='space-y-6'>
       <Card>
         <CardHeader>
           <CardTitle>Forms</CardTitle>
@@ -49,13 +40,11 @@ export default function Forms() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }
 // Add Component Form - Exact replica from screenshot
 function AddComponentFormContent() {
-  return (
-    <div className='bg-white p-6 rounded-lg border'>
+    return (<div className='bg-white p-6 rounded-lg border'>
       <div className='flex justify-between items-center mb-6'>
         <h3 className='text-lg font-semibold'>
           Component Register - Add Component
@@ -91,10 +80,10 @@ function AddComponentFormContent() {
         <Label className='text-[#52baf3] font-medium mb-2 block'>
           Component Name
         </Label>
-        <Input placeholder='Component Information' className='mb-4' />
+        <Input placeholder='Component Information' className='mb-4'/>
 
         <Button variant='outline' size='sm' className='text-[#52baf3]'>
-          <Plus className='h-4 w-4 mr-1' /> Add Field
+          <Plus className='h-4 w-4 mr-1'/> Add Field
         </Button>
       </div>
 
@@ -114,7 +103,7 @@ function AddComponentFormContent() {
         </div>
         <div>
           <Label>Component Code</Label>
-          <Input placeholder='Maker / System Category' />
+          <Input placeholder='Maker / System Category'/>
         </div>
         <div>
           <Label>Location</Label>
@@ -126,7 +115,7 @@ function AddComponentFormContent() {
         </div>
         <div>
           <Label>Installation Date</Label>
-          <Input type='date' placeholder='Commissioned Date' />
+          <Input type='date' placeholder='Commissioned Date'/>
         </div>
         <div>
           <Label>Model</Label>
@@ -138,7 +127,7 @@ function AddComponentFormContent() {
         </div>
         <div>
           <Label>EQ Group</Label>
-          <Input placeholder='Eq/Sys / System Requirement' />
+          <Input placeholder='Eq/Sys / System Requirement'/>
         </div>
         <div>
           <Label>Parent Component</Label>
@@ -154,26 +143,26 @@ function AddComponentFormContent() {
       <div className='grid grid-cols-4 gap-4 mb-6'>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Date Field' />
+          <Input placeholder='Date Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Text Field' />
+          <Input placeholder='Text Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Select Field' />
+          <Input placeholder='Select Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Item Field' />
+          <Input placeholder='Item Field'/>
         </div>
       </div>
 
       {/* Notes */}
       <div className='mb-6'>
         <Label>Notes</Label>
-        <Textarea className='h-20' />
+        <Textarea className='h-20'/>
       </div>
 
       {/* B. Running Hours & Condition Monitoring Metrics */}
@@ -188,7 +177,7 @@ function AddComponentFormContent() {
           </div>
           <div>
             <Label>Date Updated</Label>
-            <Input type='date' defaultValue='2025-08-04' />
+            <Input type='date' defaultValue='2025-08-04'/>
           </div>
           <div>
             <Label>Meters</Label>
@@ -297,7 +286,7 @@ function AddComponentFormContent() {
           G. Classification & Regulatory Data
         </h4>
         <Button variant='outline' size='sm' className='text-[#52baf3]'>
-          <Plus className='h-4 w-4 mr-1' /> Add Field
+          <Plus className='h-4 w-4 mr-1'/> Add Field
         </Button>
 
         <div className='grid grid-cols-3 gap-4 mt-4'>
@@ -340,19 +329,19 @@ function AddComponentFormContent() {
       <div className='grid grid-cols-4 gap-4 mb-6'>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Item Field' />
+          <Input placeholder='Item Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Text Field' />
+          <Input placeholder='Text Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Date Field' />
+          <Input placeholder='Date Field'/>
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-[#52baf3]'>✓</span>
-          <Input placeholder='Item Field' />
+          <Input placeholder='Item Field'/>
         </div>
       </div>
 
@@ -360,25 +349,25 @@ function AddComponentFormContent() {
       <div className='border-t pt-4 mb-6'>
         <h4 className='font-medium mb-4'>H. Misc Records/Notes</h4>
         <Button variant='outline' size='sm' className='text-[#52baf3] mb-4'>
-          <Plus className='h-4 w-4 mr-1' /> Add Field
+          <Plus className='h-4 w-4 mr-1'/> Add Field
         </Button>
 
         <div className='grid grid-cols-4 gap-4'>
           <div className='flex items-center gap-2'>
             <span className='text-[#52baf3]'>✓</span>
-            <Input placeholder='Date Field' />
+            <Input placeholder='Date Field'/>
           </div>
           <div className='flex items-center gap-2'>
             <span className='text-[#52baf3]'>✓</span>
-            <Input placeholder='Text Field' />
+            <Input placeholder='Text Field'/>
           </div>
           <div className='flex items-center gap-2'>
             <span className='text-[#52baf3]'>✓</span>
-            <Input placeholder='Item Field' />
+            <Input placeholder='Item Field'/>
           </div>
           <div className='flex items-center gap-2'>
             <span className='text-[#52baf3]'>✓</span>
-            <Input placeholder='Item Field' />
+            <Input placeholder='Item Field'/>
           </div>
         </div>
       </div>
@@ -387,13 +376,11 @@ function AddComponentFormContent() {
       <div className='flex justify-end'>
         <Button className='bg-green-600 hover:bg-green-700'>Save</Button>
       </div>
-    </div>
-  );
+    </div>);
 }
 // Work Order Planned Form - Exact replica
 function WorkOrderPlannedForm() {
-  return (
-    <div className='bg-white p-6 rounded-lg border'>
+    return (<div className='bg-white p-6 rounded-lg border'>
       <div className='flex justify-between items-center mb-6'>
         <h3 className='text-lg font-semibold'>New Work Order Form (Planned)</h3>
         <div className='flex gap-2'>
@@ -439,7 +426,7 @@ function WorkOrderPlannedForm() {
           <div>
             <h5 className='font-medium mb-3'>A1. Work Order Information</h5>
             <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
-              <Plus className='h-4 w-4 mr-1' /> Add Field
+              <Plus className='h-4 w-4 mr-1'/> Add Field
             </Button>
 
             <div className='grid grid-cols-3 gap-4'>
@@ -459,7 +446,7 @@ function WorkOrderPlannedForm() {
                 <Label>Maintenance Type</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select' />
+                    <SelectValue placeholder='Select'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='preventive'>Preventive</SelectItem>
@@ -471,7 +458,7 @@ function WorkOrderPlannedForm() {
                 <Label>Category In</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='None' />
+                    <SelectValue placeholder='None'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='none'>None</SelectItem>
@@ -482,7 +469,7 @@ function WorkOrderPlannedForm() {
                 <Label>Rank</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='None' />
+                    <SelectValue placeholder='None'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='none'>None</SelectItem>
@@ -493,7 +480,7 @@ function WorkOrderPlannedForm() {
                 <Label>Job Category</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select' />
+                    <SelectValue placeholder='Select'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='maintenance'>Maintenance</SelectItem>
@@ -504,7 +491,7 @@ function WorkOrderPlannedForm() {
                 <Label>Done By/Visit</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='Shore' />
+                    <SelectValue placeholder='Shore'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='shore'>Shore</SelectItem>
@@ -516,7 +503,7 @@ function WorkOrderPlannedForm() {
                 <Label>Priority</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='Priority' />
+                    <SelectValue placeholder='Priority'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='high'>High</SelectItem>
@@ -531,19 +518,19 @@ function WorkOrderPlannedForm() {
             <div className='grid grid-cols-4 gap-4 mt-4'>
               <div className='flex items-center gap-2'>
                 <span className='text-[#52baf3]'>✓</span>
-                <Input placeholder='Item Field' />
+                <Input placeholder='Item Field'/>
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-[#52baf3]'>✓</span>
-                <Input placeholder='Item Field' />
+                <Input placeholder='Item Field'/>
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-[#52baf3]'>✓</span>
-                <Input placeholder='Item Field' />
+                <Input placeholder='Item Field'/>
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-[#52baf3]'>✓</span>
-                <Input placeholder='Select' />
+                <Input placeholder='Select'/>
               </div>
             </div>
           </div>
@@ -551,13 +538,13 @@ function WorkOrderPlannedForm() {
           {/* Blank Work Description */}
           <div>
             <Label>Blank Work Description</Label>
-            <Textarea className='h-20' />
+            <Textarea className='h-20'/>
           </div>
 
           {/* Edit Work Description */}
           <div>
             <Label>Edit Work Description</Label>
-            <Textarea className='h-20' />
+            <Textarea className='h-20'/>
           </div>
 
           {/* A2. Safety Requirements */}
@@ -570,7 +557,7 @@ function WorkOrderPlannedForm() {
                   <RadioGroup defaultValue='safety-helmet'>
                     <div className='flex items-center gap-8'>
                       <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='safety-helmet' />
+                        <RadioGroupItem value='safety-helmet'/>
                         <Label>Safety Helmet [Enquire Gallery Helmet]</Label>
                       </div>
                     </div>
@@ -588,7 +575,7 @@ function WorkOrderPlannedForm() {
                 <Label>Other Safety Requirements</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder='Every Two' />
+                    <SelectValue placeholder='Every Two'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='every-two'>Every Two</SelectItem>
@@ -613,12 +600,8 @@ function WorkOrderPlannedForm() {
               <h5 className='font-medium mb-3'>
                 B1. Risk Assessment, Checklists & Records
               </h5>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-[#52baf3] mb-3'
-              >
-                <Plus className='h-4 w-4 mr-1' /> Add Field
+              <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
+                <Plus className='h-4 w-4 mr-1'/> Add Field
               </Button>
 
               <div className='grid grid-cols-3 gap-4'>
@@ -627,11 +610,11 @@ function WorkOrderPlannedForm() {
                   <RadioGroup defaultValue='yes'>
                     <div className='flex gap-4 mt-2'>
                       <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='yes' />
+                        <RadioGroupItem value='yes'/>
                         <Label>Yes</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='na' />
+                        <RadioGroupItem value='na'/>
                         <Label>N/A</Label>
                       </div>
                     </div>
@@ -653,11 +636,11 @@ function WorkOrderPlannedForm() {
                   <RadioGroup defaultValue='yes'>
                     <div className='flex gap-4 mt-2'>
                       <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='yes' />
+                        <RadioGroupItem value='yes'/>
                         <Label>Yes</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='na' />
+                        <RadioGroupItem value='na'/>
                         <Label>N/A</Label>
                       </div>
                     </div>
@@ -673,7 +656,7 @@ function WorkOrderPlannedForm() {
 
               <div className='mt-4'>
                 <Label>B1.3 Operational Events Completed (as applicable)</Label>
-                <Input placeholder='New Field' className='mt-2' />
+                <Input placeholder='New Field' className='mt-2'/>
               </div>
             </div>
 
@@ -682,12 +665,8 @@ function WorkOrderPlannedForm() {
               <h5 className='font-medium mb-3'>
                 B2. Details of Work Carried Out
               </h5>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-[#52baf3] mb-3'
-              >
-                <Plus className='h-4 w-4 mr-1' /> Add Field
+              <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
+                <Plus className='h-4 w-4 mr-1'/> Add Field
               </Button>
 
               <div className='grid grid-cols-3 gap-4'>
@@ -696,11 +675,11 @@ function WorkOrderPlannedForm() {
                   <div className='grid grid-cols-2 gap-2 mt-2'>
                     <div>
                       <Label className='text-xs'>From Date</Label>
-                      <Input type='date' />
+                      <Input type='date'/>
                     </div>
                     <div>
                       <Label className='text-xs'>To Date</Label>
-                      <Input type='date' />
+                      <Input type='date'/>
                     </div>
                   </div>
                 </div>
@@ -708,7 +687,7 @@ function WorkOrderPlannedForm() {
                   <Label>Assigned To</Label>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder='Chief Engineer' />
+                      <SelectValue placeholder='Chief Engineer'/>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='chief-engineer'>
@@ -730,7 +709,7 @@ function WorkOrderPlannedForm() {
                 </div>
                 <div>
                   <Label>Completed Date</Label>
-                  <Input type='date' />
+                  <Input type='date'/>
                 </div>
                 <div>
                   <Label>Chief Engineer</Label>
@@ -739,29 +718,29 @@ function WorkOrderPlannedForm() {
               </div>
 
               <div className='grid grid-cols-4 gap-4 mt-4'>
-                <Input placeholder='None Field' />
-                <Input placeholder='None Field' />
-                <Input placeholder='None Field' />
-                <Input placeholder='None Field' />
+                <Input placeholder='None Field'/>
+                <Input placeholder='None Field'/>
+                <Input placeholder='None Field'/>
+                <Input placeholder='None Field'/>
               </div>
 
               {/* Icon Fields */}
               <div className='grid grid-cols-4 gap-4 mt-4'>
                 <div className='flex items-center gap-2'>
                   <span className='text-[#52baf3]'>✓</span>
-                  <Input placeholder='Date Field' />
+                  <Input placeholder='Date Field'/>
                 </div>
                 <div className='flex items-center gap-2'>
                   <span className='text-[#52baf3]'>✓</span>
-                  <Input placeholder='Item Field' />
+                  <Input placeholder='Item Field'/>
                 </div>
                 <div className='flex items-center gap-2'>
                   <span className='text-[#52baf3]'>✓</span>
-                  <Input placeholder='Item Field' />
+                  <Input placeholder='Item Field'/>
                 </div>
                 <div className='flex items-center gap-2'>
                   <span className='text-[#52baf3]'>✓</span>
-                  <Input placeholder='Date Field' />
+                  <Input placeholder='Date Field'/>
                 </div>
               </div>
             </div>
@@ -769,13 +748,13 @@ function WorkOrderPlannedForm() {
             {/* Work Carried Out */}
             <div className='mb-6'>
               <Label>Work Carried Out</Label>
-              <Textarea className='h-20 mt-2' />
+              <Textarea className='h-20 mt-2'/>
             </div>
 
             {/* Job Experience / Notes */}
             <div className='mb-6'>
               <Label>Job Experience / Notes</Label>
-              <Textarea className='h-20 mt-2' />
+              <Textarea className='h-20 mt-2'/>
             </div>
 
             {/* B3. Running Hours */}
@@ -800,12 +779,8 @@ function WorkOrderPlannedForm() {
             {/* B5. Spare Parts Component */}
             <div className='mb-6'>
               <h5 className='font-medium mb-3'>B5. Spare Parts Component</h5>
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-[#52baf3] mb-3'
-              >
-                <Plus className='h-4 w-4 mr-1' /> Add Spare Part
+              <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
+                <Plus className='h-4 w-4 mr-1'/> Add Spare Part
               </Button>
 
               <div className='grid grid-cols-3 gap-4'>
@@ -835,13 +810,11 @@ function WorkOrderPlannedForm() {
       <div className='flex justify-end'>
         <Button className='bg-green-600 hover:bg-green-700'>Submit</Button>
       </div>
-    </div>
-  );
+    </div>);
 }
 // Work Order Unplanned Form - Exact replica
 function WorkOrderUnplannedForm() {
-  return (
-    <div className='bg-white p-6 rounded-lg border'>
+    return (<div className='bg-white p-6 rounded-lg border'>
       <div className='flex justify-between items-center mb-6'>
         <h3 className='text-lg font-semibold'>Unplanned Work Order Form</h3>
         <div className='flex gap-2'>
@@ -879,7 +852,7 @@ function WorkOrderUnplannedForm() {
         <div className='flex items-center gap-4'>
           <span className='text-gray-600'>Details</span>
           <div className='flex items-center space-x-2'>
-            <RadioGroupItem value='breakdown' checked />
+            <RadioGroupItem value='breakdown' checked/>
             <Label>Breakdown</Label>
           </div>
         </div>
@@ -898,7 +871,7 @@ function WorkOrderUnplannedForm() {
         <div className='mb-6'>
           <h5 className='font-medium mb-3'>A1. Work Order Information</h5>
           <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
-            <Plus className='h-4 w-4 mr-1' /> Add Field
+            <Plus className='h-4 w-4 mr-1'/> Add Field
           </Button>
 
           <div className='grid grid-cols-3 gap-4'>
@@ -918,7 +891,7 @@ function WorkOrderUnplannedForm() {
               <Label>Maintenance Type</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Select' />
+                  <SelectValue placeholder='Select'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='breakdown'>Breakdown</SelectItem>
@@ -930,7 +903,7 @@ function WorkOrderUnplannedForm() {
               <Label>Category In</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='None' />
+                  <SelectValue placeholder='None'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='none'>None</SelectItem>
@@ -941,7 +914,7 @@ function WorkOrderUnplannedForm() {
               <Label>Rank</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='None' />
+                  <SelectValue placeholder='None'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='none'>None</SelectItem>
@@ -952,7 +925,7 @@ function WorkOrderUnplannedForm() {
               <Label>Job Category</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Select' />
+                  <SelectValue placeholder='Select'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='repair'>Repair</SelectItem>
@@ -963,7 +936,7 @@ function WorkOrderUnplannedForm() {
               <Label>Done By/Visit</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Crew' />
+                  <SelectValue placeholder='Crew'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='crew'>Crew</SelectItem>
@@ -975,7 +948,7 @@ function WorkOrderUnplannedForm() {
               <Label>Priority</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Select' />
+                  <SelectValue placeholder='Select'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='urgent'>Urgent</SelectItem>
@@ -991,19 +964,19 @@ function WorkOrderUnplannedForm() {
           <div className='grid grid-cols-4 gap-4 mt-4'>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Item Field' />
+              <Input placeholder='Item Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Item Field' />
+              <Input placeholder='Item Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Item Field' />
+              <Input placeholder='Item Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Select' />
+              <Input placeholder='Select'/>
             </div>
           </div>
         </div>
@@ -1011,13 +984,13 @@ function WorkOrderUnplannedForm() {
         {/* Blank Work Description */}
         <div className='mb-6'>
           <Label>Blank Work Description</Label>
-          <Textarea className='h-20 mt-2' />
+          <Textarea className='h-20 mt-2'/>
         </div>
 
         {/* Edit Work Description */}
         <div className='mb-6'>
           <Label>Edit Work Description</Label>
-          <Textarea className='h-20 mt-2' />
+          <Textarea className='h-20 mt-2'/>
         </div>
 
         {/* A2. Safety Requirements */}
@@ -1030,7 +1003,7 @@ function WorkOrderUnplannedForm() {
                 <RadioGroup defaultValue='safety-helmet'>
                   <div className='flex items-center gap-8'>
                     <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='safety-helmet' />
+                      <RadioGroupItem value='safety-helmet'/>
                       <Label>Safety Helmet [Enquire Gallery Helmet]</Label>
                     </div>
                   </div>
@@ -1048,7 +1021,7 @@ function WorkOrderUnplannedForm() {
               <Label>Other Safety Requirements</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Every Two' />
+                  <SelectValue placeholder='Every Two'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='every-two'>Every Two</SelectItem>
@@ -1075,7 +1048,7 @@ function WorkOrderUnplannedForm() {
             B1. Risk Assessment, Checklists & Records
           </h5>
           <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
-            <Plus className='h-4 w-4 mr-1' /> Add Field
+            <Plus className='h-4 w-4 mr-1'/> Add Field
           </Button>
 
           <div className='grid grid-cols-3 gap-4'>
@@ -1084,11 +1057,11 @@ function WorkOrderUnplannedForm() {
               <RadioGroup defaultValue='yes'>
                 <div className='flex gap-4 mt-2'>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='yes' />
+                    <RadioGroupItem value='yes'/>
                     <Label>Yes</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='na' />
+                    <RadioGroupItem value='na'/>
                     <Label>N/A</Label>
                   </div>
                 </div>
@@ -1108,11 +1081,11 @@ function WorkOrderUnplannedForm() {
               <RadioGroup defaultValue='yes'>
                 <div className='flex gap-4 mt-2'>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='yes' />
+                    <RadioGroupItem value='yes'/>
                     <Label>Yes</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='na' />
+                    <RadioGroupItem value='na'/>
                     <Label>N/A</Label>
                   </div>
                 </div>
@@ -1132,11 +1105,11 @@ function WorkOrderUnplannedForm() {
               <RadioGroup defaultValue='yes'>
                 <div className='flex gap-4'>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='yes' />
+                    <RadioGroupItem value='yes'/>
                     <Label>Yes</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='na' />
+                    <RadioGroupItem value='na'/>
                     <Label>N/A</Label>
                   </div>
                 </div>
@@ -1152,7 +1125,7 @@ function WorkOrderUnplannedForm() {
         <div className='mb-6'>
           <h5 className='font-medium mb-3'>B2. Details of Work Carried Out</h5>
           <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
-            <Plus className='h-4 w-4 mr-1' /> Add Field
+            <Plus className='h-4 w-4 mr-1'/> Add Field
           </Button>
 
           <div className='grid grid-cols-3 gap-4'>
@@ -1161,11 +1134,11 @@ function WorkOrderUnplannedForm() {
               <div className='grid grid-cols-2 gap-2 mt-2'>
                 <div>
                   <Label className='text-xs'>From Date</Label>
-                  <Input type='date' />
+                  <Input type='date'/>
                 </div>
                 <div>
                   <Label className='text-xs'>To Date</Label>
-                  <Input type='date' />
+                  <Input type='date'/>
                 </div>
               </div>
             </div>
@@ -1173,7 +1146,7 @@ function WorkOrderUnplannedForm() {
               <Label>Assigned To</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder='Chief Engineer' />
+                  <SelectValue placeholder='Chief Engineer'/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='chief-engineer'>Chief Engineer</SelectItem>
@@ -1193,7 +1166,7 @@ function WorkOrderUnplannedForm() {
             </div>
             <div>
               <Label>Completed Date</Label>
-              <Input type='date' />
+              <Input type='date'/>
             </div>
             <div>
               <Label>Chief Engineer</Label>
@@ -1202,29 +1175,29 @@ function WorkOrderUnplannedForm() {
           </div>
 
           <div className='grid grid-cols-4 gap-4 mt-4'>
-            <Input placeholder='None Field' />
-            <Input placeholder='None Field' />
-            <Input placeholder='None Field' />
-            <Input placeholder='None Field' />
+            <Input placeholder='None Field'/>
+            <Input placeholder='None Field'/>
+            <Input placeholder='None Field'/>
+            <Input placeholder='None Field'/>
           </div>
 
           {/* Icon Fields */}
           <div className='grid grid-cols-4 gap-4 mt-4'>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Date Field' />
+              <Input placeholder='Date Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Item Field' />
+              <Input placeholder='Item Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Item Field' />
+              <Input placeholder='Item Field'/>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-[#52baf3]'>✓</span>
-              <Input placeholder='Date Field' />
+              <Input placeholder='Date Field'/>
             </div>
           </div>
         </div>
@@ -1232,13 +1205,13 @@ function WorkOrderUnplannedForm() {
         {/* Work Carried Out */}
         <div className='mb-6'>
           <Label>Work Carried Out</Label>
-          <Textarea className='h-20 mt-2' />
+          <Textarea className='h-20 mt-2'/>
         </div>
 
         {/* Job Experience / Notes */}
         <div className='mb-6'>
           <Label>Job Experience / Notes</Label>
-          <Textarea className='h-20 mt-2' />
+          <Textarea className='h-20 mt-2'/>
         </div>
 
         {/* B3. Running Hours */}
@@ -1264,7 +1237,7 @@ function WorkOrderUnplannedForm() {
         <div className='mb-6'>
           <h5 className='font-medium mb-3'>B5. Spare Parts Component</h5>
           <Button variant='outline' size='sm' className='text-[#52baf3] mb-3'>
-            <Plus className='h-4 w-4 mr-1' /> Add Spare Part
+            <Plus className='h-4 w-4 mr-1'/> Add Spare Part
           </Button>
 
           <div className='grid grid-cols-3 gap-4'>
@@ -1292,7 +1265,6 @@ function WorkOrderUnplannedForm() {
       <div className='flex justify-end'>
         <Button className='bg-green-600 hover:bg-green-700'>Submit</Button>
       </div>
-    </div>
-  );
+    </div>);
 }
 //# sourceMappingURL=Forms.jsx.map

@@ -1,111 +1,80 @@
-import { __assign, __spreadArray } from 'tslib';
+import { __assign, __spreadArray } from "tslib";
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { X, Edit, Trash2, Plus } from 'lucide-react';
 var WorkOrdersChangeRequestForm = function (_a) {
-  var onClose = _a.onClose,
-    onSubmit = _a.onSubmit,
-    _b = _a.initialData,
-    initialData = _b === void 0 ? {} : _b;
-  var _c = useState({
-      workOrderNo: initialData.workOrderNo || 'WO-2025-001',
-      title:
-        initialData.title || 'Main Engine Overhaul - Replace Main bearings',
-      component: initialData.component || 'Main Engine #1',
-      maintenanceType: initialData.maintenanceType || 'Planned Maintenance',
-      assignedTo: initialData.assignedTo || '2nd Eng',
-      approver: initialData.approver || 'Chief Engineer',
-      jobCategory: initialData.jobCategory || 'Mechanical',
-      classRelated: initialData.classRelated || 'No',
-      status: initialData.status || 'In Progress',
-      briefWorkDescription:
-        initialData.briefWorkDescription ||
-        'Complete overhaul of main engine bearings as per maintenance schedule',
-      ppeRequirements:
-        initialData.ppeRequirements || 'Safety Helmet, Safety Gloves',
-      permitRequirements: initialData.permitRequirements || 'Hot Work Permit',
-      otherSafetyRequirements: initialData.otherSafetyRequirements || '',
-      priority: initialData.priority || 'High',
-      workType: initialData.workType || 'Planned Maintenance',
-      department: initialData.department || 'Engine',
-      location: initialData.location || 'Engine Room',
-      estimatedHours: initialData.estimatedHours || '24',
-      actualHours: initialData.actualHours || '',
-      startDate: initialData.startDate || '2025-01-15',
-      targetDate: initialData.targetDate || '2025-01-20',
-      completionDate: initialData.completionDate || '',
-      notes: initialData.notes || '',
-    }),
-    workOrderData = _c[0],
-    setWorkOrderData = _c[1];
-  var _d = useState(new Set()),
-    changedFields = _d[0],
-    setChangedFields = _d[1];
-  var handleInputChange = function (field, value) {
-    setWorkOrderData(function (prev) {
-      var _a;
-      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
-    });
-    // Track changed fields for red highlighting
-    var initialValue = initialData[field];
-    if (value !== initialValue) {
-      setChangedFields(function (prev) {
-        return new Set(
-          __spreadArray(
-            __spreadArray([], Array.from(prev), true),
-            [field],
-            false
-          )
-        );
-      });
-    } else {
-      setChangedFields(function (prev) {
-        var newSet = new Set(Array.from(prev));
-        newSet.delete(field);
-        return newSet;
-      });
-    }
-  };
-  var handleSubmit = function () {
-    if (onSubmit) {
-      onSubmit(workOrderData);
-      onClose();
-    }
-  };
-  var getInputStyle = function (field) {
-    var isChanged = changedFields.has(field);
-    return isChanged
-      ? 'text-red-500 border-red-500'
-      : 'border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]';
-  };
-  var getLabelStyle = function () {
-    return 'text-[#52baf3] text-sm font-medium mb-2 block';
-  };
-  return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+    var onClose = _a.onClose, onSubmit = _a.onSubmit, _b = _a.initialData, initialData = _b === void 0 ? {} : _b;
+    var _c = useState({
+        workOrderNo: initialData.workOrderNo || 'WO-2025-001',
+        title: initialData.title || 'Main Engine Overhaul - Replace Main bearings',
+        component: initialData.component || 'Main Engine #1',
+        maintenanceType: initialData.maintenanceType || 'Planned Maintenance',
+        assignedTo: initialData.assignedTo || '2nd Eng',
+        approver: initialData.approver || 'Chief Engineer',
+        jobCategory: initialData.jobCategory || 'Mechanical',
+        classRelated: initialData.classRelated || 'No',
+        status: initialData.status || 'In Progress',
+        briefWorkDescription: initialData.briefWorkDescription ||
+            'Complete overhaul of main engine bearings as per maintenance schedule',
+        ppeRequirements: initialData.ppeRequirements || 'Safety Helmet, Safety Gloves',
+        permitRequirements: initialData.permitRequirements || 'Hot Work Permit',
+        otherSafetyRequirements: initialData.otherSafetyRequirements || '',
+        priority: initialData.priority || 'High',
+        workType: initialData.workType || 'Planned Maintenance',
+        department: initialData.department || 'Engine',
+        location: initialData.location || 'Engine Room',
+        estimatedHours: initialData.estimatedHours || '24',
+        actualHours: initialData.actualHours || '',
+        startDate: initialData.startDate || '2025-01-15',
+        targetDate: initialData.targetDate || '2025-01-20',
+        completionDate: initialData.completionDate || '',
+        notes: initialData.notes || '',
+    }), workOrderData = _c[0], setWorkOrderData = _c[1];
+    var _d = useState(new Set()), changedFields = _d[0], setChangedFields = _d[1];
+    var handleInputChange = function (field, value) {
+        setWorkOrderData(function (prev) {
+            var _a;
+            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
+        });
+        // Track changed fields for red highlighting
+        var initialValue = initialData[field];
+        if (value !== initialValue) {
+            setChangedFields(function (prev) { return new Set(__spreadArray(__spreadArray([], Array.from(prev), true), [field], false)); });
+        }
+        else {
+            setChangedFields(function (prev) {
+                var newSet = new Set(Array.from(prev));
+                newSet.delete(field);
+                return newSet;
+            });
+        }
+    };
+    var handleSubmit = function () {
+        if (onSubmit) {
+            onSubmit(workOrderData);
+            onClose();
+        }
+    };
+    var getInputStyle = function (field) {
+        var isChanged = changedFields.has(field);
+        return isChanged
+            ? 'text-red-500 border-red-500'
+            : 'border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]';
+    };
+    var getLabelStyle = function () { return 'text-[#52baf3] text-sm font-medium mb-2 block'; };
+    return (<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
       <div className='bg-white rounded-lg w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden'>
         {/* Modal Header */}
         <div className='flex items-center justify-between p-6 border-b border-[#52baf3]'>
           <h2 className='text-xl font-semibold text-[#52baf3]'>
             Work Order - Change Request
           </h2>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={onClose}
-            className='hover:bg-gray-100'
-          >
-            <X className='h-4 w-4' />
+          <Button variant='ghost' size='sm' onClick={onClose} className='hover:bg-gray-100'>
+            <X className='h-4 w-4'/>
           </Button>
         </div>
 
@@ -118,9 +87,9 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 A1. Work Order Information
               </h4>
               <div className='flex gap-2'>
-                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer' />
+                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
               </div>
             </div>
 
@@ -129,48 +98,30 @@ var WorkOrdersChangeRequestForm = function (_a) {
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Work Order</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.workOrderNo}
-                  onChange={function (e) {
-                    return handleInputChange('workOrderNo', e.target.value);
-                  }}
-                  className={'text-sm '.concat(getInputStyle('workOrderNo'))}
-                />
+                <Input value={workOrderData.workOrderNo} onChange={function (e) {
+            return handleInputChange('workOrderNo', e.target.value);
+        }} className={"text-sm ".concat(getInputStyle('workOrderNo'))}/>
               </div>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Job Title</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.title}
-                  onChange={function (e) {
-                    return handleInputChange('title', e.target.value);
-                  }}
-                  className={'text-sm '.concat(getInputStyle('title'))}
-                  placeholder='Main Engine - Replace Fuel Filters'
-                />
+                <Input value={workOrderData.title} onChange={function (e) { return handleInputChange('title', e.target.value); }} className={"text-sm ".concat(getInputStyle('title'))} placeholder='Main Engine - Replace Fuel Filters'/>
               </div>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Component</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.component}
-                  onValueChange={function (value) {
-                    return handleInputChange('component', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(getInputStyle('component'))}
-                  >
-                    <SelectValue placeholder='601.002 Main Engine' />
+                <Select value={workOrderData.component} onValueChange={function (value) { return handleInputChange('component', value); }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('component'))}>
+                    <SelectValue placeholder='601.002 Main Engine'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='601.002 Main Engine'>
@@ -192,20 +143,13 @@ var WorkOrdersChangeRequestForm = function (_a) {
                   <Label className='text-sm text-[#52baf3]'>
                     Maintenance Type
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.maintenanceType}
-                  onValueChange={function (value) {
-                    return handleInputChange('maintenanceType', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(
-                      getInputStyle('maintenanceType')
-                    )}
-                  >
+                <Select value={workOrderData.maintenanceType} onValueChange={function (value) {
+            return handleInputChange('maintenanceType', value);
+        }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('maintenanceType'))}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -224,19 +168,14 @@ var WorkOrdersChangeRequestForm = function (_a) {
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Assigned To</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.assignedTo}
-                  onValueChange={function (value) {
-                    return handleInputChange('assignedTo', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(getInputStyle('assignedTo'))}
-                  >
-                    <SelectValue placeholder='Rank' />
+                <Select value={workOrderData.assignedTo} onValueChange={function (value) {
+            return handleInputChange('assignedTo', value);
+        }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('assignedTo'))}>
+                    <SelectValue placeholder='Rank'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='Chief Engineer'>
@@ -251,19 +190,12 @@ var WorkOrdersChangeRequestForm = function (_a) {
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Approver</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.approver}
-                  onValueChange={function (value) {
-                    return handleInputChange('approver', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(getInputStyle('approver'))}
-                  >
-                    <SelectValue placeholder='Rank' />
+                <Select value={workOrderData.approver} onValueChange={function (value) { return handleInputChange('approver', value); }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('approver'))}>
+                    <SelectValue placeholder='Rank'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='Chief Engineer'>
@@ -278,19 +210,14 @@ var WorkOrdersChangeRequestForm = function (_a) {
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Job Category</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.jobCategory}
-                  onValueChange={function (value) {
-                    return handleInputChange('jobCategory', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(getInputStyle('jobCategory'))}
-                  >
-                    <SelectValue placeholder='Mechanical' />
+                <Select value={workOrderData.jobCategory} onValueChange={function (value) {
+            return handleInputChange('jobCategory', value);
+        }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('jobCategory'))}>
+                    <SelectValue placeholder='Mechanical'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='Mechanical'>Mechanical</SelectItem>
@@ -305,19 +232,14 @@ var WorkOrdersChangeRequestForm = function (_a) {
                   <Label className='text-sm text-[#52baf3]'>
                     Class Related
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Select
-                  value={workOrderData.classRelated}
-                  onValueChange={function (value) {
-                    return handleInputChange('classRelated', value);
-                  }}
-                >
-                  <SelectTrigger
-                    className={'text-sm '.concat(getInputStyle('classRelated'))}
-                  >
-                    <SelectValue placeholder='Yes' />
+                <Select value={workOrderData.classRelated} onValueChange={function (value) {
+            return handleInputChange('classRelated', value);
+        }}>
+                  <SelectTrigger className={"text-sm ".concat(getInputStyle('classRelated'))}>
+                    <SelectValue placeholder='Yes'/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='Yes'>Yes</SelectItem>
@@ -328,17 +250,10 @@ var WorkOrdersChangeRequestForm = function (_a) {
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Label className='text-sm text-[#52baf3]'>Status</Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.status}
-                  onChange={function (e) {
-                    return handleInputChange('status', e.target.value);
-                  }}
-                  className={'text-sm '.concat(getInputStyle('status'))}
-                  placeholder='Status'
-                />
+                <Input value={workOrderData.status} onChange={function (e) { return handleInputChange('status', e.target.value); }} className={"text-sm ".concat(getInputStyle('status'))} placeholder='Status'/>
               </div>
             </div>
 
@@ -348,23 +263,12 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 <Label className='text-sm text-[#52baf3]'>
                   Brief Work Description
                 </Label>
-                <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
               </div>
-              <Textarea
-                value={workOrderData.briefWorkDescription}
-                onChange={function (e) {
-                  return handleInputChange(
-                    'briefWorkDescription',
-                    e.target.value
-                  );
-                }}
-                className={'text-sm '.concat(
-                  getInputStyle('briefWorkDescription')
-                )}
-                rows={3}
-                placeholder='Add Work description'
-              />
+              <Textarea value={workOrderData.briefWorkDescription} onChange={function (e) {
+            return handleInputChange('briefWorkDescription', e.target.value);
+        }} className={"text-sm ".concat(getInputStyle('briefWorkDescription'))} rows={3} placeholder='Add Work description'/>
             </div>
           </div>
 
@@ -375,9 +279,9 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 A2. Required Spare Parts
               </h4>
               <div className='flex gap-2'>
-                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer' />
+                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
               </div>
             </div>
 
@@ -405,41 +309,21 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 <tbody>
                   <tr className='border-b border-gray-100'>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(getInputStyle('partNo1'))}
-                        placeholder='SP-001'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('partNo1'))} placeholder='SP-001'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(
-                          getInputStyle('description1')
-                        )}
-                        placeholder='O-Ring Seal'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('description1'))} placeholder='O-Ring Seal'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(
-                          getInputStyle('quantity1')
-                        )}
-                        placeholder='2'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('quantity1'))} placeholder='2'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(getInputStyle('rob1'))}
-                        placeholder='5'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('rob1'))} placeholder='5'/>
                     </td>
                     <td className='p-3'>
                       <Select>
-                        <SelectTrigger
-                          className={'text-sm '.concat(
-                            getInputStyle('status1')
-                          )}
-                        >
-                          <SelectValue placeholder='Available' />
+                        <SelectTrigger className={"text-sm ".concat(getInputStyle('status1'))}>
+                          <SelectValue placeholder='Available'/>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value='Available'>Available</SelectItem>
@@ -453,41 +337,21 @@ var WorkOrdersChangeRequestForm = function (_a) {
                   </tr>
                   <tr className='border-b border-gray-100'>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(getInputStyle('partNo2'))}
-                        placeholder='SP-002'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('partNo2'))} placeholder='SP-002'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(
-                          getInputStyle('description2')
-                        )}
-                        placeholder='Filter Element'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('description2'))} placeholder='Filter Element'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(
-                          getInputStyle('quantity2')
-                        )}
-                        placeholder='1'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('quantity2'))} placeholder='1'/>
                     </td>
                     <td className='p-3'>
-                      <Input
-                        className={'text-sm '.concat(getInputStyle('rob2'))}
-                        placeholder='3'
-                      />
+                      <Input className={"text-sm ".concat(getInputStyle('rob2'))} placeholder='3'/>
                     </td>
                     <td className='p-3'>
                       <Select>
-                        <SelectTrigger
-                          className={'text-sm '.concat(
-                            getInputStyle('status2')
-                          )}
-                        >
-                          <SelectValue placeholder='Available' />
+                        <SelectTrigger className={"text-sm ".concat(getInputStyle('status2'))}>
+                          <SelectValue placeholder='Available'/>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value='Available'>Available</SelectItem>
@@ -503,11 +367,8 @@ var WorkOrdersChangeRequestForm = function (_a) {
               </table>
 
               <div className='mt-4 flex justify-center'>
-                <Button
-                  className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-                  size='sm'
-                >
-                  <Plus className='h-4 w-4 mr-2' />+ Add Spare Part
+                <Button className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white' size='sm'>
+                  <Plus className='h-4 w-4 mr-2'/>+ Add Spare Part
                 </Button>
               </div>
             </div>
@@ -520,9 +381,9 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 A3. Job Instructions & Procedures
               </h4>
               <div className='flex gap-2'>
-                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer' />
+                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
               </div>
             </div>
 
@@ -532,31 +393,20 @@ var WorkOrdersChangeRequestForm = function (_a) {
                   <Label className='text-sm text-[#52baf3]'>
                     Work Instructions:
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Textarea
-                  className={'text-sm '.concat(
-                    getInputStyle('workInstructions')
-                  )}
-                  rows={4}
-                  placeholder='Detailed step-by-step instructions for completing the work'
-                />
+                <Textarea className={"text-sm ".concat(getInputStyle('workInstructions'))} rows={4} placeholder='Detailed step-by-step instructions for completing the work'/>
               </div>
               <div>
                 <div className='flex items-center gap-2 mb-2'>
                   <Label className='text-sm text-[#52baf3]'>
                     Reference Procedures:
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  className={'text-sm '.concat(
-                    getInputStyle('referenceProcedures')
-                  )}
-                  placeholder='Reference manual sections, procedures, or technical bulletins'
-                />
+                <Input className={"text-sm ".concat(getInputStyle('referenceProcedures'))} placeholder='Reference manual sections, procedures, or technical bulletins'/>
               </div>
             </div>
           </div>
@@ -568,9 +418,9 @@ var WorkOrdersChangeRequestForm = function (_a) {
                 A4. Safety Requirements
               </h4>
               <div className='flex gap-2'>
-                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer' />
-                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer' />
+                <Edit className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Trash2 className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
+                <Plus className='h-4 w-4 text-[#52baf3] cursor-pointer'/>
               </div>
             </div>
 
@@ -580,63 +430,36 @@ var WorkOrdersChangeRequestForm = function (_a) {
                   <Label className='text-sm text-[#52baf3]'>
                     PPE Requirements:
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.ppeRequirements}
-                  onChange={function (e) {
-                    return handleInputChange('ppeRequirements', e.target.value);
-                  }}
-                  className={'text-sm '.concat(
-                    getInputStyle('ppeRequirements')
-                  )}
-                  placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'
-                />
+                <Input value={workOrderData.ppeRequirements} onChange={function (e) {
+            return handleInputChange('ppeRequirements', e.target.value);
+        }} className={"text-sm ".concat(getInputStyle('ppeRequirements'))} placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'/>
               </div>
               <div>
                 <div className='flex items-center gap-2 mb-2'>
                   <Label className='text-sm text-[#52baf3]'>
                     Permit Requirements:
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.permitRequirements}
-                  onChange={function (e) {
-                    return handleInputChange(
-                      'permitRequirements',
-                      e.target.value
-                    );
-                  }}
-                  className={'text-sm '.concat(
-                    getInputStyle('permitRequirements')
-                  )}
-                  placeholder='[Enclosed Space Entry Permit]'
-                />
+                <Input value={workOrderData.permitRequirements} onChange={function (e) {
+            return handleInputChange('permitRequirements', e.target.value);
+        }} className={"text-sm ".concat(getInputStyle('permitRequirements'))} placeholder='[Enclosed Space Entry Permit]'/>
               </div>
               <div>
                 <div className='flex items-center gap-2 mb-2'>
                   <Label className='text-sm text-[#52baf3]'>
                     Other Safety Requirements:
                   </Label>
-                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer' />
-                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer' />
+                  <Edit className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
+                  <Trash2 className='h-3 w-3 text-[#52baf3] cursor-pointer'/>
                 </div>
-                <Input
-                  value={workOrderData.otherSafetyRequirements}
-                  onChange={function (e) {
-                    return handleInputChange(
-                      'otherSafetyRequirements',
-                      e.target.value
-                    );
-                  }}
-                  className={'text-sm '.concat(
-                    getInputStyle('otherSafetyRequirements')
-                  )}
-                  placeholder='Free Text'
-                />
+                <Input value={workOrderData.otherSafetyRequirements} onChange={function (e) {
+            return handleInputChange('otherSafetyRequirements', e.target.value);
+        }} className={"text-sm ".concat(getInputStyle('otherSafetyRequirements'))} placeholder='Free Text'/>
               </div>
             </div>
           </div>
@@ -644,23 +467,15 @@ var WorkOrdersChangeRequestForm = function (_a) {
 
         {/* Modal Footer */}
         <div className='flex justify-end gap-3 p-4 border-t bg-gray-50'>
-          <Button
-            variant='outline'
-            onClick={onClose}
-            className='border-[#52baf3] text-[#52baf3] hover:bg-[#52baf3] hover:text-white'
-          >
+          <Button variant='outline' onClick={onClose} className='border-[#52baf3] text-[#52baf3] hover:bg-[#52baf3] hover:text-white'>
             Cancel
           </Button>
-          <Button
-            className='bg-[#52baf3] hover:bg-[#40a8e0] text-white'
-            onClick={handleSubmit}
-          >
+          <Button className='bg-[#52baf3] hover:bg-[#40a8e0] text-white' onClick={handleSubmit}>
             Save Change Request
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 };
 export default WorkOrdersChangeRequestForm;
 //# sourceMappingURL=WorkOrdersChangeRequestForm.jsx.map

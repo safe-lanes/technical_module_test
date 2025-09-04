@@ -1,86 +1,79 @@
-import { __assign } from 'tslib';
+import { __assign } from "tslib";
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog';
+// import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogTitle, } from '@/components/ui/dialog';
+// import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 export default function AddComponentForm(_a) {
-  var open = _a.open,
-    onOpenChange = _a.onOpenChange;
-  var _b = useState({
-      // Component Name
-      componentName: '',
-      // Component Information
-      origin: '',
-      supplier: '',
-      partNo: '',
-      createdOn: '',
-      component: '',
-      maker: '',
-      serialNo: '',
-      installedDate: '',
-      componentCode: '',
-      type: '',
-      blackoutComponent: '',
-      modelSpecification: '',
-      warrantyInfo: '',
-      warrantyDays: '',
-      warrantyDate: '',
-      lastUsed: '',
-      supplier2: '',
-      // Running Hours
-      runningHours: '',
-      conditionMonitoring: '',
-      // Work Orders
-      workBy: '',
-      jobTitle: '',
-      dueDate: '',
-      status: '',
-      // Maintenance History
-      serialNo2: '',
-      performedBy: '',
-      nextDue: '',
-      completionDate: '',
-      // Spares
-      sparePart: '',
-      partName: '',
-      qty: '',
-      critical: '',
-      location: '',
-      // Classification & Regulatory Data
-      classificationSociety: '',
-      certificateNo: '',
-      lastClassDate: '',
-      nextClassDate: '',
-      classCode: '',
-      classRemarks: '',
-      // New Service Notes
-      serviceNote: '',
-      noteDate: '',
-      nextNote: '',
-      noteLevel: '',
-    }),
-    formData = _b[0],
-    setFormData = _b[1];
-  var handleInputChange = function (field, value) {
-    setFormData(function (prev) {
-      var _a;
-      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
-    });
-  };
-  var handleSave = function () {
-    console.log('Saving component:', formData);
-    onOpenChange(false);
-  };
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    var open = _a.open, onOpenChange = _a.onOpenChange;
+    var _b = useState({
+        // Component Name
+        componentName: '',
+        // Component Information
+        origin: '',
+        supplier: '',
+        partNo: '',
+        createdOn: '',
+        component: '',
+        maker: '',
+        serialNo: '',
+        installedDate: '',
+        componentCode: '',
+        type: '',
+        blackoutComponent: '',
+        modelSpecification: '',
+        warrantyInfo: '',
+        warrantyDays: '',
+        warrantyDate: '',
+        lastUsed: '',
+        supplier2: '',
+        // Running Hours
+        runningHours: '',
+        conditionMonitoring: '',
+        // Work Orders
+        workBy: '',
+        jobTitle: '',
+        dueDate: '',
+        status: '',
+        // Maintenance History
+        serialNo2: '',
+        performedBy: '',
+        nextDue: '',
+        completionDate: '',
+        // Spares
+        sparePart: '',
+        partName: '',
+        qty: '',
+        critical: '',
+        location: '',
+        // Classification & Regulatory Data
+        classificationSociety: '',
+        certificateNo: '',
+        lastClassDate: '',
+        nextClassDate: '',
+        classCode: '',
+        classRemarks: '',
+        // New Service Notes
+        serviceNote: '',
+        noteDate: '',
+        nextNote: '',
+        noteLevel: '',
+    }), formData = _b[0], setFormData = _b[1];
+    var handleInputChange = function (field, value) {
+        setFormData(function (prev) {
+            var _a;
+            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
+        });
+    };
+    var handleSave = function () {
+        console.log('Saving component:', formData);
+        onOpenChange(false);
+    };
+    return (<Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-[95vw] max-h-[95vh] overflow-hidden p-0'>
         <DialogTitle className='sr-only'>Add Component Form</DialogTitle>
         <DialogDescription className='sr-only'>
@@ -91,15 +84,8 @@ export default function AddComponentForm(_a) {
         <div className='bg-white border-b px-4 py-3'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
-              <Button
-                variant='ghost'
-                size='icon'
-                onClick={function () {
-                  return onOpenChange(false);
-                }}
-                className='h-8 w-8'
-              >
-                <ArrowLeft className='h-4 w-4' />
+              <Button variant='ghost' size='icon' onClick={function () { return onOpenChange(false); }} className='h-8 w-8'>
+                <ArrowLeft className='h-4 w-4'/>
               </Button>
               <h2 className='text-lg font-semibold'>
                 Component Register - Add Component
@@ -109,23 +95,13 @@ export default function AddComponentForm(_a) {
               </Badge>
             </div>
             <div className='flex items-center gap-2'>
-              <Button
-                variant='destructive'
-                size='sm'
-                onClick={function () {
-                  return onOpenChange(false);
-                }}
-              >
+              <Button variant='destructive' size='sm' onClick={function () { return onOpenChange(false); }}>
                 Cancel
               </Button>
               <Button variant='outline' size='sm'>
                 Clear Form
               </Button>
-              <Button
-                size='sm'
-                className='bg-[#52baf3] hover:bg-[#3da8e0] text-white'
-                onClick={handleSave}
-              >
+              <Button size='sm' className='bg-[#52baf3] hover:bg-[#3da8e0] text-white' onClick={handleSave}>
                 Save Form
               </Button>
             </div>
@@ -151,29 +127,17 @@ export default function AddComponentForm(_a) {
         </div>
 
         {/* Form Content */}
-        <div
-          className='overflow-y-auto p-6'
-          style={{ maxHeight: 'calc(95vh - 120px)' }}
-        >
+        <div className='overflow-y-auto p-6' style={{ maxHeight: 'calc(95vh - 120px)' }}>
           <div className='space-y-6 max-w-6xl mx-auto'>
             {/* Component Name Section */}
             <div className='bg-white rounded-lg border p-4'>
               <div className='mb-4'>
-                <Label
-                  htmlFor='component-name'
-                  className='text-sm font-semibold'
-                >
+                <Label htmlFor='component-name' className='text-sm font-semibold'>
                   Component Name
                 </Label>
-                <Input
-                  id='component-name'
-                  value={formData.componentName}
-                  onChange={function (e) {
-                    return handleInputChange('componentName', e.target.value);
-                  }}
-                  className='mt-1'
-                  placeholder='Component Information'
-                />
+                <Input id='component-name' value={formData.componentName} onChange={function (e) {
+            return handleInputChange('componentName', e.target.value);
+        }} className='mt-1' placeholder='Component Information'/>
               </div>
             </div>
 
@@ -196,109 +160,97 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='origin' className='text-xs'>
                       Origin
                     </Label>
-                    <Input id='origin' className='h-8 text-sm' />
+                    <Input id='origin' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='supplier' className='text-xs'>
                       Supplier
                     </Label>
-                    <Input id='supplier' className='h-8 text-sm' />
+                    <Input id='supplier' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='part-no' className='text-xs'>
                       Part No
                     </Label>
-                    <Input id='part-no' className='h-8 text-sm' />
+                    <Input id='part-no' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='created-on' className='text-xs'>
                       Created On
                     </Label>
-                    <Input
-                      id='created-on'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='created-on' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='component' className='text-xs'>
                       Component *
                     </Label>
-                    <Input id='component' className='h-8 text-sm' />
+                    <Input id='component' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='maker' className='text-xs'>
                       Maker / Maker Designator
                     </Label>
-                    <Input id='maker' className='h-8 text-sm' />
+                    <Input id='maker' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='serial-no' className='text-xs'>
                       Serial No
                     </Label>
-                    <Input id='serial-no' className='h-8 text-sm' />
+                    <Input id='serial-no' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='installed-date' className='text-xs'>
                       Installed Date
                     </Label>
-                    <Input
-                      id='installed-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='installed-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='component-code' className='text-xs'>
                       Component Code
                     </Label>
-                    <Input id='component-code' className='h-8 text-sm' />
+                    <Input id='component-code' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='type' className='text-xs'>
                       Type
                     </Label>
-                    <Input id='type' className='h-8 text-sm' />
+                    <Input id='type' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='blackout' className='text-xs'>
                       Blackout Component
                     </Label>
-                    <Input id='blackout' className='h-8 text-sm' />
+                    <Input id='blackout' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='model-spec' className='text-xs'>
                       Model Specification
                     </Label>
-                    <Input id='model-spec' className='h-8 text-sm' />
+                    <Input id='model-spec' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='warranty-info' className='text-xs'>
                       Warranty Info
                     </Label>
-                    <Input id='warranty-info' className='h-8 text-sm' />
+                    <Input id='warranty-info' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='warranty-days' className='text-xs'>
                       Warranty Days
                     </Label>
-                    <Input id='warranty-days' className='h-8 text-sm' />
+                    <Input id='warranty-days' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='warranty-date' className='text-xs'>
                       Warranty Date
                     </Label>
-                    <Input
-                      id='warranty-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='warranty-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='last-used' className='text-xs'>
                       Last Used
                     </Label>
-                    <Input id='last-used' className='h-8 text-sm' />
+                    <Input id='last-used' className='h-8 text-sm'/>
                   </div>
                 </div>
               </div>
@@ -320,7 +272,7 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='running-hours' className='text-xs'>
                       Running Hours
                     </Label>
-                    <Input id='running-hours' className='h-8 text-sm' />
+                    <Input id='running-hours' className='h-8 text-sm'/>
                   </div>
                   <div className='col-span-2'>
                     <Label htmlFor='condition-metrics' className='text-xs'>
@@ -355,31 +307,31 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='work-by' className='text-xs'>
                       Work By
                     </Label>
-                    <Input id='work-by' className='h-8 text-sm' />
+                    <Input id='work-by' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='job-title' className='text-xs'>
                       Job Title
                     </Label>
-                    <Input id='job-title' className='h-8 text-sm' />
+                    <Input id='job-title' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='assigned-to' className='text-xs'>
                       Assigned To
                     </Label>
-                    <Input id='assigned-to' className='h-8 text-sm' />
+                    <Input id='assigned-to' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='due-date' className='text-xs'>
                       Due Date
                     </Label>
-                    <Input id='due-date' type='date' className='h-8 text-sm' />
+                    <Input id='due-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='status' className='text-xs'>
                       Status
                     </Label>
-                    <Input id='status' className='h-8 text-sm' />
+                    <Input id='status' className='h-8 text-sm'/>
                   </div>
                 </div>
               </div>
@@ -401,33 +353,25 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='work-order-no' className='text-xs'>
                       Work Order No
                     </Label>
-                    <Input id='work-order-no' className='h-8 text-sm' />
+                    <Input id='work-order-no' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='performed-by' className='text-xs'>
                       Performed By
                     </Label>
-                    <Input id='performed-by' className='h-8 text-sm' />
+                    <Input id='performed-by' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='next-due-date' className='text-xs'>
                       Next Due Date
                     </Label>
-                    <Input
-                      id='next-due-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='next-due-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='completion-date' className='text-xs'>
                       Completion Date
                     </Label>
-                    <Input
-                      id='completion-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='completion-date' type='date' className='h-8 text-sm'/>
                   </div>
                 </div>
               </div>
@@ -449,31 +393,31 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='spare-part' className='text-xs'>
                       Spare Part
                     </Label>
-                    <Input id='spare-part' className='h-8 text-sm' />
+                    <Input id='spare-part' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='part-name' className='text-xs'>
                       Part Name
                     </Label>
-                    <Input id='part-name' className='h-8 text-sm' />
+                    <Input id='part-name' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='qty' className='text-xs'>
                       Qty
                     </Label>
-                    <Input id='qty' type='number' className='h-8 text-sm' />
+                    <Input id='qty' type='number' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='critical' className='text-xs'>
                       Critical
                     </Label>
-                    <Input id='critical' className='h-8 text-sm' />
+                    <Input id='critical' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='location' className='text-xs'>
                       Location
                     </Label>
-                    <Input id='location' className='h-8 text-sm' />
+                    <Input id='location' className='h-8 text-sm'/>
                   </div>
                 </div>
               </div>
@@ -513,60 +457,49 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='classification-society' className='text-xs'>
                       Classification Society
                     </Label>
-                    <Input
-                      id='classification-society'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='classification-society' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='certificate-no' className='text-xs'>
                       Certificate No
                     </Label>
-                    <Input id='certificate-no' className='h-8 text-sm' />
+                    <Input id='certificate-no' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='last-class-date' className='text-xs'>
                       Last Class Date
                     </Label>
-                    <Input
-                      id='last-class-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='last-class-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='next-class-date' className='text-xs'>
                       Next Class Date
                     </Label>
-                    <Input
-                      id='next-class-date'
-                      type='date'
-                      className='h-8 text-sm'
-                    />
+                    <Input id='next-class-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='class-code' className='text-xs'>
                       Class Code
                     </Label>
-                    <Input id='class-code' className='h-8 text-sm' />
+                    <Input id='class-code' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='class-remarks' className='text-xs'>
                       Class Remarks
                     </Label>
-                    <Input id='class-remarks' className='h-8 text-sm' />
+                    <Input id='class-remarks' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='class-code-2' className='text-xs'>
                       Class Code
                     </Label>
-                    <Input id='class-code-2' className='h-8 text-sm' />
+                    <Input id='class-code-2' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='certificate' className='text-xs'>
                       Certificate
                     </Label>
-                    <Input id='certificate' className='h-8 text-sm' />
+                    <Input id='certificate' className='h-8 text-sm'/>
                   </div>
                 </div>
                 <div className='flex justify-center mt-4'>
@@ -596,25 +529,25 @@ export default function AddComponentForm(_a) {
                     <Label htmlFor='service-note' className='text-xs'>
                       Service Note
                     </Label>
-                    <Input id='service-note' className='h-8 text-sm' />
+                    <Input id='service-note' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='note-date' className='text-xs'>
                       Note Date
                     </Label>
-                    <Input id='note-date' type='date' className='h-8 text-sm' />
+                    <Input id='note-date' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='next-note' className='text-xs'>
                       Next Note
                     </Label>
-                    <Input id='next-note' type='date' className='h-8 text-sm' />
+                    <Input id='next-note' type='date' className='h-8 text-sm'/>
                   </div>
                   <div>
                     <Label htmlFor='note-level' className='text-xs'>
                       Note Level
                     </Label>
-                    <Input id='note-level' className='h-8 text-sm' />
+                    <Input id='note-level' className='h-8 text-sm'/>
                   </div>
                 </div>
               </div>
@@ -622,17 +555,13 @@ export default function AddComponentForm(_a) {
 
             {/* Save Button */}
             <div className='flex justify-end pb-4'>
-              <Button
-                onClick={handleSave}
-                className='bg-green-600 hover:bg-green-700 text-white px-8'
-              >
+              <Button onClick={handleSave} className='bg-green-600 hover:bg-green-700 text-white px-8'>
                 Save
               </Button>
             </div>
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
 }
 //# sourceMappingURL=AddComponentForm.jsx.map

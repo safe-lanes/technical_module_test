@@ -454,7 +454,7 @@ export const ${formName.replace(/\s+/g, '')}Editor: React.FC<${formName.replace(
                   </SelectTrigger>
                   <SelectContent>
                     {field.options?.map((option, index) => (
-                      <SelectItem key={index} value={option.toLowerCase().replace(/\s+/g, '-')}>
+                      <SelectItem key={index} value={option.toLowerCase().replace(/\\s+/g, '-')}>
                         {option}
                       </SelectItem>
                     ))}

@@ -137,7 +137,7 @@ router.post('/test', async (req, res) => {
       alertType: policy.alertType,
       priority: policy.priority,
       objectType: 'test',
-      objectId: 'test-' + Date.now(),
+      objectId: `test-${Date.now()}`,
       vesselId: 'V001',
       dedupeKey: `test-${policyId}-${Date.now()}`,
       state: 'test',

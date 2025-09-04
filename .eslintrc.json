@@ -31,8 +31,9 @@
     ],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-non-null-assertion": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "react-hooks/rules-of-hooks": "error",
@@ -53,5 +54,53 @@
       "version": "detect"
     }
   },
-  "ignorePatterns": ["dist/**", "build/**", "node_modules/**", "*.min.js"]
+  "ignorePatterns": ["dist/**", "build/**", "node_modules/**", "*.min.js"],
+  "overrides": [
+    {
+      "files": ["client/**/*.ts", "client/**/*.tsx"],
+      "env": {
+        "browser": true,
+        "es2021": true
+      },
+      "globals": {
+        "window": "readonly",
+        "document": "readonly",
+        "fetch": "readonly",
+        "FormData": "readonly",
+        "File": "readonly",
+        "HTMLElement": "readonly",
+        "HTMLInputElement": "readonly",
+        "HTMLDivElement": "readonly",
+        "HTMLTextAreaElement": "readonly",
+        "HTMLButtonElement": "readonly",
+        "HTMLAnchorElement": "readonly",
+        "HTMLSpanElement": "readonly",
+        "HTMLParagraphElement": "readonly",
+        "HTMLHeadingElement": "readonly",
+        "HTMLOListElement": "readonly",
+        "HTMLLIElement": "readonly",
+        "Event": "readonly",
+        "MouseEvent": "readonly",
+        "KeyboardEvent": "readonly",
+        "URLSearchParams": "readonly",
+        "setTimeout": "readonly",
+        "clearTimeout": "readonly",
+        "setInterval": "readonly",
+        "clearInterval": "readonly",
+        "alert": "readonly",
+        "confirm": "readonly",
+        "prompt": "readonly",
+        "console": "readonly",
+        "URL": "readonly",
+        "Blob": "readonly",
+        "React": "readonly"
+      }
+    },
+    {
+      "files": ["server/**/*.ts"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
 }

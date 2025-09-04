@@ -1,439 +1,374 @@
-import {
-  pgTable,
-  text,
-  integer,
-  boolean,
-  timestamp,
-  decimal,
-  index,
-  json,
-} from 'drizzle-orm/pg-core';
+import { __makeTemplateObject } from "tslib";
+import { mysqlTable, text, int, boolean, timestamp, decimal, index, json, varchar, } from 'drizzle-orm/mysql-core';
+import { sql } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
-export var users = pgTable('users', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  username: text('username').notNull().unique(),
-  password: text('password').notNull(),
+export var users = mysqlTable('users', {
+    id: int('id').primaryKey().autoincrement(),
+    username: varchar('username', { length: 255 }).notNull().unique(),
+    password: varchar('password', { length: 255 }).notNull(),
 });
 export var insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+    username: true,
+    password: true,
 });
 // Running Hours Audit Table
-export var runningHoursAudit = pgTable(
-  'running_hours_audit',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    vesselId: text('vessel_id').notNull(),
-    componentId: text('component_id').notNull(),
+export var runningHoursAudit = mysqlTable('running_hours_audit', {
+    id: int('id').primaryKey().autoincrement(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    componentId: varchar('component_id', { length: 100 }).notNull(),
     previousRH: decimal('previous_rh', { precision: 10, scale: 2 }).notNull(),
     newRH: decimal('new_rh', { precision: 10, scale: 2 }).notNull(),
     cumulativeRH: decimal('cumulative_rh', {
-      precision: 10,
-      scale: 2,
+        precision: 10,
+        scale: 2,
     }).notNull(),
-    dateUpdatedLocal: text('date_updated_local').notNull(), // DD-MMM-YYYY HH:mm
-    dateUpdatedTZ: text('date_updated_tz').notNull(), // e.g., Asia/Kolkata
+    dateUpdatedLocal: varchar('date_updated_local', { length: 50 }).notNull(),
+    dateUpdatedTZ: varchar('date_updated_tz', { length: 50 }).notNull(),
     enteredAtUTC: timestamp('entered_at_utc').notNull(),
-    userId: text('user_id').notNull(),
-    source: text('source').notNull(), // 'single' | 'bulk'
+    userId: varchar('user_id', { length: 100 }).notNull(),
+    source: varchar('source', { length: 20 }).notNull(),
     notes: text('notes'),
     meterReplaced: boolean('meter_replaced').notNull().default(false),
     oldMeterFinal: decimal('old_meter_final', { precision: 10, scale: 2 }),
     newMeterStart: decimal('new_meter_start', { precision: 10, scale: 2 }),
-    version: integer('version').notNull().default(1),
-  },
-  function (table) {
-    return {
-      componentIdIdx: index('idx_component_entered').on(
-        table.componentId,
-        table.enteredAtUTC
-      ),
-      componentDateIdx: index('idx_component_date').on(
-        table.componentId,
-        table.dateUpdatedLocal
-      ),
-    };
-  }
-);
-export var insertRunningHoursAuditSchema = createInsertSchema(
-  runningHoursAudit
-).omit({
-  id: true,
+    version: int('version').notNull().default(1),
+}, function (table) { return ({
+    componentIdIdx: index('idx_component_entered').on(table.componentId, table.enteredAtUTC),
+    componentDateIdx: index('idx_component_date').on(table.componentId, table.dateUpdatedLocal),
+}); });
+export var insertRunningHoursAuditSchema = createInsertSchema(runningHoursAudit).omit({
+    id: true,
 });
-// Components Table (for storing current cumulative RH)
-export var components = pgTable('components', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  componentCode: text('component_code'),
-  parentId: text('parent_id'),
-  category: text('category').notNull(),
-  currentCumulativeRH: decimal('current_cumulative_rh', {
-    precision: 10,
-    scale: 2,
-  })
-    .notNull()
-    .default('0'),
-  lastUpdated: text('last_updated'),
-  vesselId: text('vessel_id').notNull().default('V001'),
-  // Additional fields for Component Information (Section A)
-  maker: text('maker'),
-  model: text('model'),
-  serialNo: text('serial_no'),
-  deptCategory: text('dept_category'),
-  componentCategory: text('component_category'),
-  location: text('location'),
-  commissionedDate: text('commissioned_date'),
-  critical: boolean('critical').default(false),
-  classItem: boolean('class_item').default(false),
+// Components Table
+export var components = mysqlTable('components', {
+    id: varchar('id', { length: 100 }).primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    componentCode: varchar('component_code', { length: 100 }),
+    parentId: varchar('parent_id', { length: 100 }),
+    category: varchar('category', { length: 100 }).notNull(),
+    currentCumulativeRH: decimal('current_cumulative_rh', {
+        precision: 10,
+        scale: 2,
+    })
+        .notNull()
+        .default('0'),
+    lastUpdated: varchar('last_updated', { length: 50 }),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
+    maker: varchar('maker', { length: 255 }),
+    model: varchar('model', { length: 255 }),
+    serialNo: varchar('serial_no', { length: 255 }),
+    deptCategory: varchar('dept_category', { length: 100 }),
+    componentCategory: varchar('component_category', { length: 100 }),
+    location: varchar('location', { length: 255 }),
+    commissionedDate: varchar('commissioned_date', { length: 50 }),
+    critical: boolean('critical').default(false),
+    classItem: boolean('class_item').default(false),
 });
 export var insertComponentSchema = createInsertSchema(components).omit({});
 // Form Definitions Table
-export var formDefinitions = pgTable('form_definitions', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  name: text('name').notNull().unique(), // ADD_COMPONENT, WO_PLANNED, WO_UNPLANNED
-  subgroup: text('subgroup'),
+export var formDefinitions = mysqlTable('form_definitions', {
+    id: int('id').primaryKey().autoincrement(),
+    name: varchar('name', { length: 100 }).notNull().unique(),
+    subgroup: varchar('subgroup', { length: 100 }),
 });
-export var insertFormDefinitionSchema = createInsertSchema(
-  formDefinitions
-).omit({
-  id: true,
+export var insertFormDefinitionSchema = createInsertSchema(formDefinitions).omit({
+    id: true,
 });
 // Form Versions Table
-export var formVersions = pgTable(
-  'form_versions',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    formId: integer('form_id').notNull(),
-    versionNo: integer('version_no').notNull(),
+export var formVersions = mysqlTable('form_versions', {
+    id: int('id').primaryKey().autoincrement(),
+    formId: int('form_id').notNull(),
+    versionNo: int('version_no').notNull(),
     versionDate: timestamp('version_date').notNull(),
-    status: text('status').notNull(), // DRAFT, PUBLISHED, ARCHIVED
-    authorUserId: text('author_user_id').notNull(),
+    status: varchar('status', { length: 20 }).notNull(),
+    authorUserId: varchar('author_user_id', { length: 100 }).notNull(),
     changelog: text('changelog'),
-    schemaJson: text('schema_json').notNull(), // JSON string
-  },
-  function (table) {
-    return {
-      formIdIdx: index('idx_form_id').on(table.formId),
-      statusIdx: index('idx_status').on(table.status),
-    };
-  }
-);
+    schemaJson: text('schema_json').notNull(),
+}, function (table) { return ({
+    formIdIdx: index('idx_form_id').on(table.formId),
+    statusIdx: index('idx_status').on(table.status),
+}); });
 export var insertFormVersionSchema = createInsertSchema(formVersions).omit({
-  id: true,
+    id: true,
 });
-// Form Version Usage Table (Audit)
-export var formVersionUsage = pgTable('form_version_usage', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  formVersionId: integer('form_version_id').notNull(),
-  usedInModule: text('used_in_module').notNull(),
-  usedAt: timestamp('used_at').notNull(),
+// Form Version Usage Table
+export var formVersionUsage = mysqlTable('form_version_usage', {
+    id: int('id').primaryKey().autoincrement(),
+    formVersionId: int('form_version_id').notNull(),
+    usedInModule: varchar('used_in_module', { length: 100 }).notNull(),
+    usedAt: timestamp('used_at').notNull(),
 });
-export var insertFormVersionUsageSchema = createInsertSchema(
-  formVersionUsage
-).omit({
-  id: true,
+export var insertFormVersionUsageSchema = createInsertSchema(formVersionUsage).omit({
+    id: true,
 });
 // Spares Table
-export var spares = pgTable(
-  'spares',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    partCode: text('part_code').notNull(),
-    partName: text('part_name').notNull(),
-    componentId: text('component_id').notNull(),
-    componentCode: text('component_code'),
-    componentName: text('component_name').notNull(),
-    componentSpareCode: text('component_spare_code'), // Format: SP-<ComponentCode>-<NNN>
-    critical: text('critical').notNull(), // 'Critical' | 'Non-Critical' | 'Yes' | 'No'
-    rob: integer('rob').notNull().default(0), // Remaining on Board
-    min: integer('min').notNull().default(0), // Minimum stock
-    location: text('location'),
-    vesselId: text('vessel_id').notNull().default('V001'),
+export var spares = mysqlTable('spares', {
+    id: int('id').primaryKey().autoincrement(),
+    partCode: varchar('part_code', { length: 100 }).notNull(),
+    partName: varchar('part_name', { length: 255 }).notNull(),
+    componentId: varchar('component_id', { length: 100 }).notNull(),
+    componentCode: varchar('component_code', { length: 100 }),
+    componentName: varchar('component_name', { length: 255 }).notNull(),
+    componentSpareCode: varchar('component_spare_code', { length: 100 }),
+    critical: varchar('critical', { length: 20 }).notNull(),
+    rob: int('rob').notNull().default(0),
+    min: int('min').notNull().default(0),
+    location: varchar('location', { length: 255 }),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
     deleted: boolean('deleted').notNull().default(false),
-  },
-  function (table) {
-    return {
-      componentIdIdx: index('idx_spare_component').on(table.componentId),
-      vesselIdIdx: index('idx_spare_vessel').on(table.vesselId),
-      componentSpareCodeIdx: index('idx_spare_code').on(
-        table.vesselId,
-        table.componentSpareCode
-      ),
-    };
-  }
-);
+}, function (table) { return ({
+    componentIdIdx: index('idx_spare_component').on(table.componentId),
+    vesselIdIdx: index('idx_spare_vessel').on(table.vesselId),
+    componentSpareCodeIdx: index('idx_spare_code').on(table.vesselId, table.componentSpareCode),
+}); });
 export var insertSpareSchema = createInsertSchema(spares).omit({
-  id: true,
-  deleted: true,
+    id: true,
+    deleted: true,
 });
 // Spares History Table
-export var sparesHistory = pgTable(
-  'spares_history',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+export var sparesHistory = mysqlTable('spares_history', {
+    id: int('id').primaryKey().autoincrement(),
     timestampUTC: timestamp('timestamp_utc').notNull(),
-    vesselId: text('vessel_id').notNull(),
-    spareId: integer('spare_id').notNull(),
-    partCode: text('part_code').notNull(),
-    partName: text('part_name').notNull(),
-    componentId: text('component_id').notNull(),
-    componentCode: text('component_code'),
-    componentName: text('component_name').notNull(),
-    componentSpareCode: text('component_spare_code'), // Component Spare Code at time of event
-    eventType: text('event_type').notNull(), // 'CONSUME' | 'RECEIVE' | 'ADJUST' | 'CREATE' | 'EDIT' | 'LINK_CREATED' | 'CODE_RENUMBERED'
-    qtyChange: integer('qty_change').notNull(), // positive for receive, negative for consume
-    robAfter: integer('rob_after').notNull(),
-    userId: text('user_id').notNull(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    spareId: int('spare_id').notNull(),
+    partCode: varchar('part_code', { length: 100 }).notNull(),
+    partName: varchar('part_name', { length: 255 }).notNull(),
+    componentId: varchar('component_id', { length: 100 }).notNull(),
+    componentCode: varchar('component_code', { length: 100 }),
+    componentName: varchar('component_name', { length: 255 }).notNull(),
+    componentSpareCode: varchar('component_spare_code', { length: 100 }),
+    eventType: varchar('event_type', { length: 30 }).notNull(),
+    qtyChange: int('qty_change').notNull(),
+    robAfter: int('rob_after').notNull(),
+    userId: varchar('user_id', { length: 100 }).notNull(),
     remarks: text('remarks'),
-    reference: text('reference'), // Work Order or PO reference
-    dateLocal: text('date_local'), // Local date of transaction
-    tz: text('tz'), // Timezone
-    place: text('place'), // Port/Location for receive/consume
-  },
-  function (table) {
-    return {
-      timestampIdx: index('idx_history_timestamp').on(table.timestampUTC),
-      spareIdIdx: index('idx_history_spare').on(table.spareId),
-      eventTypeIdx: index('idx_history_event').on(table.eventType),
-    };
-  }
-);
+    reference: varchar('reference', { length: 100 }),
+    dateLocal: varchar('date_local', { length: 50 }),
+    tz: varchar('tz', { length: 50 }),
+    place: varchar('place', { length: 255 }),
+}, function (table) { return ({
+    timestampIdx: index('idx_history_timestamp').on(table.timestampUTC),
+    spareIdIdx: index('idx_history_spare').on(table.spareId),
+    eventTypeIdx: index('idx_history_event').on(table.eventType),
+}); });
 export var insertSpareHistorySchema = createInsertSchema(sparesHistory).omit({
-  id: true,
+    id: true,
 });
-// Stores Ledger Table (for Stores module history)
-export var storesLedger = pgTable(
-  'stores_ledger',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    vesselId: text('vessel_id').notNull(),
-    section: text('section').notNull(), // 'stores' | 'lubes' | 'chemicals' | 'others'
-    itemId: integer('item_id').notNull(),
-    partCode: text('part_code').notNull(),
-    itemName: text('item_name').notNull(),
-    uom: text('uom'), // Base unit of measure
-    eventType: text('event_type').notNull(), // 'RECEIVE' | 'CONSUME' | 'ADJUST' | 'TRANSFER_IN' | 'TRANSFER_OUT' | 'ARCHIVE'
-    qtyChangeBase: decimal('qty_change_base', {
-      precision: 10,
-      scale: 2,
-    }).notNull(), // Change in base UOM
-    qtyDisplay: decimal('qty_display', { precision: 10, scale: 2 }).notNull(), // Change in display UOM
-    uomDisplay: text('uom_display'), // Display UOM (could be different from base)
-    robAfterBase: decimal('rob_after_base', {
-      precision: 10,
-      scale: 2,
-    }).notNull(), // ROB after in base UOM
-    dateLocal: text('date_local').notNull(), // DD-MMM-YYYY HH:mm
-    tz: text('tz').notNull(), // Timezone
+// Stores Ledger Table
+export var storesLedger = mysqlTable('stores_ledger', {
+    id: int('id').primaryKey().autoincrement(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    itemCode: varchar('item_code', { length: 100 }).notNull(),
+    itemName: varchar('item_name', { length: 255 }).notNull(),
+    unit: varchar('unit', { length: 50 }).notNull(),
+    eventType: varchar('event_type', { length: 30 }).notNull(),
+    quantity: decimal('quantity', { precision: 10, scale: 3 }).notNull(),
+    robAfter: decimal('rob_after', { precision: 10, scale: 3 }).notNull(),
+    cost: decimal('cost', { precision: 10, scale: 2 }),
+    totalCost: decimal('total_cost', { precision: 10, scale: 2 }),
+    supplier: varchar('supplier', { length: 255 }),
+    reference: varchar('reference', { length: 100 }),
+    place: varchar('place', { length: 255 }),
+    dateLocal: varchar('date_local', { length: 50 }).notNull(),
+    tz: varchar('tz', { length: 50 }).notNull(),
     timestampUTC: timestamp('timestamp_utc').notNull(),
-    place: text('place'), // For receive events
-    ref: text('ref'), // PO/WO reference
-    userId: text('user_id').notNull(),
+    userId: varchar('user_id', { length: 100 }).notNull(),
     remarks: text('remarks'),
-  },
-  function (table) {
-    return {
-      vesselSectionDateIdx: index('idx_vessel_section_date').on(
-        table.vesselId,
-        table.section,
-        table.dateLocal
-      ),
-      itemDateIdx: index('idx_item_date').on(table.itemId, table.dateLocal),
-    };
-  }
-);
+}, function (table) { return ({
+    vesselItemIdx: index('idx_vessel_item').on(table.vesselId, table.itemCode),
+    timestampIdx: index('idx_timestamp').on(table.timestampUTC),
+    eventTypeIdx: index('idx_event_type').on(table.eventType),
+}); });
 export var insertStoresLedgerSchema = createInsertSchema(storesLedger).omit({
-  id: true,
+    id: true,
 });
-// Change Request Tables for Modify PMS module
-export var changeRequest = pgTable(
-  'change_request',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    vesselId: text('vessel_id').notNull(),
-    category: text('category').notNull(), // 'components' | 'work_orders' | 'spares' | 'stores'
-    title: text('title').notNull(), // max 120 chars enforced in application
-    reason: text('reason').notNull(),
-    targetType: text('target_type'), // 'component' | 'work_order' | 'spare' | 'store'
-    targetId: text('target_id'),
-    snapshotBeforeJson: json('snapshot_before_json'),
-    proposedChangesJson: json('proposed_changes_json'), // Array of change objects
-    movePreviewJson: json('move_preview_json'), // Component move preview (nullable)
-    status: text('status').notNull().default('draft'), // 'draft' | 'submitted' | 'returned' | 'approved' | 'rejected'
-    requestedByUserId: text('requested_by_user_id').notNull(),
-    submittedAt: timestamp('submitted_at'),
-    reviewedByUserId: text('reviewed_by_user_id'),
-    reviewedAt: timestamp('reviewed_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
+// Work Orders Table
+export var workOrders = mysqlTable('work_orders', {
+    id: varchar('id', { length: 100 }).primaryKey(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
+    component: varchar('component', { length: 255 }).notNull(),
+    componentCode: varchar('component_code', { length: 100 }),
+    workOrderNo: varchar('work_order_no', { length: 50 }).notNull(),
+    templateCode: varchar('template_code', { length: 100 }),
+    executionId: varchar('execution_id', { length: 100 }),
+    jobTitle: varchar('job_title', { length: 500 }).notNull(),
+    assignedTo: varchar('assigned_to', { length: 255 }).notNull(),
+    dueDate: varchar('due_date', { length: 50 }).notNull(),
+    status: varchar('status', { length: 50 }).notNull(),
+    dateCompleted: varchar('date_completed', { length: 50 }),
+    submittedDate: varchar('submitted_date', { length: 50 }),
+    formData: json('form_data'),
+    taskType: varchar('task_type', { length: 100 }),
+    maintenanceBasis: varchar('maintenance_basis', { length: 50 }),
+    frequencyValue: varchar('frequency_value', { length: 50 }),
+    frequencyUnit: varchar('frequency_unit', { length: 50 }),
+    approverRemarks: text('approver_remarks'),
+    isExecution: boolean('is_execution').default(false),
+    templateId: varchar('template_id', { length: 100 }),
+    approver: varchar('approver', { length: 255 }),
+    approvalDate: varchar('approval_date', { length: 50 }),
+    rejectionDate: varchar('rejection_date', { length: 50 }),
+    nextDueDate: varchar('next_due_date', { length: 50 }),
+    nextDueReading: varchar('next_due_reading', { length: 50 }),
+    currentReading: varchar('current_reading', { length: 50 }),
+    createdAt: timestamp('created_at')
+        .notNull()
+        .default(sql(templateObject_1 || (templateObject_1 = __makeTemplateObject(["CURRENT_TIMESTAMP"], ["CURRENT_TIMESTAMP"])))),
     updatedAt: timestamp('updated_at')
-      .notNull()
-      .defaultNow()
-      .$onUpdateFn(function () {
-        return new Date();
-      }),
-  },
-  function (table) {
-    return {
-      vesselCategoryIdx: index('idx_vessel_category').on(
-        table.vesselId,
-        table.category
-      ),
-      statusIdx: index('idx_status').on(table.status),
-    };
-  }
-);
+        .notNull()
+        .default(sql(templateObject_2 || (templateObject_2 = __makeTemplateObject(["CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"], ["CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"])))),
+}, function (table) { return ({
+    vesselIdIdx: index('idx_wo_vessel').on(table.vesselId),
+    statusIdx: index('idx_wo_status').on(table.status),
+    componentIdx: index('idx_wo_component').on(table.componentCode),
+    dueDateIdx: index('idx_wo_due_date').on(table.dueDate),
+}); });
+export var insertWorkOrderSchema = createInsertSchema(workOrders).omit({
+    createdAt: true,
+    updatedAt: true,
+});
+// Change Request Table
+export var changeRequest = mysqlTable('change_request', {
+    id: int('id').primaryKey().autoincrement(),
+    crNumber: varchar('cr_number', { length: 50 }).notNull().unique(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    title: varchar('title', { length: 255 }).notNull(),
+    description: text('description').notNull(),
+    justification: text('justification').notNull(),
+    submittedBy: varchar('submitted_by', { length: 100 }).notNull(),
+    submittedAt: timestamp('submitted_at').notNull(),
+    status: varchar('status', { length: 20 }).notNull().default('DRAFT'),
+    priority: varchar('priority', { length: 20 }).notNull().default('MEDIUM'),
+    assignedTo: varchar('assigned_to', { length: 100 }),
+    reviewedBy: varchar('reviewed_by', { length: 100 }),
+    reviewedAt: timestamp('reviewed_at'),
+    reviewComments: text('review_comments'),
+    targetModules: json('target_modules'),
+    proposedChanges: json('proposed_changes'),
+    approvedChanges: json('approved_changes'),
+    rejectionReason: text('rejection_reason'),
+    implementedAt: timestamp('implemented_at'),
+    implementedBy: varchar('implemented_by', { length: 100 }),
+    closedAt: timestamp('closed_at'),
+    closedBy: varchar('closed_by', { length: 100 }),
+}, function (table) { return ({
+    statusIdx: index('idx_cr_status').on(table.status),
+    vesselIdx: index('idx_cr_vessel').on(table.vesselId),
+    submittedByIdx: index('idx_cr_submitted').on(table.submittedBy),
+}); });
 export var insertChangeRequestSchema = createInsertSchema(changeRequest).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+    id: true,
 });
-// Change Request Attachments
-export var changeRequestAttachment = pgTable(
-  'change_request_attachment',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    changeRequestId: integer('change_request_id').notNull(),
-    filename: text('filename').notNull(),
-    url: text('url').notNull(),
-    uploadedByUserId: text('uploaded_by_user_id').notNull(),
-    uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
-  },
-  function (table) {
-    return {
-      changeRequestIdx: index('idx_change_request').on(table.changeRequestId),
-    };
-  }
-);
-export var insertChangeRequestAttachmentSchema = createInsertSchema(
-  changeRequestAttachment
-).omit({
-  id: true,
-  uploadedAt: true,
+// Change Request Attachment Table
+export var changeRequestAttachment = mysqlTable('change_request_attachment', {
+    id: int('id').primaryKey().autoincrement(),
+    changeRequestId: int('change_request_id').notNull(),
+    fileName: varchar('file_name', { length: 255 }).notNull(),
+    fileType: varchar('file_type', { length: 100 }).notNull(),
+    fileSize: int('file_size').notNull(),
+    filePath: varchar('file_path', { length: 500 }).notNull(),
+    uploadedBy: varchar('uploaded_by', { length: 100 }).notNull(),
+    uploadedAt: timestamp('uploaded_at').notNull(),
+    description: varchar('description', { length: 500 }),
+}, function (table) { return ({
+    changeRequestIdx: index('idx_attachment_cr').on(table.changeRequestId),
+}); });
+export var insertChangeRequestAttachmentSchema = createInsertSchema(changeRequestAttachment).omit({
+    id: true,
 });
-// Change Request Comments
-export var changeRequestComment = pgTable(
-  'change_request_comment',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    changeRequestId: integer('change_request_id').notNull(),
-    userId: text('user_id').notNull(),
-    message: text('message').notNull(),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-  },
-  function (table) {
-    return {
-      changeRequestIdx: index('idx_change_request_comment').on(
-        table.changeRequestId
-      ),
-    };
-  }
-);
-export var insertChangeRequestCommentSchema = createInsertSchema(
-  changeRequestComment
-).omit({
-  id: true,
-  createdAt: true,
+// Change Request Comment Table
+export var changeRequestComment = mysqlTable('change_request_comment', {
+    id: int('id').primaryKey().autoincrement(),
+    changeRequestId: int('change_request_id').notNull(),
+    commentText: text('comment_text').notNull(),
+    commentType: varchar('comment_type', { length: 20 })
+        .notNull()
+        .default('GENERAL'),
+    commentedBy: varchar('commented_by', { length: 100 }).notNull(),
+    commentedAt: timestamp('commented_at').notNull(),
+    parentCommentId: int('parent_comment_id'),
+    isInternal: boolean('is_internal').notNull().default(false),
+    editedAt: timestamp('edited_at'),
+    editedBy: varchar('edited_by', { length: 100 }),
+}, function (table) { return ({
+    changeRequestIdx: index('idx_comment_cr').on(table.changeRequestId),
+    commentedAtIdx: index('idx_comment_date').on(table.commentedAt),
+}); });
+export var insertChangeRequestCommentSchema = createInsertSchema(changeRequestComment).omit({
+    id: true,
 });
-// Alert Policy Table
-export var alertPolicies = pgTable('alert_policies', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  alertType: text('alert_type').notNull(), // 'maintenance_due' | 'running_hours' | 'critical_inventory' | 'certificate_expiration' | 'system_backup'
-  enabled: boolean('enabled').notNull().default(true),
-  priority: text('priority').notNull().default('medium'), // 'low' | 'medium' | 'high'
-  emailEnabled: boolean('email_enabled').notNull().default(false),
-  inAppEnabled: boolean('in_app_enabled').notNull().default(true),
-  thresholds: text('thresholds').notNull().default('{}'), // JSON string for type-specific thresholds
-  scopeFilters: text('scope_filters').notNull().default('{}'), // JSON string for filters
-  recipients: text('recipients').notNull().default('{}'), // JSON string for recipient configuration
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  createdBy: text('created_by').notNull(),
-  updatedBy: text('updated_by').notNull(),
+// Alert Policies Table
+export var alertPolicies = mysqlTable('alert_policies', {
+    id: int('id').primaryKey().autoincrement(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description'),
+    module: varchar('module', { length: 100 }).notNull(),
+    triggerCondition: json('trigger_condition').notNull(),
+    enabled: boolean('enabled').notNull().default(true),
+    severity: varchar('severity', { length: 20 }).notNull().default('MEDIUM'),
+    cooldownMinutes: int('cooldown_minutes').notNull().default(60),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
 });
 export var insertAlertPolicySchema = createInsertSchema(alertPolicies).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+    id: true,
 });
 // Alert Events Table
-export var alertEvents = pgTable(
-  'alert_events',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    policyId: integer('policy_id').notNull(),
-    alertType: text('alert_type').notNull(),
-    priority: text('priority').notNull(),
-    objectType: text('object_type'), // 'work_order' | 'component' | 'spare' | 'certificate' | 'system'
-    objectId: text('object_id'),
-    vesselId: text('vessel_id'),
-    dedupeKey: text('dedupe_key').notNull(),
-    state: text('state'), // 'due' | 'overdue' | 'low' | 'critical' | 'expired' | 'failed' etc
-    payload: text('payload').notNull(), // JSON string with all event details
-    ackBy: text('ack_by'),
-    ackAt: timestamp('ack_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-  },
-  function (table) {
-    return {
-      dedupeKeyIdx: index('idx_dedupe_key').on(
-        table.dedupeKey,
-        table.createdAt
-      ),
-      policyIdx: index('idx_policy_events').on(table.policyId, table.createdAt),
-    };
-  }
-);
+export var alertEvents = mysqlTable('alert_events', {
+    id: int('id').primaryKey().autoincrement(),
+    policyId: int('policy_id').notNull(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    title: varchar('title', { length: 255 }).notNull(),
+    message: text('message').notNull(),
+    severity: varchar('severity', { length: 20 }).notNull(),
+    status: varchar('status', { length: 20 }).notNull().default('ACTIVE'),
+    triggerData: json('trigger_data'),
+    triggeredAt: timestamp('triggered_at').notNull(),
+    acknowledgedAt: timestamp('acknowledged_at'),
+    acknowledgedBy: varchar('acknowledged_by', { length: 100 }),
+    resolvedAt: timestamp('resolved_at'),
+    resolvedBy: varchar('resolved_by', { length: 100 }),
+    resolutionNotes: text('resolution_notes'),
+}, function (table) { return ({
+    policyIdx: index('idx_alert_policy').on(table.policyId),
+    vesselIdx: index('idx_alert_vessel').on(table.vesselId),
+    statusIdx: index('idx_alert_status').on(table.status),
+    triggeredAtIdx: index('idx_alert_triggered').on(table.triggeredAt),
+}); });
 export var insertAlertEventSchema = createInsertSchema(alertEvents).omit({
-  id: true,
-  createdAt: true,
+    id: true,
 });
 // Alert Deliveries Table
-export var alertDeliveries = pgTable(
-  'alert_deliveries',
-  {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-    eventId: integer('event_id').notNull(),
-    channel: text('channel').notNull(), // 'email' | 'in_app' | 'sms' | 'slack'
-    recipient: text('recipient').notNull(), // email address, user ID, phone number, etc
-    status: text('status').notNull().default('pending'), // 'pending' | 'sent' | 'failed' | 'acknowledged'
-    errorMessage: text('error_message'),
-    sentAt: timestamp('sent_at'),
-    acknowledgedAt: timestamp('acknowledged_at'),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-  },
-  function (table) {
-    return {
-      eventIdx: index('idx_event_deliveries').on(table.eventId, table.channel),
-      recipientIdx: index('idx_recipient_deliveries').on(
-        table.recipient,
-        table.status
-      ),
-    };
-  }
-);
-export var insertAlertDeliverySchema = createInsertSchema(alertDeliveries).omit(
-  {
+export var alertDeliveries = mysqlTable('alert_deliveries', {
+    id: int('id').primaryKey().autoincrement(),
+    alertEventId: int('alert_event_id').notNull(),
+    deliveryMethod: varchar('delivery_method', { length: 50 }).notNull(),
+    recipient: varchar('recipient', { length: 255 }).notNull(),
+    status: varchar('status', { length: 20 }).notNull(),
+    attemptedAt: timestamp('attempted_at').notNull(),
+    deliveredAt: timestamp('delivered_at'),
+    failureReason: text('failure_reason'),
+    retryCount: int('retry_count').notNull().default(0),
+    nextRetryAt: timestamp('next_retry_at'),
+}, function (table) { return ({
+    alertEventIdx: index('idx_delivery_event').on(table.alertEventId),
+    statusIdx: index('idx_delivery_status').on(table.status),
+    nextRetryIdx: index('idx_delivery_retry').on(table.nextRetryAt),
+}); });
+export var insertAlertDeliverySchema = createInsertSchema(alertDeliveries).omit({
     id: true,
-    createdAt: true,
-  }
-);
-// Alert Configuration Table (for quiet hours and escalation)
-export var alertConfig = pgTable('alert_config', {
-  id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-  vesselId: text('vessel_id').notNull(),
-  quietHoursEnabled: boolean('quiet_hours_enabled').notNull().default(false),
-  quietHoursStart: text('quiet_hours_start'), // HH:mm format
-  quietHoursEnd: text('quiet_hours_end'), // HH:mm format
-  escalationEnabled: boolean('escalation_enabled').notNull().default(false),
-  escalationHours: integer('escalation_hours').notNull().default(4),
-  escalationRecipients: text('escalation_recipients').notNull().default('[]'), // JSON array of recipients
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  updatedBy: text('updated_by').notNull(),
+});
+// Alert Config Table
+export var alertConfig = mysqlTable('alert_config', {
+    id: int('id').primaryKey().autoincrement(),
+    vesselId: varchar('vessel_id', { length: 50 }).notNull(),
+    configKey: varchar('config_key', { length: 100 }).notNull(),
+    configValue: json('config_value').notNull(),
+    updatedBy: varchar('updated_by', { length: 100 }).notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
 });
 export var insertAlertConfigSchema = createInsertSchema(alertConfig).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+    id: true,
 });
+var templateObject_1, templateObject_2;
 //# sourceMappingURL=schema.js.map

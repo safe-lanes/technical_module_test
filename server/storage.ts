@@ -1707,7 +1707,7 @@ export class MemStorage implements IStorage {
       componentId: spare.componentId,
       componentCode: spare.componentCode || null,
       componentName: spare.componentName,
-      componentSpareCode: componentSpareCode,
+      componentSpareCode,
       eventType: 'LINK_CREATED',
       qtyChange: spare.rob || 0,
       robAfter: spare.rob || 0,

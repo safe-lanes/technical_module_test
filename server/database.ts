@@ -36,7 +36,7 @@ import { type IStorage } from './storage';
 function logDbOperation(operation: string, data?: any) {
   console.log(
     `🔄 MySQL DB Operation: ${operation}`,
-    data ? JSON.stringify(data).slice(0, 100) + '...' : ''
+    data ? `${JSON.stringify(data).slice(0, 100)}...` : ''
   );
 }
 

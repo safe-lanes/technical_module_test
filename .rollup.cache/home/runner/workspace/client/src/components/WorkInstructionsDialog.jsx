@@ -1,14 +1,7 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 var WorkInstructionsDialog = function (_a) {
-  var isOpen = _a.isOpen,
-    onClose = _a.onClose;
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    var isOpen = _a.isOpen, onClose = _a.onClose;
+    return (<Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
         <DialogHeader className='pb-4'>
           <DialogTitle className='text-lg font-semibold text-[#16569e]'>
@@ -48,8 +41,7 @@ var WorkInstructionsDialog = function (_a) {
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
 };
 export default WorkInstructionsDialog;
 //# sourceMappingURL=WorkInstructionsDialog.jsx.map

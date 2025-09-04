@@ -1,91 +1,62 @@
-import { __assign } from 'tslib';
+import { __assign } from "tslib";
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { ArrowLeft, FileText } from 'lucide-react';
 import WorkInstructionsDialog from './WorkInstructionsDialog';
 var NewWorkOrderForm = function (_a) {
-  var isOpen = _a.isOpen,
-    onClose = _a.onClose,
-    onSubmit = _a.onSubmit;
-  var _b = useState('partA'),
-    activeSection = _b[0],
-    setActiveSection = _b[1];
-  var _c = useState(false),
-    isWorkInstructionsOpen = _c[0],
-    setIsWorkInstructionsOpen = _c[1];
-  var _d = useState({
-      workOrder: 'WO-2025-17',
-      jobTitle: '',
-      component: '',
-      maintenanceType: 'Planned Maintenance',
-      assignedTo: '',
-      approver: '',
-      jobCategory: '',
-      classRelated: '',
-      status: '',
-      briefWorkDescription: '',
-      ppeRequirements: '',
-      permitRequirements: '',
-      otherSafetyRequirements: '',
-    }),
-    formData = _d[0],
-    setFormData = _d[1];
-  var selectSection = function (section) {
-    setActiveSection(section);
-  };
-  var handleInputChange = function (field, value) {
-    setFormData(function (prev) {
-      var _a;
-      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
-    });
-  };
-  var handleSubmit = function () {
-    if (onSubmit) {
-      onSubmit(formData);
-      onClose();
-    }
-  };
-  return (
-    <>
+    var isOpen = _a.isOpen, onClose = _a.onClose;
+    var _b = useState('partA'), activeSection = _b[0], setActiveSection = _b[1];
+    var _c = useState(false), isWorkInstructionsOpen = _c[0], setIsWorkInstructionsOpen = _c[1];
+    var _d = useState({
+        workOrder: 'WO-2025-17',
+        jobTitle: '',
+        component: '',
+        maintenanceType: 'Planned Maintenance',
+        assignedTo: '',
+        approver: '',
+        jobCategory: '',
+        classRelated: '',
+        status: '',
+        briefWorkDescription: '',
+        ppeRequirements: '',
+        permitRequirements: '',
+        otherSafetyRequirements: '',
+    }), formData = _d[0], setFormData = _d[1];
+    var selectSection = function (section) {
+        setActiveSection(section);
+    };
+    var handleInputChange = function (field, value) {
+        setFormData(function (prev) {
+            var _a;
+            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
+        });
+    };
+    // const handleSubmit = () => {
+    //   if (onSubmit) {
+    //     onSubmit(formData);
+    //     onClose();
+    //   }
+    // }; // Unused
+    return (<>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className='w-[80vw] max-w-none h-[90vh] flex flex-col'>
           <DialogHeader className='pb-4 pr-12'>
             <div className='flex items-center justify-between'>
               <DialogTitle>Work Order Form</DialogTitle>
               <div className='flex items-center gap-2'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={function () {
-                    return setIsWorkInstructionsOpen(true);
-                  }}
-                >
-                  <FileText className='h-4 w-4 mr-1' />+ Add Work Instructions
+                <Button variant='outline' size='sm' onClick={function () { return setIsWorkInstructionsOpen(true); }}>
+                  <FileText className='h-4 w-4 mr-1'/>+ Add Work Instructions
                 </Button>
-                <Button
-                  size='sm'
-                  className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-                >
+                <Button size='sm' className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'>
                   Save
                 </Button>
                 <Button variant='outline' size='sm' onClick={onClose}>
-                  <ArrowLeft className='h-4 w-4 mr-1' />
+                  <ArrowLeft className='h-4 w-4 mr-1'/>
                   Back
                 </Button>
               </div>
@@ -96,44 +67,22 @@ var NewWorkOrderForm = function (_a) {
             {/* Left Sidebar - Navigation */}
             <div className='w-72 bg-gray-50 border-r border-gray-200 p-4'>
               <div className='space-y-2'>
-                <div
-                  className={'flex items-center gap-2 p-3 rounded cursor-pointer '.concat(
-                    activeSection === 'partA'
-                      ? 'bg-[#16569e] text-white'
-                      : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
-                  )}
-                  onClick={function () {
-                    return selectSection('partA');
-                  }}
-                >
-                  <div
-                    className={'w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold '.concat(
-                      activeSection === 'partA'
-                        ? 'bg-white text-[#52baf3]'
-                        : 'bg-gray-300 text-white'
-                    )}
-                  >
+                <div className={"flex items-center gap-2 p-3 rounded cursor-pointer ".concat(activeSection === 'partA'
+            ? 'bg-[#16569e] text-white'
+            : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100')} onClick={function () { return selectSection('partA'); }}>
+                  <div className={"w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ".concat(activeSection === 'partA'
+            ? 'bg-white text-[#52baf3]'
+            : 'bg-gray-300 text-white')}>
                     A
                   </div>
                   <span className='font-medium'>Work Order Details</span>
                 </div>
-                <div
-                  className={'flex items-center gap-2 p-3 rounded cursor-pointer '.concat(
-                    activeSection === 'partB'
-                      ? 'bg-[#16569e] text-white'
-                      : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
-                  )}
-                  onClick={function () {
-                    return selectSection('partB');
-                  }}
-                >
-                  <div
-                    className={'w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold '.concat(
-                      activeSection === 'partB'
-                        ? 'bg-white text-[#52baf3]'
-                        : 'bg-gray-300 text-white'
-                    )}
-                  >
+                <div className={"flex items-center gap-2 p-3 rounded cursor-pointer ".concat(activeSection === 'partB'
+            ? 'bg-[#16569e] text-white'
+            : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100')} onClick={function () { return selectSection('partB'); }}>
+                  <div className={"w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ".concat(activeSection === 'partB'
+            ? 'bg-white text-[#52baf3]'
+            : 'bg-gray-300 text-white')}>
                     B
                   </div>
                   <span className='font-medium'>Work Completion Record</span>
@@ -144,8 +93,7 @@ var NewWorkOrderForm = function (_a) {
             {/* Right Content Area */}
             <div className='flex-1 overflow-auto p-6'>
               {/* Part A - Work Order Details */}
-              {activeSection === 'partA' && (
-                <div className='border border-gray-200 rounded-lg mb-6'>
+              {activeSection === 'partA' && (<div className='border border-gray-200 rounded-lg mb-6'>
                   <div className='bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between'>
                     <h3 className='text-lg font-semibold text-gray-900'>
                       Part A - Work Order Details
@@ -158,10 +106,7 @@ var NewWorkOrderForm = function (_a) {
                   <div className='p-6'>
                     {/* A1. Work Order Information */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         A1. Work Order Information
                       </h4>
 
@@ -171,45 +116,27 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Work Order
                           </Label>
-                          <Input
-                            value={formData.workOrder}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'workOrder',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                          />
+                          <Input value={formData.workOrder} onChange={function (e) {
+                return handleInputChange('workOrder', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Job Title
                           </Label>
-                          <Input
-                            value={formData.jobTitle}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'jobTitle',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Main Engine - Replace Fuel Filters'
-                          />
+                          <Input value={formData.jobTitle} onChange={function (e) {
+                return handleInputChange('jobTitle', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Main Engine - Replace Fuel Filters'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Component
                           </Label>
-                          <Select
-                            value={formData.component}
-                            onValueChange={function (value) {
-                              return handleInputChange('component', value);
-                            }}
-                          >
+                          <Select value={formData.component} onValueChange={function (value) {
+                return handleInputChange('component', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='601.002 Main Engine' />
+                              <SelectValue placeholder='601.002 Main Engine'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='601.002 Main Engine'>
@@ -230,15 +157,9 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Maintenance Type
                           </Label>
-                          <Select
-                            value={formData.maintenanceType}
-                            onValueChange={function (value) {
-                              return handleInputChange(
-                                'maintenanceType',
-                                value
-                              );
-                            }}
-                          >
+                          <Select value={formData.maintenanceType} onValueChange={function (value) {
+                return handleInputChange('maintenanceType', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
                               <SelectValue />
                             </SelectTrigger>
@@ -259,14 +180,11 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Assigned To
                           </Label>
-                          <Select
-                            value={formData.assignedTo}
-                            onValueChange={function (value) {
-                              return handleInputChange('assignedTo', value);
-                            }}
-                          >
+                          <Select value={formData.assignedTo} onValueChange={function (value) {
+                return handleInputChange('assignedTo', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Rank' />
+                              <SelectValue placeholder='Rank'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Chief Engineer'>
@@ -288,14 +206,11 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Approver
                           </Label>
-                          <Select
-                            value={formData.approver}
-                            onValueChange={function (value) {
-                              return handleInputChange('approver', value);
-                            }}
-                          >
+                          <Select value={formData.approver} onValueChange={function (value) {
+                return handleInputChange('approver', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Rank' />
+                              <SelectValue placeholder='Rank'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Chief Engineer'>
@@ -311,14 +226,11 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Job Category
                           </Label>
-                          <Select
-                            value={formData.jobCategory}
-                            onValueChange={function (value) {
-                              return handleInputChange('jobCategory', value);
-                            }}
-                          >
+                          <Select value={formData.jobCategory} onValueChange={function (value) {
+                return handleInputChange('jobCategory', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Mechanical' />
+                              <SelectValue placeholder='Mechanical'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Mechanical'>
@@ -338,14 +250,11 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Class Related
                           </Label>
-                          <Select
-                            value={formData.classRelated}
-                            onValueChange={function (value) {
-                              return handleInputChange('classRelated', value);
-                            }}
-                          >
+                          <Select value={formData.classRelated} onValueChange={function (value) {
+                return handleInputChange('classRelated', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Yes' />
+                              <SelectValue placeholder='Yes'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Yes'>Yes</SelectItem>
@@ -357,17 +266,9 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Status
                           </Label>
-                          <Input
-                            value={formData.status}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'status',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Status'
-                          />
+                          <Input value={formData.status} onChange={function (e) {
+                return handleInputChange('status', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Status'/>
                         </div>
                       </div>
 
@@ -376,27 +277,15 @@ var NewWorkOrderForm = function (_a) {
                         <Label className='text-sm text-[#8798ad]'>
                           Brief Work Description
                         </Label>
-                        <Textarea
-                          value={formData.briefWorkDescription}
-                          onChange={function (e) {
-                            return handleInputChange(
-                              'briefWorkDescription',
-                              e.target.value
-                            );
-                          }}
-                          className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                          rows={3}
-                          placeholder='Add Work description'
-                        />
+                        <Textarea value={formData.briefWorkDescription} onChange={function (e) {
+                return handleInputChange('briefWorkDescription', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' rows={3} placeholder='Add Work description'/>
                       </div>
                     </div>
 
                     {/* A2. Safety Requirements */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         A2. Safety Requirements
                       </h4>
 
@@ -405,59 +294,33 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             PPE Requirements:
                           </Label>
-                          <Input
-                            value={formData.ppeRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'ppeRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'
-                          />
+                          <Input value={formData.ppeRequirements} onChange={function (e) {
+                return handleInputChange('ppeRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'/>
                         </div>
                         <div>
                           <Label className='text-sm text-[#8798ad]'>
                             Permit Requirements:
                           </Label>
-                          <Input
-                            value={formData.permitRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'permitRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='[Enclosed Space Entry Permit]'
-                          />
+                          <Input value={formData.permitRequirements} onChange={function (e) {
+                return handleInputChange('permitRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='[Enclosed Space Entry Permit]'/>
                         </div>
                         <div>
                           <Label className='text-sm text-[#8798ad]'>
                             Other Safety Requirements:
                           </Label>
-                          <Input
-                            value={formData.otherSafetyRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'otherSafetyRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Free Text'
-                          />
+                          <Input value={formData.otherSafetyRequirements} onChange={function (e) {
+                return handleInputChange('otherSafetyRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Free Text'/>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>)}
 
               {/* Part B - Work Completion Record */}
-              {activeSection === 'partB' && (
-                <div className='border border-gray-200 rounded-lg mb-6'>
+              {activeSection === 'partB' && (<div className='border border-gray-200 rounded-lg mb-6'>
                   <div className='bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between'>
                     <h3 className='text-lg font-semibold text-[#16569e]'>
                       Part B - Work Completion Record
@@ -471,10 +334,7 @@ var NewWorkOrderForm = function (_a) {
                   <div className='p-6'>
                     {/* B1. Risk Assessment, Checklists & Records */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B1. Risk Assessment, Checklists & Records
                       </h4>
 
@@ -485,43 +345,24 @@ var NewWorkOrderForm = function (_a) {
                           </Label>
                           <div className='flex items-center gap-6'>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                id='risk-yes'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='riskAssessment' id='risk-yes' className='text-[#52baf3]'/>
                               <label htmlFor='risk-yes' className='text-sm'>
                                 Yes
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                id='risk-no'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='riskAssessment' id='risk-no' className='text-[#52baf3]'/>
                               <label htmlFor='risk-no' className='text-sm'>
                                 No
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                id='risk-na'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='riskAssessment' id='risk-na' className='text-[#52baf3]'/>
                               <label htmlFor='risk-na' className='text-sm'>
                                 N/A
                               </label>
                             </div>
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='ml-4'
-                            >
+                            <Button size='sm' variant='outline' className='ml-4'>
                               Upload
                             </Button>
                           </div>
@@ -533,43 +374,24 @@ var NewWorkOrderForm = function (_a) {
                           </Label>
                           <div className='flex items-center gap-6'>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklist'
-                                id='safety-yes'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='safetyChecklist' id='safety-yes' className='text-[#52baf3]'/>
                               <label htmlFor='safety-yes' className='text-sm'>
                                 Yes
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklist'
-                                id='safety-no'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='safetyChecklist' id='safety-no' className='text-[#52baf3]'/>
                               <label htmlFor='safety-no' className='text-sm'>
                                 No
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklist'
-                                id='safety-na'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='safetyChecklist' id='safety-na' className='text-[#52baf3]'/>
                               <label htmlFor='safety-na' className='text-sm'>
                                 N/A
                               </label>
                             </div>
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='ml-4'
-                            >
+                            <Button size='sm' variant='outline' className='ml-4'>
                               Upload
                             </Button>
                           </div>
@@ -581,43 +403,24 @@ var NewWorkOrderForm = function (_a) {
                           </Label>
                           <div className='flex items-center gap-6'>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                id='op-yes'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='operationalForms' id='op-yes' className='text-[#52baf3]'/>
                               <label htmlFor='op-yes' className='text-sm'>
                                 Yes
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                id='op-no'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='operationalForms' id='op-no' className='text-[#52baf3]'/>
                               <label htmlFor='op-no' className='text-sm'>
                                 No
                               </label>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                id='op-na'
-                                className='text-[#52baf3]'
-                              />
+                              <input type='radio' name='operationalForms' id='op-na' className='text-[#52baf3]'/>
                               <label htmlFor='op-na' className='text-sm'>
                                 N/A
                               </label>
                             </div>
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='ml-4'
-                            >
+                            <Button size='sm' variant='outline' className='ml-4'>
                               Upload
                             </Button>
                           </div>
@@ -627,10 +430,7 @@ var NewWorkOrderForm = function (_a) {
 
                     {/* B2. Details of Work Carried Out */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B2. Details of Work Carried Out
                       </h4>
 
@@ -645,29 +445,19 @@ var NewWorkOrderForm = function (_a) {
                               <Label className='text-sm text-[#8798ad]'>
                                 Start Date
                               </Label>
-                              <Input
-                                type='date'
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='dd-mm-yyyy'
-                              />
+                              <Input type='date' className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='dd-mm-yyyy'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
                                 Start Time
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='1045'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='1045'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
                                 Assigned To
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='Chief Engineer'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Chief Engineer'/>
                             </div>
                           </div>
 
@@ -676,20 +466,13 @@ var NewWorkOrderForm = function (_a) {
                               <Label className='text-sm text-[#8798ad]'>
                                 Completion Date
                               </Label>
-                              <Input
-                                type='date'
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='dd-mm-yyyy'
-                              />
+                              <Input type='date' className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='dd-mm-yyyy'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
                                 Completion Time
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='1200'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='1200'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
@@ -697,7 +480,7 @@ var NewWorkOrderForm = function (_a) {
                               </Label>
                               <Select>
                                 <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                                  <SelectValue placeholder='Chief Engineer' />
+                                  <SelectValue placeholder='Chief Engineer'/>
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value='Chief Engineer'>
@@ -722,28 +505,19 @@ var NewWorkOrderForm = function (_a) {
                               <Label className='text-sm text-[#8798ad]'>
                                 No of Persons in the team
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='3'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='3'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
                                 Total Time Taken (Hours)
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='5'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='5'/>
                             </div>
                             <div className='space-y-2'>
                               <Label className='text-sm text-[#8798ad]'>
                                 Manhours
                               </Label>
-                              <Input
-                                className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                placeholder='15'
-                              />
+                              <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='15'/>
                             </div>
                           </div>
                         </div>
@@ -752,32 +526,21 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Work Carried Out
                           </Label>
-                          <Textarea
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            rows={4}
-                            placeholder='Work carried out'
-                          />
+                          <Textarea className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' rows={4} placeholder='Work carried out'/>
                         </div>
 
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Job Experience / Notes
                           </Label>
-                          <Textarea
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            rows={4}
-                            placeholder='Job Experience / Notes'
-                          />
+                          <Textarea className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' rows={4} placeholder='Job Experience / Notes'/>
                         </div>
                       </div>
                     </div>
 
                     {/* B3. Running Hours */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B3. Running Hours
                       </h4>
 
@@ -786,13 +549,13 @@ var NewWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Previous reading
                           </Label>
-                          <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' />
+                          <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Current Reading
                           </Label>
-                          <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' />
+                          <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                         </div>
                       </div>
                     </div>
@@ -800,16 +563,10 @@ var NewWorkOrderForm = function (_a) {
                     {/* B4. Spare Parts Consumed */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
                       <div className='flex items-center justify-between mb-4'>
-                        <h4
-                          className='text-md font-medium'
-                          style={{ color: '#16569e' }}
-                        >
+                        <h4 className='text-md font-medium' style={{ color: '#16569e' }}>
                           B4. Spare Parts Consumed
                         </h4>
-                        <Button
-                          size='sm'
-                          className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-                        >
+                        <Button size='sm' className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'>
                           + Add Spare Part
                         </Button>
                       </div>
@@ -835,71 +592,44 @@ var NewWorkOrderForm = function (_a) {
                           <tbody>
                             <tr className='border-b border-gray-100'>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='SP - 001'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='SP - 001'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='O-Ring Seal'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='O-Ring Seal'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='2'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='2'/>
                               </td>
                               <td className='p-3'>
-                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                               </td>
                             </tr>
                             <tr className='border-b border-gray-100'>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='SP-002'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='SP-002'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='Filter Element'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Filter Element'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='1'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='1'/>
                               </td>
                               <td className='p-3'>
-                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                               </td>
                             </tr>
                             <tr className='border-b border-gray-100'>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='SP - 003'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='SP - 003'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='Bearing'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Bearing'/>
                               </td>
                               <td className='p-3'>
-                                <Input
-                                  className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                                  placeholder='2'
-                                />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='2'/>
                               </td>
                               <td className='p-3'>
-                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' />
+                                <Input className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                               </td>
                             </tr>
                           </tbody>
@@ -914,22 +644,15 @@ var NewWorkOrderForm = function (_a) {
                       </Button>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>)}
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Work Instructions Dialog */}
-      <WorkInstructionsDialog
-        isOpen={isWorkInstructionsOpen}
-        onClose={function () {
-          return setIsWorkInstructionsOpen(false);
-        }}
-      />
-    </>
-  );
+      <WorkInstructionsDialog isOpen={isWorkInstructionsOpen} onClose={function () { return setIsWorkInstructionsOpen(false); }}/>
+    </>);
 };
 export default NewWorkOrderForm;
 //# sourceMappingURL=NewWorkOrderForm.jsx.map

@@ -218,12 +218,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ component, audit });
     } catch (error) {
       console.error('❌ Failed to update running hours:', error);
-      res
-        .status(500)
-        .json({
-          error: 'Failed to update running hours',
-          details: error.message,
-        });
+      res.status(500).json({
+        error: 'Failed to update running hours',
+        details: error.message,
+      });
     }
   });
 
@@ -265,12 +263,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ results });
     } catch (error) {
       console.error('❌ Failed to perform bulk update:', error);
-      res
-        .status(500)
-        .json({
-          error: 'Failed to perform bulk update',
-          details: error.message,
-        });
+      res.status(500).json({
+        error: 'Failed to perform bulk update',
+        details: error.message,
+      });
     }
   });
 

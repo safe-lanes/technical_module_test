@@ -1,154 +1,107 @@
-import { __assign, __spreadArray } from 'tslib';
+import { __assign, __spreadArray } from "tslib";
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { ArrowLeft, List } from 'lucide-react';
 var UnplannedWorkOrderForm = function (_a) {
-  var isOpen = _a.isOpen,
-    onClose = _a.onClose,
-    onSubmit = _a.onSubmit;
-  var _b = useState('partA'),
-    activeSection = _b[0],
-    setActiveSection = _b[1];
-  var _c = useState(false),
-    isPpeDialogOpen = _c[0],
-    setIsPpeDialogOpen = _c[1];
-  var _d = useState(false),
-    isPermitDialogOpen = _d[0],
-    setIsPermitDialogOpen = _d[1];
-  var _e = useState([]),
-    selectedPpeItems = _e[0],
-    setSelectedPpeItems = _e[1];
-  var _f = useState([]),
-    selectedPermitItems = _f[0],
-    setSelectedPermitItems = _f[1];
-  var _g = useState({
-      workOrder: 'WOUP-2025-17',
-      jobTitle: '',
-      component: '',
-      maintenanceType: 'Unplanned Maintenance',
-      assignedTo: '',
-      approver: '',
-      jobCategory: '',
-      classRelated: '',
-      status: '',
-      briefWorkDescription: '',
-      ppeRequirements: '',
-      permitRequirements: '',
-      otherSafetyRequirements: '',
-    }),
-    formData = _g[0],
-    setFormData = _g[1];
-  var selectSection = function (section) {
-    setActiveSection(section);
-  };
-  var handleInputChange = function (field, value) {
-    setFormData(function (prev) {
-      var _a;
-      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
-    });
-  };
-  var ppeOptions = [
-    'Leather Gloves',
-    'Goggles',
-    'Safety Helmet',
-    'Text',
-    'Text',
-    'Text',
-    'Text',
-    'Text',
-  ];
-  var permitOptions = [
-    'Enclosed Space Entry Permit',
-    'Hot Work Permit',
-    'Work Aloft Permit',
-    'Cold Work Permit',
-    'Text',
-    'Text',
-    'Text',
-    'Text',
-  ];
-  var handlePpeSelection = function (item, checked) {
-    if (checked) {
-      setSelectedPpeItems(function (prev) {
-        return __spreadArray(__spreadArray([], prev, true), [item], false);
-      });
-    } else {
-      setSelectedPpeItems(function (prev) {
-        return prev.filter(function (i) {
-          return i !== item;
+    var isOpen = _a.isOpen, onClose = _a.onClose, onSubmit = _a.onSubmit;
+    var _b = useState('partA'), activeSection = _b[0], setActiveSection = _b[1];
+    var _c = useState(false), isPpeDialogOpen = _c[0], setIsPpeDialogOpen = _c[1];
+    var _d = useState(false), isPermitDialogOpen = _d[0], setIsPermitDialogOpen = _d[1];
+    var _e = useState([]), selectedPpeItems = _e[0], setSelectedPpeItems = _e[1];
+    var _f = useState([]), selectedPermitItems = _f[0], setSelectedPermitItems = _f[1];
+    var _g = useState({
+        workOrder: 'WOUP-2025-17',
+        jobTitle: '',
+        component: '',
+        maintenanceType: 'Unplanned Maintenance',
+        assignedTo: '',
+        approver: '',
+        jobCategory: '',
+        classRelated: '',
+        status: '',
+        briefWorkDescription: '',
+        ppeRequirements: '',
+        permitRequirements: '',
+        otherSafetyRequirements: '',
+    }), formData = _g[0], setFormData = _g[1];
+    var selectSection = function (section) {
+        setActiveSection(section);
+    };
+    var handleInputChange = function (field, value) {
+        setFormData(function (prev) {
+            var _a;
+            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
         });
-      });
-    }
-  };
-  var handlePermitSelection = function (item, checked) {
-    if (checked) {
-      setSelectedPermitItems(function (prev) {
-        return __spreadArray(__spreadArray([], prev, true), [item], false);
-      });
-    } else {
-      setSelectedPermitItems(function (prev) {
-        return prev.filter(function (i) {
-          return i !== item;
-        });
-      });
-    }
-  };
-  var savePpeSelection = function () {
-    var selectedText = selectedPpeItems
-      .map(function (item) {
-        return '['.concat(item, ']');
-      })
-      .join(' ');
-    handleInputChange('ppeRequirements', selectedText);
-    setIsPpeDialogOpen(false);
-  };
-  var savePermitSelection = function () {
-    var selectedText = selectedPermitItems
-      .map(function (item) {
-        return '['.concat(item, ']');
-      })
-      .join(' ');
-    handleInputChange('permitRequirements', selectedText);
-    setIsPermitDialogOpen(false);
-  };
-  var handleSubmit = function () {
-    if (onSubmit) {
-      onSubmit(formData);
-      onClose();
-    }
-  };
-  return (
-    <>
+    };
+    var ppeOptions = [
+        'Leather Gloves',
+        'Goggles',
+        'Safety Helmet',
+        'Text',
+        'Text',
+        'Text',
+        'Text',
+        'Text',
+    ];
+    var permitOptions = [
+        'Enclosed Space Entry Permit',
+        'Hot Work Permit',
+        'Work Aloft Permit',
+        'Cold Work Permit',
+        'Text',
+        'Text',
+        'Text',
+        'Text',
+    ];
+    var handlePpeSelection = function (item, checked) {
+        if (checked) {
+            setSelectedPpeItems(function (prev) { return __spreadArray(__spreadArray([], prev, true), [item], false); });
+        }
+        else {
+            setSelectedPpeItems(function (prev) { return prev.filter(function (i) { return i !== item; }); });
+        }
+    };
+    var handlePermitSelection = function (item, checked) {
+        if (checked) {
+            setSelectedPermitItems(function (prev) { return __spreadArray(__spreadArray([], prev, true), [item], false); });
+        }
+        else {
+            setSelectedPermitItems(function (prev) { return prev.filter(function (i) { return i !== item; }); });
+        }
+    };
+    var savePpeSelection = function () {
+        var selectedText = selectedPpeItems.map(function (item) { return "[".concat(item, "]"); }).join(' ');
+        handleInputChange('ppeRequirements', selectedText);
+        setIsPpeDialogOpen(false);
+    };
+    var savePermitSelection = function () {
+        var selectedText = selectedPermitItems.map(function (item) { return "[".concat(item, "]"); }).join(' ');
+        handleInputChange('permitRequirements', selectedText);
+        setIsPermitDialogOpen(false);
+    };
+    var handleSubmit = function () {
+        if (onSubmit) {
+            onSubmit(formData);
+            onClose();
+        }
+    };
+    return (<>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className='w-[80vw] max-w-none h-[90vh] flex flex-col'>
           <DialogHeader className='pb-4 pr-12'>
             <div className='flex items-center justify-between'>
               <DialogTitle>Work Order Form - Unplanned Maintenance</DialogTitle>
               <div className='flex items-center gap-2'>
-                <Button
-                  size='sm'
-                  className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-                >
+                <Button size='sm' className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'>
                   Save
                 </Button>
                 <Button variant='outline' size='sm' onClick={onClose}>
-                  <ArrowLeft className='h-4 w-4 mr-1' />
+                  <ArrowLeft className='h-4 w-4 mr-1'/>
                   Back
                 </Button>
               </div>
@@ -159,44 +112,22 @@ var UnplannedWorkOrderForm = function (_a) {
             {/* Left Sidebar - Navigation */}
             <div className='w-72 bg-gray-50 border-r border-gray-200 p-4'>
               <div className='space-y-2'>
-                <div
-                  className={'flex items-center gap-2 p-3 rounded cursor-pointer '.concat(
-                    activeSection === 'partA'
-                      ? 'bg-[#16569e] text-white'
-                      : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
-                  )}
-                  onClick={function () {
-                    return selectSection('partA');
-                  }}
-                >
-                  <div
-                    className={'w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold '.concat(
-                      activeSection === 'partA'
-                        ? 'bg-white text-[#52baf3]'
-                        : 'bg-gray-300 text-white'
-                    )}
-                  >
+                <div className={"flex items-center gap-2 p-3 rounded cursor-pointer ".concat(activeSection === 'partA'
+            ? 'bg-[#16569e] text-white'
+            : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100')} onClick={function () { return selectSection('partA'); }}>
+                  <div className={"w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ".concat(activeSection === 'partA'
+            ? 'bg-white text-[#52baf3]'
+            : 'bg-gray-300 text-white')}>
                     A
                   </div>
                   <span className='font-medium'>Work Order Details</span>
                 </div>
-                <div
-                  className={'flex items-center gap-2 p-3 rounded cursor-pointer '.concat(
-                    activeSection === 'partB'
-                      ? 'bg-[#16569e] text-white'
-                      : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100'
-                  )}
-                  onClick={function () {
-                    return selectSection('partB');
-                  }}
-                >
-                  <div
-                    className={'w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold '.concat(
-                      activeSection === 'partB'
-                        ? 'bg-white text-[#52baf3]'
-                        : 'bg-gray-300 text-white'
-                    )}
-                  >
+                <div className={"flex items-center gap-2 p-3 rounded cursor-pointer ".concat(activeSection === 'partB'
+            ? 'bg-[#16569e] text-white'
+            : 'bg-transparent text-[#8a8a8a] hover:bg-gray-100')} onClick={function () { return selectSection('partB'); }}>
+                  <div className={"w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ".concat(activeSection === 'partB'
+            ? 'bg-white text-[#52baf3]'
+            : 'bg-gray-300 text-white')}>
                     B
                   </div>
                   <span className='font-medium'>Work Completion Record</span>
@@ -207,8 +138,7 @@ var UnplannedWorkOrderForm = function (_a) {
             {/* Right Content Area */}
             <div className='flex-1 overflow-auto p-6'>
               {/* Part A - Work Order Details */}
-              {activeSection === 'partA' && (
-                <div className='border border-gray-200 rounded-lg mb-6'>
+              {activeSection === 'partA' && (<div className='border border-gray-200 rounded-lg mb-6'>
                   <div className='bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between'>
                     <h3 className='text-lg font-semibold text-gray-900'>
                       Part A - Work Order Details
@@ -221,10 +151,7 @@ var UnplannedWorkOrderForm = function (_a) {
                   <div className='p-6'>
                     {/* A1. Work Order Information */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         A1. Work Order Information
                       </h4>
 
@@ -234,45 +161,27 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Work Order
                           </Label>
-                          <Input
-                            value={formData.workOrder}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'workOrder',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                          />
+                          <Input value={formData.workOrder} onChange={function (e) {
+                return handleInputChange('workOrder', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Job Title
                           </Label>
-                          <Input
-                            value={formData.jobTitle}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'jobTitle',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Main Engine - Replace Fuel Filters'
-                          />
+                          <Input value={formData.jobTitle} onChange={function (e) {
+                return handleInputChange('jobTitle', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Main Engine - Replace Fuel Filters'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Component
                           </Label>
-                          <Select
-                            value={formData.component}
-                            onValueChange={function (value) {
-                              return handleInputChange('component', value);
-                            }}
-                          >
+                          <Select value={formData.component} onValueChange={function (value) {
+                return handleInputChange('component', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='601.002 Main Engine' />
+                              <SelectValue placeholder='601.002 Main Engine'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='601.002 Main Engine'>
@@ -293,15 +202,9 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Maintenance Type
                           </Label>
-                          <Select
-                            value={formData.maintenanceType}
-                            onValueChange={function (value) {
-                              return handleInputChange(
-                                'maintenanceType',
-                                value
-                              );
-                            }}
-                          >
+                          <Select value={formData.maintenanceType} onValueChange={function (value) {
+                return handleInputChange('maintenanceType', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
                               <SelectValue />
                             </SelectTrigger>
@@ -322,14 +225,11 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Assigned To
                           </Label>
-                          <Select
-                            value={formData.assignedTo}
-                            onValueChange={function (value) {
-                              return handleInputChange('assignedTo', value);
-                            }}
-                          >
+                          <Select value={formData.assignedTo} onValueChange={function (value) {
+                return handleInputChange('assignedTo', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Rank' />
+                              <SelectValue placeholder='Rank'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Chief Engineer'>
@@ -351,14 +251,11 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Approver
                           </Label>
-                          <Select
-                            value={formData.approver}
-                            onValueChange={function (value) {
-                              return handleInputChange('approver', value);
-                            }}
-                          >
+                          <Select value={formData.approver} onValueChange={function (value) {
+                return handleInputChange('approver', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Rank' />
+                              <SelectValue placeholder='Rank'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Chief Engineer'>
@@ -374,14 +271,11 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Job Category
                           </Label>
-                          <Select
-                            value={formData.jobCategory}
-                            onValueChange={function (value) {
-                              return handleInputChange('jobCategory', value);
-                            }}
-                          >
+                          <Select value={formData.jobCategory} onValueChange={function (value) {
+                return handleInputChange('jobCategory', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Mechanical' />
+                              <SelectValue placeholder='Mechanical'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Mechanical'>
@@ -401,14 +295,11 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Class Related
                           </Label>
-                          <Select
-                            value={formData.classRelated}
-                            onValueChange={function (value) {
-                              return handleInputChange('classRelated', value);
-                            }}
-                          >
+                          <Select value={formData.classRelated} onValueChange={function (value) {
+                return handleInputChange('classRelated', value);
+            }}>
                             <SelectTrigger className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'>
-                              <SelectValue placeholder='Yes' />
+                              <SelectValue placeholder='Yes'/>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Yes'>Yes</SelectItem>
@@ -420,17 +311,9 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Status
                           </Label>
-                          <Input
-                            value={formData.status}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'status',
-                                e.target.value
-                              );
-                            }}
-                            className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Status'
-                          />
+                          <Input value={formData.status} onChange={function (e) {
+                return handleInputChange('status', e.target.value);
+            }} className='text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Status'/>
                         </div>
                       </div>
 
@@ -439,27 +322,15 @@ var UnplannedWorkOrderForm = function (_a) {
                         <Label className='text-sm text-[#8798ad]'>
                           Brief Work Description
                         </Label>
-                        <Textarea
-                          value={formData.briefWorkDescription}
-                          onChange={function (e) {
-                            return handleInputChange(
-                              'briefWorkDescription',
-                              e.target.value
-                            );
-                          }}
-                          className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                          rows={3}
-                          placeholder='Add Work description'
-                        />
+                        <Textarea value={formData.briefWorkDescription} onChange={function (e) {
+                return handleInputChange('briefWorkDescription', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' rows={3} placeholder='Add Work description'/>
                       </div>
                     </div>
 
                     {/* A2. Safety Requirements */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         A2. Safety Requirements
                       </h4>
 
@@ -469,82 +340,42 @@ var UnplannedWorkOrderForm = function (_a) {
                             <Label className='text-sm text-[#8798ad]'>
                               PPE Requirements:
                             </Label>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={function () {
-                                return setIsPpeDialogOpen(true);
-                              }}
-                              className='p-1 h-6 w-6'
-                            >
-                              <List className='h-3 w-3' />
+                            <Button variant='outline' size='sm' onClick={function () { return setIsPpeDialogOpen(true); }} className='p-1 h-6 w-6'>
+                              <List className='h-3 w-3'/>
                             </Button>
                           </div>
-                          <Input
-                            value={formData.ppeRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'ppeRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'
-                          />
+                          <Input value={formData.ppeRequirements} onChange={function (e) {
+                return handleInputChange('ppeRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='[Leather Gloves] [Goggles] [Safety Helmet]'/>
                         </div>
                         <div>
                           <div className='flex items-center gap-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Permit Requirements:
                             </Label>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={function () {
-                                return setIsPermitDialogOpen(true);
-                              }}
-                              className='p-1 h-6 w-6'
-                            >
-                              <List className='h-3 w-3' />
+                            <Button variant='outline' size='sm' onClick={function () { return setIsPermitDialogOpen(true); }} className='p-1 h-6 w-6'>
+                              <List className='h-3 w-3'/>
                             </Button>
                           </div>
-                          <Input
-                            value={formData.permitRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'permitRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='[Enclosed Space Entry Permit]'
-                          />
+                          <Input value={formData.permitRequirements} onChange={function (e) {
+                return handleInputChange('permitRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='[Enclosed Space Entry Permit]'/>
                         </div>
                         <div>
                           <Label className='text-sm text-[#8798ad]'>
                             Other Safety Requirements:
                           </Label>
-                          <Input
-                            value={formData.otherSafetyRequirements}
-                            onChange={function (e) {
-                              return handleInputChange(
-                                'otherSafetyRequirements',
-                                e.target.value
-                              );
-                            }}
-                            className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]'
-                            placeholder='Free Text'
-                          />
+                          <Input value={formData.otherSafetyRequirements} onChange={function (e) {
+                return handleInputChange('otherSafetyRequirements', e.target.value);
+            }} className='mt-2 text-sm border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]' placeholder='Free Text'/>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>)}
 
               {/* Part B - Work Completion Record */}
-              {activeSection === 'partB' && (
-                <div className='border border-gray-200 rounded-lg mb-6'>
+              {activeSection === 'partB' && (<div className='border border-gray-200 rounded-lg mb-6'>
                   <div className='bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between'>
                     <h3 className='text-lg font-semibold text-[#16569e]'>
                       Part B - Work Completion Record
@@ -558,10 +389,7 @@ var UnplannedWorkOrderForm = function (_a) {
                   <div className='p-6'>
                     {/* B1. Risk Assessment, Checklists & Records */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B1. Risk Assessment, Checklists & Records
                       </h4>
 
@@ -575,72 +403,32 @@ var UnplannedWorkOrderForm = function (_a) {
                           </div>
                           <div className='col-span-3 flex items-center gap-4'>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                value='yes'
-                                defaultChecked
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='riskAssessment' value='yes' defaultChecked className='text-blue-600'/>
                               <span className='text-sm'>Yes</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                value='no'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='riskAssessment' value='no' className='text-blue-600'/>
                               <span className='text-sm'>No</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='riskAssessment'
-                                value='na'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='riskAssessment' value='na' className='text-blue-600'/>
                               <span className='text-sm'>NA</span>
                             </label>
                           </div>
                           <div className='col-span-3 flex items-center gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='text-xs'
-                            >
+                            <Button variant='outline' size='sm' className='text-xs'>
                               Upload
                             </Button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z' />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z'/>
+                                <path fillRule='evenodd' d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z' clipRule='evenodd'/>
                               </svg>
                             </button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path
-                                  fillRule='evenodd'
-                                  d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z'
-                                  clipRule='evenodd'
-                                />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path fillRule='evenodd' d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z' clipRule='evenodd'/>
+                                <path fillRule='evenodd' d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z' clipRule='evenodd'/>
                               </svg>
                             </button>
                           </div>
@@ -655,72 +443,32 @@ var UnplannedWorkOrderForm = function (_a) {
                           </div>
                           <div className='col-span-3 flex items-center gap-4'>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklists'
-                                value='yes'
-                                defaultChecked
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='safetyChecklists' value='yes' defaultChecked className='text-blue-600'/>
                               <span className='text-sm'>Yes</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklists'
-                                value='no'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='safetyChecklists' value='no' className='text-blue-600'/>
                               <span className='text-sm'>No</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='safetyChecklists'
-                                value='na'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='safetyChecklists' value='na' className='text-blue-600'/>
                               <span className='text-sm'>NA</span>
                             </label>
                           </div>
                           <div className='col-span-3 flex items-center gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='text-xs'
-                            >
+                            <Button variant='outline' size='sm' className='text-xs'>
                               Upload
                             </Button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z' />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z'/>
+                                <path fillRule='evenodd' d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z' clipRule='evenodd'/>
                               </svg>
                             </button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path
-                                  fillRule='evenodd'
-                                  d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z'
-                                  clipRule='evenodd'
-                                />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path fillRule='evenodd' d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z' clipRule='evenodd'/>
+                                <path fillRule='evenodd' d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z' clipRule='evenodd'/>
                               </svg>
                             </button>
                           </div>
@@ -735,72 +483,32 @@ var UnplannedWorkOrderForm = function (_a) {
                           </div>
                           <div className='col-span-3 flex items-center gap-4'>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                value='yes'
-                                defaultChecked
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='operationalForms' value='yes' defaultChecked className='text-blue-600'/>
                               <span className='text-sm'>Yes</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                value='no'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='operationalForms' value='no' className='text-blue-600'/>
                               <span className='text-sm'>No</span>
                             </label>
                             <label className='flex items-center gap-2'>
-                              <input
-                                type='radio'
-                                name='operationalForms'
-                                value='na'
-                                className='text-blue-600'
-                              />
+                              <input type='radio' name='operationalForms' value='na' className='text-blue-600'/>
                               <span className='text-sm'>NA</span>
                             </label>
                           </div>
                           <div className='col-span-3 flex items-center gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='text-xs'
-                            >
+                            <Button variant='outline' size='sm' className='text-xs'>
                               Upload
                             </Button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z' />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path d='M10 12a2 2 0 100-4 2 2 0 000 4z'/>
+                                <path fillRule='evenodd' d='M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z' clipRule='evenodd'/>
                               </svg>
                             </button>
                             <button className='text-gray-400 hover:text-gray-600'>
-                              <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                              >
-                                <path
-                                  fillRule='evenodd'
-                                  d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z'
-                                  clipRule='evenodd'
-                                />
-                                <path
-                                  fillRule='evenodd'
-                                  d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z'
-                                  clipRule='evenodd'
-                                />
+                              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                                <path fillRule='evenodd' d='M9 2a1 1 0 000 2h2a1 1 0 100-2H9z' clipRule='evenodd'/>
+                                <path fillRule='evenodd' d='M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zM8 8a1 1 0 012 0v3a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V8z' clipRule='evenodd'/>
                               </svg>
                             </button>
                           </div>
@@ -810,10 +518,7 @@ var UnplannedWorkOrderForm = function (_a) {
 
                     {/* B2. Details of Work Carried Out */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B2. Details of Work Carried Out
                       </h4>
 
@@ -828,31 +533,19 @@ var UnplannedWorkOrderForm = function (_a) {
                             <Label className='text-sm text-[#8798ad]'>
                               Start Date
                             </Label>
-                            <Input
-                              type='date'
-                              className='w-full'
-                              placeholder='dd-mm-yyyy'
-                            />
+                            <Input type='date' className='w-full' placeholder='dd-mm-yyyy'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Start Time
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='1045'
-                            />
+                            <Input type='text' className='w-full' defaultValue='1045'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Assigned To
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='Chief Engineer'
-                            />
+                            <Input type='text' className='w-full' defaultValue='Chief Engineer'/>
                           </div>
                         </div>
 
@@ -862,21 +555,13 @@ var UnplannedWorkOrderForm = function (_a) {
                             <Label className='text-sm text-[#8798ad]'>
                               Completion Date
                             </Label>
-                            <Input
-                              type='date'
-                              className='w-full'
-                              placeholder='dd-mm-yyyy'
-                            />
+                            <Input type='date' className='w-full' placeholder='dd-mm-yyyy'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Completion Time
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='1200'
-                            />
+                            <Input type='text' className='w-full' defaultValue='1200'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
@@ -894,31 +579,19 @@ var UnplannedWorkOrderForm = function (_a) {
                             <Label className='text-sm text-[#8798ad]'>
                               No of Persons in the team
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='3'
-                            />
+                            <Input type='text' className='w-full' defaultValue='3'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Total Time Taken (Hours)
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='3'
-                            />
+                            <Input type='text' className='w-full' defaultValue='3'/>
                           </div>
                           <div className='space-y-2'>
                             <Label className='text-sm text-[#8798ad]'>
                               Manhours
                             </Label>
-                            <Input
-                              type='text'
-                              className='w-full'
-                              defaultValue='3.3'
-                            />
+                            <Input type='text' className='w-full' defaultValue='3.3'/>
                           </div>
                         </div>
 
@@ -927,10 +600,7 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Work Carried Out
                           </Label>
-                          <Textarea
-                            className='w-full min-h-[80px]'
-                            placeholder='Work carried out'
-                          />
+                          <Textarea className='w-full min-h-[80px]' placeholder='Work carried out'/>
                         </div>
 
                         {/* Job Experience / Notes */}
@@ -938,20 +608,14 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Job Experience / Notes
                           </Label>
-                          <Textarea
-                            className='w-full min-h-[80px]'
-                            placeholder='Job Experience / Notes'
-                          />
+                          <Textarea className='w-full min-h-[80px]' placeholder='Job Experience / Notes'/>
                         </div>
                       </div>
                     </div>
 
                     {/* B3. Running Hours */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
-                      <h4
-                        className='text-md font-medium mb-4'
-                        style={{ color: '#16569e' }}
-                      >
+                      <h4 className='text-md font-medium mb-4' style={{ color: '#16569e' }}>
                         B3. Running Hours
                       </h4>
 
@@ -960,13 +624,13 @@ var UnplannedWorkOrderForm = function (_a) {
                           <Label className='text-sm text-[#8798ad]'>
                             Previous reading
                           </Label>
-                          <Input type='text' className='w-full' />
+                          <Input type='text' className='w-full'/>
                         </div>
                         <div className='space-y-2'>
                           <Label className='text-sm text-[#8798ad]'>
                             Current Reading
                           </Label>
-                          <Input type='text' className='w-full' />
+                          <Input type='text' className='w-full'/>
                         </div>
                       </div>
                     </div>
@@ -974,10 +638,7 @@ var UnplannedWorkOrderForm = function (_a) {
                     {/* B4. Spare Parts Consumed */}
                     <div className='border border-gray-200 rounded-lg p-4 mb-6'>
                       <div className='flex items-center justify-between mb-4'>
-                        <h4
-                          className='text-md font-medium'
-                          style={{ color: '#16569e' }}
-                        >
+                        <h4 className='text-md font-medium' style={{ color: '#16569e' }}>
                           B4. Spare Parts Consumed
                         </h4>
                         <button className='text-sm text-blue-600 hover:text-blue-800'>
@@ -1000,14 +661,10 @@ var UnplannedWorkOrderForm = function (_a) {
                               <div className='text-gray-900'>SP -001</div>
                               <div className='text-gray-900'>O-Ring Seal</div>
                               <div>
-                                <Input
-                                  type='text'
-                                  className='w-full'
-                                  defaultValue='2'
-                                />
+                                <Input type='text' className='w-full' defaultValue='2'/>
                               </div>
                               <div>
-                                <Input type='text' className='w-full' />
+                                <Input type='text' className='w-full'/>
                               </div>
                             </div>
                           </div>
@@ -1018,14 +675,10 @@ var UnplannedWorkOrderForm = function (_a) {
                                 Filter Element
                               </div>
                               <div>
-                                <Input
-                                  type='text'
-                                  className='w-full'
-                                  defaultValue='1'
-                                />
+                                <Input type='text' className='w-full' defaultValue='1'/>
                               </div>
                               <div>
-                                <Input type='text' className='w-full' />
+                                <Input type='text' className='w-full'/>
                               </div>
                             </div>
                           </div>
@@ -1034,14 +687,10 @@ var UnplannedWorkOrderForm = function (_a) {
                               <div className='text-gray-900'>SP -003</div>
                               <div className='text-gray-900'>Bearing</div>
                               <div>
-                                <Input
-                                  type='text'
-                                  className='w-full'
-                                  defaultValue='2'
-                                />
+                                <Input type='text' className='w-full' defaultValue='2'/>
                               </div>
                               <div>
-                                <Input type='text' className='w-full' />
+                                <Input type='text' className='w-full'/>
                               </div>
                             </div>
                           </div>
@@ -1051,17 +700,12 @@ var UnplannedWorkOrderForm = function (_a) {
 
                     {/* Submit Button */}
                     <div className='flex justify-end mt-6'>
-                      <Button
-                        size='lg'
-                        className='bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium'
-                        onClick={handleSubmit}
-                      >
+                      <Button size='lg' className='bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-base font-medium' onClick={handleSubmit}>
                         Submit
                       </Button>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>)}
             </div>
           </div>
         </DialogContent>
@@ -1076,41 +720,18 @@ var UnplannedWorkOrderForm = function (_a) {
             </DialogTitle>
           </DialogHeader>
           <div className='space-y-3 py-4'>
-            {ppeOptions.map(function (item, index) {
-              return (
-                <div key={index} className='flex items-center space-x-3'>
-                  <input
-                    type='checkbox'
-                    id={'ppe-'.concat(index)}
-                    checked={selectedPpeItems.includes(item)}
-                    onChange={function (e) {
-                      return handlePpeSelection(item, e.target.checked);
-                    }}
-                    className='h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]'
-                  />
-                  <label
-                    htmlFor={'ppe-'.concat(index)}
-                    className='text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1'
-                  >
-                    {item}
-                  </label>
-                </div>
-              );
-            })}
+            {ppeOptions.map(function (item, index) { return (<div key={index} className='flex items-center space-x-3'>
+                <input type='checkbox' id={"ppe-".concat(index)} checked={selectedPpeItems.includes(item)} onChange={function (e) { return handlePpeSelection(item, e.target.checked); }} className='h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]'/>
+                <label htmlFor={"ppe-".concat(index)} className='text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1'>
+                  {item}
+                </label>
+              </div>); })}
           </div>
           <div className='flex justify-end gap-2 pt-4'>
-            <Button
-              variant='outline'
-              onClick={function () {
-                return setIsPpeDialogOpen(false);
-              }}
-            >
+            <Button variant='outline' onClick={function () { return setIsPpeDialogOpen(false); }}>
               Cancel
             </Button>
-            <Button
-              className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-              onClick={savePpeSelection}
-            >
+            <Button className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white' onClick={savePpeSelection}>
               Save
             </Button>
           </div>
@@ -1126,48 +747,24 @@ var UnplannedWorkOrderForm = function (_a) {
             </DialogTitle>
           </DialogHeader>
           <div className='space-y-3 py-4'>
-            {permitOptions.map(function (item, index) {
-              return (
-                <div key={index} className='flex items-center space-x-3'>
-                  <input
-                    type='checkbox'
-                    id={'permit-'.concat(index)}
-                    checked={selectedPermitItems.includes(item)}
-                    onChange={function (e) {
-                      return handlePermitSelection(item, e.target.checked);
-                    }}
-                    className='h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]'
-                  />
-                  <label
-                    htmlFor={'permit-'.concat(index)}
-                    className='text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1'
-                  >
-                    {item}
-                  </label>
-                </div>
-              );
-            })}
+            {permitOptions.map(function (item, index) { return (<div key={index} className='flex items-center space-x-3'>
+                <input type='checkbox' id={"permit-".concat(index)} checked={selectedPermitItems.includes(item)} onChange={function (e) { return handlePermitSelection(item, e.target.checked); }} className='h-4 w-4 text-[#52baf3] border border-gray-300 rounded focus:ring-[#52baf3]'/>
+                <label htmlFor={"permit-".concat(index)} className='text-sm text-gray-700 border border-gray-200 rounded px-3 py-2 flex-1'>
+                  {item}
+                </label>
+              </div>); })}
           </div>
           <div className='flex justify-end gap-2 pt-4'>
-            <Button
-              variant='outline'
-              onClick={function () {
-                return setIsPermitDialogOpen(false);
-              }}
-            >
+            <Button variant='outline' onClick={function () { return setIsPermitDialogOpen(false); }}>
               Cancel
             </Button>
-            <Button
-              className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white'
-              onClick={savePermitSelection}
-            >
+            <Button className='bg-[#52baf3] hover:bg-[#4aa3d9] text-white' onClick={savePermitSelection}>
               Save
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </>
-  );
+    </>);
 };
 export default UnplannedWorkOrderForm;
 //# sourceMappingURL=UnplannedWorkOrderForm.jsx.map
