@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { vesselId } = req.params;
       console.log('🔄 MySQL DB Operation: getWorkOrders', { vesselId });
-      
+
       const workOrdersData = await storage.getWorkOrders(vesselId);
       res.json(workOrdersData);
     } catch (error) {
@@ -102,12 +102,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { vesselId } = req.params;
       const workOrderData = req.body;
-      
+
       // Add vesselId to the data
       workOrderData.vesselId = vesselId;
-      
+
       console.log('🔄 MySQL DB Operation: createWorkOrder', workOrderData);
-      
+
       const newWorkOrder = await storage.createWorkOrder(workOrderData);
       res.json(newWorkOrder);
     } catch (error) {
@@ -120,10 +120,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { vesselId, workOrderId } = req.params;
       const workOrderData = req.body;
-      
-      console.log('🔄 MySQL DB Operation: updateWorkOrder', { vesselId, workOrderId, ...workOrderData });
-      
-      const updatedWorkOrder = await storage.updateWorkOrder(workOrderId, workOrderData);
+
+      console.log('🔄 MySQL DB Operation: updateWorkOrder', {
+        vesselId,
+        workOrderId,
+        ...workOrderData,
+      });
+
+      const updatedWorkOrder = await storage.updateWorkOrder(
+        workOrderId,
+        workOrderData
+      );
       res.json(updatedWorkOrder);
     } catch (error) {
       console.error('❌ Failed to update work order:', error);
@@ -134,9 +141,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/work-orders/:vesselId/:workOrderId', async (req, res) => {
     try {
       const { vesselId, workOrderId } = req.params;
-      
-      console.log('🔄 MySQL DB Operation: deleteWorkOrder', { vesselId, workOrderId });
-      
+
+      console.log('🔄 MySQL DB Operation: deleteWorkOrder', {
+        vesselId,
+        workOrderId,
+      });
+
       await storage.deleteWorkOrder(workOrderId);
       res.json({ success: true });
     } catch (error) {
@@ -175,7 +185,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { componentId } = req.params;
       const updateData = req.body;
 
-      console.log('🔍 Update data received:', JSON.stringify(updateData, null, 2));
+      console.log(
+        '🔍 Update data received:',
+        JSON.stringify(updateData, null, 2)
+      );
 
       // Ensure numeric values are converted to strings for MySQL decimal fields
       // and timestamp fields are converted to Date objects
@@ -184,8 +197,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         previousRH: updateData.audit.previousRH.toString(),
         newRH: updateData.audit.newRH.toString(),
         cumulativeRH: updateData.audit.cumulativeRH.toString(),
-        oldMeterFinal: updateData.audit.oldMeterFinal ? updateData.audit.oldMeterFinal.toString() : null,
-        newMeterStart: updateData.audit.newMeterStart ? updateData.audit.newMeterStart.toString() : null,
+        oldMeterFinal: updateData.audit.oldMeterFinal
+          ? updateData.audit.oldMeterFinal.toString()
+          : null,
+        newMeterStart: updateData.audit.newMeterStart
+          ? updateData.audit.newMeterStart.toString()
+          : null,
         enteredAtUTC: new Date(updateData.audit.enteredAtUTC), // Convert string to Date object for MySQL timestamp
       };
 
@@ -201,7 +218,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ component, audit });
     } catch (error) {
       console.error('❌ Failed to update running hours:', error);
-      res.status(500).json({ error: 'Failed to update running hours', details: error.message });
+      res
+        .status(500)
+        .json({
+          error: 'Failed to update running hours',
+          details: error.message,
+        });
     }
   });
 
@@ -211,7 +233,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updates = req.body.updates;
       const results = [];
 
-      console.log('🔍 Bulk update data received:', JSON.stringify(updates, null, 2));
+      console.log(
+        '🔍 Bulk update data received:',
+        JSON.stringify(updates, null, 2)
+      );
 
       for (const update of updates) {
         // Apply same data type conversions as single update
@@ -220,8 +245,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           previousRH: update.audit.previousRH.toString(),
           newRH: update.audit.newRH.toString(),
           cumulativeRH: update.audit.cumulativeRH.toString(),
-          oldMeterFinal: update.audit.oldMeterFinal ? update.audit.oldMeterFinal.toString() : null,
-          newMeterStart: update.audit.newMeterStart ? update.audit.newMeterStart.toString() : null,
+          oldMeterFinal: update.audit.oldMeterFinal
+            ? update.audit.oldMeterFinal.toString()
+            : null,
+          newMeterStart: update.audit.newMeterStart
+            ? update.audit.newMeterStart.toString()
+            : null,
           enteredAtUTC: new Date(update.audit.enteredAtUTC), // Convert string to Date object for MySQL timestamp
         };
 
@@ -236,7 +265,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ results });
     } catch (error) {
       console.error('❌ Failed to perform bulk update:', error);
-      res.status(500).json({ error: 'Failed to perform bulk update', details: error.message });
+      res
+        .status(500)
+        .json({
+          error: 'Failed to perform bulk update',
+          details: error.message,
+        });
     }
   });
 
@@ -605,7 +639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         vesselId,
         timestampUTC: new Date(),
-        userId: (req as any).user?.id || 'system'
+        userId: (req as any).user?.id || 'system',
       };
       const result = await storage.createStoreTransaction(transaction);
       res.json(result);
@@ -631,25 +665,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { vesselId, itemCode } = req.params;
       const { itemName, uom, minStock, location, notes } = req.body;
-      
-      console.log(`🔄 MySQL DB Operation: updateStoreItem`, { 
-        vesselId, 
-        itemCode, 
-        itemName, 
-        uom, 
-        minStock, 
-        location, 
-        notes 
+
+      console.log(`🔄 MySQL DB Operation: updateStoreItem`, {
+        vesselId,
+        itemCode,
+        itemName,
+        uom,
+        minStock,
+        location,
+        notes,
       });
-      
+
       const result = await storage.updateStoreItem(vesselId, itemCode, {
         itemName,
         uom,
         minStock,
         location,
-        notes
+        notes,
       });
-      
+
       res.json(result);
     } catch (error) {
       console.error('Error updating store item:', error);

@@ -1,27 +1,27 @@
 import 'tsconfig-paths/register';
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes.js";
-import { setupVite, serveStatic, log } from "./vite.js";
-import { config } from "dotenv";
+import express, { type Request, Response, NextFunction } from 'express';
+import { registerRoutes } from './routes.js';
+import { setupVite, serveStatic, log } from './vite.js';
+import { config } from 'dotenv';
 import * as mysql from 'mysql2/promise'; // Ensure to import mysql2
 
 // Load environment variables from .env file
-config(); 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+config();
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
 async function connectToDatabase() {
   try {
     // Check if DATABASE_URL is defined before using it
     if (!process.env.DATABASE_URL) {
-      console.log("No DATABASE_URL found, skipping database connection test");
+      console.log('No DATABASE_URL found, skipping database connection test');
       return;
     }
-    
+
     const connection = await mysql.createConnection(process.env.DATABASE_URL);
-    console.log("Database connected successfully");
+    console.log('Database connected successfully');
     await connection.end(); // Close the test connection
   } catch (error) {
-    console.error("Database connection failed", error);
+    console.error('Database connection failed', error);
   }
 }
 
@@ -43,16 +43,16 @@ app.use((req, res, next) => {
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
-  res.on("finish", () => {
+  res.on('finish', () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
+    if (path.startsWith('/api')) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
       if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
+        logLine = logLine.slice(0, 79) + '…';
       }
 
       log(logLine);
@@ -67,24 +67,27 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const message = err.message || 'Internal Server Error';
 
     res.status(status).json({ message });
     throw err;
   });
 
-  if (app.get("env") === "development") {
+  if (app.get('env') === 'development') {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0", // Ensure it listens on all interfaces
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: '0.0.0.0', // Ensure it listens on all interfaces
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    }
+  );
 })();

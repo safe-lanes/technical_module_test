@@ -232,7 +232,11 @@ export interface IStorage {
   getStoreItems(vesselId: string): Promise<any[]>;
   createStoreTransaction(transaction: any): Promise<any>;
   getStoreHistory(vesselId: string): Promise<any[]>;
-  updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any>;
+  updateStoreItem(
+    vesselId: string,
+    itemCode: string,
+    updates: any
+  ): Promise<any>;
 
   // Form Definition methods
   getFormDefinitions(): Promise<FormDefinition[]>;
@@ -2831,7 +2835,9 @@ export class MemStorage implements IStorage {
 
   // Work Orders methods
   async getWorkOrders(vesselId: string): Promise<any[]> {
-    return Array.from(this.workOrders.values()).filter(wo => wo.vesselId === vesselId);
+    return Array.from(this.workOrders.values()).filter(
+      wo => wo.vesselId === vesselId
+    );
   }
 
   async createWorkOrder(workOrder: any): Promise<any> {

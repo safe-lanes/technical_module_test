@@ -34,7 +34,10 @@ import { type IStorage } from './storage';
 
 // Console logging for database operations
 function logDbOperation(operation: string, data?: any) {
-  console.log(`🔄 MySQL DB Operation: ${operation}`, data ? JSON.stringify(data).slice(0, 100) + '...' : '');
+  console.log(
+    `🔄 MySQL DB Operation: ${operation}`,
+    data ? JSON.stringify(data).slice(0, 100) + '...' : ''
+  );
 }
 
 export class DatabaseStorage implements IStorage {
@@ -48,12 +51,16 @@ export class DatabaseStorage implements IStorage {
     const user = process.env.MYSQL_USER;
     const password = process.env.MYSQL_PASSWORD;
     const port = parseInt(process.env.MYSQL_PORT || '3306');
-    
+
     if (!host || !database || !user || !password) {
-      throw new Error('MySQL environment variables are required (MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD)');
+      throw new Error(
+        'MySQL environment variables are required (MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD)'
+      );
     }
 
-    console.log('✅ Technical Module using MySQL RDS database for persistent storage');
+    console.log(
+      '✅ Technical Module using MySQL RDS database for persistent storage'
+    );
 
     // Create MySQL connection pool
     this.pool = mysql.createPool({
@@ -68,7 +75,7 @@ export class DatabaseStorage implements IStorage {
       acquireTimeout: 60000,
       timeout: 60000,
     });
-    
+
     // Create drizzle instance
     this.db = drizzle(this.pool, {
       schema: {
@@ -120,7 +127,10 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const result = await this.db.insert(users).values(insertUser);
     const insertId = result.insertId;
-    const [user] = await this.db.select().from(users).where(eq(users.id, insertId));
+    const [user] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, insertId));
     return user;
   }
 
@@ -128,28 +138,40 @@ export class DatabaseStorage implements IStorage {
   async getComponents(vesselId?: string): Promise<Component[]> {
     logDbOperation('getComponents', { vesselId });
     if (vesselId) {
-      return await this.db.select().from(components).where(eq(components.vesselId, vesselId));
+      return await this.db
+        .select()
+        .from(components)
+        .where(eq(components.vesselId, vesselId));
     }
     return await this.db.select().from(components);
   }
 
   async getComponent(id: string): Promise<Component | undefined> {
-    const [component] = await this.db.select().from(components).where(eq(components.id, id));
+    const [component] = await this.db
+      .select()
+      .from(components)
+      .where(eq(components.id, id));
     return component || undefined;
   }
 
   async createComponent(insertComponent: InsertComponent): Promise<Component> {
     await this.db.insert(components).values(insertComponent);
-    const [component] = await this.db.select().from(components).where(eq(components.id, insertComponent.id));
+    const [component] = await this.db
+      .select()
+      .from(components)
+      .where(eq(components.id, insertComponent.id));
     return component;
   }
 
-  async updateComponent(id: string, updates: Partial<InsertComponent>): Promise<Component> {
-    await this.db
-      .update(components)
-      .set(updates)
+  async updateComponent(
+    id: string,
+    updates: Partial<InsertComponent>
+  ): Promise<Component> {
+    await this.db.update(components).set(updates).where(eq(components.id, id));
+    const [component] = await this.db
+      .select()
+      .from(components)
       .where(eq(components.id, id));
-    const [component] = await this.db.select().from(components).where(eq(components.id, id));
     return component;
   }
 
@@ -162,25 +184,42 @@ export class DatabaseStorage implements IStorage {
     return await this.db.select().from(runningHoursAudit);
   }
 
-  async getRunningHoursAudits(componentId: string, limit?: number): Promise<RunningHoursAudit[]> {
-    let query = this.db.select().from(runningHoursAudit).where(eq(runningHoursAudit.componentId, componentId));
+  async getRunningHoursAudits(
+    componentId: string,
+    limit?: number
+  ): Promise<RunningHoursAudit[]> {
+    let query = this.db
+      .select()
+      .from(runningHoursAudit)
+      .where(eq(runningHoursAudit.componentId, componentId));
     if (limit) {
       query = query.limit(limit);
     }
     return await query;
   }
 
-  async getRunningHoursAuditsInDateRange(componentId: string, startDate: Date, endDate: Date): Promise<RunningHoursAudit[]> {
-    return await this.db.select().from(runningHoursAudit)
+  async getRunningHoursAuditsInDateRange(
+    componentId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<RunningHoursAudit[]> {
+    return await this.db
+      .select()
+      .from(runningHoursAudit)
       .where(eq(runningHoursAudit.componentId, componentId))
       .where(sql`${runningHoursAudit.enteredAtUTC} >= ${startDate}`)
       .where(sql`${runningHoursAudit.enteredAtUTC} <= ${endDate}`);
   }
 
-  async createRunningHoursAudit(insertAudit: InsertRunningHoursAudit): Promise<RunningHoursAudit> {
+  async createRunningHoursAudit(
+    insertAudit: InsertRunningHoursAudit
+  ): Promise<RunningHoursAudit> {
     const result = await this.db.insert(runningHoursAudit).values(insertAudit);
     const insertId = result.insertId;
-    const [audit] = await this.db.select().from(runningHoursAudit).where(eq(runningHoursAudit.id, insertId));
+    const [audit] = await this.db
+      .select()
+      .from(runningHoursAudit)
+      .where(eq(runningHoursAudit.id, insertId));
     return audit;
   }
 
@@ -188,13 +227,19 @@ export class DatabaseStorage implements IStorage {
   async getSpares(vesselId?: string): Promise<Spare[]> {
     logDbOperation('getSpares', { vesselId });
     if (vesselId) {
-      return await this.db.select().from(spares).where(eq(spares.vesselId, vesselId));
+      return await this.db
+        .select()
+        .from(spares)
+        .where(eq(spares.vesselId, vesselId));
     }
     return await this.db.select().from(spares);
   }
 
   async getSpare(id: number): Promise<Spare | undefined> {
-    const [spare] = await this.db.select().from(spares).where(eq(spares.id, id));
+    const [spare] = await this.db
+      .select()
+      .from(spares)
+      .where(eq(spares.id, id));
     return spare || undefined;
   }
 
@@ -202,17 +247,20 @@ export class DatabaseStorage implements IStorage {
     logDbOperation('createSpare', insertSpare);
     const result = await this.db.insert(spares).values(insertSpare);
     const insertId = result.insertId;
-    const [spare] = await this.db.select().from(spares).where(eq(spares.id, insertId));
+    const [spare] = await this.db
+      .select()
+      .from(spares)
+      .where(eq(spares.id, insertId));
     return spare;
   }
 
   async updateSpare(id: number, updates: Partial<InsertSpare>): Promise<Spare> {
     logDbOperation('updateSpare', { id, updates });
-    await this.db
-      .update(spares)
-      .set(updates)
+    await this.db.update(spares).set(updates).where(eq(spares.id, id));
+    const [spare] = await this.db
+      .select()
+      .from(spares)
       .where(eq(spares.id, id));
-    const [spare] = await this.db.select().from(spares).where(eq(spares.id, id));
     return spare;
   }
 
@@ -225,10 +273,15 @@ export class DatabaseStorage implements IStorage {
     return await this.db.select().from(sparesHistory);
   }
 
-  async createSpareHistory(insertHistory: InsertSpareHistory): Promise<SpareHistory> {
+  async createSpareHistory(
+    insertHistory: InsertSpareHistory
+  ): Promise<SpareHistory> {
     const result = await this.db.insert(sparesHistory).values(insertHistory);
     const insertId = result.insertId;
-    const [history] = await this.db.select().from(sparesHistory).where(eq(sparesHistory.id, insertId));
+    const [history] = await this.db
+      .select()
+      .from(sparesHistory)
+      .where(eq(sparesHistory.id, insertId));
     return history;
   }
 
@@ -237,10 +290,15 @@ export class DatabaseStorage implements IStorage {
     return await this.db.select().from(storesLedger);
   }
 
-  async createStoresLedgerEntry(insertLedger: InsertStoresLedger): Promise<StoresLedger> {
+  async createStoresLedgerEntry(
+    insertLedger: InsertStoresLedger
+  ): Promise<StoresLedger> {
     const result = await this.db.insert(storesLedger).values(insertLedger);
     const insertId = result.insertId;
-    const [ledger] = await this.db.select().from(storesLedger).where(eq(storesLedger.id, insertId));
+    const [ledger] = await this.db
+      .select()
+      .from(storesLedger)
+      .where(eq(storesLedger.id, insertId));
     return ledger;
   }
 
@@ -250,23 +308,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getChangeRequest(id: number): Promise<ChangeRequest | undefined> {
-    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, id));
+    const [cr] = await this.db
+      .select()
+      .from(changeRequest)
+      .where(eq(changeRequest.id, id));
     return cr || undefined;
   }
 
-  async createChangeRequest(insertCR: InsertChangeRequest): Promise<ChangeRequest> {
+  async createChangeRequest(
+    insertCR: InsertChangeRequest
+  ): Promise<ChangeRequest> {
     const result = await this.db.insert(changeRequest).values(insertCR);
     const insertId = result.insertId;
-    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, insertId));
+    const [cr] = await this.db
+      .select()
+      .from(changeRequest)
+      .where(eq(changeRequest.id, insertId));
     return cr;
   }
 
-  async updateChangeRequest(id: number, updates: Partial<InsertChangeRequest>): Promise<ChangeRequest> {
+  async updateChangeRequest(
+    id: number,
+    updates: Partial<InsertChangeRequest>
+  ): Promise<ChangeRequest> {
     await this.db
       .update(changeRequest)
       .set(updates)
       .where(eq(changeRequest.id, id));
-    const [cr] = await this.db.select().from(changeRequest).where(eq(changeRequest.id, id));
+    const [cr] = await this.db
+      .select()
+      .from(changeRequest)
+      .where(eq(changeRequest.id, id));
     return cr;
   }
 
@@ -372,7 +444,7 @@ export class DatabaseStorage implements IStorage {
     remarks?: string
   ): Promise<Spare[]> {
     const results: Spare[] = [];
-    
+
     for (const update of updates) {
       if (update.consumed) {
         const result = await this.consumeSpare(
@@ -383,7 +455,7 @@ export class DatabaseStorage implements IStorage {
         );
         results.push(result);
       }
-      
+
       if (update.received) {
         const result = await this.receiveSpare(
           update.id,
@@ -397,35 +469,42 @@ export class DatabaseStorage implements IStorage {
         results.push(result);
       }
     }
-    
+
     return results;
   }
 
   async getSpareHistory(vesselId: string): Promise<SpareHistory[]> {
-    return await this.db.select().from(sparesHistory).where(eq(sparesHistory.vesselId, vesselId));
+    return await this.db
+      .select()
+      .from(sparesHistory)
+      .where(eq(sparesHistory.vesselId, vesselId));
   }
 
   async getSpareHistoryBySpareId(spareId: number): Promise<SpareHistory[]> {
-    return await this.db.select().from(sparesHistory).where(eq(sparesHistory.spareId, spareId));
+    return await this.db
+      .select()
+      .from(sparesHistory)
+      .where(eq(sparesHistory.spareId, spareId));
   }
 
   // Store Ledger methods
   async getStoreItems(vesselId: string): Promise<any[]> {
     logDbOperation('getStoreItems', { vesselId });
-    
+
     try {
       // Get all transactions for this vessel
-      const allTransactions = await this.db.select()
+      const allTransactions = await this.db
+        .select()
         .from(storesLedger)
         .where(eq(storesLedger.vesselId, vesselId))
         .orderBy(desc(storesLedger.timestampUTC));
 
       // Group by item code to get latest info
       const itemsMap = new Map();
-      
+
       for (const transaction of allTransactions) {
         const itemCode = transaction.itemCode;
-        
+
         if (!itemsMap.has(itemCode)) {
           // Initialize with basic info
           itemsMap.set(itemCode, {
@@ -436,7 +515,7 @@ export class DatabaseStorage implements IStorage {
             min_stock: 1, // Default
             location: transaction.place || 'Store Room',
             category: 'stores',
-            notes: ''
+            notes: '',
           });
         }
 
@@ -457,10 +536,14 @@ export class DatabaseStorage implements IStorage {
       // Convert map to array and calculate stock status
       const result = Array.from(itemsMap.values()).map(item => ({
         ...item,
-        stock: item.rob <= item.min_stock ? 'Minimum' : 
-               item.rob <= (item.min_stock * 1.5) ? 'Low' : 'OK'
+        stock:
+          item.rob <= item.min_stock
+            ? 'Minimum'
+            : item.rob <= item.min_stock * 1.5
+              ? 'Low'
+              : 'OK',
       }));
-      
+
       return result;
     } catch (error) {
       console.error('Error fetching store items:', error);
@@ -476,18 +559,24 @@ export class DatabaseStorage implements IStorage {
 
   async getStoreHistory(vesselId: string): Promise<any[]> {
     logDbOperation('getStoreHistory', { vesselId });
-    return await this.db.select().from(storesLedger)
+    return await this.db
+      .select()
+      .from(storesLedger)
       .where(eq(storesLedger.vesselId, vesselId))
       .orderBy(desc(storesLedger.timestampUTC));
   }
 
-  async updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any> {
+  async updateStoreItem(
+    vesselId: string,
+    itemCode: string,
+    updates: any
+  ): Promise<any> {
     logDbOperation('updateStoreItem', { vesselId, itemCode, updates });
-    
+
     // Get current ROB for this item
     const currentItems = await this.getStoreItems(vesselId);
     const currentItem = currentItems.find(item => item.item_code === itemCode);
-    
+
     if (!currentItem) {
       throw new Error('Store item not found');
     }
@@ -497,7 +586,7 @@ export class DatabaseStorage implements IStorage {
       minStock: updates.minStock,
       notes: updates.notes,
       location: updates.location,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     // Create a new transaction with updated details
@@ -514,22 +603,27 @@ export class DatabaseStorage implements IStorage {
       tz: 'UTC',
       timestampUTC: new Date(),
       userId: 'system',
-      remarks: JSON.stringify(catalogInfo)
+      remarks: JSON.stringify(catalogInfo),
     };
 
     await this.db.insert(storesLedger).values(editTransaction);
-    
+
     // Force cache invalidation by adding a timestamp to response
-    return { 
-      ...editTransaction, 
-      success: true, 
+    return {
+      ...editTransaction,
+      success: true,
       timestamp: new Date().getTime(),
-      updatedFields: updates 
+      updatedFields: updates,
     };
   }
 
   // Placeholder implementations for remaining IStorage methods
-  async getChangeRequests(filters?: { category?: string; status?: string; q?: string; vesselId?: string }): Promise<ChangeRequest[]> {
+  async getChangeRequests(filters?: {
+    category?: string;
+    status?: string;
+    q?: string;
+    vesselId?: string;
+  }): Promise<ChangeRequest[]> {
     let query = this.db.select().from(changeRequest);
     if (filters?.vesselId) {
       query = query.where(eq(changeRequest.vesselId, filters.vesselId));
@@ -541,36 +635,57 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Stub methods - will implement as needed
-  async getChangeRequestAttachments(): Promise<any[]> { return []; }
-  async getChangeRequestComments(): Promise<any[]> { return []; }
-  async updateChangeRequestTarget(): Promise<any> { throw new Error('Not implemented'); }
-  async updateChangeRequestProposed(): Promise<any> { throw new Error('Not implemented'); }
-  async submitChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
-  async approveChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
-  async rejectChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
-  async returnChangeRequest(): Promise<any> { throw new Error('Not implemented'); }
-  async createChangeRequestAttachment(): Promise<any> { throw new Error('Not implemented'); }
-  async createChangeRequestComment(): Promise<any> { throw new Error('Not implemented'); }
+  async getChangeRequestAttachments(): Promise<any[]> {
+    return [];
+  }
+  async getChangeRequestComments(): Promise<any[]> {
+    return [];
+  }
+  async updateChangeRequestTarget(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async updateChangeRequestProposed(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async submitChangeRequest(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async approveChangeRequest(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async rejectChangeRequest(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async returnChangeRequest(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async createChangeRequestAttachment(): Promise<any> {
+    throw new Error('Not implemented');
+  }
+  async createChangeRequestComment(): Promise<any> {
+    throw new Error('Not implemented');
+  }
 
   // Work Orders methods
   async getWorkOrders(vesselId: string): Promise<WorkOrder[]> {
     logDbOperation('getWorkOrders', { vesselId });
-    
+
     try {
-      return await this.db.select()
+      return await this.db
+        .select()
         .from(workOrders)
         .where(eq(workOrders.vesselId, vesselId))
         .orderBy(desc(workOrders.createdAt));
     } catch (error) {
       console.error('Failed to get work orders:', error);
-      
+
       // If table doesn't exist, create it and return empty array
       if (error instanceof Error && error.message.includes("doesn't exist")) {
         logDbOperation('getWorkOrders - table not found, creating table', {});
         await this.createWorkOrdersTable();
         return [];
       }
-      
+
       throw error;
     }
   }
@@ -617,7 +732,7 @@ export class DatabaseStorage implements IStorage {
       `);
       connection.release();
       console.log('✅ Created work_orders table in MySQL RDS');
-      
+
       console.log('✅ Work orders table ready for use');
     } catch (error) {
       console.error('❌ Failed to create work_orders table:', error);
@@ -644,8 +759,8 @@ export class DatabaseStorage implements IStorage {
         formData: {
           woTitle: 'Monthly Engine Inspection',
           component: 'Main Engine',
-          componentCode: 'ME-001'
-        }
+          componentCode: 'ME-001',
+        },
       };
 
       await this.createWorkOrder(sampleWorkOrder);
@@ -657,16 +772,17 @@ export class DatabaseStorage implements IStorage {
 
   async createWorkOrder(workOrderData: InsertWorkOrder): Promise<WorkOrder> {
     logDbOperation('createWorkOrder', workOrderData);
-    
+
     try {
       await this.db.insert(workOrders).values(workOrderData);
-      
+
       // MySQL doesn't support RETURNING, so we fetch the inserted record
-      const [newWorkOrder] = await this.db.select()
+      const [newWorkOrder] = await this.db
+        .select()
         .from(workOrders)
         .where(eq(workOrders.id, workOrderData.id))
         .limit(1);
-      
+
       return newWorkOrder;
     } catch (error) {
       console.error('Failed to create work order:', error);
@@ -674,20 +790,25 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateWorkOrder(workOrderId: string, workOrderData: Partial<InsertWorkOrder>): Promise<WorkOrder> {
+  async updateWorkOrder(
+    workOrderId: string,
+    workOrderData: Partial<InsertWorkOrder>
+  ): Promise<WorkOrder> {
     logDbOperation('updateWorkOrder', { workOrderId, ...workOrderData });
-    
+
     try {
-      await this.db.update(workOrders)
+      await this.db
+        .update(workOrders)
         .set(workOrderData)
         .where(eq(workOrders.id, workOrderId));
-      
+
       // MySQL doesn't support RETURNING, so we fetch the updated record
-      const [updatedWorkOrder] = await this.db.select()
+      const [updatedWorkOrder] = await this.db
+        .select()
         .from(workOrders)
         .where(eq(workOrders.id, workOrderId))
         .limit(1);
-      
+
       return updatedWorkOrder;
     } catch (error) {
       console.error('Failed to update work order:', error);
@@ -697,10 +818,9 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWorkOrder(workOrderId: string): Promise<void> {
     logDbOperation('deleteWorkOrder', { workOrderId });
-    
+
     try {
-      await this.db.delete(workOrders)
-        .where(eq(workOrders.id, workOrderId));
+      await this.db.delete(workOrders).where(eq(workOrders.id, workOrderId));
     } catch (error) {
       console.error('Failed to delete work order:', error);
       throw error;
@@ -710,7 +830,9 @@ export class DatabaseStorage implements IStorage {
 
 // Export singleton instance
 export const storage = new DatabaseStorage();
-console.log('✅ Technical Module using MySQL RDS database for persistent storage');
+console.log(
+  '✅ Technical Module using MySQL RDS database for persistent storage'
+);
 
 // Seed some test store data if tables are empty
 (async () => {
@@ -719,7 +841,7 @@ console.log('✅ Technical Module using MySQL RDS database for persistent storag
     const existingStores = await storage.getStoreItems('V001');
     if (existingStores.length === 0) {
       console.log('🌱 Seeding test store data into MySQL...');
-      
+
       // Add some initial store transactions
       const sampleStoreTransactions = [
         {
@@ -735,11 +857,11 @@ console.log('✅ Technical Module using MySQL RDS database for persistent storag
           tz: 'UTC',
           timestampUTC: new Date(),
           userId: 'system',
-          remarks: 'Initial stock'
+          remarks: 'Initial stock',
         },
         {
           vesselId: 'V001',
-          itemCode: 'ST-CONS-001', 
+          itemCode: 'ST-CONS-001',
           itemName: 'Cotton Rags',
           unit: 'kg',
           eventType: 'INITIAL',
@@ -750,7 +872,7 @@ console.log('✅ Technical Module using MySQL RDS database for persistent storag
           tz: 'UTC',
           timestampUTC: new Date(),
           userId: 'system',
-          remarks: 'Initial stock'
+          remarks: 'Initial stock',
         },
         {
           vesselId: 'V001',
@@ -765,14 +887,14 @@ console.log('✅ Technical Module using MySQL RDS database for persistent storag
           tz: 'UTC',
           timestampUTC: new Date(),
           userId: 'system',
-          remarks: 'Initial stock'
-        }
+          remarks: 'Initial stock',
+        },
       ];
 
       for (const transaction of sampleStoreTransactions) {
         await storage.createStoreTransaction(transaction);
       }
-      
+
       console.log('✅ Test store data seeded successfully');
     }
   } catch (error) {

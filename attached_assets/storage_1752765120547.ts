@@ -1,19 +1,19 @@
-import { DatabaseStorage } from "./database"; 
-import { 
-  users, 
-  type User, 
-  type InsertUser, 
-  type Form, 
-  type InsertForm, 
-  type RankGroup, 
-  type InsertRankGroup, 
-  type AvailableRank, 
-  type InsertAvailableRank, 
-  type CrewMember, 
-  type InsertCrewMember, 
-  type AppraisalResult, 
-  type InsertAppraisalResult 
-} from "@shared/schema";
+import { DatabaseStorage } from './database';
+import {
+  users,
+  type User,
+  type InsertUser,
+  type Form,
+  type InsertForm,
+  type RankGroup,
+  type InsertRankGroup,
+  type AvailableRank,
+  type InsertAvailableRank,
+  type CrewMember,
+  type InsertCrewMember,
+  type AppraisalResult,
+  type InsertAppraisalResult,
+} from '@shared/schema';
 
 // Interface for CRUD operations
 export interface IStorage {
@@ -27,19 +27,30 @@ export interface IStorage {
   deleteForm(id: number): Promise<boolean>;
   getRankGroups(formId: number): Promise<RankGroup[]>;
   createRankGroup(rankGroup: InsertRankGroup): Promise<RankGroup>;
-  updateRankGroup(id: number, rankGroup: Partial<InsertRankGroup>): Promise<RankGroup | undefined>;
+  updateRankGroup(
+    id: number,
+    rankGroup: Partial<InsertRankGroup>
+  ): Promise<RankGroup | undefined>;
   deleteRankGroup(id: number): Promise<boolean>;
   getAvailableRanks(): Promise<AvailableRank[]>;
   createAvailableRank(rank: InsertAvailableRank): Promise<AvailableRank>;
   getCrewMembers(): Promise<CrewMember[]>;
   getCrewMember(id: string): Promise<CrewMember | undefined>;
   createCrewMember(crewMember: InsertCrewMember): Promise<CrewMember>;
-  updateCrewMember(id: string, crewMember: Partial<InsertCrewMember>): Promise<CrewMember | undefined>;
+  updateCrewMember(
+    id: string,
+    crewMember: Partial<InsertCrewMember>
+  ): Promise<CrewMember | undefined>;
   deleteCrewMember(id: string): Promise<boolean>;
   getAppraisalResults(): Promise<AppraisalResult[]>;
   getAppraisalResult(id: number): Promise<AppraisalResult | undefined>;
-  createAppraisalResult(appraisalResult: InsertAppraisalResult): Promise<AppraisalResult>;
-  updateAppraisalResult(id: number, appraisalResult: Partial<InsertAppraisalResult>): Promise<AppraisalResult | undefined>;
+  createAppraisalResult(
+    appraisalResult: InsertAppraisalResult
+  ): Promise<AppraisalResult>;
+  updateAppraisalResult(
+    id: number,
+    appraisalResult: Partial<InsertAppraisalResult>
+  ): Promise<AppraisalResult | undefined>;
   deleteAppraisalResult(id: number): Promise<boolean>;
 }
 
@@ -52,19 +63,21 @@ if (process.env.DATABASE_URL) {
     (async () => {
       try {
         await (storage as DatabaseStorage).seedDatabase();
-        console.log("✅ MySQL database connected and seeded successfully");
+        console.log('✅ MySQL database connected and seeded successfully');
       } catch (error) {
-        console.error("Failed to seed database:", error);
+        console.error('Failed to seed database:', error);
         storage = new MemStorage();
       }
     })();
   } catch (error) {
-    console.error("Failed to initialize MySQL database:", error);
+    console.error('Failed to initialize MySQL database:', error);
     storage = new MemStorage();
   }
 } else {
   storage = new MemStorage();
-  console.log("ℹ️  No DATABASE_URL found, using in-memory storage for development");
+  console.log(
+    'ℹ️  No DATABASE_URL found, using in-memory storage for development'
+  );
 }
 
 export { storage };
@@ -110,7 +123,9 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    return Array.from(this.users.values()).find(
+      user => user.username === username
+    );
   }
 
   // Form methods
@@ -129,7 +144,10 @@ export class MemStorage implements IStorage {
     return newForm;
   }
 
-  async updateForm(id: number, form: Partial<InsertForm>): Promise<Form | undefined> {
+  async updateForm(
+    id: number,
+    form: Partial<InsertForm>
+  ): Promise<Form | undefined> {
     const existingForm = this.forms.get(id);
     if (!existingForm) return undefined;
 
@@ -144,7 +162,9 @@ export class MemStorage implements IStorage {
 
   // Rank Group methods
   async getRankGroups(formId: number): Promise<RankGroup[]> {
-    return Array.from(this.rankGroups.values()).filter(rankGroup => rankGroup.formId === formId);
+    return Array.from(this.rankGroups.values()).filter(
+      rankGroup => rankGroup.formId === formId
+    );
   }
 
   async createRankGroup(rankGroup: InsertRankGroup): Promise<RankGroup> {
@@ -154,11 +174,17 @@ export class MemStorage implements IStorage {
     return newRankGroup;
   }
 
-  async updateRankGroup(id: number, rankGroupData: Partial<InsertRankGroup>): Promise<RankGroup | undefined> {
+  async updateRankGroup(
+    id: number,
+    rankGroupData: Partial<InsertRankGroup>
+  ): Promise<RankGroup | undefined> {
     const existingRankGroup = this.rankGroups.get(id);
     if (!existingRankGroup) return undefined;
 
-    const updatedRankGroup: RankGroup = { ...existingRankGroup, ...rankGroupData };
+    const updatedRankGroup: RankGroup = {
+      ...existingRankGroup,
+      ...rankGroupData,
+    };
     this.rankGroups.set(id, updatedRankGroup);
     return updatedRankGroup;
   }
@@ -188,17 +214,30 @@ export class MemStorage implements IStorage {
     return this.crewMembers.get(id);
   }
 
-  async createCrewMember(insertCrewMember: InsertCrewMember): Promise<CrewMember> {
-    const crewMember: CrewMember = { ...insertCrewMember, createdAt: new Date(), updatedAt: new Date() };
+  async createCrewMember(
+    insertCrewMember: InsertCrewMember
+  ): Promise<CrewMember> {
+    const crewMember: CrewMember = {
+      ...insertCrewMember,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
     this.crewMembers.set(crewMember.id, crewMember);
     return crewMember;
   }
 
-  async updateCrewMember(id: string, crewMemberData: Partial<InsertCrewMember>): Promise<CrewMember | undefined> {
+  async updateCrewMember(
+    id: string,
+    crewMemberData: Partial<InsertCrewMember>
+  ): Promise<CrewMember | undefined> {
     const existingCrewMember = this.crewMembers.get(id);
     if (!existingCrewMember) return undefined;
 
-    const updatedCrewMember: CrewMember = { ...existingCrewMember, ...crewMemberData, updatedAt: new Date() };
+    const updatedCrewMember: CrewMember = {
+      ...existingCrewMember,
+      ...crewMemberData,
+      updatedAt: new Date(),
+    };
     this.crewMembers.set(id, updatedCrewMember);
     return updatedCrewMember;
   }
@@ -216,18 +255,26 @@ export class MemStorage implements IStorage {
     return this.appraisalResults.get(id);
   }
 
-  async createAppraisalResult(insertAppraisalResult: InsertAppraisalResult): Promise<AppraisalResult> {
+  async createAppraisalResult(
+    insertAppraisalResult: InsertAppraisalResult
+  ): Promise<AppraisalResult> {
     const id = this.currentAppraisalResultId++;
     const appraisalResult: AppraisalResult = { ...insertAppraisalResult, id };
     this.appraisalResults.set(id, appraisalResult);
     return appraisalResult;
   }
 
-  async updateAppraisalResult(id: number, appraisalResultData: Partial<InsertAppraisalResult>): Promise<AppraisalResult | undefined> {
+  async updateAppraisalResult(
+    id: number,
+    appraisalResultData: Partial<InsertAppraisalResult>
+  ): Promise<AppraisalResult | undefined> {
     const existingAppraisalResult = this.appraisalResults.get(id);
     if (!existingAppraisalResult) return undefined;
 
-    const updatedAppraisalResult: AppraisalResult = { ...existingAppraisalResult, ...appraisalResultData };
+    const updatedAppraisalResult: AppraisalResult = {
+      ...existingAppraisalResult,
+      ...appraisalResultData,
+    };
     this.appraisalResults.set(id, updatedAppraisalResult);
     return updatedAppraisalResult;
   }

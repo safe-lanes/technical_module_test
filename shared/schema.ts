@@ -308,8 +308,12 @@ export const workOrders = mysqlTable(
     nextDueDate: varchar('next_due_date', { length: 50 }),
     nextDueReading: varchar('next_due_reading', { length: 50 }),
     currentReading: varchar('current_reading', { length: 50 }),
-    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`),
+    createdAt: timestamp('created_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`),
   },
   table => ({
     vesselIdIdx: index('idx_wo_vessel').on(table.vesselId),
@@ -361,9 +365,11 @@ export const changeRequest = mysqlTable(
   })
 );
 
-export const insertChangeRequestSchema = createInsertSchema(changeRequest).omit({
-  id: true,
-});
+export const insertChangeRequestSchema = createInsertSchema(changeRequest).omit(
+  {
+    id: true,
+  }
+);
 
 export type InsertChangeRequest = z.infer<typeof insertChangeRequestSchema>;
 export type ChangeRequest = typeof changeRequest.$inferSelect;
@@ -396,7 +402,8 @@ export const insertChangeRequestAttachmentSchema = createInsertSchema(
 export type InsertChangeRequestAttachment = z.infer<
   typeof insertChangeRequestAttachmentSchema
 >;
-export type ChangeRequestAttachment = typeof changeRequestAttachment.$inferSelect;
+export type ChangeRequestAttachment =
+  typeof changeRequestAttachment.$inferSelect;
 
 // Change Request Comment Table
 export const changeRequestComment = mysqlTable(
@@ -405,7 +412,9 @@ export const changeRequestComment = mysqlTable(
     id: int('id').primaryKey().autoincrement(),
     changeRequestId: int('change_request_id').notNull(),
     commentText: text('comment_text').notNull(),
-    commentType: varchar('comment_type', { length: 20 }).notNull().default('GENERAL'),
+    commentType: varchar('comment_type', { length: 20 })
+      .notNull()
+      .default('GENERAL'),
     commentedBy: varchar('commented_by', { length: 100 }).notNull(),
     commentedAt: timestamp('commented_at').notNull(),
     parentCommentId: int('parent_comment_id'),
@@ -507,7 +516,9 @@ export const alertDeliveries = mysqlTable(
   })
 );
 
-export const insertAlertDeliverySchema = createInsertSchema(alertDeliveries).omit({
+export const insertAlertDeliverySchema = createInsertSchema(
+  alertDeliveries
+).omit({
   id: true,
 });
 

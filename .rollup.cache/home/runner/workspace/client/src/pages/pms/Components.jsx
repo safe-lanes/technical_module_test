@@ -1,1839 +1,3168 @@
-import { __assign, __awaiter, __generator, __spreadArray } from "tslib";
-import React, { useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, Edit2, FileText, ArrowLeft, Plus } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ComponentRegisterForm from "@/components/ComponentRegisterForm";
-import ComponentRegisterFormCR from "@/components/ComponentRegisterFormCR";
-import WorkOrderForm from "@/components/WorkOrderForm";
-import { ReviewChangesDrawer } from "@/components/ReviewChangesDrawer";
-import { useChangeRequest } from "@/contexts/ChangeRequestContext";
-import { useChangeMode } from "@/contexts/ChangeModeContext";
-import { useLocation } from "wouter";
-import { getComponentCategory } from "@/utils/componentUtils";
-import { useToast } from "@/hooks/use-toast";
-import { useModifyMode } from "@/hooks/useModifyMode";
-import { ModifyFieldWrapper } from "@/components/modify/ModifyFieldWrapper";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { __assign, __awaiter, __generator, __spreadArray } from 'tslib';
+import React, { useState, useEffect } from 'react';
+import {
+  ChevronRight,
+  ChevronDown,
+  Edit2,
+  FileText,
+  ArrowLeft,
+  Plus,
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ComponentRegisterForm from '@/components/ComponentRegisterForm';
+import ComponentRegisterFormCR from '@/components/ComponentRegisterFormCR';
+import WorkOrderForm from '@/components/WorkOrderForm';
+import { ReviewChangesDrawer } from '@/components/ReviewChangesDrawer';
+import { useChangeRequest } from '@/contexts/ChangeRequestContext';
+import { useChangeMode } from '@/contexts/ChangeModeContext';
+import { useLocation } from 'wouter';
+import { getComponentCategory } from '@/utils/componentUtils';
+import { useToast } from '@/hooks/use-toast';
+import { useModifyMode } from '@/hooks/useModifyMode';
+import { ModifyFieldWrapper } from '@/components/modify/ModifyFieldWrapper';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 var dummyComponents = [
-    {
-        id: "1",
-        code: "1",
-        name: "Ship General",
+  {
+    id: '1',
+    code: '1',
+    name: 'Ship General',
+    children: [
+      {
+        id: '1.1',
+        code: '1.1',
+        name: 'Fresh Water System',
         children: [
-            {
-                id: "1.1",
-                code: "1.1",
-                name: "Fresh Water System",
-                children: [
-                    {
-                        id: "1.1.1",
-                        code: "1.1.1",
-                        name: "Hydrophore Unit",
-                        children: [
-                            {
-                                id: "1.1.1.1",
-                                code: "1.1.1.1",
-                                name: "Pressure Vessel"
-                            },
-                            {
-                                id: "1.1.1.2",
-                                code: "1.1.1.2",
-                                name: "Feed Pump"
-                            },
-                            {
-                                id: "1.1.1.3",
-                                code: "1.1.1.3",
-                                name: "Pressure Switch"
-                            }
-                        ]
-                    },
-                    {
-                        id: "1.1.2",
-                        code: "1.1.2",
-                        name: "Potable Water Maker",
-                        children: []
-                    },
-                    {
-                        id: "1.1.3",
-                        code: "1.1.3",
-                        name: "UV Sterilizer",
-                        children: []
-                    }
-                ]
-            },
-            {
-                id: "1.2",
-                code: "1.2",
-                name: "Sewage Treatment System",
-                children: []
-            },
-            {
-                id: "1.3",
-                code: "1.3",
-                name: "HVAC – Accommodation",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "2",
-        code: "2",
-        name: "Hull",
-        children: [
-            {
-                id: "2.1",
-                code: "2.1",
-                name: "Ballast Tanks",
-                children: []
-            },
-            {
-                id: "2.2",
-                code: "2.2",
-                name: "Cathodic Protection",
-                children: []
-            },
-            {
-                id: "2.3",
-                code: "2.3",
-                name: "Hull Openings – Hatches",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "3",
-        code: "3",
-        name: "Equipment for Cargo",
-        children: [
-            {
-                id: "3.1",
-                code: "3.1",
-                name: "Cargo Cranes",
-                children: []
-            },
-            {
-                id: "3.2",
-                code: "3.2",
-                name: "Hatch Cover Hydraulics",
-                children: []
-            },
-            {
-                id: "3.3",
-                code: "3.3",
-                name: "Cargo Hold Ventilation",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "4",
-        code: "4",
-        name: "Ship's Equipment",
-        children: [
-            {
-                id: "4.1",
-                code: "4.1",
-                name: "Mooring System",
-                children: []
-            },
-            {
-                id: "4.2",
-                code: "4.2",
-                name: "Windlass",
-                children: []
-            },
-            {
-                id: "4.3",
-                code: "4.3",
-                name: "Steering Gear",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "5",
-        code: "5",
-        name: "Equipment for Crew & Passengers",
-        children: [
-            {
-                id: "5.1",
-                code: "5.1",
-                name: "Lifeboat System",
-                children: []
-            },
-            {
-                id: "5.2",
-                code: "5.2",
-                name: "Fire Main System",
-                children: []
-            },
-            {
-                id: "5.3",
-                code: "5.3",
-                name: "Emergency Lighting",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "6",
-        code: "6",
-        name: "Machinery Main Components",
+          {
+            id: '1.1.1',
+            code: '1.1.1',
+            name: 'Hydrophore Unit',
+            children: [
+              {
+                id: '1.1.1.1',
+                code: '1.1.1.1',
+                name: 'Pressure Vessel',
+              },
+              {
+                id: '1.1.1.2',
+                code: '1.1.1.2',
+                name: 'Feed Pump',
+              },
+              {
+                id: '1.1.1.3',
+                code: '1.1.1.3',
+                name: 'Pressure Switch',
+              },
+            ],
+          },
+          {
+            id: '1.1.2',
+            code: '1.1.2',
+            name: 'Potable Water Maker',
+            children: [],
+          },
+          {
+            id: '1.1.3',
+            code: '1.1.3',
+            name: 'UV Sterilizer',
+            children: [],
+          },
+        ],
+      },
+      {
+        id: '1.2',
+        code: '1.2',
+        name: 'Sewage Treatment System',
+        children: [],
+      },
+      {
+        id: '1.3',
+        code: '1.3',
+        name: 'HVAC – Accommodation',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '2',
+    code: '2',
+    name: 'Hull',
+    children: [
+      {
+        id: '2.1',
+        code: '2.1',
+        name: 'Ballast Tanks',
+        children: [],
+      },
+      {
+        id: '2.2',
+        code: '2.2',
+        name: 'Cathodic Protection',
+        children: [],
+      },
+      {
+        id: '2.3',
+        code: '2.3',
+        name: 'Hull Openings – Hatches',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '3',
+    code: '3',
+    name: 'Equipment for Cargo',
+    children: [
+      {
+        id: '3.1',
+        code: '3.1',
+        name: 'Cargo Cranes',
+        children: [],
+      },
+      {
+        id: '3.2',
+        code: '3.2',
+        name: 'Hatch Cover Hydraulics',
+        children: [],
+      },
+      {
+        id: '3.3',
+        code: '3.3',
+        name: 'Cargo Hold Ventilation',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '4',
+    code: '4',
+    name: "Ship's Equipment",
+    children: [
+      {
+        id: '4.1',
+        code: '4.1',
+        name: 'Mooring System',
+        children: [],
+      },
+      {
+        id: '4.2',
+        code: '4.2',
+        name: 'Windlass',
+        children: [],
+      },
+      {
+        id: '4.3',
+        code: '4.3',
+        name: 'Steering Gear',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '5',
+    code: '5',
+    name: 'Equipment for Crew & Passengers',
+    children: [
+      {
+        id: '5.1',
+        code: '5.1',
+        name: 'Lifeboat System',
+        children: [],
+      },
+      {
+        id: '5.2',
+        code: '5.2',
+        name: 'Fire Main System',
+        children: [],
+      },
+      {
+        id: '5.3',
+        code: '5.3',
+        name: 'Emergency Lighting',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '6',
+    code: '6',
+    name: 'Machinery Main Components',
+    isExpanded: true,
+    children: [
+      {
+        id: '6.1',
+        code: '6.1',
+        name: 'Main Engine',
         isExpanded: true,
         children: [
-            {
-                id: "6.1",
-                code: "6.1",
-                name: "Main Engine",
-                isExpanded: true,
-                children: [
-                    {
-                        id: "6.1.1",
-                        code: "6.1.1",
-                        name: "Cylinder Head",
-                        isExpanded: true,
-                        children: [
-                            {
-                                id: "6.1.1.1",
-                                code: "6.1.1.1",
-                                name: "Valve Seats"
-                            },
-                            {
-                                id: "6.1.1.2",
-                                code: "6.1.1.2",
-                                name: "Injector Sleeve"
-                            },
-                            {
-                                id: "6.1.1.3",
-                                code: "6.1.1.3",
-                                name: "Rocker Arm"
-                            }
-                        ]
-                    },
-                    {
-                        id: "6.1.2",
-                        code: "6.1.2",
-                        name: "Main Bearings",
-                        children: []
-                    },
-                    {
-                        id: "6.1.3",
-                        code: "6.1.3",
-                        name: "Cylinder Liners",
-                        children: []
-                    }
-                ]
-            },
-            {
-                id: "6.2",
-                code: "6.2",
-                name: "Diesel Generators",
-                children: [
-                    {
-                        id: "6.2.1",
-                        code: "6.2.1",
-                        name: "DG #1",
-                        children: []
-                    },
-                    {
-                        id: "6.2.2",
-                        code: "6.2.2",
-                        name: "DG #2",
-                        children: []
-                    },
-                    {
-                        id: "6.2.3",
-                        code: "6.2.3",
-                        name: "DG #3",
-                        children: []
-                    }
-                ]
-            },
-            {
-                id: "6.3",
-                code: "6.3",
-                name: "Auxiliary Boiler",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "7",
-        code: "7",
-        name: "Systems for Machinery Main Components",
+          {
+            id: '6.1.1',
+            code: '6.1.1',
+            name: 'Cylinder Head',
+            isExpanded: true,
+            children: [
+              {
+                id: '6.1.1.1',
+                code: '6.1.1.1',
+                name: 'Valve Seats',
+              },
+              {
+                id: '6.1.1.2',
+                code: '6.1.1.2',
+                name: 'Injector Sleeve',
+              },
+              {
+                id: '6.1.1.3',
+                code: '6.1.1.3',
+                name: 'Rocker Arm',
+              },
+            ],
+          },
+          {
+            id: '6.1.2',
+            code: '6.1.2',
+            name: 'Main Bearings',
+            children: [],
+          },
+          {
+            id: '6.1.3',
+            code: '6.1.3',
+            name: 'Cylinder Liners',
+            children: [],
+          },
+        ],
+      },
+      {
+        id: '6.2',
+        code: '6.2',
+        name: 'Diesel Generators',
         children: [
-            {
-                id: "7.1",
-                code: "7.1",
-                name: "Fuel Oil System",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "8",
-        code: "8",
-        name: "Ship Common Systems",
-        children: []
-    }
+          {
+            id: '6.2.1',
+            code: '6.2.1',
+            name: 'DG #1',
+            children: [],
+          },
+          {
+            id: '6.2.2',
+            code: '6.2.2',
+            name: 'DG #2',
+            children: [],
+          },
+          {
+            id: '6.2.3',
+            code: '6.2.3',
+            name: 'DG #3',
+            children: [],
+          },
+        ],
+      },
+      {
+        id: '6.3',
+        code: '6.3',
+        name: 'Auxiliary Boiler',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '7',
+    code: '7',
+    name: 'Systems for Machinery Main Components',
+    children: [
+      {
+        id: '7.1',
+        code: '7.1',
+        name: 'Fuel Oil System',
+        children: [],
+      },
+    ],
+  },
+  {
+    id: '8',
+    code: '8',
+    name: 'Ship Common Systems',
+    children: [],
+  },
 ];
 // Function to get mock data for a component based on its code
 var getComponentMockData = function (code) {
-    // Generate realistic mock data based on component code and type
-    var getComponentDetails = function (code, name) {
-        // Parse component hierarchy from code
-        var levels = code.split('.');
-        var topLevel = levels[0];
-        // Department mapping based on top-level code
-        var departmentMap = {
-            "1": "Hull & Deck",
-            "2": "Deck Machinery",
-            "3": "Accommodation",
-            "4": "Ship's Equipment",
-            "5": "Safety Equipment",
-            "6": "Engine Department",
-            "7": "Engine Systems",
-            "8": "Common Systems"
-        };
-        // Location mapping
-        var locationMap = {
-            "1": "Main Deck",
-            "2": "Fore Deck",
-            "3": "Accommodation Block",
-            "4": "Main Deck",
-            "5": "Bridge/Safety Station",
-            "6": "Engine Room",
-            "7": "Engine Room",
-            "8": "Various"
-        };
-        // Criticality based on component level and type
-        var isCritical = topLevel === "6" || topLevel === "7" || (topLevel === "1" && levels.length > 2);
-        // Generate appropriate maker based on component type
-        var getMaker = function () {
-            if (topLevel === "6")
-                return ["MAN B&W", "Wärtsilä", "Caterpillar", "Yanmar"][Math.floor(Math.random() * 4)];
-            if (topLevel === "1")
-                return ["Hyundai", "Samsung", "Daewoo"][Math.floor(Math.random() * 3)];
-            if (topLevel === "2")
-                return ["MacGregor", "TTS Marine", "Rolls-Royce"][Math.floor(Math.random() * 3)];
-            if (topLevel === "3")
-                return ["Marine Air Systems", "Novenco", "Heinen & Hopman"][Math.floor(Math.random() * 3)];
-            if (topLevel === "4")
-                return ["Kongsberg", "Furuno", "JRC"][Math.floor(Math.random() * 3)];
-            if (topLevel === "5")
-                return ["Viking", "Survitec", "LALIZAS"][Math.floor(Math.random() * 3)];
-            return "OEM Manufacturer";
-        };
-        // Generate model based on code
-        var model = "".concat(getMaker().split(' ')[0].toUpperCase(), "-").concat(code.replace(/\./g, ''), "-").concat(levels.length > 2 ? 'ADV' : 'STD');
-        // Generate serial number
-        var serialNo = "SN-".concat(new Date().getFullYear(), "-").concat(code.replace(/\./g, ''), "-").concat(Math.floor(Math.random() * 9999).toString().padStart(4, '0'));
-        // Rating based on component type
-        var getRating = function () {
-            if (topLevel === "6" && levels.length === 3)
-                return "7,200 kW";
-            if (topLevel === "6" && levels.length === 4)
-                return "High Performance";
-            if (topLevel === "2")
-                return "SWL 25 MT";
-            if (topLevel === "7")
-                return "Medium Pressure";
-            return "Standard";
-        };
-        return {
-            maker: getMaker(),
-            model: model,
-            serialNo: serialNo,
-            department: departmentMap[topLevel] || "General",
-            critical: isCritical ? "Yes" : "No",
-            classItem: isCritical ? "Yes" : "No",
-            location: locationMap[topLevel] || "Ship",
-            commissionedDate: "2020-01-15",
-            installationDate: "2019-12-20",
-            rating: getRating(),
-            conditionBased: levels.length > 2 ? "Yes" : "No",
-            noOfUnits: levels.length === 4 ? "6" : levels.length === 3 ? "2" : "1",
-            eqptSystemDept: departmentMap[topLevel] || "General",
-            parentComponent: levels.length > 1 ? "Level ".concat(levels.slice(0, -1).join('.')) : "Ship Structure",
-            dimensionsSize: levels.length === 4 ? "0.5m x 0.3m" : levels.length === 3 ? "2m x 1m" : "5m x 3m",
-            notes: "Component ".concat(code, " - ").concat(isCritical ? 'Critical for vessel operations' : 'Standard equipment')
-        };
+  // Generate realistic mock data based on component code and type
+  var getComponentDetails = function (code, name) {
+    // Parse component hierarchy from code
+    var levels = code.split('.');
+    var topLevel = levels[0];
+    // Department mapping based on top-level code
+    var departmentMap = {
+      1: 'Hull & Deck',
+      2: 'Deck Machinery',
+      3: 'Accommodation',
+      4: "Ship's Equipment",
+      5: 'Safety Equipment',
+      6: 'Engine Department',
+      7: 'Engine Systems',
+      8: 'Common Systems',
     };
-    // Special cases for specific well-known components
-    var specialCases = {
-        "6.1.1": {
-            maker: "MAN Energy Solutions",
-            model: "6S60MC-C",
-            serialNo: "ME-2020-001",
-            department: "Engine Department",
-            critical: "Yes",
-            classItem: "Yes",
-            location: "Engine Room",
-            commissionedDate: "2020-02-01",
-            installationDate: "2020-01-15",
-            rating: "7,200 kW @ 105 RPM",
-            conditionBased: "Yes",
-            noOfUnits: "1",
-            eqptSystemDept: "Engine Department",
-            parentComponent: "6.1 Main Engine",
-            dimensionsSize: "15m x 3m x 4m",
-            notes: "Main propulsion engine - 6 cylinder, 2-stroke diesel"
-        },
-        "1.1": {
-            maker: "Hyundai Heavy Industries",
-            model: "HHI-HULL-2020",
-            serialNo: "HULL-001",
-            department: "Hull & Deck",
-            critical: "Yes",
-            classItem: "Yes",
-            location: "Ship Structure",
-            commissionedDate: "2020-01-01",
-            installationDate: "2019-06-01",
-            rating: "Double Hull",
-            conditionBased: "Yes",
-            noOfUnits: "1",
-            eqptSystemDept: "Hull & Structure",
-            parentComponent: "1. Ship's Structure",
-            dimensionsSize: "180m x 32m x 18m",
-            notes: "Main hull structure - double bottom design"
-        },
-        "2.1": {
-            maker: "MacGregor",
-            model: "MG-CRANE-45T",
-            serialNo: "CR-2020-001",
-            department: "Deck Machinery",
-            critical: "Yes",
-            classItem: "Yes",
-            location: "Main Deck Port",
-            commissionedDate: "2020-01-15",
-            installationDate: "2019-12-01",
-            rating: "SWL 45 MT",
-            conditionBased: "Yes",
-            noOfUnits: "1",
-            eqptSystemDept: "Deck Department",
-            parentComponent: "2. Deck Machinery",
-            dimensionsSize: "25m boom length",
-            notes: "Main cargo crane - hydraulic operation"
-        }
+    // Location mapping
+    var locationMap = {
+      1: 'Main Deck',
+      2: 'Fore Deck',
+      3: 'Accommodation Block',
+      4: 'Main Deck',
+      5: 'Bridge/Safety Station',
+      6: 'Engine Room',
+      7: 'Engine Room',
+      8: 'Various',
     };
-    // Return special case if exists, otherwise generate based on pattern
-    return specialCases[code] || getComponentDetails(code);
+    // Criticality based on component level and type
+    var isCritical =
+      topLevel === '6' ||
+      topLevel === '7' ||
+      (topLevel === '1' && levels.length > 2);
+    // Generate appropriate maker based on component type
+    var getMaker = function () {
+      if (topLevel === '6')
+        return ['MAN B&W', 'Wärtsilä', 'Caterpillar', 'Yanmar'][
+          Math.floor(Math.random() * 4)
+        ];
+      if (topLevel === '1')
+        return ['Hyundai', 'Samsung', 'Daewoo'][Math.floor(Math.random() * 3)];
+      if (topLevel === '2')
+        return ['MacGregor', 'TTS Marine', 'Rolls-Royce'][
+          Math.floor(Math.random() * 3)
+        ];
+      if (topLevel === '3')
+        return ['Marine Air Systems', 'Novenco', 'Heinen & Hopman'][
+          Math.floor(Math.random() * 3)
+        ];
+      if (topLevel === '4')
+        return ['Kongsberg', 'Furuno', 'JRC'][Math.floor(Math.random() * 3)];
+      if (topLevel === '5')
+        return ['Viking', 'Survitec', 'LALIZAS'][Math.floor(Math.random() * 3)];
+      return 'OEM Manufacturer';
+    };
+    // Generate model based on code
+    var model = ''
+      .concat(getMaker().split(' ')[0].toUpperCase(), '-')
+      .concat(code.replace(/\./g, ''), '-')
+      .concat(levels.length > 2 ? 'ADV' : 'STD');
+    // Generate serial number
+    var serialNo = 'SN-'
+      .concat(new Date().getFullYear(), '-')
+      .concat(code.replace(/\./g, ''), '-')
+      .concat(
+        Math.floor(Math.random() * 9999)
+          .toString()
+          .padStart(4, '0')
+      );
+    // Rating based on component type
+    var getRating = function () {
+      if (topLevel === '6' && levels.length === 3) return '7,200 kW';
+      if (topLevel === '6' && levels.length === 4) return 'High Performance';
+      if (topLevel === '2') return 'SWL 25 MT';
+      if (topLevel === '7') return 'Medium Pressure';
+      return 'Standard';
+    };
+    return {
+      maker: getMaker(),
+      model: model,
+      serialNo: serialNo,
+      department: departmentMap[topLevel] || 'General',
+      critical: isCritical ? 'Yes' : 'No',
+      classItem: isCritical ? 'Yes' : 'No',
+      location: locationMap[topLevel] || 'Ship',
+      commissionedDate: '2020-01-15',
+      installationDate: '2019-12-20',
+      rating: getRating(),
+      conditionBased: levels.length > 2 ? 'Yes' : 'No',
+      noOfUnits: levels.length === 4 ? '6' : levels.length === 3 ? '2' : '1',
+      eqptSystemDept: departmentMap[topLevel] || 'General',
+      parentComponent:
+        levels.length > 1
+          ? 'Level '.concat(levels.slice(0, -1).join('.'))
+          : 'Ship Structure',
+      dimensionsSize:
+        levels.length === 4
+          ? '0.5m x 0.3m'
+          : levels.length === 3
+            ? '2m x 1m'
+            : '5m x 3m',
+      notes: 'Component '
+        .concat(code, ' - ')
+        .concat(
+          isCritical ? 'Critical for vessel operations' : 'Standard equipment'
+        ),
+    };
+  };
+  // Special cases for specific well-known components
+  var specialCases = {
+    '6.1.1': {
+      maker: 'MAN Energy Solutions',
+      model: '6S60MC-C',
+      serialNo: 'ME-2020-001',
+      department: 'Engine Department',
+      critical: 'Yes',
+      classItem: 'Yes',
+      location: 'Engine Room',
+      commissionedDate: '2020-02-01',
+      installationDate: '2020-01-15',
+      rating: '7,200 kW @ 105 RPM',
+      conditionBased: 'Yes',
+      noOfUnits: '1',
+      eqptSystemDept: 'Engine Department',
+      parentComponent: '6.1 Main Engine',
+      dimensionsSize: '15m x 3m x 4m',
+      notes: 'Main propulsion engine - 6 cylinder, 2-stroke diesel',
+    },
+    1.1: {
+      maker: 'Hyundai Heavy Industries',
+      model: 'HHI-HULL-2020',
+      serialNo: 'HULL-001',
+      department: 'Hull & Deck',
+      critical: 'Yes',
+      classItem: 'Yes',
+      location: 'Ship Structure',
+      commissionedDate: '2020-01-01',
+      installationDate: '2019-06-01',
+      rating: 'Double Hull',
+      conditionBased: 'Yes',
+      noOfUnits: '1',
+      eqptSystemDept: 'Hull & Structure',
+      parentComponent: "1. Ship's Structure",
+      dimensionsSize: '180m x 32m x 18m',
+      notes: 'Main hull structure - double bottom design',
+    },
+    2.1: {
+      maker: 'MacGregor',
+      model: 'MG-CRANE-45T',
+      serialNo: 'CR-2020-001',
+      department: 'Deck Machinery',
+      critical: 'Yes',
+      classItem: 'Yes',
+      location: 'Main Deck Port',
+      commissionedDate: '2020-01-15',
+      installationDate: '2019-12-01',
+      rating: 'SWL 45 MT',
+      conditionBased: 'Yes',
+      noOfUnits: '1',
+      eqptSystemDept: 'Deck Department',
+      parentComponent: '2. Deck Machinery',
+      dimensionsSize: '25m boom length',
+      notes: 'Main cargo crane - hydraulic operation',
+    },
+  };
+  // Return special case if exists, otherwise generate based on pattern
+  return specialCases[code] || getComponentDetails(code);
 };
 var ComponentInformationSection = function (_a) {
-    var isExpanded = _a.isExpanded, selectedComponent = _a.selectedComponent, _b = _a.isModifyMode, isModifyMode = _b === void 0 ? false : _b, onDataChange = _a.onDataChange, _c = _a.previewChanges, previewChanges = _c === void 0 ? [] : _c, _d = _a.isPreviewMode, isPreviewMode = _d === void 0 ? false : _d;
-    var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
-    var collectDiff = useChangeMode().collectDiff;
-    var isChangeMode = isModifyMode;
-    // Helper function to check if a field has changes in preview mode
-    var hasPreviewChange = function (fieldName) {
-        if (!isPreviewMode || !previewChanges)
-            return false;
-        return previewChanges.some(function (change) {
-            return change.field === fieldName || change.fieldName === fieldName ||
-                change.field === "componentInfo.".concat(fieldName) || change.fieldName === "componentInfo.".concat(fieldName);
+  var isExpanded = _a.isExpanded,
+    selectedComponent = _a.selectedComponent,
+    _b = _a.isModifyMode,
+    isModifyMode = _b === void 0 ? false : _b,
+    onDataChange = _a.onDataChange,
+    _c = _a.previewChanges,
+    previewChanges = _c === void 0 ? [] : _c,
+    _d = _a.isPreviewMode,
+    isPreviewMode = _d === void 0 ? false : _d;
+  var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
+  var collectDiff = useChangeMode().collectDiff;
+  var isChangeMode = isModifyMode;
+  // Helper function to check if a field has changes in preview mode
+  var hasPreviewChange = function (fieldName) {
+    if (!isPreviewMode || !previewChanges) return false;
+    return previewChanges.some(function (change) {
+      return (
+        change.field === fieldName ||
+        change.fieldName === fieldName ||
+        change.field === 'componentInfo.'.concat(fieldName) ||
+        change.fieldName === 'componentInfo.'.concat(fieldName)
+      );
+    });
+  };
+  // Helper function to get the new value from preview changes
+  var getPreviewValue = function (fieldName) {
+    if (!isPreviewMode || !previewChanges) return null;
+    var change = previewChanges.find(function (change) {
+      return (
+        change.field === fieldName ||
+        change.fieldName === fieldName ||
+        change.field === 'componentInfo.'.concat(fieldName) ||
+        change.fieldName === 'componentInfo.'.concat(fieldName)
+      );
+    });
+    return change ? change.newValue || change.currentValue : null;
+  };
+  // Derive Component Category from the component's tree position
+  var componentCategory = selectedComponent
+    ? getComponentCategory(selectedComponent.id)
+    : '';
+  // Component data - uses selected component code or defaults
+  var _e = useState({
+      maker: '',
+      model: '',
+      serialNo: '',
+      department: '',
+      componentCategory: '',
+      componentCode: '',
+      critical: 'No',
+      classItem: 'No',
+      location: '',
+      commissionedDate: '',
+      installationDate: '',
+      rating: '',
+      conditionBased: 'No',
+      noOfUnits: '',
+      eqptSystemDept: '',
+      parentComponent: '',
+      dimensionsSize: '',
+      notes: '',
+    }),
+    componentData = _e[0],
+    setComponentData = _e[1];
+  // Track original component data for modify mode
+  var _f = useState(null),
+    originalComponentData = _f[0],
+    setOriginalComponentData = _f[1];
+  // Update component data when selected component changes
+  useEffect(
+    function () {
+      if (selectedComponent) {
+        // Get mock data based on component code
+        var mockData = getComponentMockData(selectedComponent.code);
+        var newData = __assign(__assign({}, mockData), {
+          componentCode: selectedComponent.code,
+          componentCategory: getComponentCategory(selectedComponent.id),
         });
-    };
-    // Helper function to get the new value from preview changes
-    var getPreviewValue = function (fieldName) {
-        if (!isPreviewMode || !previewChanges)
-            return null;
-        var change = previewChanges.find(function (change) {
-            return change.field === fieldName || change.fieldName === fieldName ||
-                change.field === "componentInfo.".concat(fieldName) || change.fieldName === "componentInfo.".concat(fieldName);
-        });
-        return change ? (change.newValue || change.currentValue) : null;
-    };
-    // Derive Component Category from the component's tree position
-    var componentCategory = selectedComponent ? getComponentCategory(selectedComponent.id) : '';
-    // Component data - uses selected component code or defaults
-    var _e = useState({
-        maker: "",
-        model: "",
-        serialNo: "",
-        department: "",
-        componentCategory: "",
-        componentCode: "",
-        critical: "No",
-        classItem: "No",
-        location: "",
-        commissionedDate: "",
-        installationDate: "",
-        rating: "",
-        conditionBased: "No",
-        noOfUnits: "",
-        eqptSystemDept: "",
-        parentComponent: "",
-        dimensionsSize: "",
-        notes: ""
-    }), componentData = _e[0], setComponentData = _e[1];
-    // Track original component data for modify mode
-    var _f = useState(null), originalComponentData = _f[0], setOriginalComponentData = _f[1];
-    // Update component data when selected component changes
-    useEffect(function () {
-        if (selectedComponent) {
-            // Get mock data based on component code
-            var mockData = getComponentMockData(selectedComponent.code);
-            var newData = __assign(__assign({}, mockData), { componentCode: selectedComponent.code, componentCategory: getComponentCategory(selectedComponent.id) });
-            setComponentData(newData);
-            // Store original data for modify mode
-            if (isModifyMode || isChangeMode) {
-                setOriginalComponentData(newData);
-            }
-            // Reset changed fields when switching components
-            setChangedFields(new Set());
+        setComponentData(newData);
+        // Store original data for modify mode
+        if (isModifyMode || isChangeMode) {
+          setOriginalComponentData(newData);
         }
-    }, [selectedComponent, isModifyMode, isChangeMode]);
-    // Track which fields have been changed
-    var _g = useState(new Set()), changedFields = _g[0], setChangedFields = _g[1];
-    var handleFieldChange = function (fieldName, value) {
-        var _a;
-        if (!isChangeMode && !isModifyMode)
-            return;
-        var originalValue = componentData[fieldName];
-        setComponentData(function (prev) {
-            var _a;
-            return (__assign(__assign({}, prev), (_a = {}, _a[fieldName] = value, _a)));
-        });
-        // Component change tracking is handled through onDataChange callback
-        // Track the change
-        if (value !== originalValue) {
-            setChangedFields(function (prev) { return new Set(prev).add(fieldName); });
-            if (isModifyMode && collectDiff) {
-                collectDiff("componentInfo.".concat(fieldName), originalValue, value);
-            }
-        }
-        else {
-            setChangedFields(function (prev) {
-                var newSet = new Set(prev);
-                newSet.delete(fieldName);
-                return newSet;
-            });
-        }
-        // Notify parent component of changes
-        if (onDataChange) {
-            onDataChange(__assign(__assign({}, componentData), (_a = {}, _a[fieldName] = value, _a)));
-        }
-    };
-    return (<div className="space-y-4">
+        // Reset changed fields when switching components
+        setChangedFields(new Set());
+      }
+    },
+    [selectedComponent, isModifyMode, isChangeMode]
+  );
+  // Track which fields have been changed
+  var _g = useState(new Set()),
+    changedFields = _g[0],
+    setChangedFields = _g[1];
+  var handleFieldChange = function (fieldName, value) {
+    var _a;
+    if (!isChangeMode && !isModifyMode) return;
+    var originalValue = componentData[fieldName];
+    setComponentData(function (prev) {
+      var _a;
+      return __assign(
+        __assign({}, prev),
+        ((_a = {}), (_a[fieldName] = value), _a)
+      );
+    });
+    // Component change tracking is handled through onDataChange callback
+    // Track the change
+    if (value !== originalValue) {
+      setChangedFields(function (prev) {
+        return new Set(prev).add(fieldName);
+      });
+      if (isModifyMode && collectDiff) {
+        collectDiff('componentInfo.'.concat(fieldName), originalValue, value);
+      }
+    } else {
+      setChangedFields(function (prev) {
+        var newSet = new Set(prev);
+        newSet.delete(fieldName);
+        return newSet;
+      });
+    }
+    // Notify parent component of changes
+    if (onDataChange) {
+      onDataChange(
+        __assign(
+          __assign({}, componentData),
+          ((_a = {}), (_a[fieldName] = value), _a)
+        )
+      );
+    }
+  };
+  return (
+    <div className='space-y-4'>
       {/* Always visible first 2 rows */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className='grid grid-cols-4 gap-4'>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Maker</label>
-          {isChangeMode ? (<input type="text" value={componentData.maker} onChange={function (e) { return handleFieldChange('maker', e.target.value); }} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('maker') || hasPreviewChange('maker') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]')} data-field-value="maker"/>) : (<div className="text-sm text-gray-900">
-              {componentData.maker}
-            </div>)}
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Maker
+          </label>
+          {isChangeMode ? (
+            <input
+              type='text'
+              value={componentData.maker}
+              onChange={function (e) {
+                return handleFieldChange('maker', e.target.value);
+              }}
+              className={'text-sm w-full px-2 py-1 border rounded '.concat(
+                changedFields.has('maker') || hasPreviewChange('maker')
+                  ? 'text-red-600 border-red-300'
+                  : 'text-[#52BAF3] border-[#52BAF3]'
+              )}
+              data-field-value='maker'
+            />
+          ) : (
+            <div className='text-sm text-gray-900'>{componentData.maker}</div>
+          )}
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Model</label>
-          {isChangeMode ? (<input type="text" value={componentData.model} onChange={function (e) { return handleFieldChange('model', e.target.value); }} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('model') || hasPreviewChange('model') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]')} data-field-value="model"/>) : (<div className="text-sm text-gray-900">
-              {componentData.model}
-            </div>)}
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Model
+          </label>
+          {isChangeMode ? (
+            <input
+              type='text'
+              value={componentData.model}
+              onChange={function (e) {
+                return handleFieldChange('model', e.target.value);
+              }}
+              className={'text-sm w-full px-2 py-1 border rounded '.concat(
+                changedFields.has('model') || hasPreviewChange('model')
+                  ? 'text-red-600 border-red-300'
+                  : 'text-[#52BAF3] border-[#52BAF3]'
+              )}
+              data-field-value='model'
+            />
+          ) : (
+            <div className='text-sm text-gray-900'>{componentData.model}</div>
+          )}
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Serial No</label>
-          {isChangeMode ? (<input type="text" value={componentData.serialNo} onChange={function (e) { return handleFieldChange('serialNo', e.target.value); }} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('serialNo') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]')} data-field-value="serialNo"/>) : (<div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Serial No
+          </label>
+          {isChangeMode ? (
+            <input
+              type='text'
+              value={componentData.serialNo}
+              onChange={function (e) {
+                return handleFieldChange('serialNo', e.target.value);
+              }}
+              className={'text-sm w-full px-2 py-1 border rounded '.concat(
+                changedFields.has('serialNo')
+                  ? 'text-red-600 border-red-300'
+                  : 'text-[#52BAF3] border-[#52BAF3]'
+              )}
+              data-field-value='serialNo'
+            />
+          ) : (
+            <div className='text-sm text-gray-900'>
               {componentData.serialNo}
-            </div>)}
+            </div>
+          )}
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Department</label>
-          {isChangeMode ? (<input type="text" value={componentData.department} onChange={function (e) { return handleFieldChange('department', e.target.value); }} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('department') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]')} data-field-value="department"/>) : (<div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Department
+          </label>
+          {isChangeMode ? (
+            <input
+              type='text'
+              value={componentData.department}
+              onChange={function (e) {
+                return handleFieldChange('department', e.target.value);
+              }}
+              className={'text-sm w-full px-2 py-1 border rounded '.concat(
+                changedFields.has('department')
+                  ? 'text-red-600 border-red-300'
+                  : 'text-[#52BAF3] border-[#52BAF3]'
+              )}
+              data-field-value='department'
+            />
+          ) : (
+            <div className='text-sm text-gray-900'>
               {componentData.department}
-            </div>)}
+            </div>
+          )}
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className='grid grid-cols-4 gap-4'>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Component Code</label>
-          <div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Component Code
+          </label>
+          <div className='text-sm text-gray-900'>
             {componentData.componentCode}
           </div>
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Component Category</label>
-          <div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Component Category
+          </label>
+          <div className='text-sm text-gray-900'>
             {componentData.componentCategory}
           </div>
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Critical</label>
-          {isChangeMode || isPreviewMode ? (<select value={isPreviewMode && hasPreviewChange('critical') ? getPreviewValue('critical') : componentData.critical} onChange={function (e) { return handleFieldChange('critical', e.target.value); }} disabled={isPreviewMode} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('critical') || hasPreviewChange('critical') ? 'text-red-600 border-red-300 bg-red-50' : 'text-[#52BAF3] border-[#52BAF3]', " ").concat(isPreviewMode ? 'bg-gray-50 cursor-not-allowed' : '')} data-field-value="critical">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>) : (<div className="text-sm text-gray-900">
-              <span className={"px-2 py-1 rounded-full text-xs font-medium ".concat(componentData.critical === "Yes"
-                ? "bg-red-100 text-red-800"
-                : "bg-gray-100 text-gray-800")}>
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Critical
+          </label>
+          {isChangeMode || isPreviewMode ? (
+            <select
+              value={
+                isPreviewMode && hasPreviewChange('critical')
+                  ? getPreviewValue('critical')
+                  : componentData.critical
+              }
+              onChange={function (e) {
+                return handleFieldChange('critical', e.target.value);
+              }}
+              disabled={isPreviewMode}
+              className={'text-sm w-full px-2 py-1 border rounded '
+                .concat(
+                  changedFields.has('critical') || hasPreviewChange('critical')
+                    ? 'text-red-600 border-red-300 bg-red-50'
+                    : 'text-[#52BAF3] border-[#52BAF3]',
+                  ' '
+                )
+                .concat(isPreviewMode ? 'bg-gray-50 cursor-not-allowed' : '')}
+              data-field-value='critical'
+            >
+              <option value='Yes'>Yes</option>
+              <option value='No'>No</option>
+            </select>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              <span
+                className={'px-2 py-1 rounded-full text-xs font-medium '.concat(
+                  componentData.critical === 'Yes'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800'
+                )}
+              >
                 {componentData.critical}
               </span>
-            </div>)}
+            </div>
+          )}
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Class Item</label>
-          {isChangeMode ? (<select value={componentData.classItem} onChange={function (e) { return handleFieldChange('classItem', e.target.value); }} className={"text-sm w-full px-2 py-1 border rounded ".concat(changedFields.has('classItem') ? 'text-red-600 border-red-300' : 'text-[#52BAF3] border-[#52BAF3]')} data-field-value="classItem">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>) : (<div className="text-sm text-gray-900">
-              <span className={"px-2 py-1 rounded-full text-xs font-medium ".concat(componentData.classItem === "Yes"
-                ? "bg-blue-100 text-blue-800"
-                : "bg-gray-100 text-gray-800")}>
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Class Item
+          </label>
+          {isChangeMode ? (
+            <select
+              value={componentData.classItem}
+              onChange={function (e) {
+                return handleFieldChange('classItem', e.target.value);
+              }}
+              className={'text-sm w-full px-2 py-1 border rounded '.concat(
+                changedFields.has('classItem')
+                  ? 'text-red-600 border-red-300'
+                  : 'text-[#52BAF3] border-[#52BAF3]'
+              )}
+              data-field-value='classItem'
+            >
+              <option value='Yes'>Yes</option>
+              <option value='No'>No</option>
+            </select>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              <span
+                className={'px-2 py-1 rounded-full text-xs font-medium '.concat(
+                  componentData.classItem === 'Yes'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-gray-100 text-gray-800'
+                )}
+              >
                 {componentData.classItem}
               </span>
-            </div>)}
+            </div>
+          )}
         </div>
       </div>
-      
+
       {/* Third row */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className='grid grid-cols-4 gap-4'>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Location</label>
-          <div className="text-sm text-gray-900">
-            {componentData.location}
-          </div>
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Location
+          </label>
+          <div className='text-sm text-gray-900'>{componentData.location}</div>
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>Commissioned Date</label>
-          <div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
+            Commissioned Date
+          </label>
+          <div className='text-sm text-gray-900'>
             {componentData.commissionedDate}
           </div>
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>&nbsp;</label>
-          <div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
             &nbsp;
-          </div>
+          </label>
+          <div className='text-sm text-gray-900'>&nbsp;</div>
         </div>
         <div>
-          <label className={"text-xs font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-[#8798ad]', " block mb-1")}>&nbsp;</label>
-          <div className="text-sm text-gray-900">
+          <label
+            className={'text-xs font-medium '.concat(
+              isChangeRequestMode ? 'text-white' : 'text-[#8798ad]',
+              ' block mb-1'
+            )}
+          >
             &nbsp;
-          </div>
+          </label>
+          <div className='text-sm text-gray-900'>&nbsp;</div>
         </div>
       </div>
 
       {/* Additional details - only visible when expanded */}
-      {isExpanded && (<div className="space-y-4 pt-4">
-          <div className="grid grid-cols-4 gap-4">
+      {isExpanded && (
+        <div className='space-y-4 pt-4'>
+          <div className='grid grid-cols-4 gap-4'>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Installation Date</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.installationDate) || componentData.installationDate} currentValue={componentData.installationDate} fieldName="installationDate" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('installationDate', value); }}>
-                  <input type="date" value={componentData.installationDate} onChange={function (e) { return handleFieldChange('installationDate', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Installation Date
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.installationDate) ||
+                    componentData.installationDate
+                  }
+                  currentValue={componentData.installationDate}
+                  fieldName='installationDate'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('installationDate', value);
+                  }}
+                >
+                  <input
+                    type='date'
+                    value={componentData.installationDate}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'installationDate',
+                        e.target.value
+                      );
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.installationDate}
-                </div>)}
+                </div>
+              )}
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Commissioned Date</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.commissionedDate) || componentData.commissionedDate} currentValue={componentData.commissionedDate} fieldName="commissionedDate" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('commissionedDate', value); }}>
-                  <input type="date" value={componentData.commissionedDate} onChange={function (e) { return handleFieldChange('commissionedDate', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Commissioned Date
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.commissionedDate) ||
+                    componentData.commissionedDate
+                  }
+                  currentValue={componentData.commissionedDate}
+                  fieldName='commissionedDate'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('commissionedDate', value);
+                  }}
+                >
+                  <input
+                    type='date'
+                    value={componentData.commissionedDate}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'commissionedDate',
+                        e.target.value
+                      );
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.commissionedDate}
-                </div>)}
+                </div>
+              )}
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Rating</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.rating) || componentData.rating} currentValue={componentData.rating} fieldName="rating" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('rating', value); }}>
-                  <input type="text" value={componentData.rating} onChange={function (e) { return handleFieldChange('rating', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded" placeholder="e.g., High Performance"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Rating
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.rating) || componentData.rating
+                  }
+                  currentValue={componentData.rating}
+                  fieldName='rating'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('rating', value);
+                  }}
+                >
+                  <input
+                    type='text'
+                    value={componentData.rating}
+                    onChange={function (e) {
+                      return handleFieldChange('rating', e.target.value);
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                    placeholder='e.g., High Performance'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.rating}
-                </div>)}
+                </div>
+              )}
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Condition Based</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.conditionBased) || componentData.conditionBased} currentValue={componentData.conditionBased} fieldName="conditionBased" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('conditionBased', value); }}>
-                  <select value={componentData.conditionBased} onChange={function (e) { return handleFieldChange('conditionBased', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Condition Based
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.conditionBased) ||
+                    componentData.conditionBased
+                  }
+                  currentValue={componentData.conditionBased}
+                  fieldName='conditionBased'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('conditionBased', value);
+                  }}
+                >
+                  <select
+                    value={componentData.conditionBased}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'conditionBased',
+                        e.target.value
+                      );
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                  >
+                    <option value='Yes'>Yes</option>
+                    <option value='No'>No</option>
                   </select>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.conditionBased}
-                </div>)}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className='grid grid-cols-4 gap-4'>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">No of Units</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.noOfUnits) || componentData.noOfUnits} currentValue={componentData.noOfUnits} fieldName="noOfUnits" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('noOfUnits', value); }}>
-                  <input type="text" value={componentData.noOfUnits} onChange={function (e) { return handleFieldChange('noOfUnits', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                No of Units
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.noOfUnits) ||
+                    componentData.noOfUnits
+                  }
+                  currentValue={componentData.noOfUnits}
+                  fieldName='noOfUnits'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('noOfUnits', value);
+                  }}
+                >
+                  <input
+                    type='text'
+                    value={componentData.noOfUnits}
+                    onChange={function (e) {
+                      return handleFieldChange('noOfUnits', e.target.value);
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.noOfUnits}
-                </div>)}
+                </div>
+              )}
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Eqpt. System / Dept.</label>
-              <div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Eqpt. System / Dept.
+              </label>
+              <div className='text-sm text-gray-900'>
                 {componentData.eqptSystemDept}
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Parent Component</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.parentComponent) || componentData.parentComponent} currentValue={componentData.parentComponent} fieldName="parentComponent" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('parentComponent', value); }}>
-                  <input type="text" value={componentData.parentComponent} onChange={function (e) { return handleFieldChange('parentComponent', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded" placeholder="e.g., Level 6.1.1"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Parent Component
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.parentComponent) ||
+                    componentData.parentComponent
+                  }
+                  currentValue={componentData.parentComponent}
+                  fieldName='parentComponent'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('parentComponent', value);
+                  }}
+                >
+                  <input
+                    type='text'
+                    value={componentData.parentComponent}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'parentComponent',
+                        e.target.value
+                      );
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                    placeholder='e.g., Level 6.1.1'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.parentComponent}
-                </div>)}
+                </div>
+              )}
             </div>
             <div>
-              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Dimensions / Size</label>
-              {isModifyMode || isChangeMode ? (<ModifyFieldWrapper originalValue={(originalComponentData === null || originalComponentData === void 0 ? void 0 : originalComponentData.dimensionsSize) || componentData.dimensionsSize} currentValue={componentData.dimensionsSize} fieldName="dimensionsSize" isModifyMode={isModifyMode || isChangeMode} onFieldChange={function (field, value) { return handleFieldChange('dimensionsSize', value); }}>
-                  <input type="text" value={componentData.dimensionsSize} onChange={function (e) { return handleFieldChange('dimensionsSize', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded" placeholder="e.g., 0.5m x 0.3m"/>
-                </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">
+              <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+                Dimensions / Size
+              </label>
+              {isModifyMode || isChangeMode ? (
+                <ModifyFieldWrapper
+                  originalValue={
+                    (originalComponentData === null ||
+                    originalComponentData === void 0
+                      ? void 0
+                      : originalComponentData.dimensionsSize) ||
+                    componentData.dimensionsSize
+                  }
+                  currentValue={componentData.dimensionsSize}
+                  fieldName='dimensionsSize'
+                  isModifyMode={isModifyMode || isChangeMode}
+                  onFieldChange={function (field, value) {
+                    return handleFieldChange('dimensionsSize', value);
+                  }}
+                >
+                  <input
+                    type='text'
+                    value={componentData.dimensionsSize}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'dimensionsSize',
+                        e.target.value
+                      );
+                    }}
+                    className='text-sm w-full px-2 py-1 border rounded'
+                    placeholder='e.g., 0.5m x 0.3m'
+                  />
+                </ModifyFieldWrapper>
+              ) : (
+                <div className='text-sm text-gray-900'>
                   {componentData.dimensionsSize}
-                </div>)}
+                </div>
+              )}
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Notes</label>
-            <div className="text-sm text-gray-900">
-              {componentData.notes}
-            </div>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+              Notes
+            </label>
+            <div className='text-sm text-gray-900'>{componentData.notes}</div>
           </div>
-        </div>)}
-    </div>);
+        </div>
+      )}
+    </div>
+  );
 };
 var RunningHoursConditionSection = function () {
-    var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
-    var isModifyMode = useModifyMode().isModifyMode;
-    // State for running hours data
-    var _a = useState({
-        currentHours: "12580 hours",
-        updatedDate: "12-Jun-2025",
-        vibration: 40,
-        temperature: 60,
-        pressure: 80
-    }), runningHoursData = _a[0], setRunningHoursData = _a[1];
-    var originalData = useState(runningHoursData)[0];
-    var handleFieldChange = function (field, value) {
-        setRunningHoursData(function (prev) {
-            var _a;
-            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
-        });
-    };
-    return (<div className="space-y-6">
+  var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
+  var isModifyMode = useModifyMode().isModifyMode;
+  // State for running hours data
+  var _a = useState({
+      currentHours: '12580 hours',
+      updatedDate: '12-Jun-2025',
+      vibration: 40,
+      temperature: 60,
+      pressure: 80,
+    }),
+    runningHoursData = _a[0],
+    setRunningHoursData = _a[1];
+  var originalData = useState(runningHoursData)[0];
+  var handleFieldChange = function (field, value) {
+    setRunningHoursData(function (prev) {
+      var _a;
+      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
+    });
+  };
+  return (
+    <div className='space-y-6'>
       {/* Running Hours */}
-      <div className="flex items-start gap-8">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Running Hours:</label>
-          <Edit2 className="h-4 w-4 text-gray-500"/>
+      <div className='flex items-start gap-8'>
+        <div className='flex items-center gap-2'>
+          <label className='text-sm font-medium text-gray-700'>
+            Running Hours:
+          </label>
+          <Edit2 className='h-4 w-4 text-gray-500' />
         </div>
-        <div className="flex gap-12">
+        <div className='flex gap-12'>
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Current</label>
-            {isModifyMode ? (<ModifyFieldWrapper originalValue={originalData.currentHours} currentValue={runningHoursData.currentHours} fieldName="currentHours" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('currentHours', value); }}>
-                <input type="text" value={runningHoursData.currentHours} onChange={function (e) { return handleFieldChange('currentHours', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-              </ModifyFieldWrapper>) : (<div className="text-sm font-semibold text-gray-900">{runningHoursData.currentHours}</div>)}
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+              Current
+            </label>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.currentHours}
+                currentValue={runningHoursData.currentHours}
+                fieldName='currentHours'
+                isModifyMode={isModifyMode}
+                onFieldChange={function (field, value) {
+                  return handleFieldChange('currentHours', value);
+                }}
+              >
+                <input
+                  type='text'
+                  value={runningHoursData.currentHours}
+                  onChange={function (e) {
+                    return handleFieldChange('currentHours', e.target.value);
+                  }}
+                  className='text-sm w-full px-2 py-1 border rounded'
+                />
+              </ModifyFieldWrapper>
+            ) : (
+              <div className='text-sm font-semibold text-gray-900'>
+                {runningHoursData.currentHours}
+              </div>
+            )}
           </div>
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Updated</label>
-            {isModifyMode ? (<ModifyFieldWrapper originalValue={originalData.updatedDate} currentValue={runningHoursData.updatedDate} fieldName="updatedDate" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('updatedDate', value); }}>
-                <input type="text" value={runningHoursData.updatedDate} onChange={function (e) { return handleFieldChange('updatedDate', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-              </ModifyFieldWrapper>) : (<div className="text-sm font-semibold text-gray-900">{runningHoursData.updatedDate}</div>)}
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+              Updated
+            </label>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.updatedDate}
+                currentValue={runningHoursData.updatedDate}
+                fieldName='updatedDate'
+                isModifyMode={isModifyMode}
+                onFieldChange={function (field, value) {
+                  return handleFieldChange('updatedDate', value);
+                }}
+              >
+                <input
+                  type='text'
+                  value={runningHoursData.updatedDate}
+                  onChange={function (e) {
+                    return handleFieldChange('updatedDate', e.target.value);
+                  }}
+                  className='text-sm w-full px-2 py-1 border rounded'
+                />
+              </ModifyFieldWrapper>
+            ) : (
+              <div className='text-sm font-semibold text-gray-900'>
+                {runningHoursData.updatedDate}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Condition Monitoring Metrics */}
       <div>
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 block mb-2">Condition Monitoring Metrics:</label>
+        <div className='mb-4'>
+          <label className='text-sm font-medium text-gray-700 block mb-2'>
+            Condition Monitoring Metrics:
+          </label>
         </div>
-        <div className="grid grid-cols-3 gap-8">
+        <div className='grid grid-cols-3 gap-8'>
           {/* Vibration */}
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Vibration</label>
-            {isModifyMode ? (<ModifyFieldWrapper originalValue={originalData.vibration} currentValue={runningHoursData.vibration} fieldName="vibration" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('vibration', value); }}>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">
+              Vibration
+            </label>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.vibration}
+                currentValue={runningHoursData.vibration}
+                fieldName='vibration'
+                isModifyMode={isModifyMode}
+                onFieldChange={function (field, value) {
+                  return handleFieldChange('vibration', value);
+                }}
+              >
                 <div>
-                  <input type="range" min="0" max="100" value={runningHoursData.vibration} onChange={function (e) { return handleFieldChange('vibration', parseInt(e.target.value)); }} className="w-full"/>
-                  <span className="text-xs">{runningHoursData.vibration}%</span>
+                  <input
+                    type='range'
+                    min='0'
+                    max='100'
+                    value={runningHoursData.vibration}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'vibration',
+                        parseInt(e.target.value)
+                      );
+                    }}
+                    className='w-full'
+                  />
+                  <span className='text-xs'>{runningHoursData.vibration}%</span>
                 </div>
-              </ModifyFieldWrapper>) : (<div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: "".concat(runningHoursData.vibration, "%") }}></div>
-              </div>)}
+              </ModifyFieldWrapper>
+            ) : (
+              <div className='w-full bg-gray-200 rounded-full h-2'>
+                <div
+                  className='bg-green-500 h-2 rounded-full'
+                  style={{ width: ''.concat(runningHoursData.vibration, '%') }}
+                ></div>
+              </div>
+            )}
           </div>
-          
+
           {/* Temperature */}
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Temperature</label>
-            {isModifyMode ? (<ModifyFieldWrapper originalValue={originalData.temperature} currentValue={runningHoursData.temperature} fieldName="temperature" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('temperature', value); }}>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">
+              Temperature
+            </label>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.temperature}
+                currentValue={runningHoursData.temperature}
+                fieldName='temperature'
+                isModifyMode={isModifyMode}
+                onFieldChange={function (field, value) {
+                  return handleFieldChange('temperature', value);
+                }}
+              >
                 <div>
-                  <input type="range" min="0" max="100" value={runningHoursData.temperature} onChange={function (e) { return handleFieldChange('temperature', parseInt(e.target.value)); }} className="w-full"/>
-                  <span className="text-xs">{runningHoursData.temperature}%</span>
+                  <input
+                    type='range'
+                    min='0'
+                    max='100'
+                    value={runningHoursData.temperature}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'temperature',
+                        parseInt(e.target.value)
+                      );
+                    }}
+                    className='w-full'
+                  />
+                  <span className='text-xs'>
+                    {runningHoursData.temperature}%
+                  </span>
                 </div>
-              </ModifyFieldWrapper>) : (<div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "".concat(runningHoursData.temperature, "%") }}></div>
-              </div>)}
+              </ModifyFieldWrapper>
+            ) : (
+              <div className='w-full bg-gray-200 rounded-full h-2'>
+                <div
+                  className='bg-yellow-500 h-2 rounded-full'
+                  style={{
+                    width: ''.concat(runningHoursData.temperature, '%'),
+                  }}
+                ></div>
+              </div>
+            )}
           </div>
-          
+
           {/* Pressure */}
           <div>
-            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">Pressure</label>
-            {isModifyMode ? (<ModifyFieldWrapper originalValue={originalData.pressure} currentValue={runningHoursData.pressure} fieldName="pressure" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('pressure', value); }}>
+            <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-2">
+              Pressure
+            </label>
+            {isModifyMode ? (
+              <ModifyFieldWrapper
+                originalValue={originalData.pressure}
+                currentValue={runningHoursData.pressure}
+                fieldName='pressure'
+                isModifyMode={isModifyMode}
+                onFieldChange={function (field, value) {
+                  return handleFieldChange('pressure', value);
+                }}
+              >
                 <div>
-                  <input type="range" min="0" max="100" value={runningHoursData.pressure} onChange={function (e) { return handleFieldChange('pressure', parseInt(e.target.value)); }} className="w-full"/>
-                  <span className="text-xs">{runningHoursData.pressure}%</span>
+                  <input
+                    type='range'
+                    min='0'
+                    max='100'
+                    value={runningHoursData.pressure}
+                    onChange={function (e) {
+                      return handleFieldChange(
+                        'pressure',
+                        parseInt(e.target.value)
+                      );
+                    }}
+                    className='w-full'
+                  />
+                  <span className='text-xs'>{runningHoursData.pressure}%</span>
                 </div>
-              </ModifyFieldWrapper>) : (<div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-red-500 h-2 rounded-full" style={{ width: "".concat(runningHoursData.pressure, "%") }}></div>
-              </div>)}
+              </ModifyFieldWrapper>
+            ) : (
+              <div className='w-full bg-gray-200 rounded-full h-2'>
+                <div
+                  className='bg-red-500 h-2 rounded-full'
+                  style={{ width: ''.concat(runningHoursData.pressure, '%') }}
+                ></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>);
+    </div>
+  );
 };
 var WorkOrdersSection = function (_a) {
-    var componentCode = _a.componentCode, componentName = _a.componentName;
-    var _b = useState(false), isWorkOrderFormOpen = _b[0], setIsWorkOrderFormOpen = _b[1];
-    var _c = useState(null), selectedWorkOrder = _c[0], setSelectedWorkOrder = _c[1];
-    // Generate template code for existing data
-    var generateTemplateCode = function (componentCode, taskType, basis, frequency, unit) {
-        var taskCodes = {
-            "Inspection": "INS",
-            "Overhaul": "OH",
-            "Service": "SRV",
-            "Testing": "TST"
-        };
-        var freqTag = "";
-        if (basis === "Calendar" && frequency && unit) {
-            var unitCode = unit[0].toUpperCase();
-            freqTag = "".concat(unitCode).concat(frequency);
-        }
-        else if (basis === "Running Hours" && frequency) {
-            freqTag = "RH".concat(frequency);
-        }
-        var taskCode = taskCodes[taskType] || "";
-        return "WO-".concat(componentCode, "-").concat(taskCode).concat(freqTag).toUpperCase();
+  var componentCode = _a.componentCode,
+    componentName = _a.componentName;
+  var _b = useState(false),
+    isWorkOrderFormOpen = _b[0],
+    setIsWorkOrderFormOpen = _b[1];
+  var _c = useState(null),
+    selectedWorkOrder = _c[0],
+    setSelectedWorkOrder = _c[1];
+  // Generate template code for existing data
+  var generateTemplateCode = function (
+    componentCode,
+    taskType,
+    basis,
+    frequency,
+    unit
+  ) {
+    var taskCodes = {
+      Inspection: 'INS',
+      Overhaul: 'OH',
+      Service: 'SRV',
+      Testing: 'TST',
     };
-    var workOrders = [
-        {
-            templateCode: generateTemplateCode(componentCode, "Overhaul", "Calendar", 6, "Months"),
-            jobTitle: "Main Engine Overhaul - Replace Main Bearings",
-            assignedTo: "Chief Engineer",
-            dueDate: "02-Jun-2025",
-            status: "Due",
-            dateCompleted: "",
-            // Store template data for editing
-            taskType: "Overhaul",
-            maintenanceBasis: "Calendar",
-            frequencyValue: "6",
-            frequencyUnit: "Months"
-        },
-        {
-            templateCode: generateTemplateCode(componentCode, "Overhaul", "Calendar", 6, "Months"),
-            jobTitle: "Main Engine Overhaul - Replace Main Bearings",
-            assignedTo: "Chief Engineer",
-            dueDate: "02-Jun-2025",
-            status: "Due (Grace P)",
-            dateCompleted: "",
-            taskType: "Overhaul",
-            maintenanceBasis: "Calendar",
-            frequencyValue: "6",
-            frequencyUnit: "Months"
-        }
-    ];
-    var handleAddWorkOrder = function () {
-        setSelectedWorkOrder(null);
-        setIsWorkOrderFormOpen(true);
-    };
-    var handleRowClick = function (workOrder) {
-        setSelectedWorkOrder(workOrder);
-        setIsWorkOrderFormOpen(true);
-    };
-    var handleWorkOrderSubmit = function (formData) {
-        console.log('Work Order submitted:', formData);
-        // Handle saving the work order
-        setIsWorkOrderFormOpen(false);
-    };
-    return (<>
-      <div className="overflow-x-auto">
-        <div className="flex justify-end mb-3">
-          <Button onClick={handleAddWorkOrder} size="sm" className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white">
-            <Plus className="h-4 w-4 mr-1"/>
+    var freqTag = '';
+    if (basis === 'Calendar' && frequency && unit) {
+      var unitCode = unit[0].toUpperCase();
+      freqTag = ''.concat(unitCode).concat(frequency);
+    } else if (basis === 'Running Hours' && frequency) {
+      freqTag = 'RH'.concat(frequency);
+    }
+    var taskCode = taskCodes[taskType] || '';
+    return 'WO-'
+      .concat(componentCode, '-')
+      .concat(taskCode)
+      .concat(freqTag)
+      .toUpperCase();
+  };
+  var workOrders = [
+    {
+      templateCode: generateTemplateCode(
+        componentCode,
+        'Overhaul',
+        'Calendar',
+        6,
+        'Months'
+      ),
+      jobTitle: 'Main Engine Overhaul - Replace Main Bearings',
+      assignedTo: 'Chief Engineer',
+      dueDate: '02-Jun-2025',
+      status: 'Due',
+      dateCompleted: '',
+      // Store template data for editing
+      taskType: 'Overhaul',
+      maintenanceBasis: 'Calendar',
+      frequencyValue: '6',
+      frequencyUnit: 'Months',
+    },
+    {
+      templateCode: generateTemplateCode(
+        componentCode,
+        'Overhaul',
+        'Calendar',
+        6,
+        'Months'
+      ),
+      jobTitle: 'Main Engine Overhaul - Replace Main Bearings',
+      assignedTo: 'Chief Engineer',
+      dueDate: '02-Jun-2025',
+      status: 'Due (Grace P)',
+      dateCompleted: '',
+      taskType: 'Overhaul',
+      maintenanceBasis: 'Calendar',
+      frequencyValue: '6',
+      frequencyUnit: 'Months',
+    },
+  ];
+  var handleAddWorkOrder = function () {
+    setSelectedWorkOrder(null);
+    setIsWorkOrderFormOpen(true);
+  };
+  var handleRowClick = function (workOrder) {
+    setSelectedWorkOrder(workOrder);
+    setIsWorkOrderFormOpen(true);
+  };
+  var handleWorkOrderSubmit = function (formData) {
+    console.log('Work Order submitted:', formData);
+    // Handle saving the work order
+    setIsWorkOrderFormOpen(false);
+  };
+  return (
+    <>
+      <div className='overflow-x-auto'>
+        <div className='flex justify-end mb-3'>
+          <Button
+            onClick={handleAddWorkOrder}
+            size='sm'
+            className='bg-[#0ea5e9] hover:bg-[#0284c7] text-white'
+          >
+            <Plus className='h-4 w-4 mr-1' />
             Add WO
           </Button>
         </div>
-        <table className="w-full text-sm">
+        <table className='w-full text-sm'>
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">W.O No.</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Job Title</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Due Date</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
-              <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
+            <tr className='border-b border-gray-200'>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                W.O No.
+              </th>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                Job Title
+              </th>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                Assigned to
+              </th>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                Due Date
+              </th>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                Status
+              </th>
+              <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+                Date Completed
+              </th>
             </tr>
           </thead>
           <tbody>
-            {workOrders.map(function (order, index) { return (<tr key={index} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={function () { return handleRowClick(order); }}>
-                <td className="py-3 px-3 text-gray-900">{order.templateCode}</td>
-                <td className="py-3 px-3 text-gray-900">{order.jobTitle}</td>
-                <td className="py-3 px-3 text-gray-900">{order.assignedTo}</td>
-                <td className="py-3 px-3 text-gray-900">{order.dueDate}</td>
-                <td className="py-3 px-3">
-                  <span className={"px-3 py-1 rounded-full text-xs font-medium ".concat(order.status === "Due"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-yellow-100 text-yellow-800")}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-3 px-3 text-gray-900">{order.dateCompleted}</td>
-              </tr>); })}
+            {workOrders.map(function (order, index) {
+              return (
+                <tr
+                  key={index}
+                  className='border-b border-gray-100 hover:bg-gray-50 cursor-pointer'
+                  onClick={function () {
+                    return handleRowClick(order);
+                  }}
+                >
+                  <td className='py-3 px-3 text-gray-900'>
+                    {order.templateCode}
+                  </td>
+                  <td className='py-3 px-3 text-gray-900'>{order.jobTitle}</td>
+                  <td className='py-3 px-3 text-gray-900'>
+                    {order.assignedTo}
+                  </td>
+                  <td className='py-3 px-3 text-gray-900'>{order.dueDate}</td>
+                  <td className='py-3 px-3'>
+                    <span
+                      className={'px-3 py-1 rounded-full text-xs font-medium '.concat(
+                        order.status === 'Due'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      )}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className='py-3 px-3 text-gray-900'>
+                    {order.dateCompleted}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
       {/* Work Order Form Dialog */}
-      <WorkOrderForm isOpen={isWorkOrderFormOpen} onClose={function () { return setIsWorkOrderFormOpen(false); }} onSubmit={handleWorkOrderSubmit} component={{ code: componentCode, name: componentName }} workOrder={selectedWorkOrder}/>
-    </>);
+      <WorkOrderForm
+        isOpen={isWorkOrderFormOpen}
+        onClose={function () {
+          return setIsWorkOrderFormOpen(false);
+        }}
+        onSubmit={handleWorkOrderSubmit}
+        component={{ code: componentCode, name: componentName }}
+        workOrder={selectedWorkOrder}
+      />
+    </>
+  );
 };
 var MaintenanceHistorySection = function () {
-    var maintenanceHistory = [
-        {
-            title: "Main Engine Overhaul - Replace Main bearings",
-            workOrderNo: "WO-2025-001",
-            assignedTo: "2nd Eng",
-            status: "Completed",
-            dateCompleted: "02-Jun-2025"
-        },
-        {
-            title: "Main Engine - Replace Piston Rings",
-            workOrderNo: "WO-2024-013",
-            assignedTo: "2nd Eng",
-            status: "Completed",
-            dateCompleted: "02-Feb-2025"
-        }
-    ];
-    return (<div className="overflow-x-auto">
-      <table className="w-full text-sm">
+  var maintenanceHistory = [
+    {
+      title: 'Main Engine Overhaul - Replace Main bearings',
+      workOrderNo: 'WO-2025-001',
+      assignedTo: '2nd Eng',
+      status: 'Completed',
+      dateCompleted: '02-Jun-2025',
+    },
+    {
+      title: 'Main Engine - Replace Piston Rings',
+      workOrderNo: 'WO-2024-013',
+      assignedTo: '2nd Eng',
+      status: 'Completed',
+      dateCompleted: '02-Feb-2025',
+    },
+  ];
+  return (
+    <div className='overflow-x-auto'>
+      <table className='w-full text-sm'>
         <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Work Order No</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Assigned to</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Date Completed</th>
+          <tr className='border-b border-gray-200'>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Title
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Work Order No
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Assigned to
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Status
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Date Completed
+            </th>
           </tr>
         </thead>
         <tbody>
-          {maintenanceHistory.map(function (record, index) { return (<tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{record.title}</td>
-              <td className="py-3 px-3 text-gray-900">{record.workOrderNo}</td>
-              <td className="py-3 px-3 text-gray-900">{record.assignedTo}</td>
-              <td className="py-3 px-3">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  {record.status}
-                </span>
-              </td>
-              <td className="py-3 px-3 text-gray-900">{record.dateCompleted}</td>
-            </tr>); })}
+          {maintenanceHistory.map(function (record, index) {
+            return (
+              <tr key={index} className='border-b border-gray-100'>
+                <td className='py-3 px-3 text-gray-900'>{record.title}</td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {record.workOrderNo}
+                </td>
+                <td className='py-3 px-3 text-gray-900'>{record.assignedTo}</td>
+                <td className='py-3 px-3'>
+                  <span className='px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                    {record.status}
+                  </span>
+                </td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {record.dateCompleted}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-    </div>);
+    </div>
+  );
 };
 var SparesSection = function () {
-    var isModifyMode = useModifyMode().isModifyMode;
-    var _a = useState([
-        {
-            partCode: "SP-ME-001",
-            partName: "Fuel Injector",
-            critical: "Critical",
-            rob: "2",
-            min: "1",
-            stock: "OK",
-            location: "Store Room A"
-        },
-        {
-            partCode: "SP-ME-002",
-            partName: "Cylinder Head Gasket",
-            critical: "",
-            rob: "2",
-            min: "1",
-            stock: "OK",
-            location: "Store Room B"
-        }
-    ]), spares = _a[0], setSpares = _a[1];
-    var originalSpares = useState(JSON.parse(JSON.stringify(spares)))[0];
-    var handleFieldChange = function (index, field, value) {
-        var _a;
-        var updatedSpares = __spreadArray([], spares, true);
-        updatedSpares[index] = __assign(__assign({}, updatedSpares[index]), (_a = {}, _a[field] = value, _a));
-        setSpares(updatedSpares);
-    };
-    return (<div className="overflow-x-auto">
-      <table className="w-full text-sm">
+  var isModifyMode = useModifyMode().isModifyMode;
+  var _a = useState([
+      {
+        partCode: 'SP-ME-001',
+        partName: 'Fuel Injector',
+        critical: 'Critical',
+        rob: '2',
+        min: '1',
+        stock: 'OK',
+        location: 'Store Room A',
+      },
+      {
+        partCode: 'SP-ME-002',
+        partName: 'Cylinder Head Gasket',
+        critical: '',
+        rob: '2',
+        min: '1',
+        stock: 'OK',
+        location: 'Store Room B',
+      },
+    ]),
+    spares = _a[0],
+    setSpares = _a[1];
+  var originalSpares = useState(JSON.parse(JSON.stringify(spares)))[0];
+  var handleFieldChange = function (index, field, value) {
+    var _a;
+    var updatedSpares = __spreadArray([], spares, true);
+    updatedSpares[index] = __assign(
+      __assign({}, updatedSpares[index]),
+      ((_a = {}), (_a[field] = value), _a)
+    );
+    setSpares(updatedSpares);
+  };
+  return (
+    <div className='overflow-x-auto'>
+      <table className='w-full text-sm'>
         <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Part Code</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Part Name</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Critical</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">ROB</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Min</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Stock</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Location</th>
+          <tr className='border-b border-gray-200'>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Part Code
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Part Name
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Critical
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              ROB
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Min
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Stock
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Location
+            </th>
           </tr>
         </thead>
         <tbody>
-          {spares.map(function (spare, index) { return (<tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].partCode} currentValue={spare.partCode} fieldName={"partCode-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'partCode', value); }}>
-                    <input type="text" value={spare.partCode} onChange={function (e) { return handleFieldChange(index, 'partCode', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                  </ModifyFieldWrapper>) : (spare.partCode)}
-              </td>
-              <td className="py-3 px-3 text-gray-900">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].partName} currentValue={spare.partName} fieldName={"partName-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'partName', value); }}>
-                    <input type="text" value={spare.partName} onChange={function (e) { return handleFieldChange(index, 'partName', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                  </ModifyFieldWrapper>) : (spare.partName)}
-              </td>
-              <td className="py-3 px-3">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].critical} currentValue={spare.critical} fieldName={"critical-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'critical', value); }}>
-                    <select value={spare.critical} onChange={function (e) { return handleFieldChange(index, 'critical', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded">
-                      <option value="">Non-Critical</option>
-                      <option value="Critical">Critical</option>
-                    </select>
-                  </ModifyFieldWrapper>) : (spare.critical && (<span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
-                      {spare.critical}
-                    </span>))}
-              </td>
-              <td className="py-3 px-3 text-gray-900">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].rob} currentValue={spare.rob} fieldName={"rob-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'rob', value); }}>
-                    <input type="text" value={spare.rob} onChange={function (e) { return handleFieldChange(index, 'rob', e.target.value); }} className="text-sm w-[60px] px-2 py-1 border rounded"/>
-                  </ModifyFieldWrapper>) : (spare.rob)}
-              </td>
-              <td className="py-3 px-3 text-gray-900">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].min} currentValue={spare.min} fieldName={"min-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'min', value); }}>
-                    <input type="text" value={spare.min} onChange={function (e) { return handleFieldChange(index, 'min', e.target.value); }} className="text-sm w-[60px] px-2 py-1 border rounded"/>
-                  </ModifyFieldWrapper>) : (spare.min)}
-              </td>
-              <td className="py-3 px-3">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  {spare.stock}
-                </span>
-              </td>
-              <td className="py-3 px-3 text-gray-900">
-                {isModifyMode ? (<ModifyFieldWrapper originalValue={originalSpares[index].location} currentValue={spare.location} fieldName={"location-".concat(index)} isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange(index, 'location', value); }}>
-                    <input type="text" value={spare.location} onChange={function (e) { return handleFieldChange(index, 'location', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-                  </ModifyFieldWrapper>) : (spare.location)}
-              </td>
-            </tr>); })}
+          {spares.map(function (spare, index) {
+            return (
+              <tr key={index} className='border-b border-gray-100'>
+                <td className='py-3 px-3 text-gray-900'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].partCode}
+                      currentValue={spare.partCode}
+                      fieldName={'partCode-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'partCode', value);
+                      }}
+                    >
+                      <input
+                        type='text'
+                        value={spare.partCode}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'partCode',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-full px-2 py-1 border rounded'
+                      />
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.partCode
+                  )}
+                </td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].partName}
+                      currentValue={spare.partName}
+                      fieldName={'partName-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'partName', value);
+                      }}
+                    >
+                      <input
+                        type='text'
+                        value={spare.partName}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'partName',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-full px-2 py-1 border rounded'
+                      />
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.partName
+                  )}
+                </td>
+                <td className='py-3 px-3'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].critical}
+                      currentValue={spare.critical}
+                      fieldName={'critical-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'critical', value);
+                      }}
+                    >
+                      <select
+                        value={spare.critical}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'critical',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-full px-2 py-1 border rounded'
+                      >
+                        <option value=''>Non-Critical</option>
+                        <option value='Critical'>Critical</option>
+                      </select>
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.critical && (
+                      <span className='px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300'>
+                        {spare.critical}
+                      </span>
+                    )
+                  )}
+                </td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].rob}
+                      currentValue={spare.rob}
+                      fieldName={'rob-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'rob', value);
+                      }}
+                    >
+                      <input
+                        type='text'
+                        value={spare.rob}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'rob',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-[60px] px-2 py-1 border rounded'
+                      />
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.rob
+                  )}
+                </td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].min}
+                      currentValue={spare.min}
+                      fieldName={'min-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'min', value);
+                      }}
+                    >
+                      <input
+                        type='text'
+                        value={spare.min}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'min',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-[60px] px-2 py-1 border rounded'
+                      />
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.min
+                  )}
+                </td>
+                <td className='py-3 px-3'>
+                  <span className='px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                    {spare.stock}
+                  </span>
+                </td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {isModifyMode ? (
+                    <ModifyFieldWrapper
+                      originalValue={originalSpares[index].location}
+                      currentValue={spare.location}
+                      fieldName={'location-'.concat(index)}
+                      isModifyMode={isModifyMode}
+                      onFieldChange={function (field, value) {
+                        return handleFieldChange(index, 'location', value);
+                      }}
+                    >
+                      <input
+                        type='text'
+                        value={spare.location}
+                        onChange={function (e) {
+                          return handleFieldChange(
+                            index,
+                            'location',
+                            e.target.value
+                          );
+                        }}
+                        className='text-sm w-full px-2 py-1 border rounded'
+                      />
+                    </ModifyFieldWrapper>
+                  ) : (
+                    spare.location
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-    </div>);
+    </div>
+  );
 };
 var DrawingsAndManualsSection = function () {
-    var documents = [
-        { name: "Equipment Drawing", icon: FileText },
-        { name: "Installation Guide", icon: FileText },
-        { name: "Maintenance Manual", icon: FileText },
-        { name: "Trouble shooting Guide", icon: FileText }
-    ];
-    return (<div className="grid grid-cols-2 gap-4">
-      {documents.map(function (doc, index) { return (<div key={index} className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer rounded-md">
-          <doc.icon className="h-5 w-5 text-gray-600"/>
-          <span className="text-sm text-gray-700">{doc.name}</span>
-        </div>); })}
-    </div>);
+  var documents = [
+    { name: 'Equipment Drawing', icon: FileText },
+    { name: 'Installation Guide', icon: FileText },
+    { name: 'Maintenance Manual', icon: FileText },
+    { name: 'Trouble shooting Guide', icon: FileText },
+  ];
+  return (
+    <div className='grid grid-cols-2 gap-4'>
+      {documents.map(function (doc, index) {
+        return (
+          <div
+            key={index}
+            className='flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer rounded-md'
+          >
+            <doc.icon className='h-5 w-5 text-gray-600' />
+            <span className='text-sm text-gray-700'>{doc.name}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 var ClassificationRegulatorySection = function () {
-    var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
-    var isModifyMode = useModifyMode().isModifyMode;
-    var _a = useState({
-        classificationSociety: "DNV",
-        certificateNo: "CERT-ME-2025-01",
-        lastClassSurvey: "15-Mar-2023",
-        nextClassSurvey: "15-Mar-2025"
-    }), classData = _a[0], setClassData = _a[1];
-    var originalClassData = useState(classData)[0];
-    var handleFieldChange = function (field, value) {
-        setClassData(function (prev) {
-            var _a;
-            return (__assign(__assign({}, prev), (_a = {}, _a[field] = value, _a)));
-        });
-    };
-    return (<div className="space-y-4">
+  var isChangeRequestMode = useChangeRequest().isChangeRequestMode;
+  var isModifyMode = useModifyMode().isModifyMode;
+  var _a = useState({
+      classificationSociety: 'DNV',
+      certificateNo: 'CERT-ME-2025-01',
+      lastClassSurvey: '15-Mar-2023',
+      nextClassSurvey: '15-Mar-2025',
+    }),
+    classData = _a[0],
+    setClassData = _a[1];
+  var originalClassData = useState(classData)[0];
+  var handleFieldChange = function (field, value) {
+    setClassData(function (prev) {
+      var _a;
+      return __assign(__assign({}, prev), ((_a = {}), (_a[field] = value), _a));
+    });
+  };
+  return (
+    <div className='space-y-4'>
       {/* First row */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className='grid grid-cols-4 gap-4'>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Classification Society</label>
-          {isModifyMode ? (<ModifyFieldWrapper originalValue={originalClassData.classificationSociety} currentValue={classData.classificationSociety} fieldName="classificationSociety" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('classificationSociety', value); }}>
-              <input type="text" value={classData.classificationSociety} onChange={function (e) { return handleFieldChange('classificationSociety', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-            </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">{classData.classificationSociety}</div>)}
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Classification Society
+          </label>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.classificationSociety}
+              currentValue={classData.classificationSociety}
+              fieldName='classificationSociety'
+              isModifyMode={isModifyMode}
+              onFieldChange={function (field, value) {
+                return handleFieldChange('classificationSociety', value);
+              }}
+            >
+              <input
+                type='text'
+                value={classData.classificationSociety}
+                onChange={function (e) {
+                  return handleFieldChange(
+                    'classificationSociety',
+                    e.target.value
+                  );
+                }}
+                className='text-sm w-full px-2 py-1 border rounded'
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              {classData.classificationSociety}
+            </div>
+          )}
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Certificate No.</label>
-          {isModifyMode ? (<ModifyFieldWrapper originalValue={originalClassData.certificateNo} currentValue={classData.certificateNo} fieldName="certificateNo" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('certificateNo', value); }}>
-              <input type="text" value={classData.certificateNo} onChange={function (e) { return handleFieldChange('certificateNo', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-            </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">{classData.certificateNo}</div>)}
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Certificate No.
+          </label>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.certificateNo}
+              currentValue={classData.certificateNo}
+              fieldName='certificateNo'
+              isModifyMode={isModifyMode}
+              onFieldChange={function (field, value) {
+                return handleFieldChange('certificateNo', value);
+              }}
+            >
+              <input
+                type='text'
+                value={classData.certificateNo}
+                onChange={function (e) {
+                  return handleFieldChange('certificateNo', e.target.value);
+                }}
+                className='text-sm w-full px-2 py-1 border rounded'
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              {classData.certificateNo}
+            </div>
+          )}
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Last Class Survey</label>
-          {isModifyMode ? (<ModifyFieldWrapper originalValue={originalClassData.lastClassSurvey} currentValue={classData.lastClassSurvey} fieldName="lastClassSurvey" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('lastClassSurvey', value); }}>
-              <input type="text" value={classData.lastClassSurvey} onChange={function (e) { return handleFieldChange('lastClassSurvey', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-            </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">{classData.lastClassSurvey}</div>)}
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Last Class Survey
+          </label>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.lastClassSurvey}
+              currentValue={classData.lastClassSurvey}
+              fieldName='lastClassSurvey'
+              isModifyMode={isModifyMode}
+              onFieldChange={function (field, value) {
+                return handleFieldChange('lastClassSurvey', value);
+              }}
+            >
+              <input
+                type='text'
+                value={classData.lastClassSurvey}
+                onChange={function (e) {
+                  return handleFieldChange('lastClassSurvey', e.target.value);
+                }}
+                className='text-sm w-full px-2 py-1 border rounded'
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              {classData.lastClassSurvey}
+            </div>
+          )}
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Next Class Survey</label>
-          {isModifyMode ? (<ModifyFieldWrapper originalValue={originalClassData.nextClassSurvey} currentValue={classData.nextClassSurvey} fieldName="nextClassSurvey" isModifyMode={isModifyMode} onFieldChange={function (field, value) { return handleFieldChange('nextClassSurvey', value); }}>
-              <input type="text" value={classData.nextClassSurvey} onChange={function (e) { return handleFieldChange('nextClassSurvey', e.target.value); }} className="text-sm w-full px-2 py-1 border rounded"/>
-            </ModifyFieldWrapper>) : (<div className="text-sm text-gray-900">{classData.nextClassSurvey}</div>)}
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Next Class Survey
+          </label>
+          {isModifyMode ? (
+            <ModifyFieldWrapper
+              originalValue={originalClassData.nextClassSurvey}
+              currentValue={classData.nextClassSurvey}
+              fieldName='nextClassSurvey'
+              isModifyMode={isModifyMode}
+              onFieldChange={function (field, value) {
+                return handleFieldChange('nextClassSurvey', value);
+              }}
+            >
+              <input
+                type='text'
+                value={classData.nextClassSurvey}
+                onChange={function (e) {
+                  return handleFieldChange('nextClassSurvey', e.target.value);
+                }}
+                className='text-sm w-full px-2 py-1 border rounded'
+              />
+            </ModifyFieldWrapper>
+          ) : (
+            <div className='text-sm text-gray-900'>
+              {classData.nextClassSurvey}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Second row */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className='grid grid-cols-4 gap-4'>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Survey Type</label>
-          <div className="text-sm text-gray-900">Annual</div>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Survey Type
+          </label>
+          <div className='text-sm text-gray-900'>Annual</div>
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Class Requirements</label>
-          <div className="text-sm text-gray-900">SOLAS, MARPOL, MLC</div>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Class Requirements
+          </label>
+          <div className='text-sm text-gray-900'>SOLAS, MARPOL, MLC</div>
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Class Code</label>
-          <div className="text-sm text-gray-900">DNV-ME-001</div>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Class Code
+          </label>
+          <div className='text-sm text-gray-900'>DNV-ME-001</div>
         </div>
         <div>
-          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">Information</label>
-          <div className="text-sm text-gray-900">Details</div>
+          <label className="text-xs font-medium ${isChangeRequestMode ? 'text-white' : 'text-[#8798ad]'} block mb-1">
+            Information
+          </label>
+          <div className='text-sm text-gray-900'>Details</div>
         </div>
       </div>
-    </div>);
+    </div>
+  );
 };
 var RequisitionsSection = function () {
-    var requisitions = [
-        {
-            reqId: "RQ-ME-001",
-            reqDate: "15-May-2025",
-            titleDescription: "Main Engine Cylinder Head Gasket - Urgent Replacement",
-            requestedDate: "20-May-2025",
-            status: "Approved",
-            remarks: "High priority - main engine showing compression loss"
-        },
-        {
-            reqId: "RQ-ME-002",
-            reqDate: "10-May-2025",
-            titleDescription: "Fuel Injection Pump Service Kit",
-            requestedDate: "25-May-2025",
-            status: "Ordered",
-            remarks: "Preventive maintenance - scheduled overhaul"
-        },
-        {
-            reqId: "RQ-ME-003",
-            reqDate: "08-May-2025",
-            titleDescription: "Turbocharger Bearing Set",
-            requestedDate: "30-May-2025",
-            status: "Open",
-            remarks: "Vibration monitoring shows wear indication"
-        }
-    ];
-    return (<div className="overflow-x-auto">
-      <table className="w-full text-sm">
+  var requisitions = [
+    {
+      reqId: 'RQ-ME-001',
+      reqDate: '15-May-2025',
+      titleDescription: 'Main Engine Cylinder Head Gasket - Urgent Replacement',
+      requestedDate: '20-May-2025',
+      status: 'Approved',
+      remarks: 'High priority - main engine showing compression loss',
+    },
+    {
+      reqId: 'RQ-ME-002',
+      reqDate: '10-May-2025',
+      titleDescription: 'Fuel Injection Pump Service Kit',
+      requestedDate: '25-May-2025',
+      status: 'Ordered',
+      remarks: 'Preventive maintenance - scheduled overhaul',
+    },
+    {
+      reqId: 'RQ-ME-003',
+      reqDate: '08-May-2025',
+      titleDescription: 'Turbocharger Bearing Set',
+      requestedDate: '30-May-2025',
+      status: 'Open',
+      remarks: 'Vibration monitoring shows wear indication',
+    },
+  ];
+  return (
+    <div className='overflow-x-auto'>
+      <table className='w-full text-sm'>
         <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. ID</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Req. Date</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Title / Description</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Requested Date</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Status</th>
-            <th className="text-left py-2 px-3 font-medium text-[#8798ad]">Remarks</th>
+          <tr className='border-b border-gray-200'>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Req. ID
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Req. Date
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Title / Description
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Requested Date
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Status
+            </th>
+            <th className='text-left py-2 px-3 font-medium text-[#8798ad]'>
+              Remarks
+            </th>
           </tr>
         </thead>
         <tbody>
-          {requisitions.map(function (req, index) { return (<tr key={index} className="border-b border-gray-100">
-              <td className="py-3 px-3 text-gray-900">{req.reqId}</td>
-              <td className="py-3 px-3 text-gray-900">{req.reqDate}</td>
-              <td className="py-3 px-3 text-gray-900">{req.titleDescription}</td>
-              <td className="py-3 px-3 text-gray-900">{req.requestedDate}</td>
-              <td className="py-3 px-3">
-                <span className={"px-3 py-1 rounded-full text-xs font-medium ".concat(req.status === "Approved" ? "bg-green-100 text-green-800" :
-                req.status === "Ordered" ? "bg-blue-100 text-blue-800" :
-                    req.status === "Open" ? "bg-yellow-100 text-yellow-800" :
-                        "bg-gray-100 text-gray-800")}>
-                  {req.status}
-                </span>
-              </td>
-              <td className="py-3 px-3 text-gray-900">{req.remarks}</td>
-            </tr>); })}
+          {requisitions.map(function (req, index) {
+            return (
+              <tr key={index} className='border-b border-gray-100'>
+                <td className='py-3 px-3 text-gray-900'>{req.reqId}</td>
+                <td className='py-3 px-3 text-gray-900'>{req.reqDate}</td>
+                <td className='py-3 px-3 text-gray-900'>
+                  {req.titleDescription}
+                </td>
+                <td className='py-3 px-3 text-gray-900'>{req.requestedDate}</td>
+                <td className='py-3 px-3'>
+                  <span
+                    className={'px-3 py-1 rounded-full text-xs font-medium '.concat(
+                      req.status === 'Approved'
+                        ? 'bg-green-100 text-green-800'
+                        : req.status === 'Ordered'
+                          ? 'bg-blue-100 text-blue-800'
+                          : req.status === 'Open'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-gray-100 text-gray-800'
+                    )}
+                  >
+                    {req.status}
+                  </span>
+                </td>
+                <td className='py-3 px-3 text-gray-900'>{req.remarks}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-    </div>);
+    </div>
+  );
 };
 var Components = function () {
-    var _a = useState(""), searchTerm = _a[0], setSearchTerm = _a[1];
-    var _b = useState(null), selectedComponent = _b[0], setSelectedComponent = _b[1];
-    var _c = useState(new Set(["6", "6.1", "6.1.1"])), expandedNodes = _c[0], setExpandedNodes = _c[1];
-    var _d = useState(new Set(["A", "B", "C", "D", "E", "F", "G", "H"])), expandedSections = _d[0], setExpandedSections = _d[1];
-    var _e = useState(false), isComponentFormOpen = _e[0], setIsComponentFormOpen = _e[1];
-    var _f = useState(false), showReviewDrawer = _f[0], setShowReviewDrawer = _f[1];
-    var _g = useState(false), showModifySubmitFooter = _g[0], setShowModifySubmitFooter = _g[1];
-    var _h = useState(null), modifiedComponentData = _h[0], setModifiedComponentData = _h[1];
-    var _j = useState(null), originalComponentData = _j[0], setOriginalComponentData = _j[1];
-    // Preview changes mode state
-    var _k = useState(false), isPreviewMode = _k[0], setIsPreviewMode = _k[1];
-    var _l = useState(null), changeRequestData = _l[0], setChangeRequestData = _l[1];
-    var _m = useState([]), previewChanges = _m[0], setPreviewChanges = _m[1];
-    var _o = useChangeRequest(), isChangeRequestMode = _o.isChangeRequestMode, exitChangeRequestMode = _o.exitChangeRequestMode;
-    var _p = useChangeMode(), isChangeMode = _p.isChangeMode, changeRequestTitle = _p.changeRequestTitle, changeRequestCategory = _p.changeRequestCategory, setOriginalSnapshot = _p.setOriginalSnapshot, collectDiff = _p.collectDiff, getDiffs = _p.getDiffs, reset = _p.reset;
-    var _q = useLocation(), location = _q[0], setLocation = _q[1];
-    var toast = useToast().toast;
-    // Helper function to find component by ID
-    var findComponentById = function (id) {
-        var searchInTree = function (nodes) {
-            for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
-                var node = nodes_1[_i];
-                if (node.id === id || node.code === id) {
-                    return node;
-                }
-                if (node.children) {
-                    var found = searchInTree(node.children);
-                    if (found)
-                        return found;
-                }
-            }
-            return null;
-        };
-        return searchInTree(dummyComponents);
+  var _a = useState(''),
+    searchTerm = _a[0],
+    setSearchTerm = _a[1];
+  var _b = useState(null),
+    selectedComponent = _b[0],
+    setSelectedComponent = _b[1];
+  var _c = useState(new Set(['6', '6.1', '6.1.1'])),
+    expandedNodes = _c[0],
+    setExpandedNodes = _c[1];
+  var _d = useState(new Set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])),
+    expandedSections = _d[0],
+    setExpandedSections = _d[1];
+  var _e = useState(false),
+    isComponentFormOpen = _e[0],
+    setIsComponentFormOpen = _e[1];
+  var _f = useState(false),
+    showReviewDrawer = _f[0],
+    setShowReviewDrawer = _f[1];
+  var _g = useState(false),
+    showModifySubmitFooter = _g[0],
+    setShowModifySubmitFooter = _g[1];
+  var _h = useState(null),
+    modifiedComponentData = _h[0],
+    setModifiedComponentData = _h[1];
+  var _j = useState(null),
+    originalComponentData = _j[0],
+    setOriginalComponentData = _j[1];
+  // Preview changes mode state
+  var _k = useState(false),
+    isPreviewMode = _k[0],
+    setIsPreviewMode = _k[1];
+  var _l = useState(null),
+    changeRequestData = _l[0],
+    setChangeRequestData = _l[1];
+  var _m = useState([]),
+    previewChanges = _m[0],
+    setPreviewChanges = _m[1];
+  var _o = useChangeRequest(),
+    isChangeRequestMode = _o.isChangeRequestMode,
+    exitChangeRequestMode = _o.exitChangeRequestMode;
+  var _p = useChangeMode(),
+    isChangeMode = _p.isChangeMode,
+    changeRequestTitle = _p.changeRequestTitle,
+    changeRequestCategory = _p.changeRequestCategory,
+    setOriginalSnapshot = _p.setOriginalSnapshot,
+    collectDiff = _p.collectDiff,
+    getDiffs = _p.getDiffs,
+    reset = _p.reset;
+  var _q = useLocation(),
+    location = _q[0],
+    setLocation = _q[1];
+  var toast = useToast().toast;
+  // Helper function to find component by ID
+  var findComponentById = function (id) {
+    var searchInTree = function (nodes) {
+      for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+        var node = nodes_1[_i];
+        if (node.id === id || node.code === id) {
+          return node;
+        }
+        if (node.children) {
+          var found = searchInTree(node.children);
+          if (found) return found;
+        }
+      }
+      return null;
     };
-    // Check for modify mode from URL parameter
-    var urlParams = new URLSearchParams(window.location.search);
-    var isModifyMode = urlParams.get('modify') === '1';
-    // Check for preview changes mode and load change request data
-    useEffect(function () {
-        var params = new URLSearchParams(window.location.search);
-        var previewMode = params.get('previewChanges') === '1';
-        var changeRequestId = params.get('changeRequestId');
-        var targetId = params.get('targetId');
-        if (previewMode && changeRequestId) {
-            setIsPreviewMode(true);
-            // Fetch the change request data
-            fetch("/api/change-requests/".concat(changeRequestId))
-                .then(function (res) { return res.json(); })
-                .then(function (data) {
-                setChangeRequestData(data);
-                if (data.proposedChangesJson) {
-                    setPreviewChanges(Array.isArray(data.proposedChangesJson) ? data.proposedChangesJson : []);
-                }
-                // Auto-select the target component if provided
-                if (targetId && data.targetType === 'component') {
-                    var component = findComponentById(targetId);
-                    if (component) {
-                        setSelectedComponent(component);
-                        // Expand the path to show the component
-                        var expandPath = function (componentCode) {
-                            var parts = componentCode.split('.');
-                            var newExpanded = new Set(expandedNodes);
-                            for (var i = 0; i < parts.length - 1; i++) {
-                                newExpanded.add(parts.slice(0, i + 1).join('.'));
-                            }
-                            setExpandedNodes(newExpanded);
-                        };
-                        expandPath(component.code);
-                    }
-                }
-            })
-                .catch(function (err) {
-                console.error('Failed to load change request data:', err);
-                toast({
-                    title: "Error",
-                    description: "Failed to load change request data",
-                    variant: "destructive"
-                });
-            });
-        }
-        else {
-            setIsPreviewMode(false);
-            setChangeRequestData(null);
-            setPreviewChanges([]);
-        }
-    }, [location]);
-    // Handle change mode - capture original snapshot when component is selected
-    useEffect(function () {
-        if (isChangeMode && selectedComponent) {
-            // Set the original snapshot for change tracking
-            var snapshot = {
-                id: selectedComponent.id,
-                displayKey: selectedComponent.code,
-                displayName: selectedComponent.name,
-                displayPath: "".concat(selectedComponent.code, " ").concat(selectedComponent.name),
-                componentCode: selectedComponent.code,
-                name: selectedComponent.name,
-                maker: "MAN B&W", // These would come from actual data
-                model: "6S60MC-C",
-                serialNo: "MB2020001",
-                category: getComponentCategory(selectedComponent.code),
-                deptCategory: "Engineering",
-                location: "Engine Room",
-                critical: "Yes",
-                classItem: "Yes",
-                commissionedDate: "01-Jan-2020"
-            };
-            setOriginalSnapshot(snapshot);
-        }
-    }, [isChangeMode, selectedComponent]);
-    // Initialize modify mode from URL parameter
-    useEffect(function () {
-        if (isModifyMode) {
-            setShowModifySubmitFooter(true);
-            // Apply modify mode styles to the body
-            document.body.classList.add('modify-mode');
-        }
-        return function () {
-            document.body.classList.remove('modify-mode');
-        };
-    }, [isModifyMode]);
-    // Check if we should open the Add/Edit Component form OR select a specific component
-    useEffect(function () {
-        var shouldOpenForm = sessionStorage.getItem('openComponentForm');
-        var targetComponentCode = sessionStorage.getItem('targetComponentCode');
-        if (shouldOpenForm === 'true') {
-            setIsComponentFormOpen(true);
-            sessionStorage.removeItem('openComponentForm');
-        }
-        // If we have a target component code from ModifyPMS, find and select it
-        if (targetComponentCode) {
-            var findComponent_1 = function (nodes) {
-                for (var _i = 0, nodes_2 = nodes; _i < nodes_2.length; _i++) {
-                    var node = nodes_2[_i];
-                    if (node.code === targetComponentCode) {
-                        return node;
-                    }
-                    if (node.children) {
-                        var found = findComponent_1(node.children);
-                        if (found)
-                            return found;
-                    }
-                }
-                return null;
-            };
-            var targetComponent = findComponent_1(dummyComponents);
-            if (targetComponent) {
-                setSelectedComponent(targetComponent);
-                // Expand parent nodes to show the selected component
-                var expandParents = function (code) {
-                    var parts = code.split('.');
-                    var parentsToExpand = [];
-                    for (var i = 1; i <= parts.length; i++) {
-                        parentsToExpand.push(parts.slice(0, i).join('.'));
-                    }
-                    setExpandedNodes(new Set(parentsToExpand));
+    return searchInTree(dummyComponents);
+  };
+  // Check for modify mode from URL parameter
+  var urlParams = new URLSearchParams(window.location.search);
+  var isModifyMode = urlParams.get('modify') === '1';
+  // Check for preview changes mode and load change request data
+  useEffect(
+    function () {
+      var params = new URLSearchParams(window.location.search);
+      var previewMode = params.get('previewChanges') === '1';
+      var changeRequestId = params.get('changeRequestId');
+      var targetId = params.get('targetId');
+      if (previewMode && changeRequestId) {
+        setIsPreviewMode(true);
+        // Fetch the change request data
+        fetch('/api/change-requests/'.concat(changeRequestId))
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            setChangeRequestData(data);
+            if (data.proposedChangesJson) {
+              setPreviewChanges(
+                Array.isArray(data.proposedChangesJson)
+                  ? data.proposedChangesJson
+                  : []
+              );
+            }
+            // Auto-select the target component if provided
+            if (targetId && data.targetType === 'component') {
+              var component = findComponentById(targetId);
+              if (component) {
+                setSelectedComponent(component);
+                // Expand the path to show the component
+                var expandPath = function (componentCode) {
+                  var parts = componentCode.split('.');
+                  var newExpanded = new Set(expandedNodes);
+                  for (var i = 0; i < parts.length - 1; i++) {
+                    newExpanded.add(parts.slice(0, i + 1).join('.'));
+                  }
+                  setExpandedNodes(newExpanded);
                 };
-                expandParents(targetComponentCode);
+                expandPath(component.code);
+              }
             }
-            sessionStorage.removeItem('targetComponentCode');
+          })
+          .catch(function (err) {
+            console.error('Failed to load change request data:', err);
+            toast({
+              title: 'Error',
+              description: 'Failed to load change request data',
+              variant: 'destructive',
+            });
+          });
+      } else {
+        setIsPreviewMode(false);
+        setChangeRequestData(null);
+        setPreviewChanges([]);
+      }
+    },
+    [location]
+  );
+  // Handle change mode - capture original snapshot when component is selected
+  useEffect(
+    function () {
+      if (isChangeMode && selectedComponent) {
+        // Set the original snapshot for change tracking
+        var snapshot = {
+          id: selectedComponent.id,
+          displayKey: selectedComponent.code,
+          displayName: selectedComponent.name,
+          displayPath: ''
+            .concat(selectedComponent.code, ' ')
+            .concat(selectedComponent.name),
+          componentCode: selectedComponent.code,
+          name: selectedComponent.name,
+          maker: 'MAN B&W', // These would come from actual data
+          model: '6S60MC-C',
+          serialNo: 'MB2020001',
+          category: getComponentCategory(selectedComponent.code),
+          deptCategory: 'Engineering',
+          location: 'Engine Room',
+          critical: 'Yes',
+          classItem: 'Yes',
+          commissionedDate: '01-Jan-2020',
+        };
+        setOriginalSnapshot(snapshot);
+      }
+    },
+    [isChangeMode, selectedComponent]
+  );
+  // Initialize modify mode from URL parameter
+  useEffect(
+    function () {
+      if (isModifyMode) {
+        setShowModifySubmitFooter(true);
+        // Apply modify mode styles to the body
+        document.body.classList.add('modify-mode');
+      }
+      return function () {
+        document.body.classList.remove('modify-mode');
+      };
+    },
+    [isModifyMode]
+  );
+  // Check if we should open the Add/Edit Component form OR select a specific component
+  useEffect(function () {
+    var shouldOpenForm = sessionStorage.getItem('openComponentForm');
+    var targetComponentCode = sessionStorage.getItem('targetComponentCode');
+    if (shouldOpenForm === 'true') {
+      setIsComponentFormOpen(true);
+      sessionStorage.removeItem('openComponentForm');
+    }
+    // If we have a target component code from ModifyPMS, find and select it
+    if (targetComponentCode) {
+      var findComponent_1 = function (nodes) {
+        for (var _i = 0, nodes_2 = nodes; _i < nodes_2.length; _i++) {
+          var node = nodes_2[_i];
+          if (node.code === targetComponentCode) {
+            return node;
+          }
+          if (node.children) {
+            var found = findComponent_1(node.children);
+            if (found) return found;
+          }
         }
-    }, []);
-    var handleBackToModifyPMS = function () {
-        exitChangeRequestMode();
-        reset();
-        setLocation("/pms/modify-pms");
-    };
-    var handleCancelChangeMode = function () {
-        reset();
-        setLocation("/pms/modify-pms");
-    };
-    var toggleNode = function (nodeId) {
-        setExpandedNodes(function (prev) {
-            var newSet = new Set(prev);
-            if (newSet.has(nodeId)) {
-                newSet.delete(nodeId);
-            }
-            else {
-                newSet.add(nodeId);
-            }
-            return newSet;
-        });
-    };
-    var toggleSection = function (sectionId) {
-        setExpandedSections(function (prev) {
-            var newSet = new Set(prev);
-            if (newSet.has(sectionId)) {
-                newSet.delete(sectionId);
-            }
-            else {
-                newSet.add(sectionId);
-            }
-            return newSet;
-        });
-    };
-    var renderComponentTree = function (nodes, level) {
-        if (level === void 0) { level = 0; }
-        return nodes.map(function (node) {
-            var hasChildren = node.children && node.children.length > 0;
-            var isExpanded = expandedNodes.has(node.id);
-            var isSelected = (selectedComponent === null || selectedComponent === void 0 ? void 0 : selectedComponent.id) === node.id;
-            return (<div key={node.id}>
-          <div className={"flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ".concat(isSelected ? "bg-blue-50" : "")} style={{ paddingLeft: "".concat(level * 20 + 12, "px") }} onClick={function () {
-                    setSelectedComponent(node);
-                    // Automatically open CR form when in change request mode
-                    if (isChangeRequestMode) {
-                        setIsComponentFormOpen(true);
-                    }
-                }}>
-            <button className="mr-2 flex-shrink-0" onClick={function (e) {
-                    e.stopPropagation();
-                    if (hasChildren) {
-                        toggleNode(node.id);
-                    }
-                }}>
-              {hasChildren ? (isExpanded ? (<ChevronDown className="h-4 w-4 text-gray-600"/>) : (<ChevronRight className="h-4 w-4 text-gray-600"/>)) : (<ChevronRight className="h-4 w-4 text-gray-400"/>)}
+        return null;
+      };
+      var targetComponent = findComponent_1(dummyComponents);
+      if (targetComponent) {
+        setSelectedComponent(targetComponent);
+        // Expand parent nodes to show the selected component
+        var expandParents = function (code) {
+          var parts = code.split('.');
+          var parentsToExpand = [];
+          for (var i = 1; i <= parts.length; i++) {
+            parentsToExpand.push(parts.slice(0, i).join('.'));
+          }
+          setExpandedNodes(new Set(parentsToExpand));
+        };
+        expandParents(targetComponentCode);
+      }
+      sessionStorage.removeItem('targetComponentCode');
+    }
+  }, []);
+  var handleBackToModifyPMS = function () {
+    exitChangeRequestMode();
+    reset();
+    setLocation('/pms/modify-pms');
+  };
+  var handleCancelChangeMode = function () {
+    reset();
+    setLocation('/pms/modify-pms');
+  };
+  var toggleNode = function (nodeId) {
+    setExpandedNodes(function (prev) {
+      var newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+  var toggleSection = function (sectionId) {
+    setExpandedSections(function (prev) {
+      var newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+  var renderComponentTree = function (nodes, level) {
+    if (level === void 0) {
+      level = 0;
+    }
+    return nodes.map(function (node) {
+      var hasChildren = node.children && node.children.length > 0;
+      var isExpanded = expandedNodes.has(node.id);
+      var isSelected =
+        (selectedComponent === null || selectedComponent === void 0
+          ? void 0
+          : selectedComponent.id) === node.id;
+      return (
+        <div key={node.id}>
+          <div
+            className={'flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 border-b border-gray-100 '.concat(
+              isSelected ? 'bg-blue-50' : ''
+            )}
+            style={{ paddingLeft: ''.concat(level * 20 + 12, 'px') }}
+            onClick={function () {
+              setSelectedComponent(node);
+              // Automatically open CR form when in change request mode
+              if (isChangeRequestMode) {
+                setIsComponentFormOpen(true);
+              }
+            }}
+          >
+            <button
+              className='mr-2 flex-shrink-0'
+              onClick={function (e) {
+                e.stopPropagation();
+                if (hasChildren) {
+                  toggleNode(node.id);
+                }
+              }}
+            >
+              {hasChildren ? (
+                isExpanded ? (
+                  <ChevronDown className='h-4 w-4 text-gray-600' />
+                ) : (
+                  <ChevronRight className='h-4 w-4 text-gray-600' />
+                )
+              ) : (
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              )}
             </button>
-            <span className="text-sm text-gray-700">
+            <span className='text-sm text-gray-700'>
               {node.code} {node.name}
             </span>
           </div>
-          {hasChildren && isExpanded && (<div>{renderComponentTree(node.children, level + 1)}</div>)}
-        </div>);
+          {hasChildren && isExpanded && (
+            <div>{renderComponentTree(node.children, level + 1)}</div>
+          )}
+        </div>
+      );
+    });
+  };
+  var formSections = [
+    { id: 'A', title: 'Component Information' },
+    { id: 'B', title: 'Running Hours & Condition Monitoring' },
+    { id: 'C', title: 'Work Orders' },
+    { id: 'D', title: 'Maintenance History' },
+    { id: 'E', title: 'Spares' },
+    { id: 'F', title: 'Drawings & Manuals' },
+    { id: 'G', title: 'Classification & Regulatory Data' },
+    { id: 'H', title: 'Requisitions' },
+  ];
+  // Build proposed changes from tracked modifications
+  var buildProposedChanges = function () {
+    var changes = [];
+    // Use Change Mode Context diffs which properly track all field changes
+    var diffs = getDiffs();
+    if (diffs.length > 0) {
+      diffs.forEach(function (diff) {
+        changes.push({
+          field: diff.path,
+          oldValue: diff.oldVal || '',
+          newValue: diff.newVal || '',
         });
-    };
-    var formSections = [
-        { id: "A", title: "Component Information" },
-        { id: "B", title: "Running Hours & Condition Monitoring" },
-        { id: "C", title: "Work Orders" },
-        { id: "D", title: "Maintenance History" },
-        { id: "E", title: "Spares" },
-        { id: "F", title: "Drawings & Manuals" },
-        { id: "G", title: "Classification & Regulatory Data" },
-        { id: "H", title: "Requisitions" }
-    ];
-    // Build proposed changes from tracked modifications
-    var buildProposedChanges = function () {
-        var changes = [];
-        // Use Change Mode Context diffs which properly track all field changes
-        var diffs = getDiffs();
-        if (diffs.length > 0) {
-            diffs.forEach(function (diff) {
-                changes.push({
-                    field: diff.path,
-                    oldValue: diff.oldVal || '',
-                    newValue: diff.newVal || ''
-                });
-            });
-        }
-        return changes;
-    };
-    // Handle Submit for modify mode
-    var handleModifySubmit = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var componentDetails, proposedChanges, changeRequest, response, errorData, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!selectedComponent) {
-                        toast({
-                            title: "Please select a component",
-                            description: "You must select a component to modify before submitting",
-                            variant: "destructive"
-                        });
-                        return [2 /*return*/];
-                    }
-                    componentDetails = getComponentMockData(selectedComponent.code);
-                    proposedChanges = buildProposedChanges();
-                    if (proposedChanges.length === 0) {
-                        toast({
-                            title: "No changes detected",
-                            description: "Please make some modifications before submitting",
-                            variant: "destructive"
-                        });
-                        return [2 /*return*/];
-                    }
-                    changeRequest = {
-                        vesselId: 'V001', // Required field
-                        category: 'components', // Required field
-                        title: "Modify Component: ".concat(selectedComponent.code, " ").concat(selectedComponent.name), // Required field
-                        reason: 'Component modification request', // Required field
-                        requestedByUserId: 'current_user', // Required field
-                        targetType: 'component',
-                        targetId: selectedComponent.id,
-                        snapshotBeforeJson: {
-                            displayKey: selectedComponent.code,
-                            displayName: selectedComponent.name,
-                            displayPath: "".concat(selectedComponent.code, " ").concat(selectedComponent.name),
-                            fields: {
-                                id: selectedComponent.id,
-                                code: selectedComponent.code,
-                                name: selectedComponent.name,
-                                maker: componentDetails.maker,
-                                model: componentDetails.model,
-                                serialNo: componentDetails.serialNo,
-                                department: componentDetails.department,
-                                location: componentDetails.location,
-                                critical: componentDetails.critical,
-                                classItem: componentDetails.classItem,
-                                commissionedDate: componentDetails.commissionedDate,
-                                installationDate: componentDetails.installationDate,
-                                rating: componentDetails.rating,
-                                conditionBased: componentDetails.conditionBased,
-                                noOfUnits: componentDetails.noOfUnits,
-                                eqptSystemDept: componentDetails.eqptSystemDept,
-                                parentComponent: componentDetails.parentComponent,
-                                dimensionsSize: componentDetails.dimensionsSize,
-                                notes: componentDetails.notes
-                            }
-                        },
-                        proposedChangesJson: proposedChanges, // Now populated with actual changes
-                        status: 'submitted' // Submit directly as submitted for review
-                    };
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 6, , 7]);
-                    return [4 /*yield*/, fetch('/api/change-requests', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(changeRequest),
-                        })];
-                case 2:
-                    response = _a.sent();
-                    if (!response.ok) return [3 /*break*/, 3];
-                    toast({
-                        title: "Change request created",
-                        description: "Your change request has been created as a draft. Navigate to Modify PMS to complete it.",
-                    });
-                    // Navigate back to Modify PMS
-                    setLocation('/pms/modify-pms');
-                    return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, response.json()];
-                case 4:
-                    errorData = _a.sent();
-                    console.error('API Error:', errorData);
-                    throw new Error(errorData.error || 'Failed to submit change request');
-                case 5: return [3 /*break*/, 7];
-                case 6:
-                    error_1 = _a.sent();
-                    console.error('Submission error:', error_1);
-                    toast({
-                        title: "Submission failed",
-                        description: error_1.message || "Failed to submit change request. Please try again.",
-                        variant: "destructive"
-                    });
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+      });
+    }
+    return changes;
+  };
+  // Handle Submit for modify mode
+  var handleModifySubmit = function () {
+    return __awaiter(void 0, void 0, void 0, function () {
+      var componentDetails,
+        proposedChanges,
+        changeRequest,
+        response,
+        errorData,
+        error_1;
+      return __generator(this, function (_a) {
+        switch (_a.label) {
+          case 0:
+            if (!selectedComponent) {
+              toast({
+                title: 'Please select a component',
+                description:
+                  'You must select a component to modify before submitting',
+                variant: 'destructive',
+              });
+              return [2 /*return*/];
             }
-        });
-    }); };
-    return (<div className={"h-full p-6 ".concat(isModifyMode ? '' : isChangeMode ? 'bg-orange-50' : isChangeRequestMode ? 'bg-[#52baf3]' : 'bg-[#fafafa]')}>
+            componentDetails = getComponentMockData(selectedComponent.code);
+            proposedChanges = buildProposedChanges();
+            if (proposedChanges.length === 0) {
+              toast({
+                title: 'No changes detected',
+                description: 'Please make some modifications before submitting',
+                variant: 'destructive',
+              });
+              return [2 /*return*/];
+            }
+            changeRequest = {
+              vesselId: 'V001', // Required field
+              category: 'components', // Required field
+              title: 'Modify Component: '
+                .concat(selectedComponent.code, ' ')
+                .concat(selectedComponent.name), // Required field
+              reason: 'Component modification request', // Required field
+              requestedByUserId: 'current_user', // Required field
+              targetType: 'component',
+              targetId: selectedComponent.id,
+              snapshotBeforeJson: {
+                displayKey: selectedComponent.code,
+                displayName: selectedComponent.name,
+                displayPath: ''
+                  .concat(selectedComponent.code, ' ')
+                  .concat(selectedComponent.name),
+                fields: {
+                  id: selectedComponent.id,
+                  code: selectedComponent.code,
+                  name: selectedComponent.name,
+                  maker: componentDetails.maker,
+                  model: componentDetails.model,
+                  serialNo: componentDetails.serialNo,
+                  department: componentDetails.department,
+                  location: componentDetails.location,
+                  critical: componentDetails.critical,
+                  classItem: componentDetails.classItem,
+                  commissionedDate: componentDetails.commissionedDate,
+                  installationDate: componentDetails.installationDate,
+                  rating: componentDetails.rating,
+                  conditionBased: componentDetails.conditionBased,
+                  noOfUnits: componentDetails.noOfUnits,
+                  eqptSystemDept: componentDetails.eqptSystemDept,
+                  parentComponent: componentDetails.parentComponent,
+                  dimensionsSize: componentDetails.dimensionsSize,
+                  notes: componentDetails.notes,
+                },
+              },
+              proposedChangesJson: proposedChanges, // Now populated with actual changes
+              status: 'submitted', // Submit directly as submitted for review
+            };
+            _a.label = 1;
+          case 1:
+            _a.trys.push([1, 6, , 7]);
+            return [
+              4 /*yield*/,
+              fetch('/api/change-requests', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(changeRequest),
+              }),
+            ];
+          case 2:
+            response = _a.sent();
+            if (!response.ok) return [3 /*break*/, 3];
+            toast({
+              title: 'Change request created',
+              description:
+                'Your change request has been created as a draft. Navigate to Modify PMS to complete it.',
+            });
+            // Navigate back to Modify PMS
+            setLocation('/pms/modify-pms');
+            return [3 /*break*/, 5];
+          case 3:
+            return [4 /*yield*/, response.json()];
+          case 4:
+            errorData = _a.sent();
+            console.error('API Error:', errorData);
+            throw new Error(
+              errorData.error || 'Failed to submit change request'
+            );
+          case 5:
+            return [3 /*break*/, 7];
+          case 6:
+            error_1 = _a.sent();
+            console.error('Submission error:', error_1);
+            toast({
+              title: 'Submission failed',
+              description:
+                error_1.message ||
+                'Failed to submit change request. Please try again.',
+              variant: 'destructive',
+            });
+            return [3 /*break*/, 7];
+          case 7:
+            return [2 /*return*/];
+        }
+      });
+    });
+  };
+  return (
+    <div
+      className={'h-full p-6 '.concat(
+        isModifyMode
+          ? ''
+          : isChangeMode
+            ? 'bg-orange-50'
+            : isChangeRequestMode
+              ? 'bg-[#52baf3]'
+              : 'bg-[#fafafa]'
+      )}
+    >
       {/* Change Mode Banner */}
-      {isChangeMode && (<div className="mb-4 p-4 bg-amber-50 border-b-2 border-amber-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+      {isChangeMode && (
+        <div className='mb-4 p-4 bg-amber-50 border-b-2 border-amber-200'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
               <div>
-                <h3 className="font-semibold text-amber-900">
+                <h3 className='font-semibold text-amber-900'>
                   You are proposing changes to this record
                 </h3>
-                <p className="text-sm text-amber-700">
-                  {changeRequestTitle ? "Change Request: ".concat(changeRequestTitle) : 'Edited fields will be tracked and submitted for approval'}
+                <p className='text-sm text-amber-700'>
+                  {changeRequestTitle
+                    ? 'Change Request: '.concat(changeRequestTitle)
+                    : 'Edited fields will be tracked and submitted for approval'}
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleCancelChangeMode}>
+            <div className='flex gap-2'>
+              <Button variant='outline' onClick={handleCancelChangeMode}>
                 Cancel
               </Button>
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={function () { return setShowReviewDrawer(true); }} disabled={getDiffs().length === 0}>
+              <Button
+                className='bg-amber-600 hover:bg-amber-700 text-white'
+                onClick={function () {
+                  return setShowReviewDrawer(true);
+                }}
+                disabled={getDiffs().length === 0}
+              >
                 Review & Submit
               </Button>
             </div>
           </div>
-        </div>)}
-      
+        </div>
+      )}
+
       {/* Header with SubModule Title */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            {isChangeRequestMode && (<Button variant="ghost" onClick={handleBackToModifyPMS} className="text-white hover:bg-white/20">
-                <ArrowLeft className="h-4 w-4 mr-2"/>
+      <div className='mb-6'>
+        <div className='flex items-center justify-between mb-4'>
+          <div className='flex items-center gap-4'>
+            {isChangeRequestMode && (
+              <Button
+                variant='ghost'
+                onClick={handleBackToModifyPMS}
+                className='text-white hover:bg-white/20'
+              >
+                <ArrowLeft className='h-4 w-4 mr-2' />
                 Back to Modify PMS
-              </Button>)}
-            <h1 className={"text-2xl font-semibold ".concat(isChangeRequestMode ? 'text-white' : 'text-gray-800')}>
-              Components {isChangeMode ? '- Edit Mode' : isChangeRequestMode ? '- Change Request Mode' : ''}
+              </Button>
+            )}
+            <h1
+              className={'text-2xl font-semibold '.concat(
+                isChangeRequestMode ? 'text-white' : 'text-gray-800'
+              )}
+            >
+              Components{' '}
+              {isChangeMode
+                ? '- Edit Mode'
+                : isChangeRequestMode
+                  ? '- Change Request Mode'
+                  : ''}
             </h1>
           </div>
-          {!isChangeRequestMode && !isChangeMode && (<Button className="bg-[#52baf3] hover:bg-[#40a8e0] text-white" onClick={function () { return setIsComponentFormOpen(true); }}>
+          {!isChangeRequestMode && !isChangeMode && (
+            <Button
+              className='bg-[#52baf3] hover:bg-[#40a8e0] text-white'
+              onClick={function () {
+                return setIsComponentFormOpen(true);
+              }}
+            >
               + Add / Edit Component
-            </Button>)}
+            </Button>
+          )}
         </div>
-        
+
         {/* Filters Row */}
-        <div className="flex gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <span className={"text-sm font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-gray-600')}>Vessel:</span>
-            <Select defaultValue="all">
-              <SelectTrigger className={"w-[150px] ".concat(isChangeRequestMode ? 'border-white bg-white/10 text-white' : '')}>
-                <SelectValue placeholder="Select vessel"/>
+        <div className='flex gap-4 mb-4'>
+          <div className='flex items-center gap-2'>
+            <span
+              className={'text-sm font-medium '.concat(
+                isChangeRequestMode ? 'text-white' : 'text-gray-600'
+              )}
+            >
+              Vessel:
+            </span>
+            <Select defaultValue='all'>
+              <SelectTrigger
+                className={'w-[150px] '.concat(
+                  isChangeRequestMode
+                    ? 'border-white bg-white/10 text-white'
+                    : ''
+                )}
+              >
+                <SelectValue placeholder='Select vessel' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Vessels</SelectItem>
-                <SelectItem value="vessel1">Vessel 1</SelectItem>
-                <SelectItem value="vessel2">Vessel 2</SelectItem>
+                <SelectItem value='all'>All Vessels</SelectItem>
+                <SelectItem value='vessel1'>Vessel 1</SelectItem>
+                <SelectItem value='vessel2'>Vessel 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <span className={"text-sm font-medium ".concat(isChangeRequestMode ? 'text-white' : 'text-gray-600')}>Critical Item:</span>
-            <Select defaultValue="all">
-              <SelectTrigger className={"w-[140px] ".concat(isChangeRequestMode ? 'border-white bg-white/10 text-white' : '')}>
-                <SelectValue placeholder="All Items"/>
+
+          <div className='flex items-center gap-2'>
+            <span
+              className={'text-sm font-medium '.concat(
+                isChangeRequestMode ? 'text-white' : 'text-gray-600'
+              )}
+            >
+              Critical Item:
+            </span>
+            <Select defaultValue='all'>
+              <SelectTrigger
+                className={'w-[140px] '.concat(
+                  isChangeRequestMode
+                    ? 'border-white bg-white/10 text-white'
+                    : ''
+                )}
+              >
+                <SelectValue placeholder='All Items' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Items</SelectItem>
-                <SelectItem value="critical">Critical Only</SelectItem>
-                <SelectItem value="non-critical">Non-Critical</SelectItem>
+                <SelectItem value='all'>All Items</SelectItem>
+                <SelectItem value='critical'>Critical Only</SelectItem>
+                <SelectItem value='non-critical'>Non-Critical</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <div className="flex items-center gap-2 flex-1">
-            <Input placeholder="Search Components..." value={searchTerm} onChange={function (e) { return setSearchTerm(e.target.value); }} className={"max-w-md ".concat(isChangeRequestMode ? 'border-white bg-white/10 text-white placeholder:text-white/70' : '')}/>
+
+          <div className='flex items-center gap-2 flex-1'>
+            <Input
+              placeholder='Search Components...'
+              value={searchTerm}
+              onChange={function (e) {
+                return setSearchTerm(e.target.value);
+              }}
+              className={'max-w-md '.concat(
+                isChangeRequestMode
+                  ? 'border-white bg-white/10 text-white placeholder:text-white/70'
+                  : ''
+              )}
+            />
           </div>
         </div>
       </div>
       {/* Main Content Area */}
-      <div className="flex gap-6 h-[calc(100vh-200px)]">
+      <div className='flex gap-6 h-[calc(100vh-200px)]'>
         {/* Left Panel - Component Tree (30%) */}
-        <div className="w-[30%]">
-          <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
-            <div className="flex-1 overflow-auto">
-              <div className="bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm">
+        <div className='w-[30%]'>
+          <div className='bg-white rounded-lg shadow-sm h-full flex flex-col'>
+            <div className='flex-1 overflow-auto'>
+              <div className='bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm'>
                 COMPONENTS
               </div>
-              <div>
-                {renderComponentTree(dummyComponents)}
-              </div>
+              <div>{renderComponentTree(dummyComponents)}</div>
             </div>
           </div>
         </div>
 
         {/* Right Panel - Component Details Form (70%) */}
-        <div className="w-[70%]">
-          {selectedComponent ? (<div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
-              <div className="p-4 border-b-2 border-[#52baf3] flex-shrink-0">
-                <h3 className="text-lg font-semibold text-[#15569e]">
+        <div className='w-[70%]'>
+          {selectedComponent ? (
+            <div className='bg-white rounded-lg shadow-sm h-full flex flex-col'>
+              <div className='p-4 border-b-2 border-[#52baf3] flex-shrink-0'>
+                <h3 className='text-lg font-semibold text-[#15569e]'>
                   {selectedComponent.code} {selectedComponent.name}
                 </h3>
-                
+
                 {/* Preview Mode Banner */}
-                {isPreviewMode && changeRequestData && (<div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-blue-900 text-sm">Viewing Change Request Preview</h4>
-                        <p className="text-xs text-blue-700">
-                          {changeRequestData.title} - Changed fields are highlighted in <span className="text-red-600 font-medium">red</span>
+                {isPreviewMode && changeRequestData && (
+                  <div className='mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                    <div className='flex items-center gap-3'>
+                      <div className='w-2 h-2 bg-blue-500 rounded-full animate-pulse'></div>
+                      <div className='flex-1'>
+                        <h4 className='font-medium text-blue-900 text-sm'>
+                          Viewing Change Request Preview
+                        </h4>
+                        <p className='text-xs text-blue-700'>
+                          {changeRequestData.title} - Changed fields are
+                          highlighted in{' '}
+                          <span className='text-red-600 font-medium'>red</span>
                         </p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={function () { return setLocation('/pms/modify-pms'); }} className="text-blue-700 border-blue-300 text-xs px-2 py-1 h-7">
-                        <ArrowLeft className="w-3 h-3 mr-1"/>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={function () {
+                          return setLocation('/pms/modify-pms');
+                        }}
+                        className='text-blue-700 border-blue-300 text-xs px-2 py-1 h-7'
+                      >
+                        <ArrowLeft className='w-3 h-3 mr-1' />
                         Back
                       </Button>
                     </div>
-                  </div>)}
+                  </div>
+                )}
               </div>
-              <div className="flex-1 overflow-auto p-4">
-                <div className="space-y-2">
+              <div className='flex-1 overflow-auto p-4'>
+                <div className='space-y-2'>
                   {formSections.map(function (section) {
-                var isExpanded = expandedSections.has(section.id);
-                return (<Card key={section.id} className="rounded-sm border border-gray-200">
-                        <CardHeader className="py-3 cursor-pointer hover:bg-gray-50" onClick={function () { return toggleSection(section.id); }}>
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm font-medium text-[#16569e]">
+                    var isExpanded = expandedSections.has(section.id);
+                    return (
+                      <Card
+                        key={section.id}
+                        className='rounded-sm border border-gray-200'
+                      >
+                        <CardHeader
+                          className='py-3 cursor-pointer hover:bg-gray-50'
+                          onClick={function () {
+                            return toggleSection(section.id);
+                          }}
+                        >
+                          <div className='flex items-center justify-between'>
+                            <CardTitle className='text-sm font-medium text-[#16569e]'>
                               {section.id}. {section.title}
                             </CardTitle>
-                            {isExpanded ? (<ChevronDown className="h-4 w-4"/>) : (<ChevronRight className="h-4 w-4"/>)}
+                            {isExpanded ? (
+                              <ChevronDown className='h-4 w-4' />
+                            ) : (
+                              <ChevronRight className='h-4 w-4' />
+                            )}
                           </div>
                         </CardHeader>
-                        {isExpanded && (<CardContent className="pt-4 border-t border-gray-100">
-                            {section.id === "A" ? (<ComponentInformationSection isExpanded={isExpanded} selectedComponent={selectedComponent} isModifyMode={isModifyMode || isPreviewMode} isPreviewMode={isPreviewMode} previewChanges={previewChanges} onDataChange={function (data) {
-                                // Update modified component data for change tracking
-                                if (isModifyMode) {
+                        {isExpanded && (
+                          <CardContent className='pt-4 border-t border-gray-100'>
+                            {section.id === 'A' ? (
+                              <ComponentInformationSection
+                                isExpanded={isExpanded}
+                                selectedComponent={selectedComponent}
+                                isModifyMode={isModifyMode || isPreviewMode}
+                                isPreviewMode={isPreviewMode}
+                                previewChanges={previewChanges}
+                                onDataChange={function (data) {
+                                  // Update modified component data for change tracking
+                                  if (isModifyMode) {
                                     setModifiedComponentData(data);
+                                  }
+                                  if (!originalComponentData && data) {
+                                    setOriginalComponentData(
+                                      JSON.parse(JSON.stringify(data))
+                                    );
+                                  }
+                                }}
+                              />
+                            ) : section.id === 'B' ? (
+                              <RunningHoursConditionSection />
+                            ) : section.id === 'C' ? (
+                              <WorkOrdersSection
+                                componentCode={
+                                  (selectedComponent === null ||
+                                  selectedComponent === void 0
+                                    ? void 0
+                                    : selectedComponent.code) || ''
                                 }
-                                if (!originalComponentData && data) {
-                                    setOriginalComponentData(JSON.parse(JSON.stringify(data)));
+                                componentName={
+                                  (selectedComponent === null ||
+                                  selectedComponent === void 0
+                                    ? void 0
+                                    : selectedComponent.name) || ''
                                 }
-                            }}/>) : section.id === "B" ? (<RunningHoursConditionSection />) : section.id === "C" ? (<WorkOrdersSection componentCode={(selectedComponent === null || selectedComponent === void 0 ? void 0 : selectedComponent.code) || ""} componentName={(selectedComponent === null || selectedComponent === void 0 ? void 0 : selectedComponent.name) || ""}/>) : section.id === "D" ? (<MaintenanceHistorySection />) : section.id === "E" ? (<SparesSection />) : section.id === "F" ? (<DrawingsAndManualsSection />) : section.id === "G" ? (<ClassificationRegulatorySection />) : section.id === "H" ? (<RequisitionsSection />) : (<p className="text-sm text-gray-500">
-                              {section.title} content will be added here
-                            </p>)}
-                          </CardContent>)}
-                      </Card>);
-            })}
+                              />
+                            ) : section.id === 'D' ? (
+                              <MaintenanceHistorySection />
+                            ) : section.id === 'E' ? (
+                              <SparesSection />
+                            ) : section.id === 'F' ? (
+                              <DrawingsAndManualsSection />
+                            ) : section.id === 'G' ? (
+                              <ClassificationRegulatorySection />
+                            ) : section.id === 'H' ? (
+                              <RequisitionsSection />
+                            ) : (
+                              <p className='text-sm text-gray-500'>
+                                {section.title} content will be added here
+                              </p>
+                            )}
+                          </CardContent>
+                        )}
+                      </Card>
+                    );
+                  })}
                 </div>
-                
+
                 {/* Submit Changes Button - Only shown in modify mode */}
-                {isModifyMode && modifiedComponentData && (<div className="mt-6 pb-4">
-                    <button onClick={function () {
-                    // Create change request with modified data
-                    var changedFields = {};
-                    if (originalComponentData && modifiedComponentData) {
-                        Object.keys(modifiedComponentData).forEach(function (key) {
-                            if (modifiedComponentData[key] !== originalComponentData[key]) {
+                {isModifyMode && modifiedComponentData && (
+                  <div className='mt-6 pb-4'>
+                    <button
+                      onClick={function () {
+                        // Create change request with modified data
+                        var changedFields = {};
+                        if (originalComponentData && modifiedComponentData) {
+                          Object.keys(modifiedComponentData).forEach(
+                            function (key) {
+                              if (
+                                modifiedComponentData[key] !==
+                                originalComponentData[key]
+                              ) {
                                 changedFields[key] = {
-                                    old: originalComponentData[key],
-                                    new: modifiedComponentData[key]
+                                  old: originalComponentData[key],
+                                  new: modifiedComponentData[key],
                                 };
+                              }
                             }
-                        });
-                    }
-                    if (Object.keys(changedFields).length > 0) {
-                        // Show review drawer with changes
-                        setShowReviewDrawer(true);
-                    }
-                    else {
-                        toast({
-                            title: "No Changes",
-                            description: "No fields have been modified",
-                        });
-                    }
-                }} className="w-full bg-[#15569e] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0d3d6e] transition-colors" disabled={!modifiedComponentData}>
+                          );
+                        }
+                        if (Object.keys(changedFields).length > 0) {
+                          // Show review drawer with changes
+                          setShowReviewDrawer(true);
+                        } else {
+                          toast({
+                            title: 'No Changes',
+                            description: 'No fields have been modified',
+                          });
+                        }
+                      }}
+                      className='w-full bg-[#15569e] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0d3d6e] transition-colors'
+                      disabled={!modifiedComponentData}
+                    >
                       Submit Changes
                     </button>
-                  </div>)}
+                  </div>
+                )}
               </div>
-            </div>) : (<div className="bg-white rounded-lg shadow-sm h-full flex items-center justify-center">
-              <p className="text-gray-500">Select a component to view details</p>
-            </div>)}
+            </div>
+          ) : (
+            <div className='bg-white rounded-lg shadow-sm h-full flex items-center justify-center'>
+              <p className='text-gray-500'>
+                Select a component to view details
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Component Register Form */}
       {/* Use CR form when in change request mode, regular form otherwise */}
-      {isChangeRequestMode ? (<ComponentRegisterFormCR isOpen={isComponentFormOpen} onClose={function () {
-                setIsComponentFormOpen(false);
-                if (isChangeRequestMode) {
+      {isChangeRequestMode ? (
+        <ComponentRegisterFormCR
+          isOpen={isComponentFormOpen}
+          onClose={function () {
+            setIsComponentFormOpen(false);
+            if (isChangeRequestMode) {
+              exitChangeRequestMode();
+              reset();
+              setLocation('/pms/modify-pms');
+            }
+          }}
+          selectedComponent={selectedComponent}
+        />
+      ) : (
+        <ComponentRegisterForm
+          isOpen={isComponentFormOpen}
+          onClose={function () {
+            setIsComponentFormOpen(false);
+            // If in change mode and closing without submitting, go back to ModifyPMS
+            if (isChangeMode) {
+              exitChangeRequestMode();
+              reset();
+              setLocation('/pms/modify-pms');
+            }
+          }}
+          onSubmit={function (componentData) {
+            return __awaiter(void 0, void 0, void 0, function () {
+              var changeRequest, response, result, error_2;
+              return __generator(this, function (_a) {
+                switch (_a.label) {
+                  case 0:
+                    console.log('Component data submitted:', componentData);
+                    if (!isChangeMode) return [3 /*break*/, 8];
+                    _a.label = 1;
+                  case 1:
+                    _a.trys.push([1, 6, , 7]);
+                    changeRequest = {
+                      category: 'components',
+                      title:
+                        changeRequestTitle ||
+                        'New Component: '.concat(componentData.componentName),
+                      reason: 'Adding new component '
+                        .concat(componentData.componentName, ' with code ')
+                        .concat(componentData.componentCode),
+                      targetType: 'component',
+                      targetId: componentData.componentCode,
+                      snapshotBeforeJson: {
+                        displayKey: componentData.componentCode,
+                        displayName: componentData.componentName,
+                        displayPath: ''
+                          .concat(componentData.componentCode, ' ')
+                          .concat(componentData.componentName),
+                        fields: {
+                          componentCode: componentData.componentCode,
+                          componentName: componentData.componentName,
+                          maker: componentData.maker || '',
+                          model: componentData.model || '',
+                          serialNo: componentData.serialNo || '',
+                          category: componentData.equipmentCategory || '',
+                          location: componentData.location || '',
+                          critical: componentData.critical || 'No',
+                          classItem: componentData.classItem || 'No',
+                        },
+                      },
+                      proposedChangesJson: [
+                        {
+                          field: 'New Component',
+                          oldValue: null,
+                          newValue: componentData.componentName,
+                          description: 'Create new component '
+                            .concat(componentData.componentCode, ' - ')
+                            .concat(componentData.componentName),
+                        },
+                      ],
+                      status: 'submitted',
+                      vesselId: 'MV Test Vessel',
+                      requestedByUserId: 'current_user',
+                    };
+                    return [
+                      4 /*yield*/,
+                      fetch('/api/change-requests', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(changeRequest),
+                      }),
+                    ];
+                  case 2:
+                    response = _a.sent();
+                    if (!response.ok) return [3 /*break*/, 4];
+                    return [4 /*yield*/, response.json()];
+                  case 3:
+                    result = _a.sent();
+                    toast({
+                      title: 'Success',
+                      description: 'Change request CR'.concat(
+                        String(result.id).padStart(4, '0'),
+                        ' created and submitted successfully'
+                      ),
+                    });
+                    // Exit change mode and navigate back to ModifyPMS
                     exitChangeRequestMode();
                     reset();
-                    setLocation("/pms/modify-pms");
+                    setLocation('/pms/modify-pms');
+                    return [3 /*break*/, 5];
+                  case 4:
+                    throw new Error('Failed to create change request');
+                  case 5:
+                    return [3 /*break*/, 7];
+                  case 6:
+                    error_2 = _a.sent();
+                    console.error('Error creating change request:', error_2);
+                    toast({
+                      title: 'Error',
+                      description: 'Failed to create change request',
+                      variant: 'destructive',
+                    });
+                    return [3 /*break*/, 7];
+                  case 7:
+                    return [3 /*break*/, 9];
+                  case 8:
+                    // Normal mode - just close the form
+                    toast({
+                      title: 'Success',
+                      description: 'Component saved successfully',
+                    });
+                    setIsComponentFormOpen(false);
+                    _a.label = 9;
+                  case 9:
+                    return [2 /*return*/];
                 }
-            }} selectedComponent={selectedComponent}/>) : (<ComponentRegisterForm isOpen={isComponentFormOpen} onClose={function () {
-                setIsComponentFormOpen(false);
-                // If in change mode and closing without submitting, go back to ModifyPMS
-                if (isChangeMode) {
-                    exitChangeRequestMode();
-                    reset();
-                    setLocation("/pms/modify-pms");
-                }
-            }} onSubmit={function (componentData) { return __awaiter(void 0, void 0, void 0, function () {
-                var changeRequest, response, result, error_2;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            console.log('Component data submitted:', componentData);
-                            if (!isChangeMode) return [3 /*break*/, 8];
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 6, , 7]);
-                            changeRequest = {
-                                category: 'components',
-                                title: changeRequestTitle || "New Component: ".concat(componentData.componentName),
-                                reason: "Adding new component ".concat(componentData.componentName, " with code ").concat(componentData.componentCode),
-                                targetType: 'component',
-                                targetId: componentData.componentCode,
-                                snapshotBeforeJson: {
-                                    displayKey: componentData.componentCode,
-                                    displayName: componentData.componentName,
-                                    displayPath: "".concat(componentData.componentCode, " ").concat(componentData.componentName),
-                                    fields: {
-                                        componentCode: componentData.componentCode,
-                                        componentName: componentData.componentName,
-                                        maker: componentData.maker || '',
-                                        model: componentData.model || '',
-                                        serialNo: componentData.serialNo || '',
-                                        category: componentData.equipmentCategory || '',
-                                        location: componentData.location || '',
-                                        critical: componentData.critical || 'No',
-                                        classItem: componentData.classItem || 'No'
-                                    }
-                                },
-                                proposedChangesJson: [{
-                                        field: 'New Component',
-                                        oldValue: null,
-                                        newValue: componentData.componentName,
-                                        description: "Create new component ".concat(componentData.componentCode, " - ").concat(componentData.componentName)
-                                    }],
-                                status: 'submitted',
-                                vesselId: 'MV Test Vessel',
-                                requestedByUserId: 'current_user'
-                            };
-                            return [4 /*yield*/, fetch('/api/change-requests', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(changeRequest)
-                                })];
-                        case 2:
-                            response = _a.sent();
-                            if (!response.ok) return [3 /*break*/, 4];
-                            return [4 /*yield*/, response.json()];
-                        case 3:
-                            result = _a.sent();
-                            toast({
-                                title: "Success",
-                                description: "Change request CR".concat(String(result.id).padStart(4, '0'), " created and submitted successfully")
-                            });
-                            // Exit change mode and navigate back to ModifyPMS
-                            exitChangeRequestMode();
-                            reset();
-                            setLocation("/pms/modify-pms");
-                            return [3 /*break*/, 5];
-                        case 4: throw new Error('Failed to create change request');
-                        case 5: return [3 /*break*/, 7];
-                        case 6:
-                            error_2 = _a.sent();
-                            console.error('Error creating change request:', error_2);
-                            toast({
-                                title: "Error",
-                                description: "Failed to create change request",
-                                variant: "destructive"
-                            });
-                            return [3 /*break*/, 7];
-                        case 7: return [3 /*break*/, 9];
-                        case 8:
-                            // Normal mode - just close the form
-                            toast({
-                                title: "Success",
-                                description: "Component saved successfully"
-                            });
-                            setIsComponentFormOpen(false);
-                            _a.label = 9;
-                        case 9: return [2 /*return*/];
-                    }
-                });
-            }); }}/>)}
-      
+              });
+            });
+          }}
+        />
+      )}
+
       {/* Review Changes Drawer */}
-      {(isChangeMode || isModifyMode) && selectedComponent && (<ReviewChangesDrawer isOpen={showReviewDrawer} onClose={function () { return setShowReviewDrawer(false); }} targetType="component" targetId={selectedComponent.id}/>)}
-      
+      {(isChangeMode || isModifyMode) && selectedComponent && (
+        <ReviewChangesDrawer
+          isOpen={showReviewDrawer}
+          onClose={function () {
+            return setShowReviewDrawer(false);
+          }}
+          targetType='component'
+          targetId={selectedComponent.id}
+        />
+      )}
+
       {/* Sticky Footer for Modify Mode */}
-      {isModifyMode && showModifySubmitFooter && (<div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700">
+      {isModifyMode && showModifySubmitFooter && (
+        <div className='fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50'>
+          <div className='container mx-auto px-6 py-4'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-3'>
+                <span className='text-sm font-medium text-gray-700'>
                   {selectedComponent
-                ? "Selected: ".concat(selectedComponent.code, " ").concat(selectedComponent.name)
-                : 'Select a component to modify'}
+                    ? 'Selected: '
+                        .concat(selectedComponent.code, ' ')
+                        .concat(selectedComponent.name)
+                    : 'Select a component to modify'}
                 </span>
-                {selectedComponent && (<span className="text-xs text-gray-500">
+                {selectedComponent && (
+                  <span className='text-xs text-gray-500'>
                     • Make your changes then click Submit
-                  </span>)}
+                  </span>
+                )}
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={function () {
-                setShowModifySubmitFooter(false);
-                setLocation('/pms/modify-pms');
-            }}>
+              <div className='flex gap-3'>
+                <Button
+                  variant='outline'
+                  onClick={function () {
+                    setShowModifySubmitFooter(false);
+                    setLocation('/pms/modify-pms');
+                  }}
+                >
                   Cancel
                 </Button>
-                <Button className="bg-[#52BAF3] hover:bg-[#40a8e0] text-white" onClick={handleModifySubmit} disabled={!selectedComponent}>
+                <Button
+                  className='bg-[#52BAF3] hover:bg-[#40a8e0] text-white'
+                  onClick={handleModifySubmit}
+                  disabled={!selectedComponent}
+                >
                   Submit Change Request
                 </Button>
               </div>
             </div>
           </div>
-        </div>)}
-    </div>);
+        </div>
+      )}
+    </div>
+  );
 };
 export default Components;
 //# sourceMappingURL=Components.jsx.map
