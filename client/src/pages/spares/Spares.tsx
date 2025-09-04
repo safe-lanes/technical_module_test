@@ -718,6 +718,9 @@ const Spares: React.FC = () => {
         suppressAutoSize: true,
         flex: 0,
         cellClass: 'ihm-column',
+        pinned: false,
+        hide: false,
+        lockPosition: true,
       },
       {
         headerName: 'Actions',
@@ -735,6 +738,10 @@ const Spares: React.FC = () => {
         flex: 0,
       },
     ];
+
+  // Debug: Log column definitions
+  console.log('Column definitions count:', columnDefs.length);
+  console.log('Column names:', columnDefs.map(col => col.headerName));
 
   // Handle modal actions
   const handleConsume = (spare: Spare) => {
