@@ -32,7 +32,7 @@ import {
   // Move,
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+// import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface FormVersion {
@@ -105,11 +105,14 @@ export default function FormSchemaEditor({
   // Update schema mutation
   const updateSchemaMutation = useMutation({
     mutationFn: (schemaJson: any) =>
-      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/schema`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schemaJson }),
-      }).then(res => res.json()),
+      fetch(
+        `/api/admin/forms/${version.formId}/versions/${version.id}/schema`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ schemaJson }),
+        }
+      ).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',
@@ -129,11 +132,14 @@ export default function FormSchemaEditor({
   // Publish version mutation
   const publishMutation = useMutation({
     mutationFn: (changelog: string) =>
-      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/publish`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'admin', changelog }),
-      }).then(res => res.json()),
+      fetch(
+        `/api/admin/forms/${version.formId}/versions/${version.id}/publish`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: 'admin', changelog }),
+        }
+      ).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',
@@ -155,10 +161,13 @@ export default function FormSchemaEditor({
   // Discard draft mutation
   const discardMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/admin/forms/${version.formId}/versions/${version.id}/discard`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }).then(res => res.json()),
+      fetch(
+        `/api/admin/forms/${version.formId}/versions/${version.id}/discard`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }
+      ).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: 'Success',

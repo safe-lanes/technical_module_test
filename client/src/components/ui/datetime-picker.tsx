@@ -18,17 +18,19 @@ interface DateTimePickerProps {
 export function DateTimePicker({
   value,
   onChange,
-  placeholder = "Select date & time",
+  placeholder = 'Select date & time',
   className,
-  disabled
+  disabled,
 }: DateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [timeValue, setTimeValue] = React.useState('');
-  
+
   // Parse the datetime-local string format (YYYY-MM-DDTHH:MM)
-  const dateTime = value ? parse(value, "yyyy-MM-dd'T'HH:mm", new Date()) : undefined;
+  const dateTime = value
+    ? parse(value, "yyyy-MM-dd'T'HH:mm", new Date())
+    : undefined;
   const isValidDateTime = dateTime && isValid(dateTime);
-  
+
   // Extract time from value
   React.useEffect(() => {
     if (value) {
@@ -36,28 +38,28 @@ export function DateTimePicker({
       setTimeValue(timePart);
     }
   }, [value]);
-  
+
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
-    
+
     const dateStr = format(date, 'yyyy-MM-dd');
     const time = timeValue || '00:00';
     const newValue = `${dateStr}T${time}`;
-    
+
     onChange?.(newValue);
   };
-  
+
   const handleTimeChange = (time: string) => {
     setTimeValue(time);
-    
+
     if (dateTime) {
       const dateStr = format(dateTime, 'yyyy-MM-dd');
       const newValue = `${dateStr}T${time}`;
       onChange?.(newValue);
     }
   };
-  
-  const displayValue = isValidDateTime 
+
+  const displayValue = isValidDateTime
     ? `${format(dateTime, 'dd/MM/yyyy')} ${timeValue}`
     : '';
 
@@ -75,27 +77,27 @@ export function DateTimePicker({
             height: '36px',
             minHeight: '36px',
             maxHeight: '36px',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
           }}
         >
           <span>{displayValue || placeholder}</span>
-          <Calendar className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <Calendar className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <div className="border-b border-border p-3">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 opacity-50" />
+      <PopoverContent className='w-auto p-0' align='start'>
+        <div className='border-b border-border p-3'>
+          <div className='flex items-center space-x-2'>
+            <Clock className='h-4 w-4 opacity-50' />
             <Input
-              type="time"
+              type='time'
               value={timeValue}
-              onChange={(e) => handleTimeChange(e.target.value)}
-              className="h-8"
+              onChange={e => handleTimeChange(e.target.value)}
+              className='h-8'
             />
           </div>
         </div>
         <CalendarComponent
-          mode="single"
+          mode='single'
           selected={isValidDateTime ? dateTime : undefined}
           onSelect={handleDateSelect}
           initialFocus

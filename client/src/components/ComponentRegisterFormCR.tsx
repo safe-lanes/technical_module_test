@@ -996,7 +996,7 @@ export default function ComponentRegisterFormCR({
       onClose();
       setLocation('/pms/modify-pms');
     },
-    onError: (_error) => {
+    onError: _error => {
       toast({
         title: 'Error',
         description: 'Failed to submit change request',

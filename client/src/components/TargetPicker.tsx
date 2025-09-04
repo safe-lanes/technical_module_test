@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Package, ClipboardList, Archive, Store } from 'lucide-react';
 import { ComponentTreeSelector } from './ComponentTreeSelector';

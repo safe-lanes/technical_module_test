@@ -36,10 +36,10 @@ import {
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import AgGridTable from '@/components/common/AgGridTable';
-import { 
-  StockStatusCellRenderer, 
-  CriticalCellRenderer, 
-  SparesActionsCellRenderer 
+import {
+  StockStatusCellRenderer,
+  CriticalCellRenderer,
+  SparesActionsCellRenderer,
 } from '@/components/common/AgGridCellRenderers';
 
 // Component tree is now imported from shared data
@@ -527,91 +527,97 @@ const Spares: React.FC = () => {
   const sparesWithStock = useMemo(() => {
     return filteredSpares.map(spare => ({
       ...spare,
-      stock: getStockStatus(spare.rob, spare.min)
+      stock: getStockStatus(spare.rob, spare.min),
     }));
   }, [filteredSpares]);
 
   // AG Grid column definitions
-  const columnDefs = useMemo((): ColDef[] => [
-    {
-      headerName: 'Part Code',
-      field: 'partCode',
-      width: 140,
-      pinned: 'left'
-    },
-    {
-      headerName: 'Part Name',
-      field: 'partName',
-      width: 200
-    },
-    {
-      headerName: 'Component',
-      field: 'component',
-      width: 250
-    },
-    {
-      headerName: 'Critical',
-      field: 'critical',
-      width: 120,
-      cellRenderer: CriticalCellRenderer
-    },
-    {
-      headerName: 'ROB',
-      field: 'rob',
-      width: 80,
-      cellRenderer: (params) => {
-        return <span className="font-medium">{params.value}</span>;
-      }
-    },
-    {
-      headerName: 'Min',
-      field: 'min',
-      width: 80,
-      cellRenderer: (params) => {
-        return <span className="font-medium">{params.value}</span>;
-      }
-    },
-    {
-      headerName: 'Stock',
-      field: 'stock',
-      width: 100,
-      cellRenderer: StockStatusCellRenderer
-    },
-    {
-      headerName: 'Location',
-      field: 'location',
-      width: 150
-    },
-    {
-      headerName: 'Actions',
-      field: 'actions',
-      width: 180,
-      cellRenderer: SparesActionsCellRenderer,
-      sortable: false,
-      filter: false,
-      pinned: 'right'
-    }
-  ], []);
+  const columnDefs = useMemo(
+    (): ColDef[] => [
+      {
+        headerName: 'Part Code',
+        field: 'partCode',
+        width: 140,
+        pinned: 'left',
+      },
+      {
+        headerName: 'Part Name',
+        field: 'partName',
+        width: 200,
+      },
+      {
+        headerName: 'Component',
+        field: 'component',
+        width: 250,
+      },
+      {
+        headerName: 'Critical',
+        field: 'critical',
+        width: 120,
+        cellRenderer: CriticalCellRenderer,
+      },
+      {
+        headerName: 'ROB',
+        field: 'rob',
+        width: 80,
+        cellRenderer: params => {
+          return <span className='font-medium'>{params.value}</span>;
+        },
+      },
+      {
+        headerName: 'Min',
+        field: 'min',
+        width: 80,
+        cellRenderer: params => {
+          return <span className='font-medium'>{params.value}</span>;
+        },
+      },
+      {
+        headerName: 'Stock',
+        field: 'stock',
+        width: 100,
+        cellRenderer: StockStatusCellRenderer,
+      },
+      {
+        headerName: 'Location',
+        field: 'location',
+        width: 150,
+      },
+      {
+        headerName: 'Actions',
+        field: 'actions',
+        width: 180,
+        cellRenderer: SparesActionsCellRenderer,
+        sortable: false,
+        filter: false,
+        pinned: 'right',
+      },
+    ],
+    []
+  );
 
   // AG Grid context for action handlers
-  const gridContext = useMemo(() => ({
-    onConsume: (spare: any) => {
-      console.log('Consume spare:', spare);
-      // Implement consume functionality
-    },
-    onReceive: (spare: any) => {
-      console.log('Receive spare:', spare);
-      // Implement receive functionality
-    },
-    onEdit: (spare: any) => {
-      console.log('Edit spare:', spare);
-      // Implement edit functionality
-    },
-    onHistory: (spare: any) => {
-      console.log('View history for spare:', spare);
-      // Implement history functionality
-    }
-  }), []);
+  const gridContext = useMemo(
+    () => ({
+      onConsume: (spare: any) => {
+        console.log('Consume spare:', spare);
+        // Implement consume functionality
+      },
+      onReceive: (spare: any) => {
+        console.log('Receive spare:', spare);
+        // Implement receive functionality
+      },
+      onEdit: (spare: any) => {
+        console.log('Edit spare:', spare);
+        // Implement edit functionality
+      },
+      onHistory: (spare: any) => {
+        console.log('View history for spare:', spare);
+        // Implement history functionality
+      },
+    }),
+    []
+  );
 
   const onGridReady = (params: GridReadyEvent) => {
     setGridApi(params.api);
@@ -790,7 +796,7 @@ const Spares: React.FC = () => {
                 columnDefs={columnDefs}
                 onGridReady={onGridReady}
                 context={gridContext}
-                height="calc(100vh - 280px)"
+                height='calc(100vh - 280px)'
                 enableExport={true}
                 enableSideBar={true}
                 enableStatusBar={true}
@@ -798,7 +804,7 @@ const Spares: React.FC = () => {
                 paginationPageSize={50}
                 animateRows={true}
                 suppressRowClickSelection={true}
-                className="rounded-lg shadow-sm"
+                className='rounded-lg shadow-sm'
               />
             </div>
           </div>

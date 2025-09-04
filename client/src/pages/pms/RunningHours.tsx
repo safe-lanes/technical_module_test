@@ -19,10 +19,10 @@ import { getComponentCategory } from '@/utils/componentUtils';
 import { useModifyMode } from '@/hooks/useModifyMode';
 import { ModifyStickyFooter } from '@/components/modify/ModifyStickyFooter';
 import AgGridTable from '@/components/common/AgGridTable';
-import { 
-  RunningHoursActionsCellRenderer, 
-  UtilizationRateCellRenderer, 
-  DateCellRenderer
+import {
+  RunningHoursActionsCellRenderer,
+  UtilizationRateCellRenderer,
+  DateCellRenderer,
 } from '@/components/common/AgGridCellRenderers';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -80,7 +80,10 @@ const RunningHours = () => {
   const { data: components, isLoading } = useQuery<any[]>({
     queryKey: ['/api/running-hours/components', vesselId],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/running-hours/components/${vesselId}`);
+      const response = await apiRequest(
+        'GET',
+        `/api/running-hours/components/${vesselId}`
+      );
       return await response.json();
     },
   });
@@ -88,13 +91,13 @@ const RunningHours = () => {
   // Transform components data to RunningHoursData format
   const runningHoursData: RunningHoursData[] = useMemo(() => {
     if (!components || !Array.isArray(components)) return [];
-    
+
     return components.map((component: any) => ({
       id: component.id,
       component: component.name,
       componentCode: component.componentCode,
       componentCategory: getComponentCategory(component.componentCode || ''),
-      runningHours: component.currentCumulativeRH 
+      runningHours: component.currentCumulativeRH
         ? `${parseInt(component.currentCumulativeRH).toLocaleString()} hrs`
         : '0 hrs',
       lastUpdated: component.lastUpdated || 'Never',
@@ -107,13 +110,17 @@ const RunningHours = () => {
     queryKey: ['/api/running-hours/utilization-rates', vesselId],
     queryFn: async () => {
       if (!components || !Array.isArray(components)) return {};
-      
+
       const componentIds = components.map((c: any) => c.id);
       if (componentIds.length === 0) return {};
-      
-      const response = await apiRequest('POST', '/api/running-hours/utilization-rates', {
-        componentIds
-      });
+
+      const response = await apiRequest(
+        'POST',
+        '/api/running-hours/utilization-rates',
+        {
+          componentIds,
+        }
+      );
       return await response.json();
     },
     enabled: !!components && Array.isArray(components) && components.length > 0,
@@ -123,25 +130,32 @@ const RunningHours = () => {
   // Combine data with utilization rates
   const runningHoursDataWithRates = useMemo(() => {
     if (!utilizationRates) return runningHoursData;
-    
+
     return runningHoursData.map(item => ({
       ...item,
       utilizationRate: utilizationRates[item.id] || null,
     }));
   }, [runningHoursData, utilizationRates]);
 
-
   // Mutation for single update - Real MySQL API call
   const updateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('POST', `/api/running-hours/update/${data.componentId}`, data);
+      const response = await apiRequest(
+        'POST',
+        `/api/running-hours/update/${data.componentId}`,
+        data
+      );
       return await response.json();
     },
     onSuccess: () => {
       // Invalidate and refetch data
-      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/components', vesselId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/utilization-rates', vesselId] });
-      
+      queryClient.invalidateQueries({
+        queryKey: ['/api/running-hours/components', vesselId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/running-hours/utilization-rates', vesselId],
+      });
+
       toast({
         title: 'Success',
         description: 'Running hours updated successfully',
@@ -161,14 +175,22 @@ const RunningHours = () => {
   // Mutation for bulk update - Real MySQL API call
   const bulkUpdateRunningHours = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('POST', '/api/running-hours/bulk-update', data);
+      const response = await apiRequest(
+        'POST',
+        '/api/running-hours/bulk-update',
+        data
+      );
       return await response.json();
     },
     onSuccess: () => {
       // Invalidate and refetch data
-      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/components', vesselId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/running-hours/utilization-rates', vesselId] });
-      
+      queryClient.invalidateQueries({
+        queryKey: ['/api/running-hours/components', vesselId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/running-hours/utilization-rates', vesselId],
+      });
+
       toast({
         title: 'Success',
         description: 'Bulk update completed successfully',
@@ -514,60 +536,65 @@ const RunningHours = () => {
   }, [runningHoursDataWithRates, searchTerm]);
 
   // AG Grid column definitions
-  const columnDefs = useMemo((): ColDef[] => [
-    {
-      headerName: 'Component',
-      field: 'component',
-      width: 200,
-      pinned: 'left'
-    },
-    {
-      headerName: 'Component Code',
-      field: 'componentCode',
-      width: 150
-    },
-    {
-      headerName: 'Component Category',
-      field: 'componentCategory',
-      width: 180
-    },
-    {
-      headerName: 'Running Hours',
-      field: 'runningHours',
-      width: 150,
-      cellRenderer: (params: any) => {
-        return <span className="font-medium">{params.value}</span>;
-      }
-    },
-    {
-      headerName: 'Last Updated',
-      field: 'lastUpdated',
-      width: 140,
-      cellRenderer: DateCellRenderer
-    },
-    {
-      headerName: 'Utilization Rate',
-      field: 'utilizationRate',
-      width: 150,
-      cellRenderer: UtilizationRateCellRenderer,
-      tooltip: 'Computed from last 30 days of RH entries'
-    },
-    {
-      headerName: 'Update RH',
-      field: 'actions',
-      width: 140,
-      cellRenderer: RunningHoursActionsCellRenderer,
-      sortable: false,
-      filter: false,
-      pinned: 'right'
-    }
-  ], []);
+  const columnDefs = useMemo(
+    (): ColDef[] => [
+      {
+        headerName: 'Component',
+        field: 'component',
+        width: 200,
+        pinned: 'left',
+      },
+      {
+        headerName: 'Component Code',
+        field: 'componentCode',
+        width: 150,
+      },
+      {
+        headerName: 'Component Category',
+        field: 'componentCategory',
+        width: 180,
+      },
+      {
+        headerName: 'Running Hours',
+        field: 'runningHours',
+        width: 150,
+        cellRenderer: (params: any) => {
+          return <span className='font-medium'>{params.value}</span>;
+        },
+      },
+      {
+        headerName: 'Last Updated',
+        field: 'lastUpdated',
+        width: 140,
+        cellRenderer: DateCellRenderer,
+      },
+      {
+        headerName: 'Utilization Rate',
+        field: 'utilizationRate',
+        width: 150,
+        cellRenderer: UtilizationRateCellRenderer,
+        tooltip: 'Computed from last 30 days of RH entries',
+      },
+      {
+        headerName: 'Update RH',
+        field: 'actions',
+        width: 140,
+        cellRenderer: RunningHoursActionsCellRenderer,
+        sortable: false,
+        filter: false,
+        pinned: 'right',
+      },
+    ],
+    []
+  );
 
   // AG Grid context for action handlers
-  const gridContext = useMemo(() => ({
-    onUpdate: openUpdateDialog
-  }), []);
-
+  const gridContext = useMemo(
+    () => ({
+      onUpdate: openUpdateDialog,
+    }),
+    []
+  );
 
   return (
     <div className='space-y-6'>
@@ -616,15 +643,17 @@ const RunningHours = () => {
       {/* Table */}
       <div className='bg-white rounded-lg'>
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-gray-500">Loading running hours data from database...</div>
+          <div className='flex items-center justify-center h-64'>
+            <div className='text-gray-500'>
+              Loading running hours data from database...
+            </div>
           </div>
         ) : (
           <AgGridTable
             rowData={filteredData}
             columnDefs={columnDefs}
             context={gridContext}
-            height="calc(100vh - 320px)"
+            height='calc(100vh - 320px)'
             enableExport={true}
             enableSideBar={true}
             enableStatusBar={true}
@@ -632,7 +661,7 @@ const RunningHours = () => {
             paginationPageSize={50}
             animateRows={true}
             suppressRowClickSelection={true}
-            className="rounded-lg shadow-sm"
+            className='rounded-lg shadow-sm'
           />
         )}
       </div>

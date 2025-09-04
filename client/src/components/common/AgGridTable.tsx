@@ -21,7 +21,7 @@ import {
   StatusBarModule,
   RowGroupingModule,
   PivotModule,
-  ClipboardModule
+  ClipboardModule,
 } from 'ag-grid-enterprise';
 
 // Register AG Grid modules - Required for Enterprise features
@@ -38,7 +38,7 @@ ModuleRegistry.registerModules([
   StatusBarModule,
   RowGroupingModule,
   PivotModule,
-  ClipboardModule
+  ClipboardModule,
 ]);
 
 interface AgGridTableProps {
@@ -109,21 +109,28 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
   // suppressVerticalScroll = false
 }) => {
   // Default column definition
-  const defaultColDef = useMemo(() => ({
-    sortable: true,
-    filter: true,
-    resizable: true,
-    flex: 1,
-    minWidth: 100,
-    floatingFilter: false, // Disabled for cleaner appearance
-    suppressMenu: false,
-    menuTabs: ['filterMenuTab' as any, 'generalMenuTab' as any, 'columnsMenuTab' as any]
-  }), []);
+  const defaultColDef = useMemo(
+    () => ({
+      sortable: true,
+      filter: true,
+      resizable: true,
+      flex: 1,
+      minWidth: 100,
+      floatingFilter: false, // Disabled for cleaner appearance
+      suppressMenu: false,
+      menuTabs: [
+        'filterMenuTab' as any,
+        'generalMenuTab' as any,
+        'columnsMenuTab' as any,
+      ],
+    }),
+    []
+  );
 
   // Side bar configuration
   const sideBar = useMemo(() => {
     if (!enableSideBar) return false;
-    
+
     return {
       toolPanels: [
         {
@@ -139,121 +146,124 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
           labelKey: 'filters',
           iconKey: 'filter',
           toolPanel: 'agFiltersToolPanel',
-        }
+        },
       ],
-      defaultToolPanel: null // Sidebar starts closed
+      defaultToolPanel: null, // Sidebar starts closed
     };
   }, [enableSideBar]);
 
   // Status bar configuration
   const statusBar = useMemo(() => {
     if (!enableStatusBar) return false;
-    
+
     return {
       statusPanels: [
         {
           statusPanel: 'agTotalAndFilteredRowCountComponent',
-          align: 'left'
+          align: 'left',
         },
         {
           statusPanel: 'agSelectedRowCountComponent',
-          align: 'center'
+          align: 'center',
         },
         {
           statusPanel: 'agAggregationComponent',
-          align: 'right'
-        }
-      ]
+          align: 'right',
+        },
+      ],
     };
   }, [enableStatusBar]);
 
   // Grid options
-  const defaultGridOptions: GridOptions = useMemo(() => ({
-    // Row selection
-    rowSelection: rowSelection || undefined,
-    suppressRowClickSelection,
-    
-    // Pagination
-    pagination,
-    paginationPageSize,
-    
-    // Animation
-    animateRows,
-    
-    // Range selection
-    enableRangeSelection,
-    enableRangeHandle: enableRangeSelection,
-    enableFillHandle: enableRangeSelection,
-    
-    // Charts
-    enableCharts,
-    
-    // Row grouping
-    enableRowGroup: enableRowGrouping,
-    groupDefaultExpanded: enableRowGrouping ? 1 : -1,
-    
-    // Pivoting
-    enablePivot: enablePivoting,
-    
-    // Advanced filter
-    enableAdvancedFilter,
-    
-    // Export
-    enableExport,
-    
-    // Scrolling
-    suppressHorizontalScroll,
-    
-    // Auto height settings
-    domLayout: autoHeight ? 'autoHeight' : 'normal',
-    
-    // Loading
-    loadingOverlayComponent: loading ? 'agLoadingOverlay' : undefined,
-    
-    // Context
-    context,
-    
-    // Row ID
-    getRowId,
-    
-    // Event handlers
-    onGridReady: (params: GridReadyEvent) => {
-      // Auto-size columns to fit
-      params.api.sizeColumnsToFit();
-      
-      // Call custom onGridReady if provided
-      if (onGridReady) {
-        onGridReady(params);
-      }
-    },
-    
-    onRowClicked,
-    onSelectionChanged,
-    
-    // Override with custom grid options
-    ...gridOptions
-  }), [
-    rowSelection,
-    suppressRowClickSelection,
-    pagination,
-    paginationPageSize,
-    animateRows,
-    enableRangeSelection,
-    enableCharts,
-    enableRowGrouping,
-    enablePivoting,
-    enableAdvancedFilter,
-    enableExport,
-    suppressHorizontalScroll,
-    autoHeight,
-    loading,
-    context,
-    getRowId,
-    onGridReady,
-    onRowClicked,
-    onSelectionChanged,
-    gridOptions
-  ]);
+  const defaultGridOptions: GridOptions = useMemo(
+    () => ({
+      // Row selection
+      rowSelection: rowSelection || undefined,
+      suppressRowClickSelection,
+
+      // Pagination
+      pagination,
+      paginationPageSize,
+
+      // Animation
+      animateRows,
+
+      // Range selection
+      enableRangeSelection,
+      enableRangeHandle: enableRangeSelection,
+      enableFillHandle: enableRangeSelection,
+
+      // Charts
+      enableCharts,
+
+      // Row grouping
+      enableRowGroup: enableRowGrouping,
+      groupDefaultExpanded: enableRowGrouping ? 1 : -1,
+
+      // Pivoting
+      enablePivot: enablePivoting,
+
+      // Advanced filter
+      enableAdvancedFilter,
+
+      // Export
+      enableExport,
+
+      // Scrolling
+      suppressHorizontalScroll,
+
+      // Auto height settings
+      domLayout: autoHeight ? 'autoHeight' : 'normal',
+
+      // Loading
+      loadingOverlayComponent: loading ? 'agLoadingOverlay' : undefined,
+
+      // Context
+      context,
+
+      // Row ID
+      getRowId,
+
+      // Event handlers
+      onGridReady: (params: GridReadyEvent) => {
+        // Auto-size columns to fit
+        params.api.sizeColumnsToFit();
+
+        // Call custom onGridReady if provided
+        if (onGridReady) {
+          onGridReady(params);
+        }
+      },
+
+      onRowClicked,
+      onSelectionChanged,
+
+      // Override with custom grid options
+      ...gridOptions,
+    }),
+    [
+      rowSelection,
+      suppressRowClickSelection,
+      pagination,
+      paginationPageSize,
+      animateRows,
+      enableRangeSelection,
+      enableCharts,
+      enableRowGrouping,
+      enablePivoting,
+      enableAdvancedFilter,
+      enableExport,
+      suppressHorizontalScroll,
+      autoHeight,
+      loading,
+      context,
+      getRowId,
+      onGridReady,
+      onRowClicked,
+      onSelectionChanged,
+      gridOptions,
+    ]
+  );
 
   // Container style
   const containerStyle = useMemo(() => {
@@ -261,18 +271,15 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
       width,
       height: autoHeight ? 'auto' : height,
       maxHeight: autoHeight ? maxHeight : undefined,
-      minHeight: autoHeight ? minHeight : undefined
+      minHeight: autoHeight ? minHeight : undefined,
     };
-    
+
     return baseStyle;
   }, [width, height, autoHeight, maxHeight, minHeight]);
 
   return (
-    <div className="ag-grid-container">
-      <div 
-        className={`ag-theme-${theme} ${className}`}
-        style={containerStyle}
-      >
+    <div className='ag-grid-container'>
+      <div className={`ag-theme-${theme} ${className}`} style={containerStyle}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -286,7 +293,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
           overlayNoRowsTemplate="<span class='ag-overlay-no-rows-center'>No data to display</span>"
         />
       </div>
-      
+
       <style jsx global>{`
         /* Blue header styling */
         .ag-grid-container .ag-theme-alpine .ag-header {

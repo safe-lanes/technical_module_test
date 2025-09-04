@@ -1,12 +1,12 @@
 import React from 'react';
-import { useLocation } from 'wouter';
+// import { useLocation } from 'wouter';
 import {
   Grid3X3,
   BarChart3,
   FileCheck,
   AlertTriangle,
   Wrench,
-  Settings,
+  // Settings,
   Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';

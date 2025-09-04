@@ -36,9 +36,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import * as XLSX from 'xlsx';
 import AgGridTable from '@/components/common/AgGridTable';
-import { 
-  StockStatusCellRenderer, 
-  StoresActionsCellRenderer 
+import {
+  StockStatusCellRenderer,
+  StoresActionsCellRenderer,
 } from '@/components/common/AgGridCellRenderers';
 
 interface StoreItem {
@@ -654,11 +654,11 @@ const hardcodedStoreItems: StoreItem[] = [
 
 const Stores: React.FC = () => {
   const { toast } = useToast();
-  
+
   // API query to fetch stores data from MySQL
   const { data: apiStoreItems = [], isLoading: storeItemsLoading } = useQuery({
     queryKey: ['/api/stores', 'V001'],
-    queryFn: () => fetch('/api/stores/V001').then(res => res.json())
+    queryFn: () => fetch('/api/stores/V001').then(res => res.json()),
   });
 
   // Mutation for store transactions (receive, consume)
@@ -667,7 +667,7 @@ const Stores: React.FC = () => {
       const response = await fetch('/api/stores/V001/transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transaction)
+        body: JSON.stringify(transaction),
       });
       if (!response.ok) throw new Error('Failed to create transaction');
       return response.json();
@@ -675,17 +675,20 @@ const Stores: React.FC = () => {
     onSuccess: () => {
       // Refetch store items to get updated data
       queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
-    }
+    },
   });
 
   // Mutation for updating store item details
   const updateItemMutation = useMutation({
     mutationFn: async (updateData: any) => {
-      const response = await fetch(`/api/stores/V001/item/${updateData.itemCode}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
-      });
+      const response = await fetch(
+        `/api/stores/V001/item/${updateData.itemCode}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData),
+        }
+      );
       if (!response.ok) throw new Error('Failed to update store item');
       return response.json();
     },
@@ -693,7 +696,7 @@ const Stores: React.FC = () => {
       // Force refetch by removing cache and fetching fresh data
       queryClient.removeQueries({ queryKey: ['/api/stores', 'V001'] });
       queryClient.invalidateQueries({ queryKey: ['/api/stores', 'V001'] });
-    }
+    },
   });
   const [activeTab, setActiveTab] = useState<
     'stores' | 'lubes' | 'chemicals' | 'others'
@@ -725,18 +728,20 @@ const Stores: React.FC = () => {
     if (apiStoreItems && apiStoreItems.length > 0) {
       console.log('🔄 Loading store items from MySQL database:', apiStoreItems);
       // Transform API data to match component interface
-      const transformedItems = apiStoreItems.map((item: any, index: number) => ({
-        id: index + 1,
-        itemCode: item.item_code || item.itemCode,
-        itemName: item.item_name || item.itemName,
-        storesCategory: 'General Stores', // Default category
-        uom: item.uom,
-        rob: parseFloat(item.rob) || 0,
-        min: parseFloat(item.min_stock) || 1,
-        stock: item.stock || 'OK',
-        location: item.location || 'Store Room',
-        category: 'stores' as const,
-      }));
+      const transformedItems = apiStoreItems.map(
+        (item: any, index: number) => ({
+          id: index + 1,
+          itemCode: item.item_code || item.itemCode,
+          itemName: item.item_name || item.itemName,
+          storesCategory: 'General Stores', // Default category
+          uom: item.uom,
+          rob: parseFloat(item.rob) || 0,
+          min: parseFloat(item.min_stock) || 1,
+          stock: item.stock || 'OK',
+          location: item.location || 'Store Room',
+          category: 'stores' as const,
+        })
+      );
       setItems(transformedItems);
     } else {
       console.log('📋 Using fallback hardcoded store data');
@@ -908,82 +913,106 @@ const Stores: React.FC = () => {
   }, [activeTab, searchTerm, categoryFilter, stockFilter, items]);
 
   // AG Grid column definitions
-  const columnDefs = useMemo((): ColDef[] => [
-    {
-      headerName: activeTab === 'lubes' ? 'Lube Grade' : activeTab === 'chemicals' ? 'Chem Code' : 'Item Code',
-      field: 'itemCode',
-      width: 150,
-      pinned: 'left'
-    },
-    {
-      headerName: activeTab === 'lubes' ? 'Lube Type' : activeTab === 'chemicals' ? 'Chemical Name' : 'Item Name',
-      field: 'itemName',
-      width: 200
-    },
-    {
-      headerName: activeTab === 'lubes' ? 'Application' : activeTab === 'chemicals' ? 'Application Area' : 'Stores Category',
-      field: 'storesCategory',
-      width: 200
-    },
-    {
-      headerName: 'UOM',
-      field: 'uom',
-      width: 80
-    },
-    {
-      headerName: 'ROB',
-      field: 'rob',
-      width: 80,
-      cellRenderer: (params) => {
-        return <span className="font-medium">{params.value}</span>;
-      }
-    },
-    {
-      headerName: 'Min',
-      field: 'min',
-      width: 80,
-      cellRenderer: (params) => {
-        return <span className="font-medium">{params.value}</span>;
-      }
-    },
-    {
-      headerName: 'Stock',
-      field: 'stock',
-      width: 100,
-      cellRenderer: StockStatusCellRenderer
-    },
-    {
-      headerName: 'Location',
-      field: 'location',
-      width: 150
-    },
-    {
-      headerName: 'Actions',
-      field: 'actions',
-      width: 140,
-      cellRenderer: StoresActionsCellRenderer,
-      sortable: false,
-      filter: false,
-      pinned: 'right'
-    }
-  ], [activeTab]);
+  const columnDefs = useMemo(
+    (): ColDef[] => [
+      {
+        headerName:
+          activeTab === 'lubes'
+            ? 'Lube Grade'
+            : activeTab === 'chemicals'
+              ? 'Chem Code'
+              : 'Item Code',
+        field: 'itemCode',
+        width: 150,
+        pinned: 'left',
+      },
+      {
+        headerName:
+          activeTab === 'lubes'
+            ? 'Lube Type'
+            : activeTab === 'chemicals'
+              ? 'Chemical Name'
+              : 'Item Name',
+        field: 'itemName',
+        width: 200,
+      },
+      {
+        headerName:
+          activeTab === 'lubes'
+            ? 'Application'
+            : activeTab === 'chemicals'
+              ? 'Application Area'
+              : 'Stores Category',
+        field: 'storesCategory',
+        width: 200,
+      },
+      {
+        headerName: 'UOM',
+        field: 'uom',
+        width: 80,
+      },
+      {
+        headerName: 'ROB',
+        field: 'rob',
+        width: 80,
+        cellRenderer: params => {
+          return <span className='font-medium'>{params.value}</span>;
+        },
+      },
+      {
+        headerName: 'Min',
+        field: 'min',
+        width: 80,
+        cellRenderer: params => {
+          return <span className='font-medium'>{params.value}</span>;
+        },
+      },
+      {
+        headerName: 'Stock',
+        field: 'stock',
+        width: 100,
+        cellRenderer: StockStatusCellRenderer,
+      },
+      {
+        headerName: 'Location',
+        field: 'location',
+        width: 150,
+      },
+      {
+        headerName: 'Actions',
+        field: 'actions',
+        width: 140,
+        cellRenderer: StoresActionsCellRenderer,
+        sortable: false,
+        filter: false,
+        pinned: 'right',
+      },
+    ],
+    [activeTab]
+  );
 
   // AG Grid context for action handlers
-  const gridContext = useMemo(() => ({
-    onEdit: (item: StoreItem) => {
-      openEditModal(item);
-    },
-    onConsume: (item: StoreItem) => {
-      // Quick consume - open a simple prompt
-      const quantity = prompt(`How much ${item.uom || 'units'} of ${item.itemName} to consume?`, '1');
-      if (quantity && !isNaN(Number(quantity))) {
-        handleQuickConsume(item, Number(quantity));
-      }
-    },
-    onReceive: (item: StoreItem) => {
-      openReceiveModal(item);
-    }
-  }), []);
+  const gridContext = useMemo(
+    () => ({
+      onEdit: (item: StoreItem) => {
+        openEditModal(item);
+      },
+      onConsume: (item: StoreItem) => {
+        // Quick consume - open a simple prompt
+        const quantity = prompt(
+          `How much ${item.uom || 'units'} of ${item.itemName} to consume?`,
+          '1'
+        );
+        if (quantity && !isNaN(Number(quantity))) {
+          handleQuickConsume(item, Number(quantity));
+        }
+      },
+      onReceive: (item: StoreItem) => {
+        openReceiveModal(item);
+      },
+    }),
+    []
+  );
 
   const onGridReady = (params: GridReadyEvent) => {
     setGridApi(params.api);
@@ -1187,7 +1216,7 @@ const Stores: React.FC = () => {
             place: '',
             dateLocal: new Date().toISOString().split('T')[0],
             tz: 'UTC',
-            remarks: updateData.comments
+            remarks: updateData.comments,
           });
         }
 
@@ -1203,7 +1232,7 @@ const Stores: React.FC = () => {
             place: placeReceived,
             dateLocal: dateReceived,
             tz: 'UTC',
-            remarks: updateData.comments
+            remarks: updateData.comments,
           });
         }
 
@@ -1284,7 +1313,7 @@ const Stores: React.FC = () => {
         uom: uom,
         minStock: editForm.min,
         location: editForm.location,
-        notes: editForm.notes
+        notes: editForm.notes,
       });
 
       // Update local state for immediate feedback
@@ -1322,7 +1351,10 @@ const Stores: React.FC = () => {
 
       setItems(updatedItems);
       setIsEditModalOpen(false);
-      toast({ title: 'Success', description: 'Item updated successfully - saved to database' });
+      toast({
+        title: 'Success',
+        description: 'Item updated successfully - saved to database',
+      });
     } catch (error) {
       console.error('Failed to update item:', error);
       toast({
@@ -1383,7 +1415,7 @@ const Stores: React.FC = () => {
         reference: receiveForm.supplierPO,
         dateLocal: receiveForm.dateLocal,
         tz: 'UTC',
-        remarks: receiveForm.remarks
+        remarks: receiveForm.remarks,
       });
 
       // Update local state immediately for better UX
@@ -1425,7 +1457,11 @@ const Stores: React.FC = () => {
 
   // Handle Add New Item
   const handleAddNewItem = async () => {
-    if (!addItemForm.itemCode || !addItemForm.itemName || !addItemForm.initialQty) {
+    if (
+      !addItemForm.itemCode ||
+      !addItemForm.itemName ||
+      !addItemForm.initialQty
+    ) {
       toast({
         title: 'Error',
         description: 'Item code, name, and initial quantity are required',
@@ -1445,8 +1481,9 @@ const Stores: React.FC = () => {
     }
 
     try {
-      const uom = addItemForm.uom === 'Other' ? addItemForm.customUom : addItemForm.uom;
-      
+      const uom =
+        addItemForm.uom === 'Other' ? addItemForm.customUom : addItemForm.uom;
+
       // Create initial transaction for new item
       await createTransactionMutation.mutateAsync({
         itemCode: addItemForm.itemCode,
@@ -1458,7 +1495,7 @@ const Stores: React.FC = () => {
         place: addItemForm.location,
         dateLocal: new Date().toISOString().split('T')[0],
         tz: 'UTC',
-        remarks: `Initial stock - ${addItemForm.notes || 'New item added'}`
+        remarks: `Initial stock - ${addItemForm.notes || 'New item added'}`,
       });
 
       // Create catalog update transaction with min stock and notes
@@ -1477,8 +1514,8 @@ const Stores: React.FC = () => {
             minStock: parseInt(addItemForm.minStock),
             notes: addItemForm.notes,
             location: addItemForm.location,
-            updatedAt: new Date().toISOString()
-          })
+            updatedAt: new Date().toISOString(),
+          }),
         });
       }
 
@@ -1494,7 +1531,7 @@ const Stores: React.FC = () => {
         notes: '',
       });
       setIsAddItemModalOpen(false);
-      
+
       toast({
         title: 'Success',
         description: `Added new item: ${addItemForm.itemName} - saved to database`,
@@ -1530,7 +1567,7 @@ const Stores: React.FC = () => {
 
     try {
       const newRob = item.rob - quantity;
-      
+
       // Create consume transaction in database
       await createTransactionMutation.mutateAsync({
         itemCode: item.itemCode,
@@ -1542,7 +1579,7 @@ const Stores: React.FC = () => {
         place: '',
         dateLocal: new Date().toISOString().split('T')[0],
         tz: 'UTC',
-        remarks: `Quick consume: ${quantity} ${item.uom || 'units'}`
+        remarks: `Quick consume: ${quantity} ${item.uom || 'units'}`,
       });
 
       // Update local state
@@ -1551,7 +1588,15 @@ const Stores: React.FC = () => {
       );
 
       // Add to history
-      addToHistory(item, 'CONSUME', -quantity, newRob, '', '', `Quick consume: ${quantity} ${item.uom || 'units'}`);
+      addToHistory(
+        item,
+        'CONSUME',
+        -quantity,
+        newRob,
+        '',
+        '',
+        `Quick consume: ${quantity} ${item.uom || 'units'}`
+      );
 
       setItems(updatedItems);
       toast({
@@ -1611,7 +1656,8 @@ const Stores: React.FC = () => {
             className='bg-[#52baf3] hover:bg-[#40a8e0] text-white'
             onClick={openBulkUpdateModal}
           >
-            + Bulk Update {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            + Bulk Update{' '}
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
           </Button>
         </div>
       </div>
@@ -1812,7 +1858,7 @@ const Stores: React.FC = () => {
             columnDefs={columnDefs}
             onGridReady={onGridReady}
             context={gridContext}
-            height="calc(100vh - 280px)"
+            height='calc(100vh - 280px)'
             enableExport={true}
             enableSideBar={true}
             enableStatusBar={true}
@@ -1820,7 +1866,7 @@ const Stores: React.FC = () => {
             paginationPageSize={50}
             animateRows={true}
             suppressRowClickSelection={true}
-            className="rounded-lg shadow-sm"
+            className='rounded-lg shadow-sm'
           />
         </div>
       ) : (

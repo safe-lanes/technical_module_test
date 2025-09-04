@@ -15,10 +15,10 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import AgGridTable from '@/components/common/AgGridTable';
-import { 
-  StatusCellRenderer, 
-  WorkOrderActionsCellRenderer, 
-  DateCellRenderer 
+import {
+  StatusCellRenderer,
+  WorkOrderActionsCellRenderer,
+  DateCellRenderer,
 } from '@/components/common/AgGridCellRenderers';
 import PostponeWorkOrderDialog from '@/components/PostponeWorkOrderDialog';
 import WorkOrderForm from '@/components/WorkOrderForm';
@@ -333,45 +333,73 @@ const WorkOrders: React.FC = () => {
   // Fetch work orders from database
   const { data: workOrdersFromDB = [], isLoading } = useQuery({
     queryKey: ['/api/work-orders', vesselId],
-    queryFn: () => fetch(`/api/work-orders/${vesselId}`).then(res => res.json()),
+    queryFn: () =>
+      fetch(`/api/work-orders/${vesselId}`).then(res => res.json()),
   });
 
   // Create work order mutation
   const createWorkOrderMutation = useMutation({
-    mutationFn: (workOrderData: Omit<WorkOrder, 'createdAt' | 'updatedAt'>) => 
+    mutationFn: (workOrderData: Omit<WorkOrder, 'createdAt' | 'updatedAt'>) =>
       apiRequest('POST', `/api/work-orders/${vesselId}`, workOrderData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
-      toast({ title: 'Success', description: 'Work order created successfully' });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/work-orders', vesselId],
+      });
+      toast({
+        title: 'Success',
+        description: 'Work order created successfully',
+      });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to create work order', variant: 'destructive' });
+      toast({
+        title: 'Error',
+        description: 'Failed to create work order',
+        variant: 'destructive',
+      });
     },
   });
 
   // Update work order mutation
   const updateWorkOrderMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<WorkOrder> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<WorkOrder> }) =>
       apiRequest('PUT', `/api/work-orders/${vesselId}/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
-      toast({ title: 'Success', description: 'Work order updated successfully' });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/work-orders', vesselId],
+      });
+      toast({
+        title: 'Success',
+        description: 'Work order updated successfully',
+      });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to update work order', variant: 'destructive' });
+      toast({
+        title: 'Error',
+        description: 'Failed to update work order',
+        variant: 'destructive',
+      });
     },
   });
 
   // Delete work order mutation
   const deleteWorkOrderMutation = useMutation({
-    mutationFn: (id: string) => 
+    mutationFn: (id: string) =>
       apiRequest('DELETE', `/api/work-orders/${vesselId}/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/work-orders', vesselId] });
-      toast({ title: 'Success', description: 'Work order deleted successfully' });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/work-orders', vesselId],
+      });
+      toast({
+        title: 'Success',
+        description: 'Work order deleted successfully',
+      });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to delete work order', variant: 'destructive' });
+      toast({
+        title: 'Error',
+        description: 'Failed to delete work order',
+        variant: 'destructive',
+      });
     },
   });
 
@@ -380,7 +408,8 @@ const WorkOrders: React.FC = () => {
   const [location] = useLocation();
 
   // Use database data if available, otherwise fallback to sample data for demo
-  const workOrdersToUse = workOrdersFromDB.length > 0 ? workOrdersFromDB : sampleWorkOrders;
+  const workOrdersToUse =
+    workOrdersFromDB.length > 0 ? workOrdersFromDB : sampleWorkOrders;
 
   // Backfill templateCode for existing work orders if missing
   const backfilledWorkOrders = workOrdersToUse.map(wo => {
@@ -424,31 +453,41 @@ const WorkOrders: React.FC = () => {
   }, [location, workOrdersList]);
 
   const handleWorkOrderSubmit = (workOrderId: string, formData?: any) => {
-    console.log('🔄 handleWorkOrderSubmit called:', { workOrderId, type: formData?.type, data: formData?.data });
+    console.log('🔄 handleWorkOrderSubmit called:', {
+      workOrderId,
+      type: formData?.type,
+      data: formData?.data,
+    });
     console.log('🔍 Full formData object:', JSON.stringify(formData, null, 2));
-    
+
     if (formData?.type === 'template_draft') {
       // Save template as draft (Part A)
       console.log('💾 Saving template draft...');
       const workOrder = workOrdersList.find(wo => wo.id === workOrderId);
       if (workOrder) {
         console.log('🔍 About to update existing work order:', workOrderId);
-        updateWorkOrderMutation.mutate({
-          id: workOrderId,
-          data: {
-            ...formData.data,
-            status: 'Draft',
-            templateCode: formData.data.templateCode || formData.data.woTemplateCode || workOrder.templateCode,
-            formData: formData.data, // Save the complete form data to the formData column
-          }
-        }, {
-          onSuccess: (data) => {
-            console.log('✅ Update successful:', data);
+        updateWorkOrderMutation.mutate(
+          {
+            id: workOrderId,
+            data: {
+              ...formData.data,
+              status: 'Draft',
+              templateCode:
+                formData.data.templateCode ||
+                formData.data.woTemplateCode ||
+                workOrder.templateCode,
+              formData: formData.data, // Save the complete form data to the formData column
+            },
           },
-          onError: (error) => {
-            console.error('❌ Update failed:', error);
+          {
+            onSuccess: data => {
+              console.log('✅ Update successful:', data);
+            },
+            onError: error => {
+              console.error('❌ Update failed:', error);
+            },
           }
-        });
+        );
       } else {
         // Create new draft work order
         const newWorkOrder: WorkOrder = {
@@ -456,7 +495,8 @@ const WorkOrders: React.FC = () => {
           component: formData.data.component || '',
           componentCode: formData.data.componentCode || '',
           workOrderNo: formData.data.woTemplateCode || `WO-${Date.now()}`,
-          templateCode: formData.data.templateCode || formData.data.woTemplateCode,
+          templateCode:
+            formData.data.templateCode || formData.data.woTemplateCode,
           jobTitle: formData.data.woTitle || formData.data.jobTitle,
           assignedTo: formData.data.assignedTo,
           dueDate: formData.data.nextDueDate || '',
@@ -466,12 +506,12 @@ const WorkOrders: React.FC = () => {
         };
         console.log('🔍 About to create new work order:', newWorkOrder);
         createWorkOrderMutation.mutate(newWorkOrder, {
-          onSuccess: (data) => {
+          onSuccess: data => {
             console.log('✅ Create successful:', data);
           },
-          onError: (error) => {
+          onError: error => {
             console.error('❌ Create failed:', error);
-          }
+          },
         });
       }
     } else if (formData?.type === 'execution_draft') {
@@ -486,7 +526,7 @@ const WorkOrders: React.FC = () => {
             status: 'In Progress',
             templateCode: formData.data.templateCode || workOrder.templateCode,
             formData: formData.data, // Save the complete form data to the formData column
-          }
+          },
         });
       }
     } else if (formData?.type === 'execution') {
@@ -537,7 +577,7 @@ const WorkOrders: React.FC = () => {
               formData.data.woTemplateCode ||
               formData.data.templateCode ||
               workOrder.templateCode,
-          }
+          },
         });
       }
     }
@@ -689,28 +729,31 @@ const WorkOrders: React.FC = () => {
         headerName: 'Component',
         field: 'component',
         width: 200,
-        cellRenderer: (params) => {
+        cellRenderer: params => {
           return (
-            <span 
-              className="text-blue-600 hover:text-blue-800 cursor-pointer"
+            <span
+              className='text-blue-600 hover:text-blue-800 cursor-pointer'
               onClick={() => handleWorkOrderClick(params.data)}
             >
               {params.value}
             </span>
           );
-        }
+        },
       },
       {
-        headerName: activeTab === 'Pending Approval' ? 'WO Execution ID' : 'Work Order No',
+        headerName:
+          activeTab === 'Pending Approval'
+            ? 'WO Execution ID'
+            : 'Work Order No',
         field: activeTab === 'Pending Approval' ? 'executionId' : 'workOrderNo',
         width: 180,
-        valueGetter: (params) => {
+        valueGetter: params => {
           if (activeTab === 'Pending Approval' && params.data.executionId) {
             return params.data.executionId;
           }
           return params.data.templateCode || params.data.workOrderNo;
-        }
-      }
+        },
+      },
     ];
 
     // Add template code column for pending approval
@@ -718,7 +761,7 @@ const WorkOrders: React.FC = () => {
       baseColumns.push({
         headerName: 'WO Template Code',
         field: 'templateCode',
-        width: 180
+        width: 180,
       });
     }
 
@@ -727,24 +770,25 @@ const WorkOrders: React.FC = () => {
       {
         headerName: 'Job Title',
         field: 'jobTitle',
-        width: 250
+        width: 250,
       },
       {
         headerName: 'Assigned to',
         field: 'assignedTo',
-        width: 150
+        width: 150,
       },
       {
-        headerName: activeTab === 'Pending Approval' ? 'Submitted Date' : 'Due Date',
+        headerName:
+          activeTab === 'Pending Approval' ? 'Submitted Date' : 'Due Date',
         field: activeTab === 'Pending Approval' ? 'submittedDate' : 'dueDate',
         width: 150,
-        cellRenderer: DateCellRenderer
+        cellRenderer: DateCellRenderer,
       },
       {
         headerName: 'Status',
         field: 'status',
         width: 150,
-        cellRenderer: StatusCellRenderer
+        cellRenderer: StatusCellRenderer,
       }
     );
 
@@ -754,7 +798,7 @@ const WorkOrders: React.FC = () => {
         headerName: 'Date Completed',
         field: 'dateCompleted',
         width: 150,
-        cellRenderer: DateCellRenderer
+        cellRenderer: DateCellRenderer,
       });
     }
 
@@ -766,39 +810,50 @@ const WorkOrders: React.FC = () => {
       cellRenderer: WorkOrderActionsCellRenderer,
       sortable: false,
       filter: false,
-      pinned: 'right'
+      pinned: 'right',
     });
 
     return baseColumns;
   }, [activeTab]);
 
   // AG Grid context for action handlers
-  const gridContext = useMemo(() => ({
-    onEdit: handlePencilClick,
-    onPostpone: handleTimerClick,
-    onApprove: (workOrder: WorkOrder) => {
-      handleApprove(workOrder);
-    },
-    onReject: (workOrder: WorkOrder) => {
-      handleReject(workOrder, 'Rejected from grid');
-    }
-  }), []);
+  const gridContext = useMemo(
+    () => ({
+      onEdit: handlePencilClick,
+      onPostpone: handleTimerClick,
+      onApprove: (workOrder: WorkOrder) => {
+        handleApprove(workOrder);
+      },
+      onReject: (workOrder: WorkOrder) => {
+        handleReject(workOrder, 'Rejected from grid');
+      },
+    }),
+    []
+  );
 
   const onGridReady = (params: GridReadyEvent) => {
     setGridApi(params.api);
   };
 
-  const handleApprove = (workOrderOrId: WorkOrder | string, approverRemarks?: string) => {
-    console.log('🎯 handleApprove called with:', { workOrderOrId, approverRemarks });
-    
+  const handleApprove = (
+    workOrderOrId: WorkOrder | string,
+    approverRemarks?: string
+  ) => {
+    console.log('🎯 handleApprove called with:', {
+      workOrderOrId,
+      approverRemarks,
+    });
+
     // Handle both cases: work order object from AG Grid context or string ID
     let workOrder: WorkOrder | undefined;
     if (typeof workOrderOrId === 'string') {
-      workOrder = workOrdersList.find(wo => wo.executionId === workOrderOrId || wo.id === workOrderOrId);
+      workOrder = workOrdersList.find(
+        wo => wo.executionId === workOrderOrId || wo.id === workOrderOrId
+      );
     } else {
       workOrder = workOrderOrId; // It's already the work order object
     }
-    
+
     console.log('🔍 Found workOrder:', workOrder);
     if (workOrder) {
       const updatedData: Partial<WorkOrder> = {
@@ -828,28 +883,37 @@ const WorkOrders: React.FC = () => {
         workOrder.currentReading
       ) {
         updatedData.nextDueReading = (
-          parseInt(workOrder.currentReading) + parseInt(workOrder.frequencyValue || '0')
+          parseInt(workOrder.currentReading) +
+          parseInt(workOrder.frequencyValue || '0')
         ).toString();
       }
 
       updateWorkOrderMutation.mutate({
         id: workOrder.id,
-        data: updatedData
+        data: updatedData,
       });
     }
   };
 
-  const handleReject = (workOrderOrId: WorkOrder | string, rejectionComments: string) => {
-    console.log('🎯 handleReject called with:', { workOrderOrId, rejectionComments });
-    
+  const handleReject = (
+    workOrderOrId: WorkOrder | string,
+    rejectionComments: string
+  ) => {
+    console.log('🎯 handleReject called with:', {
+      workOrderOrId,
+      rejectionComments,
+    });
+
     // Handle both cases: work order object from AG Grid context or string ID
     let workOrder: WorkOrder | undefined;
     if (typeof workOrderOrId === 'string') {
-      workOrder = workOrdersList.find(wo => wo.executionId === workOrderOrId || wo.id === workOrderOrId);
+      workOrder = workOrdersList.find(
+        wo => wo.executionId === workOrderOrId || wo.id === workOrderOrId
+      );
     } else {
       workOrder = workOrderOrId; // It's already the work order object
     }
-    
+
     console.log('🔍 Found workOrder:', workOrder);
     if (workOrder) {
       updateWorkOrderMutation.mutate({
@@ -859,7 +923,7 @@ const WorkOrders: React.FC = () => {
           approver: 'Current User',
           approverRemarks: rejectionComments,
           rejectionDate: new Date().toISOString(),
-        }
+        },
       });
     }
   };
@@ -872,7 +936,7 @@ const WorkOrders: React.FC = () => {
         data: {
           status: 'Postponed',
           dueDate: postponeData.nextDueDate || workOrder.dueDate,
-        }
+        },
       });
     }
   };
@@ -1032,7 +1096,7 @@ const WorkOrders: React.FC = () => {
           columnDefs={columnDefs}
           onGridReady={onGridReady}
           context={gridContext}
-          height="calc(100vh - 320px)"
+          height='calc(100vh - 320px)'
           enableExport={true}
           enableSideBar={true}
           enableStatusBar={true}
@@ -1040,7 +1104,7 @@ const WorkOrders: React.FC = () => {
           paginationPageSize={50}
           animateRows={true}
           suppressRowClickSelection={true}
-          className="rounded-lg shadow-sm"
+          className='rounded-lg shadow-sm'
         />
       </div>
 

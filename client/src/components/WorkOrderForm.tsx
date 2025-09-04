@@ -403,17 +403,18 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       if (executionMode) {
         setActiveSection('partB');
         const savedFormData = workOrder.formData || {};
-        
+
         setExecutionData(prev => {
           const newExecutionData = {
             ...prev,
             // Use saved woExecutionId if available, otherwise generate new one
-            woExecutionId: savedFormData.woExecutionId || generateWOExecutionId(),
+            woExecutionId:
+              savedFormData.woExecutionId || generateWOExecutionId(),
             assignedTo: savedFormData.assignedTo || workOrder.assignedTo || '',
             // Load execution data from formData if available
             ...savedFormData,
           };
-          
+
           return newExecutionData;
         });
       }
@@ -454,7 +455,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       rob: '',
       status: 'Available',
     };
-    
+
     setTemplateData(prev => ({
       ...prev,
       requiredSpareParts: [...(prev.requiredSpareParts as any[]), newSparePart],
@@ -465,7 +466,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   const handleRemoveSparePart = (id: string) => {
     setTemplateData(prev => ({
       ...prev,
-      requiredSpareParts: prev.requiredSpareParts.filter((part: any) => part.id !== id),
+      requiredSpareParts: prev.requiredSpareParts.filter(
+        (part: any) => part.id !== id
+      ),
     }));
   };
 
@@ -488,14 +491,18 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       quantityConsumed: '',
       comments: '',
     };
-    
+
     setExecutionData(prev => ({
       ...prev,
       sparePartsConsumed: [...prev.sparePartsConsumed, newConsumedPart],
     }));
   };
 
-  const handleUpdateConsumedSparePart = (id: string, field: string, value: string) => {
+  const handleUpdateConsumedSparePart = (
+    id: string,
+    field: string,
+    value: string
+  ) => {
     setExecutionData(prev => ({
       ...prev,
       sparePartsConsumed: prev.sparePartsConsumed.map((part: any) =>
@@ -507,7 +514,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
   const handleRemoveConsumedSparePart = (id: string) => {
     setExecutionData(prev => ({
       ...prev,
-      sparePartsConsumed: prev.sparePartsConsumed.filter((part: any) => part.id !== id),
+      sparePartsConsumed: prev.sparePartsConsumed.filter(
+        (part: any) => part.id !== id
+      ),
     }));
   };
 
@@ -520,7 +529,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
       currentROB: '',
       status: 'Available',
     };
-    
+
     setTemplateData(prev => ({
       ...prev,
       requiredTools: [...prev.requiredTools, newTool],
@@ -547,7 +556,6 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   // Save as draft (can be called from either Part A or Part B)
   const handleSave = () => {
-    
     if (activeSection === 'partA') {
       // Save Part A data as draft (minimal validation)
       if (!templateData.woTitle) {
@@ -592,7 +600,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
           // Ensure sparePartsConsumed is explicitly included
           sparePartsConsumed: executionData.sparePartsConsumed || [],
         };
-        onSubmit(workOrderId, { type: 'execution_draft', data: executionRecord });
+        onSubmit(workOrderId, {
+          type: 'execution_draft',
+          data: executionRecord,
+        });
         toast({
           title: 'Saved',
           description: 'Work completion record saved as draft',
@@ -603,7 +614,6 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
 
   // Final submit (only from Part B with full validation)
   const handleSubmit = () => {
-    
     if (activeSection === 'partA') {
       // Validate template data
       if (!templateData.woTitle) {
@@ -1253,7 +1263,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       >
                         A2. Required Spare Parts
                       </h4>
-                      <button 
+                      <button
                         className='text-sm text-blue-600 hover:text-blue-800'
                         onClick={handleAddSparePart}
                         disabled={isReadOnly}
@@ -1276,7 +1286,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className='divide-y divide-gray-200'>
                         {templateData.requiredSpareParts.length === 0 ? (
                           <div className='px-4 py-3 text-center text-gray-500'>
-                            No spare parts added yet. Click "+ Add Spare Part" to add items.
+                            No spare parts added yet. Click "+ Add Spare Part"
+                            to add items.
                           </div>
                         ) : (
                           templateData.requiredSpareParts.map((part: any) => (
@@ -1285,7 +1296,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={part.partNo}
-                                    onChange={(e) => handleUpdateSparePart(part.id, 'partNo', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateSparePart(
+                                        part.id,
+                                        'partNo',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Part No'
                                     disabled={isReadOnly}
@@ -1294,7 +1311,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={part.description}
-                                    onChange={(e) => handleUpdateSparePart(part.id, 'description', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateSparePart(
+                                        part.id,
+                                        'description',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Description'
                                     disabled={isReadOnly}
@@ -1303,7 +1326,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={part.quantityRequired}
-                                    onChange={(e) => handleUpdateSparePart(part.id, 'quantityRequired', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateSparePart(
+                                        part.id,
+                                        'quantityRequired',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Qty'
                                     disabled={isReadOnly}
@@ -1312,7 +1341,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={part.rob}
-                                    onChange={(e) => handleUpdateSparePart(part.id, 'rob', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateSparePart(
+                                        part.id,
+                                        'rob',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='ROB'
                                     disabled={isReadOnly}
@@ -1321,23 +1356,37 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Select
                                     value={part.status}
-                                    onValueChange={(value) => handleUpdateSparePart(part.id, 'status', value)}
+                                    onValueChange={value =>
+                                      handleUpdateSparePart(
+                                        part.id,
+                                        'status',
+                                        value
+                                      )
+                                    }
                                     disabled={isReadOnly}
                                   >
                                     <SelectTrigger className='text-sm'>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value='Available'>Available</SelectItem>
-                                      <SelectItem value='Order Required'>Order Required</SelectItem>
-                                      <SelectItem value='Low Stock'>Low Stock</SelectItem>
+                                      <SelectItem value='Available'>
+                                        Available
+                                      </SelectItem>
+                                      <SelectItem value='Order Required'>
+                                        Order Required
+                                      </SelectItem>
+                                      <SelectItem value='Low Stock'>
+                                        Low Stock
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
                                 <div>
                                   {!isReadOnly && (
                                     <button
-                                      onClick={() => handleRemoveSparePart(part.id)}
+                                      onClick={() =>
+                                        handleRemoveSparePart(part.id)
+                                      }
                                       className='text-red-600 hover:text-red-800 text-sm'
                                     >
                                       Remove
@@ -1361,7 +1410,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       >
                         A3. Required Tools & Equipment
                       </h4>
-                      <button 
+                      <button
                         className='text-sm text-blue-600 hover:text-blue-800'
                         onClick={handleAddTool}
                         disabled={isReadOnly}
@@ -1383,7 +1432,8 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                       <div className='divide-y divide-gray-200'>
                         {templateData.requiredTools.length === 0 ? (
                           <div className='px-4 py-3 text-center text-gray-500'>
-                            No tools added yet. Click "+ Add Tool / Eqpt..." to add items.
+                            No tools added yet. Click "+ Add Tool / Eqpt..." to
+                            add items.
                           </div>
                         ) : (
                           templateData.requiredTools.map((tool: any) => (
@@ -1392,7 +1442,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={tool.name}
-                                    onChange={(e) => handleUpdateTool(tool.id, 'name', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateTool(
+                                        tool.id,
+                                        'name',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Tool / Equipment Name'
                                     disabled={isReadOnly}
@@ -1401,7 +1457,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={tool.quantityRequired}
-                                    onChange={(e) => handleUpdateTool(tool.id, 'quantityRequired', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateTool(
+                                        tool.id,
+                                        'quantityRequired',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Qty Required'
                                     disabled={isReadOnly}
@@ -1410,7 +1472,13 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Input
                                     value={tool.currentROB}
-                                    onChange={(e) => handleUpdateTool(tool.id, 'currentROB', e.target.value)}
+                                    onChange={e =>
+                                      handleUpdateTool(
+                                        tool.id,
+                                        'currentROB',
+                                        e.target.value
+                                      )
+                                    }
                                     className='text-sm'
                                     placeholder='Current ROB'
                                     disabled={isReadOnly}
@@ -1419,16 +1487,24 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 <div>
                                   <Select
                                     value={tool.status}
-                                    onValueChange={(value) => handleUpdateTool(tool.id, 'status', value)}
+                                    onValueChange={value =>
+                                      handleUpdateTool(tool.id, 'status', value)
+                                    }
                                     disabled={isReadOnly}
                                   >
                                     <SelectTrigger className='text-sm'>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value='Available'>Available</SelectItem>
-                                      <SelectItem value='Order Required'>Order Required</SelectItem>
-                                      <SelectItem value='Maintenance Required'>Maintenance Required</SelectItem>
+                                      <SelectItem value='Available'>
+                                        Available
+                                      </SelectItem>
+                                      <SelectItem value='Order Required'>
+                                        Order Required
+                                      </SelectItem>
+                                      <SelectItem value='Maintenance Required'>
+                                        Maintenance Required
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -1977,10 +2053,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <DateTimePicker
                             value={executionData.startDateTime}
                             onChange={value =>
-                              handleExecutionChange(
-                                'startDateTime',
-                                value
-                              )
+                              handleExecutionChange('startDateTime', value)
                             }
                             placeholder='Select start date & time'
                             className='w-full'
@@ -1993,10 +2066,7 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           <DateTimePicker
                             value={executionData.completionDateTime}
                             onChange={value =>
-                              handleExecutionChange(
-                                'completionDateTime',
-                                value
-                              )
+                              handleExecutionChange('completionDateTime', value)
                             }
                             placeholder='Select completion date & time'
                             className='w-full'
@@ -2297,10 +2367,10 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         B4. Spare Parts Consumed
                       </h4>
                       {!isReadOnly && (
-                        <button 
+                        <button
                           onClick={handleAddConsumedSparePart}
                           className='text-sm text-blue-600 hover:text-blue-800'
-                          type="button"
+                          type='button'
                         >
                           + Add Spare Part
                         </button>
@@ -2321,15 +2391,25 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         {executionData.sparePartsConsumed?.length > 0 ? (
                           executionData.sparePartsConsumed.map((part: any) => (
                             <div key={part.id} className='px-4 py-3'>
-                              <div className={`grid gap-4 text-sm items-center ${isReadOnly ? 'grid-cols-4' : 'grid-cols-5'}`}>
+                              <div
+                                className={`grid gap-4 text-sm items-center ${isReadOnly ? 'grid-cols-4' : 'grid-cols-5'}`}
+                              >
                                 <div>
                                   {isReadOnly ? (
-                                    <div className='text-gray-900'>{part.partNo || ''}</div>
+                                    <div className='text-gray-900'>
+                                      {part.partNo || ''}
+                                    </div>
                                   ) : (
                                     <Input
                                       type='text'
                                       value={part.partNo || ''}
-                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'partNo', e.target.value)}
+                                      onChange={e =>
+                                        handleUpdateConsumedSparePart(
+                                          part.id,
+                                          'partNo',
+                                          e.target.value
+                                        )
+                                      }
                                       placeholder='Part No'
                                       className='w-full'
                                     />
@@ -2337,12 +2417,20 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 </div>
                                 <div>
                                   {isReadOnly ? (
-                                    <div className='text-gray-900'>{part.description || ''}</div>
+                                    <div className='text-gray-900'>
+                                      {part.description || ''}
+                                    </div>
                                   ) : (
                                     <Input
                                       type='text'
                                       value={part.description || ''}
-                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'description', e.target.value)}
+                                      onChange={e =>
+                                        handleUpdateConsumedSparePart(
+                                          part.id,
+                                          'description',
+                                          e.target.value
+                                        )
+                                      }
                                       placeholder='Description'
                                       className='w-full'
                                     />
@@ -2350,12 +2438,20 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 </div>
                                 <div>
                                   {isReadOnly ? (
-                                    <div className='text-gray-900'>{part.quantityConsumed || ''}</div>
+                                    <div className='text-gray-900'>
+                                      {part.quantityConsumed || ''}
+                                    </div>
                                   ) : (
                                     <Input
                                       type='number'
                                       value={part.quantityConsumed || ''}
-                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'quantityConsumed', e.target.value)}
+                                      onChange={e =>
+                                        handleUpdateConsumedSparePart(
+                                          part.id,
+                                          'quantityConsumed',
+                                          e.target.value
+                                        )
+                                      }
                                       placeholder='Quantity'
                                       className='w-full'
                                     />
@@ -2363,12 +2459,20 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 </div>
                                 <div>
                                   {isReadOnly ? (
-                                    <div className='text-gray-900'>{part.comments || ''}</div>
+                                    <div className='text-gray-900'>
+                                      {part.comments || ''}
+                                    </div>
                                   ) : (
                                     <Input
                                       type='text'
                                       value={part.comments || ''}
-                                      onChange={(e) => handleUpdateConsumedSparePart(part.id, 'comments', e.target.value)}
+                                      onChange={e =>
+                                        handleUpdateConsumedSparePart(
+                                          part.id,
+                                          'comments',
+                                          e.target.value
+                                        )
+                                      }
                                       placeholder='Comments'
                                       className='w-full'
                                     />
@@ -2377,9 +2481,11 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                                 {!isReadOnly && (
                                   <div>
                                     <button
-                                      onClick={() => handleRemoveConsumedSparePart(part.id)}
+                                      onClick={() =>
+                                        handleRemoveConsumedSparePart(part.id)
+                                      }
                                       className='text-red-600 hover:text-red-800 text-sm'
-                                      type="button"
+                                      type='button'
                                     >
                                       Remove
                                     </button>
@@ -2390,7 +2496,9 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                           ))
                         ) : (
                           <div className='px-4 py-8 text-center text-gray-500'>
-                            {isReadOnly ? 'No spare parts were consumed for this work order.' : 'No spare parts added yet. Click "Add Spare Part" to add consumed parts.'}
+                            {isReadOnly
+                              ? 'No spare parts were consumed for this work order.'
+                              : 'No spare parts added yet. Click "Add Spare Part" to add consumed parts.'}
                           </div>
                         )}
                       </div>
