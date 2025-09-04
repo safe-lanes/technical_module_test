@@ -1,19 +1,31 @@
-
 /* CSS Isolation for Micro Frontend */
 .micro-frontend-isolated {
   /* Reset any inherited styles */
   all: initial;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji';
+
   /* Ensure the micro frontend doesn't affect parent styles */
   box-sizing: border-box;
-  
+
   /* Prevent style leakage */
   isolation: isolate;
-  
+
   /* Set a consistent line-height */
   line-height: 1.6;
-  
+
   /* Ensure consistent color scheme */
   color-scheme: light;
 }

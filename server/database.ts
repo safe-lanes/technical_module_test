@@ -175,56 +175,156 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Stub implementations for all other required methods
-  async getSpares(): Promise<any[]> { return []; }
-  async getSpare(): Promise<any> { return undefined; }
-  async createSpare(): Promise<any> { return {}; }
-  async updateSpare(): Promise<any> { return {}; }
-  async deleteSpare(): Promise<boolean> { return true; }
-  async getStoreItems(): Promise<any[]> { return []; }
-  async getStoreItem(): Promise<any> { return undefined; }
-  async createStoreItem(): Promise<any> { return {}; }
-  async updateStoreItem(): Promise<any> { return {}; }
-  async deleteStoreItem(): Promise<boolean> { return true; }
-  async getWorkOrders(): Promise<any[]> { return []; }
-  async getWorkOrder(): Promise<any> { return undefined; }
-  async createWorkOrder(): Promise<any> { return {}; }
-  async updateWorkOrder(): Promise<any> { return {}; }
-  async deleteWorkOrder(): Promise<boolean> { return true; }
-  async getChangeRequests(): Promise<any[]> { return []; }
-  async getChangeRequest(): Promise<any> { return undefined; }
-  async createChangeRequest(): Promise<any> { return {}; }
-  async updateChangeRequest(): Promise<any> { return {}; }
-  async deleteChangeRequest(): Promise<boolean> { return true; }
-  async getRunningHoursAudit(): Promise<any[]> { return []; }
-  async createRunningHoursAudit(): Promise<any> { return {}; }
-  async getSparesHistory(): Promise<any[]> { return []; }
-  async createSparesHistory(): Promise<any> { return {}; }
-  async getStoresLedger(): Promise<any[]> { return []; }
-  async createStoresLedger(): Promise<any> { return {}; }
-  async bulkCreateComponents(): Promise<any[]> { return []; }
-  async bulkUpdateComponents(): Promise<any[]> { return []; }
-  async bulkUpsertComponents(): Promise<any[]> { return []; }
-  async bulkCreateSpares(): Promise<any[]> { return []; }
-  async bulkUpdateSpares(): Promise<any[]> { return []; }
-  async bulkUpsertSpares(): Promise<any[]> { return []; }
-  async bulkCreateStoreItems(): Promise<any[]> { return []; }
-  async bulkUpdateStoreItems(): Promise<any[]> { return []; }
-  async bulkUpsertStoreItems(): Promise<any[]> { return []; }
-  async bulkCreateWorkOrders(): Promise<any[]> { return []; }
-  async bulkUpdateWorkOrders(): Promise<any[]> { return []; }
-  async bulkUpsertWorkOrders(): Promise<any[]> { return []; }
-  async bulkCreateChangeRequests(): Promise<any[]> { return []; }
-  async bulkUpdateChangeRequests(): Promise<any[]> { return []; }
-  async bulkUpsertChangeRequests(): Promise<any[]> { return []; }
-  async bulkCreateRunningHoursAudit(): Promise<any[]> { return []; }
-  async bulkUpdateRunningHoursAudit(): Promise<any[]> { return []; }
-  async bulkUpsertRunningHoursAudit(): Promise<any[]> { return []; }
-  async bulkCreateSparesHistory(): Promise<any[]> { return []; }
-  async bulkUpdateSparesHistory(): Promise<any[]> { return []; }
-  async bulkUpsertSparesHistory(): Promise<any[]> { return []; }
-  async bulkCreateStoresLedger(): Promise<any[]> { return []; }
-  async bulkUpdateStoresLedger(): Promise<any[]> { return []; }
-  async bulkUpsertStoresLedger(): Promise<any[]> { return []; }
+  async getSpares(): Promise<any[]> {
+    return [];
+  }
+  async getSpare(): Promise<any> {
+    return undefined;
+  }
+  async createSpare(): Promise<any> {
+    return {};
+  }
+  async updateSpare(): Promise<any> {
+    return {};
+  }
+  async deleteSpare(): Promise<boolean> {
+    return true;
+  }
+  async getStoreItems(): Promise<any[]> {
+    return [];
+  }
+  async getStoreItem(): Promise<any> {
+    return undefined;
+  }
+  async createStoreItem(): Promise<any> {
+    return {};
+  }
+  async updateStoreItem(): Promise<any> {
+    return {};
+  }
+  async deleteStoreItem(): Promise<boolean> {
+    return true;
+  }
+  async getWorkOrders(): Promise<any[]> {
+    return [];
+  }
+  async getWorkOrder(): Promise<any> {
+    return undefined;
+  }
+  async createWorkOrder(): Promise<any> {
+    return {};
+  }
+  async updateWorkOrder(): Promise<any> {
+    return {};
+  }
+  async deleteWorkOrder(): Promise<boolean> {
+    return true;
+  }
+  async getChangeRequests(): Promise<any[]> {
+    return [];
+  }
+  async getChangeRequest(): Promise<any> {
+    return undefined;
+  }
+  async createChangeRequest(): Promise<any> {
+    return {};
+  }
+  async updateChangeRequest(): Promise<any> {
+    return {};
+  }
+  async deleteChangeRequest(): Promise<boolean> {
+    return true;
+  }
+  async getRunningHoursAudit(): Promise<any[]> {
+    return [];
+  }
+  async createRunningHoursAudit(): Promise<any> {
+    return {};
+  }
+  async getSparesHistory(): Promise<any[]> {
+    return [];
+  }
+  async createSparesHistory(): Promise<any> {
+    return {};
+  }
+  async getStoresLedger(): Promise<any[]> {
+    return [];
+  }
+  async createStoresLedger(): Promise<any> {
+    return {};
+  }
+  async bulkCreateComponents(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateComponents(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertComponents(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateSpares(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateSpares(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertSpares(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateStoreItems(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateStoreItems(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertStoreItems(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateWorkOrders(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateWorkOrders(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertWorkOrders(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateChangeRequests(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateChangeRequests(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertChangeRequests(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateRunningHoursAudit(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateRunningHoursAudit(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertRunningHoursAudit(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateSparesHistory(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateSparesHistory(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertSparesHistory(): Promise<any[]> {
+    return [];
+  }
+  async bulkCreateStoresLedger(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpdateStoresLedger(): Promise<any[]> {
+    return [];
+  }
+  async bulkUpsertStoresLedger(): Promise<any[]> {
+    return [];
+  }
 }
 
 export const storage = new DatabaseStorage();
