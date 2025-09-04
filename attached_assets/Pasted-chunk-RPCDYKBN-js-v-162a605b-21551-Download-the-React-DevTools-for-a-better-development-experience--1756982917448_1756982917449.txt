@@ -1,0 +1,119 @@
+chunk-RPCDYKBN.js?v=162a605b:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+api/spares/V001:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+api/spares/V001:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+api/spares/V001:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+SparesNew.tsx:141  GET https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/api/spares/V001 500 (Internal Server Error)
+queryFn @ SparesNew.tsx:141
+fetchFn @ @tanstack_react-query.js?v=162a605b:840
+run @ @tanstack_react-query.js?v=162a605b:494
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+SparesNew.tsx:141  GET https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/api/spares/V001 500 (Internal Server Error)
+queryFn @ SparesNew.tsx:141
+fetchFn @ @tanstack_react-query.js?v=162a605b:840
+run @ @tanstack_react-query.js?v=162a605b:494
+start @ @tanstack_react-query.js?v=162a605b:536
+fetch @ @tanstack_react-query.js?v=162a605b:926
+executeFetch_fn @ @tanstack_react-query.js?v=162a605b:2211
+fetch @ @tanstack_react-query.js?v=162a605b:2011
+refetch @ @tanstack_react-query.js?v=162a605b:2001
+onFocus @ @tanstack_react-query.js?v=162a605b:749
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1112
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1111
+batch @ @tanstack_react-query.js?v=162a605b:583
+onFocus @ @tanstack_react-query.js?v=162a605b:1110
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1601
+await in (anonymous)
+(anonymous) @ @tanstack_react-query.js?v=162a605b:313
+onFocus @ @tanstack_react-query.js?v=162a605b:312
+(anonymous) @ @tanstack_react-query.js?v=162a605b:299
+listener @ @tanstack_react-query.js?v=162a605b:270
+SparesNew.tsx:141  GET https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/api/spares/V001 500 (Internal Server Error)
+queryFn @ SparesNew.tsx:141
+fetchFn @ @tanstack_react-query.js?v=162a605b:840
+run @ @tanstack_react-query.js?v=162a605b:494
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+start @ @tanstack_react-query.js?v=162a605b:536
+fetch @ @tanstack_react-query.js?v=162a605b:926
+executeFetch_fn @ @tanstack_react-query.js?v=162a605b:2211
+fetch @ @tanstack_react-query.js?v=162a605b:2011
+refetch @ @tanstack_react-query.js?v=162a605b:2001
+onFocus @ @tanstack_react-query.js?v=162a605b:749
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1112
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1111
+batch @ @tanstack_react-query.js?v=162a605b:583
+onFocus @ @tanstack_react-query.js?v=162a605b:1110
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1601
+await in (anonymous)
+(anonymous) @ @tanstack_react-query.js?v=162a605b:313
+onFocus @ @tanstack_react-query.js?v=162a605b:312
+(anonymous) @ @tanstack_react-query.js?v=162a605b:299
+listener @ @tanstack_react-query.js?v=162a605b:270
+SparesNew.tsx:141  GET https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/api/spares/V001 500 (Internal Server Error)
+queryFn @ SparesNew.tsx:141
+fetchFn @ @tanstack_react-query.js?v=162a605b:840
+run @ @tanstack_react-query.js?v=162a605b:494
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+start @ @tanstack_react-query.js?v=162a605b:536
+fetch @ @tanstack_react-query.js?v=162a605b:926
+executeFetch_fn @ @tanstack_react-query.js?v=162a605b:2211
+fetch @ @tanstack_react-query.js?v=162a605b:2011
+refetch @ @tanstack_react-query.js?v=162a605b:2001
+onFocus @ @tanstack_react-query.js?v=162a605b:749
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1112
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1111
+batch @ @tanstack_react-query.js?v=162a605b:583
+onFocus @ @tanstack_react-query.js?v=162a605b:1110
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1601
+await in (anonymous)
+(anonymous) @ @tanstack_react-query.js?v=162a605b:313
+onFocus @ @tanstack_react-query.js?v=162a605b:312
+(anonymous) @ @tanstack_react-query.js?v=162a605b:299
+listener @ @tanstack_react-query.js?v=162a605b:270
+SparesNew.tsx:141  GET https://6137ef74-6195-4505-b7ca-53fdbbf26fd2-00-3kxl71414iwoo.sisko.replit.dev/api/spares/V001 500 (Internal Server Error)
+queryFn @ SparesNew.tsx:141
+fetchFn @ @tanstack_react-query.js?v=162a605b:840
+run @ @tanstack_react-query.js?v=162a605b:494
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+(anonymous) @ @tanstack_react-query.js?v=162a605b:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=162a605b:515
+Promise.catch
+run @ @tanstack_react-query.js?v=162a605b:498
+start @ @tanstack_react-query.js?v=162a605b:536
+fetch @ @tanstack_react-query.js?v=162a605b:926
+executeFetch_fn @ @tanstack_react-query.js?v=162a605b:2211
+fetch @ @tanstack_react-query.js?v=162a605b:2011
+refetch @ @tanstack_react-query.js?v=162a605b:2001
+onFocus @ @tanstack_react-query.js?v=162a605b:749
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1112
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1111
+batch @ @tanstack_react-query.js?v=162a605b:583
+onFocus @ @tanstack_react-query.js?v=162a605b:1110
+(anonymous) @ @tanstack_react-query.js?v=162a605b:1601
+await in (anonymous)
+(anonymous) @ @tanstack_react-query.js?v=162a605b:313
+onFocus @ @tanstack_react-query.js?v=162a605b:312
+(anonymous) @ @tanstack_react-query.js?v=162a605b:299
+listener @ @tanstack_react-query.js?v=162a605b:270

@@ -59,6 +59,9 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
+    // Set DATABASE_URL for drizzle-kit
+    process.env.DATABASE_URL = `mysql://${user}:${password}@${host}:${port}/${database}`;
+
     console.log(
       '✅ Technical Module using MySQL RDS database for persistent storage'
     );
@@ -695,18 +698,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Use MemStorage instead of DatabaseStorage for now
-// Avoid circular import by creating MemStorage directly here
-let _memStorage: any = null;
-function getMemStorage() {
-  if (!_memStorage) {
-    const { MemStorage } = require('./storage');
-    _memStorage = new MemStorage();
-  }
-  return _memStorage;
-}
-export const storage = new Proxy({}, {
-  get(target, prop) {
-    return getMemStorage()[prop];
-  }
-}) as IStorage;
+// Use MySQL DatabaseStorage for persistent storage
+export const storage = new DatabaseStorage();
