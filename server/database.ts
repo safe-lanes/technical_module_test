@@ -175,10 +175,16 @@ export class DatabaseStorage implements IStorage {
   // Spares methods - Full MySQL implementation
   async getSpares(vesselId: any): Promise<any[]> {
     logDbOperation('getSpares', { vesselId });
-    return await this.db
+    const result = await this.db
       .select()
       .from(spares)
       .where(eq(spares.vesselId, vesselId));
+    
+    // Add default ihm field for backwards compatibility
+    return result.map(spare => ({
+      ...spare,
+      ihm: spare.ihm !== undefined ? spare.ihm : false
+    }));
   }
 
   async getSpare(id: any): Promise<any> {

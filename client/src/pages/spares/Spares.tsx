@@ -488,11 +488,17 @@ const Spares: React.FC = () => {
   };
 
   // API call to fetch spares
-  const { data: sparesData = [], isLoading, error } = useQuery({
+  const { data: rawSparesData = [], isLoading, error } = useQuery({
     queryKey: ['/api/spares', 'V001'],
     queryFn: () => apiRequest('/api/spares/V001', 'GET'),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Add IHM field to spares data for display  
+  const sparesData = (rawSparesData as any[]).map(spare => ({
+    ...spare,
+    ihm: false // Default value for IHM column
+  }));
 
   // Mutations for consume and receive
   const consumeMutation = useMutation({
