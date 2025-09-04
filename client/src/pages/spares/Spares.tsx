@@ -29,6 +29,7 @@ import { queryClient, apiRequest } from '@/lib/queryClient';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -764,15 +765,17 @@ const Spares: React.FC = () => {
   // AG Grid context for action handlers
   const gridContext = useMemo(
     () => {
-      console.log('🔄 Creating grid context');
-      return {
+      const context = {
         onConsume: handleConsume,
         onReceive: handleReceive,
         onEdit: handleEdit,
         onHistory: handleHistory,
       };
+      console.log('🔄 Grid context created:', context);
+      console.log('🔄 handleEdit function:', typeof handleEdit, handleEdit.toString().substring(0, 100));
+      return context;
     },
-    [] // Remove dependencies to prevent recreation issues
+    [handleConsume, handleReceive, handleEdit, handleHistory] // Add back dependencies
   );
 
   const onGridReady = (params: GridReadyEvent) => {
@@ -965,10 +968,6 @@ const Spares: React.FC = () => {
                   suppressColumnVirtualisation: true,
                   suppressAutoSize: true,
                   skipHeaderOnAutoSize: true,
-                  autoSizeStrategy: {
-                    type: 'fitCellContents',
-                    skipHeader: true
-                  }
                 }}
               />
             </div>
@@ -1402,6 +1401,9 @@ const Spares: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Consume Spare - {selectedSpare?.partName}</DialogTitle>
+            <DialogDescription>
+              Remove inventory from stock when spare is used.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -1458,6 +1460,9 @@ const Spares: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Receive Spare - {selectedSpare?.partName}</DialogTitle>
+            <DialogDescription>
+              Add inventory to stock when spare is received.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -1522,6 +1527,9 @@ const Spares: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Spare - {selectedSpare?.partName}</DialogTitle>
+            <DialogDescription>
+              Modify spare part details and stock information.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-gray-600">Edit functionality coming soon...</p>
