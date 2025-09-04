@@ -740,9 +740,6 @@ const Spares: React.FC = () => {
       },
     ];
 
-  // Debug: Log column definitions
-  console.log('Column definitions count:', columnDefs.length);
-  console.log('Column names:', columnDefs.map(col => col.headerName));
 
   // Handle modal actions
   const handleConsume = (spare: Spare) => {
