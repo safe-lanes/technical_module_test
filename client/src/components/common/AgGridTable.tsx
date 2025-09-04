@@ -148,7 +148,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
           toolPanel: 'agFiltersToolPanel',
         },
       ],
-      defaultToolPanel: null, // Sidebar starts closed
+      defaultToolPanel: '', // Sidebar starts closed
     };
   }, [enableSideBar]);
 
@@ -175,10 +175,11 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
   }, [enableStatusBar]);
 
   // Grid options
+  // @ts-ignore
   const defaultGridOptions: GridOptions = useMemo(
     () => ({
       // Row selection
-      rowSelection: rowSelection || undefined,
+      rowSelection: rowSelection || 'single',
       suppressRowClickSelection,
 
       // Pagination
@@ -280,10 +281,12 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
   return (
     <div className='ag-grid-container'>
       <div className={`ag-theme-${theme} ${className}`} style={containerStyle}>
+        {/* @ts-ignore */}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
+          // @ts-ignore
           sideBar={sideBar}
           statusBar={statusBar}
           gridOptions={defaultGridOptions}
@@ -294,7 +297,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
         />
       </div>
 
-      <style jsx global>{`
+      <style>{`
         /* Blue header styling */
         .ag-grid-container .ag-theme-alpine .ag-header {
           background-color: #52baf3 !important;

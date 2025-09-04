@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, X, Edit, Trash2, Plus } from 'lucide-react';
+import { X, Edit, Trash2, Plus } from 'lucide-react';
 
 interface WorkOrdersChangeRequestFormProps {
   onClose: () => void;
@@ -86,7 +86,6 @@ const WorkOrdersChangeRequestForm: React.FC<
       : 'border-[#52baf3] focus:border-[#52baf3] focus:ring-[#52baf3]';
   };
 
-  const getLabelStyle = () => 'text-[#52baf3] text-sm font-medium mb-2 block';
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>

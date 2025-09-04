@@ -28,7 +28,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Send, Eye } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 interface AlertPolicy {
   id: number;

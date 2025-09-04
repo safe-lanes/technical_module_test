@@ -27,7 +27,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  Calendar,
   Filter,
   CheckCircle,
   AlertCircle,
@@ -54,16 +53,16 @@ interface AlertEvent {
   createdAt: Date;
 }
 
-interface AlertDelivery {
-  id: number;
-  eventId: number;
-  channel: string;
-  recipient: string;
-  status: string;
-  errorMessage?: string;
-  sentAt?: Date;
-  acknowledgedAt?: Date;
-}
+// interface AlertDelivery {
+//   id: number;
+//   eventId: number;
+//   channel: string;
+//   recipient: string;
+//   status: string;
+//   errorMessage?: string;
+//   sentAt?: Date;
+//   acknowledgedAt?: Date;
+// }
 
 const alertTypeLabels: Record<string, string> = {
   maintenance_due: 'Maintenance Due',

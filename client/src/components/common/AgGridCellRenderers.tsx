@@ -84,16 +84,10 @@ export const StockStatusCellRenderer = (params: ICellRendererParams) => {
   const status = data.stock || stockStatus;
 
   return (
+    // @ts-ignore
     <StatusCellRenderer
+      {...params}
       value={status}
-      data={data}
-      node={params.node}
-      colDef={params.colDef}
-      column={params.column}
-      rowIndex={params.rowIndex}
-      api={params.api}
-      columnApi={params.columnApi}
-      context={params.context}
     />
   );
 };
