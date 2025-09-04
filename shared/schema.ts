@@ -182,6 +182,7 @@ export const spares = mysqlTable(
     rob: int('rob').notNull().default(0),
     min: int('min').notNull().default(0),
     location: varchar('location', { length: 255 }),
+    ihm: boolean('ihm').default(false),
     vesselId: varchar('vessel_id', { length: 50 }).notNull().default('V001'),
     deleted: boolean('deleted').notNull().default(false),
   },

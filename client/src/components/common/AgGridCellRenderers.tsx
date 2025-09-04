@@ -184,7 +184,36 @@ export const RunningHoursActionsCellRenderer = (
   );
 };
 
-// Spares actions cell renderer
+// IHM cell renderer - Contains only the edit button
+export const IHMCellRenderer = (params: ICellRendererParams) => {
+  const { data, context } = params;
+
+  if (!data || !context) {
+    return null;
+  }
+
+  const handleEdit = () => {
+    if (context.onEdit) {
+      context.onEdit(data);
+    }
+  };
+
+  return (
+    <div className='flex justify-center items-center w-full h-full'>
+      <Button 
+        size='sm' 
+        variant='outline' 
+        onClick={handleEdit}
+        className='h-8 w-8 p-0 border-blue-200 hover:bg-blue-50'
+        title='Edit spare'
+      >
+        <Edit className='w-3 h-3 text-blue-600' />
+      </Button>
+    </div>
+  );
+};
+
+// Spares actions cell renderer - Only +/- buttons
 export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
   const { data, context } = params;
 
@@ -201,18 +230,6 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
   const handleReceive = () => {
     if (context.onReceive) {
       context.onReceive(data);
-    }
-  };
-
-  const handleEdit = () => {
-    if (context.onEdit) {
-      context.onEdit(data);
-    }
-  };
-
-  const handleHistory = () => {
-    if (context.onHistory) {
-      context.onHistory(data);
     }
   };
 
@@ -235,24 +252,6 @@ export const SparesActionsCellRenderer = (params: ICellRendererParams) => {
         title='Receive spare'
       >
         <Plus className='w-3 h-3 text-green-600' />
-      </Button>
-      <Button 
-        size='sm' 
-        variant='outline' 
-        onClick={handleEdit}
-        className='h-8 w-8 p-0 border-blue-200 hover:bg-blue-50'
-        title='Edit spare'
-      >
-        <Edit className='w-3 h-3 text-blue-600' />
-      </Button>
-      <Button 
-        size='sm' 
-        variant='outline' 
-        onClick={handleHistory}
-        className='h-8 w-8 p-0 border-gray-200 hover:bg-gray-50'
-        title='View history'
-      >
-        <Eye className='w-3 h-3 text-gray-600' />
       </Button>
     </div>
   );
