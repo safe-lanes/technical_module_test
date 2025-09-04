@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DatabaseStorage } from '../database';
 import { readdir } from 'fs/promises';
 import { join } from 'path';

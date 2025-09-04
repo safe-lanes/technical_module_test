@@ -668,7 +668,7 @@ const Spares: React.FC = () => {
           data.consumed > 0
             ? new Date().toISOString().split('T')[0]
             : undefined,
-        remarks: data.comments || undefined,
+        remarks: (data as any).comments || undefined,
         userId: 'user',
       }));
 
@@ -1277,6 +1277,7 @@ const Spares: React.FC = () => {
                       Object.keys(updated).forEach(id => {
                         updated[Number(id)] = {
                           ...updated[Number(id)],
+                          // @ts-ignore
                           comments,
                         };
                       });

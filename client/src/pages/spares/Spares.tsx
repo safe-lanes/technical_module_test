@@ -783,7 +783,7 @@ const Spares: React.FC = () => {
                 <div className='bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm'>
                   COMPONENTS
                 </div>
-                <div>{renderComponentTree(componentsTree)}</div>
+                <div>{renderComponentTree(componentTree)}</div>
               </div>
             </div>
           </div>
@@ -819,7 +819,7 @@ const Spares: React.FC = () => {
                 <div className='bg-[#52baf3] text-white px-4 py-2 font-semibold text-sm'>
                   COMPONENTS
                 </div>
-                <div>{renderComponentTree(componentsTree)}</div>
+                <div>{renderComponentTree(componentTree)}</div>
               </div>
             </div>
           </div>

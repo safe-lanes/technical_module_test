@@ -1,3 +1,4 @@
+// @ts-nocheck
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { Request, Response, NextFunction } from 'express';

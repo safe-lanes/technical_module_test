@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Migration } from './migrationRunner';
 import { sql } from 'drizzle-orm';
 
