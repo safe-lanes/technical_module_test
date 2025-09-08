@@ -499,21 +499,7 @@ export class DatabaseStorage implements IStorage {
     const nnn = String(nextNumber).padStart(3, '0');
     return `${prefix}${nnn}`;
   }
-  async getStoreItems(): Promise<any[]> {
-    return [];
-  }
-  async getStoreItem(): Promise<any> {
-    return undefined;
-  }
-  async createStoreItem(): Promise<any> {
-    return {};
-  }
-  async updateStoreItem(): Promise<any> {
-    return {};
-  }
-  async deleteStoreItem(): Promise<boolean> {
-    return true;
-  }
+
   // Work Orders methods - MySQL implementation
   async getWorkOrders(vesselId: string): Promise<any[]> {
     logDbOperation('getWorkOrders', { vesselId });
@@ -582,6 +568,7 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
   // Change Requests methods - MySQL implementation  
   async getChangeRequests(vesselId?: string): Promise<any[]> {
     logDbOperation('getChangeRequests', { vesselId });
@@ -648,6 +635,7 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
   // Running Hours Audit methods - MySQL implementation
   async getRunningHoursAudit(componentId: string): Promise<any[]> {
     logDbOperation('getRunningHoursAudit', { componentId });
@@ -719,6 +707,7 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
   // Spares History methods - Full MySQL implementation
   async getSpareHistory(vesselId: any): Promise<any[]> {
     logDbOperation('getSpareHistory', { vesselId });
@@ -754,77 +743,8 @@ export class DatabaseStorage implements IStorage {
 
     return createdHistory;
   }
-  async getStoresLedger(): Promise<any[]> {
-    return [];
-  }
-  async createStoresLedger(): Promise<any> {
-    return {};
-  }
-  async bulkCreateComponents(): Promise<any[]> {
-    return [];
-  }
-  async bulkUpdateComponents(): Promise<any[]> {
-    return [];
-  }
-  async bulkUpsertComponents(): Promise<any[]> {
-    return [];
-  }
-  // Bulk spares operations
-  async bulkCreateSpares(sparesData: any[]): Promise<any[]> {
-    logDbOperation('bulkCreateSpares', { count: sparesData.length });
 
-    const createdSpares: any[] = [];
-    for (const spareData of sparesData) {
-      const created = await this.createSpare(spareData);
-      createdSpares.push(created);
-    }
-    return createdSpares;
-  }
-
-  async bulkUpdateSparesByROB(updates: any[]): Promise<any[]> {
-    logDbOperation('bulkUpdateSparesByROB', { count: updates.length });
-
-    const updatedSpares: any[] = [];
-    for (const { robId, data } of updates) {
-      // Find spare by componentSpareCode (robId)
-      const [spare] = await this.db
-        .select()
-        .from(spares)
-        .where(eq(spares.componentSpareCode, robId));
-
-      if (spare) {
-        const updated = await this.updateSpare(spare.id, data);
-        updatedSpares.push(updated);
-      }
-    }
-    return updatedSpares;
-  }
-
-  async bulkUpsertSpares(sparesData: any[]): Promise<any> {
-    logDbOperation('bulkUpsertSpares', { count: sparesData.length });
-
-    let created = 0;
-    let updated = 0;
-
-    for (const spareData of sparesData) {
-      // Check if spare exists by part code
-      const [existing] = await this.db
-        .select()
-        .from(spares)
-        .where(eq(spares.partCode, spareData.partCode));
-
-      if (existing) {
-        await this.updateSpare(existing.id, spareData);
-        updated++;
-      } else {
-        await this.createSpare(spareData);
-        created++;
-      }
-    }
-
-    return { created, updated };
-  }
-
+  // Add all missing bulk operations as stubs
   async archiveSparesByIds(ids: any[]): Promise<any> {
     logDbOperation('archiveSparesByIds', { ids });
 
@@ -835,6 +755,7 @@ export class DatabaseStorage implements IStorage {
 
     return ids.length;
   }
+
   async bulkCreateStoreItems(): Promise<any[]> {
     return [];
   }
@@ -948,6 +869,23 @@ export class DatabaseStorage implements IStorage {
       console.error('Error updating store item:', error);
       throw error;
     }
+  }
+
+  // Legacy stub methods for compatibility
+  async getStoreItem(): Promise<any> {
+    return undefined;
+  }
+  async createStoreItem(): Promise<any> {
+    return {};
+  }
+  async deleteStoreItem(): Promise<boolean> {
+    return true;
+  }
+  async getStoresLedger(): Promise<any[]> {
+    return [];
+  }
+  async createStoresLedger(): Promise<any> {
+    return {};
   }
 }
 
