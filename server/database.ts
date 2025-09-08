@@ -150,7 +150,7 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(insertUser: any): Promise<any> {
     const result = await this.db.insert(users).values(insertUser);
-    const insertId = (result as any).insertId;
+    const insertId = (result as any)[0]?.insertId;
     const [user] = await this.db
       .select()
       .from(users)
@@ -244,7 +244,7 @@ export class DatabaseStorage implements IStorage {
     };
 
     const result = await this.db.insert(spares).values(spareData);
-    const insertId = (result as any).insertId;
+    const insertId = (result as any)[0]?.insertId;
 
     // Get the created spare
     const [createdSpare] = await this.db
