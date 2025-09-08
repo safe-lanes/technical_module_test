@@ -1,5 +1,11 @@
 // @ts-nocheck
+import dotenv from 'dotenv';
 import express, { type Request, Response, NextFunction } from 'express';
+
+// Load environment variables from .env.local file
+dotenv.config({ path: '.env.local' });
+// Fallback to .env if .env.local doesn't exist
+dotenv.config();
 import { registerRoutes } from './routes';
 import { setupVite, serveStatic, log } from './vite';
 
