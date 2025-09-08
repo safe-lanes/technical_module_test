@@ -535,7 +535,7 @@ export class DatabaseStorage implements IStorage {
       const result = await this.db
         .insert(workOrders)
         .values(workOrder);
-      const insertId = (result as any).insertId;
+      const insertId = (result as any)[0]?.insertId;
       
       const [createdWorkOrder] = await this.db
         .select()
@@ -613,7 +613,7 @@ export class DatabaseStorage implements IStorage {
       const result = await this.db
         .insert(changeRequest)
         .values(request);
-      const insertId = (result as any).insertId;
+      const insertId = (result as any)[0]?.insertId;
       
       const [createdRequest] = await this.db
         .select()
@@ -722,7 +722,7 @@ export class DatabaseStorage implements IStorage {
       const result = await this.db
         .insert(runningHoursAudit)
         .values(audit);
-      const insertId = (result as any).insertId;
+      const insertId = (result as any)[0]?.insertId;
       
       const [createdAudit] = await this.db
         .select()
@@ -762,7 +762,7 @@ export class DatabaseStorage implements IStorage {
     });
 
     const result = await this.db.insert(sparesHistory).values(history);
-    const insertId = (result as any).insertId;
+    const insertId = (result as any)[0]?.insertId;
 
     const [createdHistory] = await this.db
       .select()
@@ -860,7 +860,7 @@ export class DatabaseStorage implements IStorage {
       const result = await this.db
         .insert(storesLedger)
         .values(transaction);
-      const insertId = (result as any).insertId;
+      const insertId = (result as any)[0]?.insertId;
       
       const [createdTransaction] = await this.db
         .select()

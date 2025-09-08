@@ -1,0 +1,45 @@
+[dotenv@17.2.2] injecting env (5) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🔍 Environment Check:
+MYSQL_HOST: SET
+MYSQL_DATABASE: SET
+MYSQL_USER: SET
+MYSQL_PASSWORD: SET
+🔑 Using direct password (like MySQL Workbench)
+✅ Technical Module using MySQL RDS database for persistent storage
+[dotenv@17.2.2] injecting env (0) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+5:58:57 PM [express] serving on port 5000
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+Error: Failed to parse JSON file.
+    at TransformPluginContext._formatError (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49258:41)
+    at TransformPluginContext.error (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49253:16)
+    at TransformPluginContext.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:47184:14)
+    at PluginContainer.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49100:19)
+    at async <anonymous> (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62417:22)
+    at async Promise.all (index 0)
+    at async devHtmlHook (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62412:3)
+    at async applyHtmlTransforms (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:35875:17)
+    at async <anonymous> (D:\techmodule\technical_module_test\server\vite.ts:62:20)
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:59:15 PM [express] GET /api/stores/V001 200 in 80ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+info: HTTP Request {"duration":"81ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:59:15","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-TOOL-001","itemName":"Torque Wrench","eventType":"RECEIVE","quantity":15,"robAfter":...
+🔍 Insert result: {
+  insertId: undefined,
+  result: [
+    ResultSetHeader {
+      fieldCount: 0,
+      affectedRows: 1,
+      insertId: 15,
+      info: '',
+      serverStatus: 2,
+      warningStatus: 1,
+      changedRows: 0
+    },
+    undefined
+  ]
+}
+⚠️ No insertId returned, returning transaction data
+5:59:32 PM [express] POST /api/stores/V001/transaction 200 in 81ms :: {"itemCode":"ST-TOOL-001","ite…
+info: HTTP Request {"duration":"81ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:59:32","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
