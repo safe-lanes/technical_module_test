@@ -1,4 +1,12 @@
 // @ts-nocheck
+// Load environment variables first - MUST be before any other imports
+import dotenv from 'dotenv';
+
+// Load environment variables from .env.local file
+dotenv.config({ path: '.env.local' });
+// Fallback to .env if .env.local doesn't exist  
+dotenv.config();
+
 import mysql from 'mysql2/promise';
 import { drizzle } from 'drizzle-orm/mysql2';
 import {
