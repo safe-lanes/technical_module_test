@@ -4,20 +4,17 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development tsx server/index.ts",
+    "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "start": "cross-env NODE_ENV=production node dist/index.js", 
     "build": "npm run quality && vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "build:micro-frontend": "vite build --mode micro-frontend",
-    "start": "NODE_ENV=production node dist/index.js",
+    "build:local": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "check": "tsc",
     "quality": "node quality.js",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
-    "setup-microfrontend": "node scripts/setup-microfrontend.js",
-    "build:local": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "setup:local": "node setup-local.js",
     "format": "npx prettier --write .",
-    "postinstall": "node setup-local.js"
-  },
+    "setup:local": "node setup-local.js",
+    "db:push": "drizzle-kit push", 
+    "db:generate": "drizzle-kit generate"
+  }
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
