@@ -720,6 +720,66 @@ export class DatabaseStorage implements IStorage {
   async bulkUpsertStoresLedger(): Promise<any[]> {
     return [];
   }
+
+  // Store methods - MySQL implementation
+  async getStoreItems(vesselId: string): Promise<any[]> {
+    logDbOperation('getStoreItems', { vesselId });
+    try {
+      const result = await this.db
+        .select()
+        .from(storesLedger)
+        .where(eq(storesLedger.vesselId, vesselId));
+      return result;
+    } catch (error) {
+      console.error('Error getting store items:', error);
+      throw error;
+    }
+  }
+
+  async createStoreTransaction(transaction: any): Promise<any> {
+    logDbOperation('createStoreTransaction', transaction);
+    try {
+      const [result] = await this.db
+        .insert(storesLedger)
+        .values(transaction)
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error creating store transaction:', error);
+      throw error;
+    }
+  }
+
+  async getStoreHistory(vesselId: string): Promise<any[]> {
+    logDbOperation('getStoreHistory', { vesselId });
+    try {
+      const result = await this.db
+        .select()
+        .from(storesLedger)
+        .where(eq(storesLedger.vesselId, vesselId));
+      return result;
+    } catch (error) {
+      console.error('Error getting store history:', error);
+      throw error;
+    }
+  }
+
+  async updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any> {
+    logDbOperation('updateStoreItem', { vesselId, itemCode, updates });
+    try {
+      const [result] = await this.db
+        .update(storesLedger)
+        .set(updates)
+        .where(
+          sql`${storesLedger.vesselId} = ${vesselId} AND ${storesLedger.itemCode} = ${itemCode}`
+        )
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error updating store item:', error);
+      throw error;
+    }
+  }
 }
 
 // Use MySQL DatabaseStorage for persistent storage
