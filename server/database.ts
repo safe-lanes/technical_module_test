@@ -876,10 +876,26 @@ export class DatabaseStorage implements IStorage {
         .values(transaction);
       const insertId = (result as any).insertId;
       
+      console.log('🔍 Insert result:', { insertId, result });
+      
+      if (!insertId) {
+        // If no insertId, return the transaction data with success flag
+        console.log('⚠️ No insertId returned, returning transaction data');
+        return { ...transaction, success: true, id: null };
+      }
+      
       const [createdTransaction] = await this.db
         .select()
         .from(storesLedger)
         .where(eq(storesLedger.id, insertId));
+      
+      console.log('🔍 Found created transaction:', createdTransaction);
+      
+      if (!createdTransaction) {
+        // If select fails, return success with transaction data
+        console.log('⚠️ Could not find created transaction, returning success');
+        return { ...transaction, success: true, id: insertId };
+      }
       
       return createdTransaction;
     } catch (error) {

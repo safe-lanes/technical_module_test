@@ -1,0 +1,86 @@
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🔍 Environment Check:
+MYSQL_HOST: SET
+MYSQL_DATABASE: SET
+MYSQL_USER: SET
+MYSQL_PASSWORD: SET
+🔑 Using direct password (like MySQL Workbench)
+✅ Technical Module using MySQL RDS database for persistent storage
+[dotenv@17.2.2] injecting env (0) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+5:46:45 PM [express] serving on port 5000
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:47:29 PM [express] GET /api/stores/V001 200 in 96ms :: [{"id":2,"vesselId":"V001","itemCode":"ST-C…
+info: HTTP Request {"duration":"97ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:47:29","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-CONS-001","itemName":"Cotton Rags","eventType":"RECEIVE","quantity":15,"robAfter":15...
+5:47:54 PM [express] POST /api/stores/V001/transaction 200 in 181ms
+info: HTTP Request {"duration":"182ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:47:54","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-CONS-001","itemName":"Cotton Rags","eventType":"RECEIVE","quantity":15,"robAfter":15...
+5:48:36 PM [express] POST /api/stores/V001/transaction 200 in 186ms
+info: HTTP Request {"duration":"187ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:48:36","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:48:38 PM [express] GET /api/stores/V001 200 in 89ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+info: HTTP Request {"duration":"90ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:48:38","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:48:43 PM [express] GET /api/stores/V001 304 in 89ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"90ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:48:43","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:48:43 PM [express] GET /api/stores/V001 304 in 93ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"94ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:48:43","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:49:28 PM [express] GET /api/stores/V001 304 in 89ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"90ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:49:28","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-CONS-001","itemName":"Cotton Rags","eventType":"RECEIVE","quantity":15,"robAfter":15...
+5:49:30 PM [express] POST /api/stores/V001/transaction 200 in 175ms
+info: HTTP Request {"duration":"176ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:49:30","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:49:32 PM [express] GET /api/stores/V001 200 in 88ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+info: HTTP Request {"duration":"88ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:49:32","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:49:35 PM [express] GET /api/stores/V001 304 in 88ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"89ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:49:35","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:49:35 PM [express] GET /api/stores/V001 304 in 90ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"91ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:49:35","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-CONS-001","itemName":"Cotton Rags","eventType":"RECEIVE","quantity":15,"robAfter":15...
+5:50:03 PM [express] POST /api/stores/V001/transaction 200 in 176ms
+info: HTTP Request {"duration":"177ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:50:03","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:50:05 PM [express] GET /api/stores/V001 200 in 94ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+info: HTTP Request {"duration":"96ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:50:05","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:50:10 PM [express] GET /api/stores/V001 304 in 89ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"90ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:50:10","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:50:10 PM [express] GET /api/stores/V001 304 in 88ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"88ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:50:10","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+Error: Failed to parse JSON file.
+    at TransformPluginContext._formatError (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49258:41)
+    at TransformPluginContext.error (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49253:16)
+    at TransformPluginContext.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:47184:14)
+    at PluginContainer.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49100:19)
+    at async <anonymous> (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62417:22)
+    at async Promise.all (index 0)
+    at async devHtmlHook (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62412:3)
+    at async applyHtmlTransforms (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:35875:17)
+    at async <anonymous> (D:\techmodule\technical_module_test\server\vite.ts:62:20)
+🔄 MySQL DB Operation: createStoreTransaction {"itemCode":"ST-CONS-001","itemName":"Cotton Rags","eventType":"RECEIVE","quantity":15,"robAfter":15...
+5:51:29 PM [express] POST /api/stores/V001/transaction 200 in 210ms
+info: HTTP Request {"duration":"210ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:51:29","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:51:33 PM [express] GET /api/stores/V001 200 in 89ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+info: HTTP Request {"duration":"90ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 17:51:33","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+5:51:41 PM [express] GET /api/stores/V001 304 in 88ms :: [{"id":1,"vesselId":"V001","itemCode":"ST-T…
+warn: HTTP Redirect {"duration":"88ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":304,"timestamp":"2025-09-08 17:51:41","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+Error: Failed to parse JSON file.
+    at TransformPluginContext._formatError (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49258:41)
+    at TransformPluginContext.error (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49253:16)
+    at TransformPluginContext.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:47184:14)
+    at PluginContainer.transform (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:49100:19)
+    at async <anonymous> (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62417:22)
+    at async Promise.all (index 0)
+    at async devHtmlHook (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:62412:3)
+    at async applyHtmlTransforms (D:\techmodule\technical_module_test\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:35875:17)
+    at async <anonymous> (D:\techmodule\technical_module_test\server\vite.ts:62:20)
