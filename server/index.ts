@@ -70,7 +70,7 @@ app.use((req, res, next) => {
   server.listen(
     {
       port,
-      host: process.platform === 'win32' ? 'localhost' : '0.0.0.0',
+      host: process.platform === 'win32' ? '127.0.0.1' : '0.0.0.0',
       reusePort: true,
     },
     () => {
