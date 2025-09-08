@@ -204,14 +204,17 @@ export const BaseSubmoduleForm: React.FC<BaseSubmoduleFormProps> = ({
             className='flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6'
             style={{ backgroundColor: sailDesignSystem.colors.background }}
           >
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className='space-y-4 sm:space-y-6'
-              >
-                {children({ activeSection, form, showConfirmDialog })}
-              </form>
-            </Form>
+            <Form
+              {...form}
+              children={
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className='space-y-4 sm:space-y-6'
+                >
+                  {children({ activeSection, form, showConfirmDialog })}
+                </form>
+              }
+            />
           </div>
         </div>
       </div>

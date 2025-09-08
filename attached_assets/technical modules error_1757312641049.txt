@@ -1,0 +1,1439 @@
+D:\react projects\technical_module_test>npm run build
+
+> rest-express@1.0.0 build
+> npm run quality && vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+
+> rest-express@1.0.0 quality
+> node quality.js
+
+🔍 Running quality checks...
+📝 Type checking...
+client/src/components/admin/AddComponentForm.tsx:117:42 - error TS2322: Type '{ variant: "secondary"; className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+117               <Badge variant='secondary' className='bg-gray-100'>
+                                             ~~~~~~~~~
+
+client/src/components/admin/FormSchemaEditor.tsx:340:29 - error TS2322: Type '{ style: { backgroundColor: string; color: string; }; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'style' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+340                             style={{
+                                ~~~~~
+
+client/src/components/admin/FormSchemaEditor.tsx:523:27 - error TS2322: Type '{ style: { backgroundColor: string; color: string; }; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'style' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+523                           style={{ backgroundColor: '#52baf3', color: 'white' }}
+                              ~~~~~
+
+client/src/components/BaseSubmoduleForm.tsx:207:14 - error TS2322: Type '{ watch: UseFormWatch<any>; getValues: UseFormGetValues<any>; getFieldState: UseFormGetFieldState<any>; setError: UseFormSetError<any>; ... 11 more ...; subscribe: UseFromSubscribe<...>; }' is not assignable to type 'FormProviderProps<any, any, any>'.
+  Property 'children' is missing in type '{ watch: UseFormWatch<any>; getValues: UseFormGetValues<any>; getFieldState: UseFormGetFieldState<any>; setError: UseFormSetError<any>; ... 11 more ...; subscribe: UseFromSubscribe<...>; }' but required in type '{ children: any; }'.
+
+207             <Form {...form}>
+                 ~~~~
+
+  node_modules/react-hook-form/dist/types/form.d.ts:686:5
+    686     children: React.ReactNode | React.ReactNode[];
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/BaseSubmoduleTable.tsx:71:55 - error TS2339: Property 'toLowerCase' does not exist on type 'unknown'.
+
+71         return itemValue.toLowerCase().includes(value.toLowerCase());
+                                                         ~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:27:30 - error TS2339: Property 'componentId' does not exist on type '{}'.
+
+27     componentId: initialData.componentId || '601.003.XXX',
+                                ~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:29:24 - error TS2339: Property 'maker' does not exist on type '{}'.
+
+29     maker: initialData.maker || 'MAN B&W',
+                          ~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:30:24 - error TS2339: Property 'model' does not exist on type '{}'.
+
+30     model: initialData.model || '6S60MC-C',
+                          ~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:31:27 - error TS2339: Property 'serialNo' does not exist on type '{}'.
+
+31     serialNo: initialData.serialNo || '12345',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:32:28 - error TS2339: Property 'drawingNo' does not exist on type '{}'.
+
+32     drawingNo: initialData.drawingNo || 'DRW-001',
+                              ~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:33:32 - error TS2339: Property 'componentCode' does not exist on type '{}'.
+
+33     componentCode: initialData.componentCode || 'ME-001',
+                                  ~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:34:36 - error TS2339: Property 'equipmentCategory' does not exist on type '{}'.
+
+34     equipmentCategory: initialData.equipmentCategory || 'Main Engine',
+                                      ~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:35:27 - error TS2339: Property 'location' does not exist on type '{}'.
+
+35     location: initialData.location || 'Engine Room',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:36:27 - error TS2339: Property 'critical' does not exist on type '{}'.
+
+36     critical: initialData.critical || 'Yes',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:37:31 - error TS2339: Property 'installation' does not exist on type '{}'.
+
+37     installation: initialData.installation || '2020-01-15',
+                                 ~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:38:31 - error TS2339: Property 'commissioned' does not exist on type '{}'.
+
+38     commissioned: initialData.commissioned || '2020-02-01',
+                                 ~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:39:25 - error TS2339: Property 'rating' does not exist on type '{}'.
+
+39     rating: initialData.rating || '12000 kW',
+                           ~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:40:33 - error TS2339: Property 'conditionBased' does not exist on type '{}'.
+
+40     conditionBased: initialData.conditionBased || 'Yes',
+                                   ~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:41:28 - error TS2339: Property 'noOfUnits' does not exist on type '{}'.
+
+41     noOfUnits: initialData.noOfUnits || '1',
+                              ~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:42:38 - error TS2339: Property 'equipmentDepartment' does not exist on type '{}'.
+
+42     equipmentDepartment: initialData.equipmentDepartment || 'Engine',
+                                        ~~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:43:34 - error TS2339: Property 'parentComponent' does not exist on type '{}'.
+
+43     parentComponent: initialData.parentComponent || 'Propulsion System',
+                                    ~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:44:27 - error TS2339: Property 'facility' does not exist on type '{}'.
+
+44     facility: initialData.facility || 'Main Deck',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:45:33 - error TS2339: Property 'dimensionsSize' does not exist on type '{}'.
+
+45     dimensionsSize: initialData.dimensionsSize || '10m x 3m x 4m',
+                                   ~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:46:24 - error TS2339: Property 'notes' does not exist on type '{}'.
+
+46     notes: initialData.notes || '',
+                          ~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:48:31 - error TS2339: Property 'runningHours' does not exist on type '{}'.
+
+48     runningHours: initialData.runningHours || '20000',
+                                 ~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:49:30 - error TS2339: Property 'dateUpdated' does not exist on type '{}'.
+
+49     dateUpdated: initialData.dateUpdated || '2025-01-08',
+                                ~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:51:27 - error TS2339: Property 'conditionMonitoringMetrics' does not exist on type '{}'.
+
+51       metric: initialData.conditionMonitoringMetrics?.metric || 'Temperature',
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:53:21 - error TS2339: Property 'conditionMonitoringMetrics' does not exist on type '{}'.
+
+53         initialData.conditionMonitoringMetrics?.alertsThresholds || '85°C',
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:58:21 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+58         initialData.classificationData?.classificationProvider || 'DNV GL',
+                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:60:21 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+60         initialData.classificationData?.certificateNo || 'CERT-2020-001',
+                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:62:21 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+62         initialData.classificationData?.lastDataSurvey || '2024-06-15',
+                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:64:21 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+64         initialData.classificationData?.nextDataSurvey || '2025-06-15',
+                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:65:31 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+65       surveyType: initialData.classificationData?.surveyType || 'Annual',
+                                 ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:67:21 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+67         initialData.classificationData?.classRequirements || 'Class A',
+                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:68:30 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+68       classCode: initialData.classificationData?.classCode || 'A1',
+                                ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:69:32 - error TS2339: Property 'classificationData' does not exist on type '{}'.
+
+69       information: initialData.classificationData?.information || '',
+                                  ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:36:29 - error TS2339: Property 'partCode' does not exist on type '{}'.
+
+36       partCode: initialData.partCode || 'SP-ME-001',
+                               ~~~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:37:29 - error TS2339: Property 'partName' does not exist on type '{}'.
+
+37       partName: initialData.partName || 'Fuel Injector',
+                               ~~~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:38:36 - error TS2339: Property 'linkedComponent' does not exist on type '{}'.
+
+38       linkedComponent: initialData.linkedComponent || 'component1',
+                                      ~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:39:24 - error TS2339: Property 'qty' does not exist on type '{}'.
+
+39       qty: initialData.qty || '1',
+                          ~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:40:27 - error TS2339: Property 'minQty' does not exist on type '{}'.
+
+40       minQty: initialData.minQty || '1',
+                             ~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:41:29 - error TS2339: Property 'critical' does not exist on type '{}'.
+
+41       critical: initialData.critical || 'Y',
+                               ~~~~~~~~
+
+client/src/components/change-request-forms/SparesChangeRequestForm.tsx:42:29 - error TS2339: Property 'location' does not exist on type '{}'.
+
+42       location: initialData.location || 'Store Room A',
+                               ~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:31:17 - error TS2339: Property 'placeReceived' does not exist on type '{}'.
+
+31     initialData.placeReceived || ''
+                   ~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:34:17 - error TS2339: Property 'dateReceived' does not exist on type '{}'.
+
+34     initialData.dateReceived || ''
+                   ~~~~~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:40:21 - error TS2339: Property 'itemCode' does not exist on type '{}'.
+
+40         initialData.itemCode ||
+                       ~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:47:21 - error TS2339: Property 'itemName' does not exist on type '{}'.
+
+47         initialData.itemName ||
+                       ~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:54:21 - error TS2339: Property 'storesCategory' does not exist on type '{}'.
+
+54         initialData.storesCategory ||
+                       ~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:60:24 - error TS2339: Property 'rob' does not exist on type '{}'.
+
+60       rob: initialData.rob || '2',
+                          ~~~
+
+client/src/components/change-request-forms/StoresChangeRequestForm.tsx:63:27 - error TS2339: Property 'rob' does not exist on type '{}'.
+
+63       newRob: initialData.rob || '2',
+                             ~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:25:30 - error TS2339: Property 'workOrderNo' does not exist on type '{}'.
+
+25     workOrderNo: initialData.workOrderNo || 'WO-2025-001',
+                                ~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:26:24 - error TS2339: Property 'title' does not exist on type '{}'.
+
+26     title: initialData.title || 'Main Engine Overhaul - Replace Main bearings',
+                          ~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:27:28 - error TS2339: Property 'component' does not exist on type '{}'.
+
+27     component: initialData.component || 'Main Engine #1',
+                              ~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:28:34 - error TS2339: Property 'maintenanceType' does not exist on type '{}'.
+
+28     maintenanceType: initialData.maintenanceType || 'Planned Maintenance',
+                                    ~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:29:29 - error TS2339: Property 'assignedTo' does not exist on type '{}'.
+
+29     assignedTo: initialData.assignedTo || '2nd Eng',
+                               ~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:30:27 - error TS2339: Property 'approver' does not exist on type '{}'.
+
+30     approver: initialData.approver || 'Chief Engineer',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:31:30 - error TS2339: Property 'jobCategory' does not exist on type '{}'.
+
+31     jobCategory: initialData.jobCategory || 'Mechanical',
+                                ~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:32:31 - error TS2339: Property 'classRelated' does not exist on type '{}'.
+
+32     classRelated: initialData.classRelated || 'No',
+                                 ~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:33:25 - error TS2339: Property 'status' does not exist on type '{}'.
+
+33     status: initialData.status || 'In Progress',
+                           ~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:35:19 - error TS2339: Property 'briefWorkDescription' does not exist on type '{}'.
+
+35       initialData.briefWorkDescription ||
+                     ~~~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:38:19 - error TS2339: Property 'ppeRequirements' does not exist on type '{}'.
+
+38       initialData.ppeRequirements || 'Safety Helmet, Safety Gloves',
+                     ~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:39:37 - error TS2339: Property 'permitRequirements' does not exist on type '{}'.
+
+39     permitRequirements: initialData.permitRequirements || 'Hot Work Permit',
+                                       ~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:40:42 - error TS2339: Property 'otherSafetyRequirements' does not exist on type '{}'.
+
+40     otherSafetyRequirements: initialData.otherSafetyRequirements || '',
+                                            ~~~~~~~~~~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:41:27 - error TS2339: Property 'priority' does not exist on type '{}'.
+
+41     priority: initialData.priority || 'High',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:42:27 - error TS2339: Property 'workType' does not exist on type '{}'.
+
+42     workType: initialData.workType || 'Planned Maintenance',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:43:29 - error TS2339: Property 'department' does not exist on type '{}'.
+
+43     department: initialData.department || 'Engine',
+                               ~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:44:27 - error TS2339: Property 'location' does not exist on type '{}'.
+
+44     location: initialData.location || 'Engine Room',
+                             ~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:45:33 - error TS2339: Property 'estimatedHours' does not exist on type '{}'.
+
+45     estimatedHours: initialData.estimatedHours || '24',
+                                   ~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:46:30 - error TS2339: Property 'actualHours' does not exist on type '{}'.
+
+46     actualHours: initialData.actualHours || '',
+                                ~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:47:28 - error TS2339: Property 'startDate' does not exist on type '{}'.
+
+47     startDate: initialData.startDate || '2025-01-15',
+                              ~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:48:29 - error TS2339: Property 'targetDate' does not exist on type '{}'.
+
+48     targetDate: initialData.targetDate || '2025-01-20',
+                               ~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:49:33 - error TS2339: Property 'completionDate' does not exist on type '{}'.
+
+49     completionDate: initialData.completionDate || '',
+                                   ~~~~~~~~~~~~~~
+
+client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:50:24 - error TS2339: Property 'notes' does not exist on type '{}'.
+
+50     notes: initialData.notes || '',
+                          ~~~~~
+
+client/src/components/common/AgGridCellRenderers.tsx:43:12 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+43     <Badge className={getStatusColor(params.value)}>
+              ~~~~~~~~~
+
+client/src/components/common/AgGridCellRenderers.tsx:55:7 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+55       className={
+         ~~~~~~~~~
+
+client/src/components/ComponentRegisterForm.tsx:1340:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1340                     <DeletableField fieldKey='noOfUnits'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1350:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1350                     <DeletableField fieldKey='eqptSystemDept'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1363:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1363                     <DeletableField fieldKey='parentComponent'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1373:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1373                     <DeletableField fieldKey='dimensionsSize'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1385:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1385                     <DeletableField fieldKey='notes'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1428:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1428                     <DeletableField fieldKey='runningHours'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1439:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1439                     <DeletableField fieldKey='dateUpdated'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1465:24 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1465                       <DeletableField fieldKey='metric'>
+                            ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1475:24 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1475                       <DeletableField fieldKey='alertsThresholds'>
+                            ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1897:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1897                     <DeletableField fieldKey='classificationProvider'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1913:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1913                     <DeletableField fieldKey='certificateNo'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1926:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1926                     <DeletableField fieldKey='lastDataSurvey'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1939:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1939                     <DeletableField fieldKey='nextDataSurvey'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1952:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1952                     <DeletableField fieldKey='surveyType'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1965:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1965                     <DeletableField fieldKey='classRequirements'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1980:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1980                     <DeletableField fieldKey='classCode'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/ComponentRegisterForm.tsx:1993:22 - error TS2741: Property 'children' is missing in type '{ fieldKey: string; }' but required in type '{ fieldKey: string; children: React.ReactNode; className?: string; }'.
+
+1993                     <DeletableField fieldKey='information'>
+                          ~~~~~~~~~~~~~~
+
+  client/src/components/ComponentRegisterForm.tsx:940:5
+    940     children: React.ReactNode;
+            ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/modifyPms/ModifyPMS.tsx:46:9 - error TS2503: Cannot find namespace 'React'.
+
+46   icon: React.ReactNode;
+           ~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:373:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+373                               <Badge className='bg-[#52BAF3] text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:378:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+378                               <Badge className='bg-green-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:383:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+383                               <Badge className='bg-red-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:388:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+388                               <Badge className='bg-gray-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:393:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+393                               <Badge className='bg-yellow-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:471:30 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+471                       <Badge className='bg-[#52BAF3] text-white'>
+                                 ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:476:30 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+476                       <Badge className='bg-green-500 text-white'>
+                                 ~~~~~~~~~
+
+client/src/components/modifyPms/ModifyPMS.tsx:481:30 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+481                       <Badge className='bg-red-500 text-white'>Rejected</Badge>
+                                 ~~~~~~~~~
+
+client/src/components/ReviewChangesDrawer.tsx:137:33 - error TS2339: Property 'map' does not exist on type 'unknown'.
+
+137                   {sectionDiffs.map((diff, index) => (
+                                    ~~~
+
+client/src/components/TableSelector.tsx:117:23 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+117         return <Badge className='bg-orange-500 text-white'>Low</Badge>;
+                          ~~~~~~~~~
+
+client/src/components/TableSelector.tsx:119:23 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+119         return <Badge className='bg-green-500 text-white'>OK</Badge>;
+                          ~~~~~~~~~
+
+client/src/components/ui/badge.tsx:29:18 - error TS2339: Property 'className' does not exist on type 'BadgeProps'.
+
+29 function Badge({ className, variant, ...props }: BadgeProps) {
+                    ~~~~~~~~~
+
+client/src/components/ui/resizable.tsx:11:4 - error TS2503: Cannot find namespace 'React'.
+
+11 }: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) => (
+      ~~~~~
+
+client/src/components/ui/resizable.tsx:27:4 - error TS2503: Cannot find namespace 'React'.
+
+27 }: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
+      ~~~~~
+
+client/src/components/ui/sheet.tsx:64:37 - error TS2322: Type 'string' is not assignable to type '"right" | "left" | "bottom" | "top"'.
+
+64       className={cn(sheetVariants({ side }), className)}
+                                       ~~~~
+
+  client/src/components/ui/sheet.tsx:37:7
+     37       side: {
+              ~~~~~~~
+     38         top: 'inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ...
+     43           'inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     44       },
+        ~~~~~~~
+    The expected type comes from property 'side' which is declared here on type 'ConfigVariants<{ side: { top: string; bottom: string; left: string; right: string; }; }> & ClassProp'
+
+client/src/components/ui/sidebar.tsx:571:51 - error TS2322: Type 'string' is not assignable to type '"default" | "outline"'.
+
+571         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+                                                      ~~~~~~~
+
+  client/src/components/ui/sidebar.tsx:524:7
+    524       variant: {
+              ~~~~~~~~~~
+    525         default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ...
+    527           'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    528       },
+        ~~~~~~~
+    The expected type comes from property 'variant' which is declared here on type 'ConfigVariants<{ variant: { default: string; outline: string; }; size: { default: string; sm: string; lg: string; }; }> & ClassProp'
+
+client/src/components/ui/sidebar.tsx:571:60 - error TS2322: Type 'string' is not assignable to type '"default" | "sm" | "lg"'.
+
+571         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+                                                               ~~~~
+
+  client/src/components/ui/sidebar.tsx:529:7
+    529       size: {
+              ~~~~~~~
+    530         default: 'h-8 text-sm',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ...
+    532         lg: 'h-12 text-sm group-data-[collapsible=icon]:!p-0',
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    533       },
+        ~~~~~~~
+    The expected type comes from property 'size' which is declared here on type 'ConfigVariants<{ variant: { default: string; outline: string; }; size: { default: string; sm: string; lg: string; }; }> & ClassProp'
+
+client/src/components/ui/skeleton.tsx:6:4 - error TS2503: Cannot find namespace 'React'.
+
+6 }: React.HTMLAttributes<HTMLDivElement>) {
+     ~~~~~
+
+client/src/components/WorkInstructionsDialog.tsx:13:31 - error TS2503: Cannot find namespace 'React'.
+
+13 const WorkInstructionsDialog: React.FC<WorkInstructionsDialogProps> = ({
+                                 ~~~~~
+
+client/src/components/WorkOrderForm.tsx:925:26 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+925                         <ModifyFieldWrapper
+                             ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:977:26 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+977                         <ModifyFieldWrapper
+                             ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1013:26 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+1013                         <ModifyFieldWrapper
+                              ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1054:28 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+1054                           <ModifyFieldWrapper
+                                ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1087:26 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+1087                         <ModifyFieldWrapper
+                              ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1120:26 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+1120                         <ModifyFieldWrapper
+                              ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1233:24 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: any; }' but required in type 'ModifyFieldWrapperProps'.
+
+1233                       <ModifyFieldWrapper
+                            ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/components/WorkOrderForm.tsx:1676:48 - error TS2339: Property 'originalValue' does not exist on type 'unknown'.
+
+1676                               oldValue: change.originalValue,
+                                                    ~~~~~~~~~~~~~
+
+client/src/components/WorkOrderForm.tsx:1677:48 - error TS2339: Property 'currentValue' does not exist on type 'unknown'.
+
+1677                               newValue: change.currentValue,
+                                                    ~~~~~~~~~~~~
+
+client/src/components/WorkOrderForm.tsx:2568:48 - error TS2339: Property 'originalValue' does not exist on type 'unknown'.
+
+2568                               oldValue: change.originalValue,
+                                                    ~~~~~~~~~~~~~
+
+client/src/components/WorkOrderForm.tsx:2569:48 - error TS2339: Property 'currentValue' does not exist on type 'unknown'.
+
+2569                               newValue: change.currentValue,
+                                                    ~~~~~~~~~~~~
+
+client/src/contexts/AuthContext.tsx:128:21 - error TS2503: Cannot find namespace 'React'.
+
+128   WrappedComponent: React.ComponentType<P>,
+                        ~~~~~
+
+client/src/hooks/useModifyMode.ts:139:23 - error TS2339: Property 'fieldName' does not exist on type 'unknown'.
+
+139         field: change.fieldName,
+                          ~~~~~~~~~
+
+client/src/hooks/useModifyMode.ts:140:22 - error TS2339: Property 'originalValue' does not exist on type 'unknown'.
+
+140         from: change.originalValue,
+                         ~~~~~~~~~~~~~
+
+client/src/hooks/useModifyMode.ts:141:20 - error TS2339: Property 'currentValue' does not exist on type 'unknown'.
+
+141         to: change.currentValue,
+                       ~~~~~~~~~~~~
+
+client/src/hooks/useModifyMode.ts:142:27 - error TS2339: Property 'timestamp' does not exist on type 'unknown'.
+
+142         timestamp: change.timestamp.toISOString(),
+                              ~~~~~~~~~
+
+client/src/pages/admin/AdminPanel.tsx:488:48 - error TS2322: Type '{ variant: "outline"; className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+488                       <Badge variant='outline' className='px-3 py-1'>
+                                                   ~~~~~~~~~
+
+client/src/pages/admin/AdminPanel.tsx:492:48 - error TS2322: Type '{ variant: "outline"; className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+492                       <Badge variant='outline' className='px-3 py-1'>
+                                                   ~~~~~~~~~
+
+client/src/pages/admin/AdminPanel.tsx:496:48 - error TS2322: Type '{ variant: "outline"; className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+496                       <Badge variant='outline' className='px-3 py-1'>
+                                                   ~~~~~~~~~
+
+client/src/pages/admin/AdminPanel.tsx:528:35 - error TS2322: Type '{ variant: "default" | "secondary" | "destructive"; className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+528                                   className={
+                                      ~~~~~~~~~
+
+client/src/pages/pms/Components.tsx:855:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+855                 <ModifyFieldWrapper
+                     ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:887:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+887                 <ModifyFieldWrapper
+                     ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:919:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+919                 <ModifyFieldWrapper
+                     ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:949:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+949                 <ModifyFieldWrapper
+                     ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:986:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+986                 <ModifyFieldWrapper
+                     ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1025:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1025                 <ModifyFieldWrapper
+                      ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1058:18 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: boolean; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1058                 <ModifyFieldWrapper
+                      ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1138:16 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1138               <ModifyFieldWrapper
+                    ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1167:16 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1167               <ModifyFieldWrapper
+                    ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1208:16 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1208               <ModifyFieldWrapper
+                    ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1247:16 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1247               <ModifyFieldWrapper
+                    ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1288:16 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1288               <ModifyFieldWrapper
+                    ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1627:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1627                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1651:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1651                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1675:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1675                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1705:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1705                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1729:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1729                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1758:20 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1758                   <ModifyFieldWrapper
+                        ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1840:14 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1840             <ModifyFieldWrapper
+                  ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1869:14 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1869             <ModifyFieldWrapper
+                  ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1898:14 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1898             <ModifyFieldWrapper
+                  ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/Components.tsx:1927:14 - error TS2741: Property 'children' is missing in type '{ originalValue: any; currentValue: any; fieldName: string; isModifyMode: any; onFieldChange: (field: string, value: any) => void; }' but required in type 'ModifyFieldWrapperProps'.
+
+1927             <ModifyFieldWrapper
+                  ~~~~~~~~~~~~~~~~~~
+
+  client/src/components/modify/ModifyFieldWrapper.tsx:5:3
+    5   children: ReactNode;
+        ~~~~~~~~
+    'children' is declared here.
+
+client/src/pages/pms/ModifyPMS.tsx:424:9 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+424         className={`${statusColors[status as keyof typeof statusColors]} text-white`}
+            ~~~~~~~~~
+
+client/src/pages/pms/ModifyPMS.tsx:586:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+586                               <Badge className='bg-[#52BAF3] text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/pages/pms/ModifyPMS.tsx:591:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+591                               <Badge className='bg-green-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/pages/pms/ModifyPMS.tsx:596:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+596                               <Badge className='bg-red-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/pages/pms/ModifyPMS.tsx:601:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+601                               <Badge className='bg-gray-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/pages/pms/ModifyPMS.tsx:606:38 - error TS2322: Type '{ className: string; }' is not assignable to type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+  Property 'className' does not exist on type 'VariantProps<(props?: ConfigVariants<{ variant: { default: string; secondary: string; destructive: string; outline: string; }; }> & ClassProp) => string>'.
+
+606                               <Badge className='bg-yellow-500 text-white px-3 py-1 text-xs rounded-full'>
+                                         ~~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:654:40 - error TS2339: Property 'consumed' does not exist on type 'unknown'.
+
+654       const newROB = spare.rob - (data.consumed || 0) + (data.received || 0);
+                                           ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:654:63 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+654       const newROB = spare.rob - (data.consumed || 0) + (data.received || 0);
+                                                                  ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:658:16 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+658       if (data.received > 0 && !data.receivedDate) return true;
+                   ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:658:38 - error TS2339: Property 'receivedDate' does not exist on type 'unknown'.
+
+658       if (data.received > 0 && !data.receivedDate) return true;
+                                         ~~~~~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:673:35 - error TS2339: Property 'consumed' does not exist on type 'unknown'.
+
+673       .filter(([_, data]) => data.consumed > 0 || data.received > 0)
+                                      ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:673:56 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+673       .filter(([_, data]) => data.consumed > 0 || data.received > 0)
+                                                           ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:676:24 - error TS2339: Property 'consumed' does not exist on type 'unknown'.
+
+676         consumed: data.consumed || 0,
+                           ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:677:24 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+677         received: data.received || 0,
+                           ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:678:28 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+678         receivedDate: data.received > 0 ? data.receivedDate : undefined,
+                               ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:678:48 - error TS2339: Property 'receivedDate' does not exist on type 'unknown'.
+
+678         receivedDate: data.received > 0 ? data.receivedDate : undefined,
+                                                   ~~~~~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:679:29 - error TS2339: Property 'receivedPlace' does not exist on type 'unknown'.
+
+679         receivedPlace: data.receivedPlace || undefined,
+                                ~~~~~~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:681:16 - error TS2339: Property 'consumed' does not exist on type 'unknown'.
+
+681           data.consumed > 0
+                   ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:1420:41 - error TS2339: Property 'consumed' does not exist on type 'unknown'.
+
+1420                       spare.rob - (data.consumed || 0) + (data.received || 0);
+                                             ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:1420:64 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+1420                       spare.rob - (data.consumed || 0) + (data.received || 0);
+                                                                    ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:1422:30 - error TS2339: Property 'received' does not exist on type 'unknown'.
+
+1422                     if (data.received > 0 && !data.receivedDate) return true;
+                                  ~~~~~~~~
+
+client/src/pages/spares/SparesNew.tsx:1422:52 - error TS2339: Property 'receivedDate' does not exist on type 'unknown'.
+
+1422                     if (data.received > 0 && !data.receivedDate) return true;
+                                                        ~~~~~~~~~~~~
+
+vite.config.ts:13:24 - error TS2307: Cannot find module '@replit/vite-plugin-cartographer' or its corresponding type declarations.
+
+13           await import('@replit/vite-plugin-cartographer').then(m =>
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 177 errors in 27 files.
+
+Errors  Files
+     1  client/src/components/admin/AddComponentForm.tsx:117
+     2  client/src/components/admin/FormSchemaEditor.tsx:340
+     1  client/src/components/BaseSubmoduleForm.tsx:207
+     1  client/src/components/BaseSubmoduleTable.tsx:71
+    31  client/src/components/change-request-forms/ComponentChangeRequestForm.tsx:27
+     7  client/src/components/change-request-forms/SparesChangeRequestForm.tsx:36
+     7  client/src/components/change-request-forms/StoresChangeRequestForm.tsx:31
+    23  client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx:25
+     2  client/src/components/common/AgGridCellRenderers.tsx:43
+    17  client/src/components/ComponentRegisterForm.tsx:1340
+     9  client/src/components/modifyPms/ModifyPMS.tsx:46
+     1  client/src/components/ReviewChangesDrawer.tsx:137
+     2  client/src/components/TableSelector.tsx:117
+     1  client/src/components/ui/badge.tsx:29
+     2  client/src/components/ui/resizable.tsx:11
+     1  client/src/components/ui/sheet.tsx:64
+     2  client/src/components/ui/sidebar.tsx:571
+     1  client/src/components/ui/skeleton.tsx:6
+     1  client/src/components/WorkInstructionsDialog.tsx:13
+    11  client/src/components/WorkOrderForm.tsx:925
+     1  client/src/contexts/AuthContext.tsx:128
+     4  client/src/hooks/useModifyMode.ts:139
+     4  client/src/pages/admin/AdminPanel.tsx:488
+    22  client/src/pages/pms/Components.tsx:855
+     6  client/src/pages/pms/ModifyPMS.tsx:424
+    16  client/src/pages/spares/SparesNew.tsx:654
+     1  vite.config.ts:13
+⚠️  TypeScript issues found (continuing with build for production readiness)
+💄 Checking code formatting...
+Checking formatting...
+[warn] .prettierrc
+[warn] build.js
+[warn] client/index.html
+[warn] client/src/App.tsx
+[warn] client/src/components/admin/AddComponentForm.tsx
+[warn] client/src/components/admin/Forms.tsx
+[warn] client/src/components/admin/FormSchemaEditor.tsx
+[warn] client/src/components/alerts/AlertHistory.tsx
+[warn] client/src/components/alerts/AlertPolicyDrawer.tsx
+[warn] client/src/components/BaseSubmoduleForm.tsx
+[warn] client/src/components/BaseSubmoduleTable.tsx
+[warn] client/src/components/change-request-forms/ComponentChangeRequestForm.tsx
+[warn] client/src/components/change-request-forms/SparesChangeRequestForm.tsx
+[warn] client/src/components/change-request-forms/StoresChangeRequestForm.tsx
+[warn] client/src/components/change-request-forms/WorkOrdersChangeRequestForm.tsx
+[warn] client/src/components/common/AgGridCellRenderers.tsx
+[warn] client/src/components/common/AgGridTable.tsx
+[warn] client/src/components/ComponentRegisterForm.tsx
+[warn] client/src/components/ComponentRegisterFormCR.tsx
+[warn] client/src/components/ComponentTreeSelector.tsx
+[warn] client/src/components/FormEditorFactory.tsx
+[warn] client/src/components/modals/AddFieldModal.tsx
+[warn] client/src/components/modals/AddSectionModal.tsx
+[warn] client/src/components/modify/ChangeRequestModal.tsx
+[warn] client/src/components/modify/ModifyFieldWrapper.tsx
+[warn] client/src/components/modify/ModifyStickyFooter.tsx
+[warn] client/src/components/modifyPms/ModifyPMS.tsx
+[warn] client/src/components/ModuleNavigator.tsx
+[warn] client/src/components/NewWorkOrderForm.tsx
+[warn] client/src/components/PostponeWorkOrderDialog.tsx
+[warn] client/src/components/ProposeChanges.tsx
+[warn] client/src/components/ReviewChangesDrawer.tsx
+[warn] client/src/components/SideMenuBar.tsx
+[warn] client/src/components/TableSelector.tsx
+[warn] client/src/components/TargetPicker.tsx
+[warn] client/src/components/TopMenuBar.tsx
+[warn] client/src/components/ui/accordion.tsx
+[warn] client/src/components/ui/alert-dialog.tsx
+[warn] client/src/components/ui/alert.tsx
+[warn] client/src/components/ui/aspect-ratio.tsx
+[warn] client/src/components/ui/avatar.tsx
+[warn] client/src/components/ui/badge.tsx
+[warn] client/src/components/ui/breadcrumb.tsx
+[warn] client/src/components/ui/button.tsx
+[warn] client/src/components/ui/calendar.tsx
+[warn] client/src/components/ui/card.tsx
+[warn] client/src/components/ui/carousel.tsx
+[warn] client/src/components/ui/chart.tsx
+[warn] client/src/components/ui/checkbox.tsx
+[warn] client/src/components/ui/collapsible.tsx
+[warn] client/src/components/ui/command.tsx
+[warn] client/src/components/ui/context-menu.tsx
+[warn] client/src/components/ui/datetime-picker.tsx
+[warn] client/src/components/ui/dialog.tsx
+[warn] client/src/components/ui/drawer.tsx
+[warn] client/src/components/ui/dropdown-menu.tsx
+[warn] client/src/components/ui/form-popup.tsx
+[warn] client/src/components/ui/form.tsx
+[warn] client/src/components/ui/hover-card.tsx
+[warn] client/src/components/ui/input-otp.tsx
+[warn] client/src/components/ui/input.tsx
+[warn] client/src/components/ui/label.tsx
+[warn] client/src/components/ui/menubar.tsx
+[warn] client/src/components/ui/navigation-menu.tsx
+[warn] client/src/components/ui/pagination.tsx
+[warn] client/src/components/ui/popover.tsx
+[warn] client/src/components/ui/progress.tsx
+[warn] client/src/components/ui/radio-group.tsx
+[warn] client/src/components/ui/resizable.tsx
+[warn] client/src/components/ui/scroll-area.tsx
+[warn] client/src/components/ui/select.tsx
+[warn] client/src/components/ui/separator.tsx
+[warn] client/src/components/ui/sheet.tsx
+[warn] client/src/components/ui/sidebar.tsx
+[warn] client/src/components/ui/skeleton.tsx
+[warn] client/src/components/ui/slider.tsx
+[warn] client/src/components/ui/switch.tsx
+[warn] client/src/components/ui/table.tsx
+[warn] client/src/components/ui/tabs.tsx
+[warn] client/src/components/ui/textarea.tsx
+[warn] client/src/components/ui/toast.tsx
+[warn] client/src/components/ui/toaster.tsx
+[warn] client/src/components/ui/toggle-group.tsx
+[warn] client/src/components/ui/toggle.tsx
+[warn] client/src/components/ui/tooltip.tsx
+[warn] client/src/components/UnplannedWorkOrderForm.tsx
+[warn] client/src/components/WorkInstructionsDialog.tsx
+[warn] client/src/components/WorkOrderForm.tsx
+[warn] client/src/config/features.ts
+[warn] client/src/config/sailDesignSystem.ts
+[warn] client/src/contexts/AuthContext.tsx
+[warn] client/src/contexts/ChangeModeContext.tsx
+[warn] client/src/contexts/ChangeRequestContext.tsx
+[warn] client/src/data/componentTree.ts
+[warn] client/src/hooks/use-mobile.tsx
+[warn] client/src/hooks/use-toast.ts
+[warn] client/src/hooks/useModifyMode.ts
+[warn] client/src/index.css
+[warn] client/src/lib/queryClient.ts
+[warn] client/src/lib/utils.ts
+[warn] client/src/main.tsx
+[warn] client/src/micro-frontend/index.ts
+[warn] client/src/micro-frontend/micro-frontend.css
+[warn] client/src/micro-frontend/MicroFrontendWrapper.tsx
+[warn] client/src/pages/admin/AdminPanel.tsx
+[warn] client/src/pages/admin/Alerts.tsx
+[warn] client/src/pages/modify-pms/ModifyPMS.tsx
+[warn] client/src/pages/not-found.tsx
+[warn] client/src/pages/pms/Components.tsx
+[warn] client/src/pages/pms/ModifyPMS.tsx
+[warn] client/src/pages/pms/RunningHours.tsx
+[warn] client/src/pages/pms/WorkOrders.tsx
+[warn] client/src/pages/spares/Spares.tsx
+[warn] client/src/pages/spares/SparesNew.tsx
+[warn] client/src/pages/stores/Stores.tsx
+[warn] client/src/pages/TechnicalModule.tsx
+[warn] client/src/services/changeRequestService.ts
+[warn] client/src/styles/change-request.css
+[warn] client/src/utils/componentUtils.ts
+[warn] client/src/utils/formCommands.ts
+[warn] client/src/utils/formEditorGenerator.ts
+[warn] client/src/utils/formHelp.ts
+[warn] client/src/utils/ratingUtils.tsx
+[warn] client/src/utils/suggestionEngine.ts
+[warn] drizzle.config.ts
+[warn] eslint.config.js
+[warn] micro-frontend.config.js
+[warn] npm-run-quality.js
+[warn] postcss.config.js
+[warn] rollup.config.js
+[warn] run-quality.js
+[warn] scripts/init-db.ts
+[warn] scripts/setup-microfrontend.js
+[warn] scripts/setup-mysql.ts
+[warn] server/database.ts
+[warn] server/db.ts
+[warn] server/index.ts
+[warn] server/middleware/auth.ts
+[warn] server/middleware/errorHandler.ts
+[warn] server/middleware/logger.ts
+[warn] server/migrations/migration_001_initial_tables.ts
+[warn] server/migrations/migrationRunner.ts
+[warn] server/routes.ts
+[warn] server/routes/alerts.ts
+[warn] server/routes/bulk.ts
+[warn] server/routes/changeRequests.ts
+[warn] server/routes/forms.ts
+[warn] server/storage.ts
+[warn] server/utils/errors.ts
+[warn] server/vite.ts
+[warn] shared/changeRequestSchema.ts
+[warn] shared/schema.ts
+[warn] shared/types/auth.ts
+[warn] tailwind.config.ts
+[warn] vite.config.ts
+[warn] Code style issues found in 155 files. Run Prettier with --write to fix.
+⚠️  Code formatting issues found - run "npx prettier --write ." to fix
+🧹 Linting code...
+
+Oops! Something went wrong! :(
+
+ESLint: 9.34.0
+
+Error: Cannot find module './Obj.js'
+Require stack:
+- D:\react projects\technical_module_test\node_modules\prelude-ls\lib\index.js
+- D:\react projects\technical_module_test\node_modules\levn\lib\parse-string.js
+- D:\react projects\technical_module_test\node_modules\levn\lib\index.js
+- D:\react projects\technical_module_test\node_modules\@eslint\plugin-kit\dist\cjs\index.cjs
+- D:\react projects\technical_module_test\node_modules\eslint\lib\languages\js\source-code\source-code.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\languages\js\source-code\index.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\languages\js\index.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\config\default-config.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\eslint\eslint.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\eslint\index.js
+- D:\react projects\technical_module_test\node_modules\eslint\lib\cli.js
+- D:\react projects\technical_module_test\node_modules\eslint\bin\eslint.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (D:\react projects\technical_module_test\node_modules\prelude-ls\lib\index.js:5:7)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+⚠️  ESLint issues found (continuing with build)
+🔧 Checking build configuration...
+✅ Quality checks completed - ready for production build!
+X [ERROR] Failed to resolve entry for package "@replit/vite-plugin-cartographer". The package may have incorrect main/module/exports specified in its package.json. [plugin externalize-deps]
+
+    vite.config.ts:13:23:
+      13 │           await import('@replit/vite-plugin-cartographer').then(m =>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+failed to load config from D:\react projects\technical_module_test\vite.config.ts
+error during build:
+Error: Build failed with 1 error:
+vite.config.ts:13:23: ERROR: [plugin: externalize-deps] Failed to resolve entry for package "@replit/vite-plugin-cartographer". The package may have incorrect main/module/exports specified in its package.json.
+    at failureErrorWithLog (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:1472:15)
+    at D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:945:25
+    at runOnEndCallbacks (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:1315:45)
+    at buildResponseToResult (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:943:7)
+    at D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:970:16
+    at responseCallbacks.<computed> (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:622:9)
+    at handleIncomingPacket (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:677:12)
+    at Socket.readFromStdout (D:\react projects\technical_module_test\node_modules\vite\node_modules\esbuild\lib\main.js:600:7)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+
+D:\react projects\technical_module_test>

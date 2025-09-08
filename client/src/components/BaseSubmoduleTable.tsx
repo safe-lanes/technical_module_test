@@ -68,7 +68,9 @@ export const BaseSubmoduleTable: React.FC<BaseSubmoduleTableProps> = ({
 
       const itemValue = item[key];
       if (typeof itemValue === 'string') {
-        return itemValue.toLowerCase().includes(value.toLowerCase());
+        return String(itemValue || '')
+          .toLowerCase()
+          .includes(value.toLowerCase());
       }
       return itemValue === value;
     });
