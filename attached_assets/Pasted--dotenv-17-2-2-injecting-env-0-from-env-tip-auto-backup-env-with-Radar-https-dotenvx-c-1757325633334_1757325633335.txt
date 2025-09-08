@@ -1,0 +1,70 @@
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+3:08:55 PM [express] serving on port 5000
+🔄 MySQL DB Operation: getWorkOrders { vesselId: 'V001' }
+3:10:33 PM [express] GET /api/work-orders/V001 200 in 7ms :: []
+info: HTTP Request {"duration":"7ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 15:10:33","url":"/api/work-orders/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getComponents {"vesselId":"V001"}...
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:10:37 PM [express] GET /api/running-hours/components/V001 500 in 1768ms :: {"error":"Failed to fet…
+error: HTTP Error {"duration":"1769ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:10:37","url":"/api/running-hours/components/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+3:10:37 PM [express] GET /api/spares/V001 500 in 402ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"403ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:10:37","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:10:38 PM [express] GET /api/spares/V001 500 in 221ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"223ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:10:38","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:10:41 PM [express] GET /api/spares/V001 500 in 266ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"267ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:10:41","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:10:45 PM [express] GET /api/spares/V001 500 in 319ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"320ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:10:45","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:28:38 PM [express] GET /api/spares/V001 500 in 291ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"292ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:28:38","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:28:39 PM [express] GET /api/spares/V001 500 in 263ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"263ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:28:39","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+🔄 MySQL DB Operation: getSpares {"vesselId":"V001"}...
+3:28:42 PM [express] GET /api/spares/V001 500 in 220ms :: {"error":"Failed to fetch spares"}
+error: HTTP Error {"duration":"221ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:28:42","url":"/api/spares/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+3:28:42 PM [express] GET /api/stores/V001 200 in 1ms :: []
+info: HTTP Request {"duration":"1ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":200,"timestamp":"2025-09-08 15:28:42","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
+Error creating store transaction: TypeError: storage.createStoreTransaction is not a function
+    at <anonymous> (D:\techmodule\technical_module_test\server\routes.ts:642:36)
+    at Layer.handle [as handle_request] (D:\techmodule\technical_module_test\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\techmodule\technical_module_test\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\techmodule\technical_module_test\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\techmodule\technical_module_test\node_modules\express\lib\router\layer.js:95:5)
+    at D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:284:15
+    at param (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:280:10)
+    at requestLogger (D:\techmodule\technical_module_test\server\middleware\logger.ts:80:3)
+    at Layer.handle [as handle_request] (D:\techmodule\technical_module_test\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:328:13)
+    at D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:280:10)
+    at <anonymous> (D:\techmodule\technical_module_test\server\index.ts:43:3)
+    at Layer.handle [as handle_request] (D:\techmodule\technical_module_test\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:328:13)
+    at D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:280:10)
+    at urlencodedParser (D:\techmodule\technical_module_test\node_modules\body-parser\lib\types\urlencoded.js:85:7)
+    at Layer.handle [as handle_request] (D:\techmodule\technical_module_test\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:328:13)
+    at D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\techmodule\technical_module_test\node_modules\express\lib\router\index.js:280:10)
+    at D:\techmodule\technical_module_test\node_modules\body-parser\lib\read.js:137:5
+    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)
+    at invokeCallback (D:\techmodule\technical_module_test\node_modules\raw-body\index.js:238:16)
+    at done (D:\techmodule\technical_module_test\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (D:\techmodule\technical_module_test\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:524:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+3:29:05 PM [express] POST /api/stores/V001/transaction 500 in 17ms :: {"error":"Failed to create tra…
+error: HTTP Error {"duration":"18ms","ip":"127.0.0.1","method":"POST","service":"maritime-pms","status":500,"timestamp":"2025-09-08 15:29:05","url":"/api/stores/V001/transaction","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}
