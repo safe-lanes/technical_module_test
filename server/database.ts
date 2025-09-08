@@ -514,41 +514,210 @@ export class DatabaseStorage implements IStorage {
   async deleteStoreItem(): Promise<boolean> {
     return true;
   }
-  async getWorkOrders(): Promise<any[]> {
-    return [];
+  // Work Orders methods - MySQL implementation
+  async getWorkOrders(vesselId: string): Promise<any[]> {
+    logDbOperation('getWorkOrders', { vesselId });
+    try {
+      const result = await this.db
+        .select()
+        .from(workOrders)
+        .where(eq(workOrders.vesselId, vesselId));
+      return result;
+    } catch (error) {
+      console.error('Error getting work orders:', error);
+      throw error;
+    }
   }
-  async getWorkOrder(): Promise<any> {
-    return undefined;
+
+  async getWorkOrder(id: string): Promise<any> {
+    logDbOperation('getWorkOrder', { id });
+    try {
+      const [result] = await this.db
+        .select()
+        .from(workOrders)
+        .where(eq(workOrders.id, id));
+      return result || undefined;
+    } catch (error) {
+      console.error('Error getting work order:', error);
+      throw error;
+    }
   }
-  async createWorkOrder(): Promise<any> {
-    return {};
+
+  async createWorkOrder(workOrder: any): Promise<any> {
+    logDbOperation('createWorkOrder', workOrder);
+    try {
+      const [result] = await this.db
+        .insert(workOrders)
+        .values(workOrder)
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error creating work order:', error);
+      throw error;
+    }
   }
-  async updateWorkOrder(): Promise<any> {
-    return {};
+
+  async updateWorkOrder(id: string, updates: any): Promise<any> {
+    logDbOperation('updateWorkOrder', { id, updates });
+    try {
+      const [result] = await this.db
+        .update(workOrders)
+        .set(updates)
+        .where(eq(workOrders.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error updating work order:', error);
+      throw error;
+    }
   }
-  async deleteWorkOrder(): Promise<boolean> {
-    return true;
+
+  async deleteWorkOrder(id: string): Promise<boolean> {
+    logDbOperation('deleteWorkOrder', { id });
+    try {
+      await this.db.delete(workOrders).where(eq(workOrders.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error deleting work order:', error);
+      throw error;
+    }
   }
-  async getChangeRequests(): Promise<any[]> {
-    return [];
+  // Change Requests methods - MySQL implementation  
+  async getChangeRequests(vesselId?: string): Promise<any[]> {
+    logDbOperation('getChangeRequests', { vesselId });
+    try {
+      // For now, return all change requests without filtering
+      const result = await this.db.select().from(changeRequest);
+      return result;
+    } catch (error) {
+      console.error('Error getting change requests:', error);
+      throw error;
+    }
   }
-  async getChangeRequest(): Promise<any> {
-    return undefined;
+
+  async getChangeRequest(id: string): Promise<any> {
+    logDbOperation('getChangeRequest', { id });
+    try {
+      const [result] = await this.db
+        .select()
+        .from(changeRequest)
+        .where(eq(changeRequest.id, id));
+      return result || undefined;
+    } catch (error) {
+      console.error('Error getting change request:', error);
+      throw error;
+    }
   }
-  async createChangeRequest(): Promise<any> {
-    return {};
+
+  async createChangeRequest(request: any): Promise<any> {
+    logDbOperation('createChangeRequest', request);
+    try {
+      const [result] = await this.db
+        .insert(changeRequest)
+        .values(request)
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error creating change request:', error);
+      throw error;
+    }
   }
-  async updateChangeRequest(): Promise<any> {
-    return {};
+
+  async updateChangeRequest(id: string, updates: any): Promise<any> {
+    logDbOperation('updateChangeRequest', { id, updates });
+    try {
+      const [result] = await this.db
+        .update(changeRequest)
+        .set(updates)
+        .where(eq(changeRequest.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error updating change request:', error);
+      throw error;
+    }
   }
-  async deleteChangeRequest(): Promise<boolean> {
-    return true;
+
+  async deleteChangeRequest(id: string): Promise<boolean> {
+    logDbOperation('deleteChangeRequest', { id });
+    try {
+      await this.db.delete(changeRequest).where(eq(changeRequest.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error deleting change request:', error);
+      throw error;
+    }
   }
-  async getRunningHoursAudit(): Promise<any[]> {
-    return [];
+  // Running Hours Audit methods - MySQL implementation
+  async getRunningHoursAudit(componentId: string): Promise<any[]> {
+    logDbOperation('getRunningHoursAudit', { componentId });
+    try {
+      const result = await this.db
+        .select()
+        .from(runningHoursAudit)
+        .where(eq(runningHoursAudit.componentId, componentId))
+        .orderBy(desc(runningHoursAudit.enteredAtUTC));
+      return result;
+    } catch (error) {
+      console.error('Error getting running hours audit:', error);
+      throw error;
+    }
   }
-  async createRunningHoursAudit(): Promise<any> {
-    return {};
+
+  async getRunningHoursAudits(componentId: string, limit?: number): Promise<any[]> {
+    logDbOperation('getRunningHoursAudits', { componentId, limit });
+    try {
+      let query = this.db
+        .select()
+        .from(runningHoursAudit)
+        .where(eq(runningHoursAudit.componentId, componentId))
+        .orderBy(desc(runningHoursAudit.enteredAtUTC));
+      
+      if (limit) {
+        query = query.limit(limit);
+      }
+      
+      const result = await query;
+      return result;
+    } catch (error) {
+      console.error('Error getting running hours audits:', error);
+      throw error;
+    }
+  }
+
+  async getRunningHoursAuditsInDateRange(
+    componentId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<any[]> {
+    logDbOperation('getRunningHoursAuditsInDateRange', { componentId, startDate, endDate });
+    try {
+      const result = await this.db
+        .select()
+        .from(runningHoursAudit)
+        .where(
+          sql`${runningHoursAudit.componentId} = ${componentId} AND ${runningHoursAudit.enteredAtUTC} >= ${startDate} AND ${runningHoursAudit.enteredAtUTC} <= ${endDate}`
+        )
+        .orderBy(desc(runningHoursAudit.enteredAtUTC));
+      return result;
+    } catch (error) {
+      console.error('Error getting running hours audits in date range:', error);
+      throw error;
+    }
+  }
+
+  async createRunningHoursAudit(audit: any): Promise<any> {
+    logDbOperation('createRunningHoursAudit', audit);
+    try {
+      const [result] = await this.db
+        .insert(runningHoursAudit)
+        .values(audit)
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Error creating running hours audit:', error);
+      throw error;
+    }
   }
   // Spares History methods - Full MySQL implementation
   async getSpareHistory(vesselId: any): Promise<any[]> {
