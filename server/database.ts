@@ -84,6 +84,12 @@ export class DatabaseStorage implements IStorage {
       waitForConnections: true,
       connectionLimit: 20,
       queueLimit: 0,
+      ssl: {
+        rejectUnauthorized: false
+      },
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      timeout: 30000,
     });
 
     // Create drizzle instance
