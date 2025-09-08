@@ -61,6 +61,13 @@ export class DatabaseStorage implements IStorage {
     const password = process.env.MYSQL_PASSWORD;
     const port = parseInt(process.env.MYSQL_PORT || '3306');
 
+    // Debug environment variables
+    console.log('🔍 Environment Check:');
+    console.log('MYSQL_HOST:', host ? 'SET' : 'MISSING');
+    console.log('MYSQL_DATABASE:', database ? 'SET' : 'MISSING');
+    console.log('MYSQL_USER:', user ? 'SET' : 'MISSING');
+    console.log('MYSQL_PASSWORD:', password ? 'SET' : 'MISSING');
+
     if (!host || !database || !user || !password) {
       throw new Error(
         'MySQL environment variables are required (MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD)'
@@ -87,9 +94,8 @@ export class DatabaseStorage implements IStorage {
       ssl: {
         rejectUnauthorized: false
       },
-      connectTimeout: 30000,
-      acquireTimeout: 30000,
-      timeout: 30000,
+      connectTimeout: 60000,
+      charset: 'utf8mb4',
     });
 
     // Create drizzle instance
