@@ -14,7 +14,7 @@
     "setup:local": "node setup-local.js",
     "db:push": "drizzle-kit push", 
     "db:generate": "drizzle-kit generate"
-  }
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
