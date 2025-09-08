@@ -1,0 +1,62 @@
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🔍 Environment Check:
+MYSQL_HOST: SET
+MYSQL_DATABASE: SET
+MYSQL_USER: SET
+MYSQL_PASSWORD: SET
+✅ Technical Module using MySQL RDS database for persistent storage
+[dotenv@17.2.2] injecting env (0) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+4:49:20 PM [express] serving on port 5000
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+Error getting store items: Error: Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)
+    at PromisePool.query (D:\techmodule\technical_module_test\node_modules\mysql2\lib\promise\pool.js:36:22)
+    at MySql2PreparedQuery.execute (D:\techmodule\technical_module_test\node_modules\src\mysql2\session.ts:121:31)
+    at MySqlSelectBase.execute (D:\techmodule\technical_module_test\node_modules\src\mysql-core\query-builders\select.ts:1056:25)
+    at MySqlSelectBase.then (D:\techmodule\technical_module_test\node_modules\src\query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)"
+}
+Error fetching store items: Error: Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)
+    at PromisePool.query (D:\techmodule\technical_module_test\node_modules\mysql2\lib\promise\pool.js:36:22)
+    at MySql2PreparedQuery.execute (D:\techmodule\technical_module_test\node_modules\src\mysql2\session.ts:121:31)
+    at MySqlSelectBase.execute (D:\techmodule\technical_module_test\node_modules\src\mysql-core\query-builders\select.ts:1056:25)
+    at MySqlSelectBase.then (D:\techmodule\technical_module_test\node_modules\src\query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)"
+}
+🔄 MySQL DB Operation: getStoreItems {"vesselId":"V001"}...
+Error getting store items: Error: Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)
+    at PromisePool.query (D:\techmodule\technical_module_test\node_modules\mysql2\lib\promise\pool.js:36:22)
+    at MySql2PreparedQuery.execute (D:\techmodule\technical_module_test\node_modules\src\mysql2\session.ts:121:31)
+    at MySqlSelectBase.execute (D:\techmodule\technical_module_test\node_modules\src\mysql-core\query-builders\select.ts:1056:25)
+    at MySqlSelectBase.then (D:\techmodule\technical_module_test\node_modules\src\query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)"
+}
+Error fetching store items: Error: Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)
+    at PromisePool.query (D:\techmodule\technical_module_test\node_modules\mysql2\lib\promise\pool.js:36:22)
+    at MySql2PreparedQuery.execute (D:\techmodule\technical_module_test\node_modules\src\mysql2\session.ts:121:31)
+    at MySqlSelectBase.execute (D:\techmodule\technical_module_test\node_modules\src\mysql-core\query-builders\select.ts:1056:25)
+    at MySqlSelectBase.then (D:\techmodule\technical_module_test\node_modules\src\query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'dbmasteruser'@'122.160.164.190' (using password: YES)"
+}
+4:49:44 PM [express] GET /api/stores/V001 500 in 431ms :: {"error":"Failed to fetch store items"}
+error: HTTP Error {"duration":"434ms","ip":"127.0.0.1","method":"GET","service":"maritime-pms","status":500,"timestamp":"2025-09-08 16:49:44","url":"/api/stores/V001","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"}

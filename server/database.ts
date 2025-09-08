@@ -67,6 +67,9 @@ export class DatabaseStorage implements IStorage {
     console.log('MYSQL_DATABASE:', database ? 'SET' : 'MISSING');
     console.log('MYSQL_USER:', user ? 'SET' : 'MISSING');
     console.log('MYSQL_PASSWORD:', password ? 'SET' : 'MISSING');
+    
+    // Try URL encoding password for special characters
+    const encodedPassword = encodeURIComponent(password || '');
 
     if (!host || !database || !user || !password) {
       throw new Error(
@@ -74,28 +77,32 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Set DATABASE_URL for drizzle-kit
-    process.env.DATABASE_URL = `mysql://${user}:${password}@${host}:${port}/${database}`;
+    // Set DATABASE_URL for drizzle-kit with encoded password
+    process.env.DATABASE_URL = `mysql://${user}:${encodedPassword}@${host}:${port}/${database}`;
 
     console.log(
       '✅ Technical Module using MySQL RDS database for persistent storage'
     );
 
-    // Create MySQL connection pool
+    // Create MySQL connection pool with encoded password
     this.pool = mysql.createPool({
       host,
       port,
       user,
-      password,
+      password: encodedPassword,
       database,
       waitForConnections: true,
       connectionLimit: 20,
       queueLimit: 0,
       ssl: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        ca: false
       },
       connectTimeout: 60000,
       charset: 'utf8mb4',
+      authPlugins: {
+        mysql_native_password: () => () => Buffer.alloc(0)
+      }
     });
 
     // Create drizzle instance
