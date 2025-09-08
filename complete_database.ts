@@ -532,11 +532,17 @@ export class DatabaseStorage implements IStorage {
   async createWorkOrder(workOrder: any): Promise<any> {
     logDbOperation('createWorkOrder', workOrder);
     try {
-      const [result] = await this.db
+      const result = await this.db
         .insert(workOrders)
-        .values(workOrder)
-        .returning();
-      return result;
+        .values(workOrder);
+      const insertId = (result as any).insertId;
+      
+      const [createdWorkOrder] = await this.db
+        .select()
+        .from(workOrders)
+        .where(eq(workOrders.id, insertId));
+      
+      return createdWorkOrder;
     } catch (error) {
       console.error('Error creating work order:', error);
       throw error;
@@ -546,12 +552,17 @@ export class DatabaseStorage implements IStorage {
   async updateWorkOrder(id: string, updates: any): Promise<any> {
     logDbOperation('updateWorkOrder', { id, updates });
     try {
-      const [result] = await this.db
+      await this.db
         .update(workOrders)
         .set(updates)
-        .where(eq(workOrders.id, id))
-        .returning();
-      return result;
+        .where(eq(workOrders.id, id));
+      
+      const [updatedWorkOrder] = await this.db
+        .select()
+        .from(workOrders)
+        .where(eq(workOrders.id, id));
+      
+      return updatedWorkOrder;
     } catch (error) {
       console.error('Error updating work order:', error);
       throw error;
@@ -599,11 +610,17 @@ export class DatabaseStorage implements IStorage {
   async createChangeRequest(request: any): Promise<any> {
     logDbOperation('createChangeRequest', request);
     try {
-      const [result] = await this.db
+      const result = await this.db
         .insert(changeRequest)
-        .values(request)
-        .returning();
-      return result;
+        .values(request);
+      const insertId = (result as any).insertId;
+      
+      const [createdRequest] = await this.db
+        .select()
+        .from(changeRequest)
+        .where(eq(changeRequest.id, insertId));
+      
+      return createdRequest;
     } catch (error) {
       console.error('Error creating change request:', error);
       throw error;
@@ -613,12 +630,17 @@ export class DatabaseStorage implements IStorage {
   async updateChangeRequest(id: string, updates: any): Promise<any> {
     logDbOperation('updateChangeRequest', { id, updates });
     try {
-      const [result] = await this.db
+      await this.db
         .update(changeRequest)
         .set(updates)
-        .where(eq(changeRequest.id, id))
-        .returning();
-      return result;
+        .where(eq(changeRequest.id, id));
+      
+      const [updatedRequest] = await this.db
+        .select()
+        .from(changeRequest)
+        .where(eq(changeRequest.id, id));
+      
+      return updatedRequest;
     } catch (error) {
       console.error('Error updating change request:', error);
       throw error;
@@ -697,11 +719,17 @@ export class DatabaseStorage implements IStorage {
   async createRunningHoursAudit(audit: any): Promise<any> {
     logDbOperation('createRunningHoursAudit', audit);
     try {
-      const [result] = await this.db
+      const result = await this.db
         .insert(runningHoursAudit)
-        .values(audit)
-        .returning();
-      return result;
+        .values(audit);
+      const insertId = (result as any).insertId;
+      
+      const [createdAudit] = await this.db
+        .select()
+        .from(runningHoursAudit)
+        .where(eq(runningHoursAudit.id, insertId));
+      
+      return createdAudit;
     } catch (error) {
       console.error('Error creating running hours audit:', error);
       throw error;
@@ -829,11 +857,17 @@ export class DatabaseStorage implements IStorage {
   async createStoreTransaction(transaction: any): Promise<any> {
     logDbOperation('createStoreTransaction', transaction);
     try {
-      const [result] = await this.db
+      const result = await this.db
         .insert(storesLedger)
-        .values(transaction)
-        .returning();
-      return result;
+        .values(transaction);
+      const insertId = (result as any).insertId;
+      
+      const [createdTransaction] = await this.db
+        .select()
+        .from(storesLedger)
+        .where(eq(storesLedger.id, insertId));
+      
+      return createdTransaction;
     } catch (error) {
       console.error('Error creating store transaction:', error);
       throw error;
@@ -857,14 +891,21 @@ export class DatabaseStorage implements IStorage {
   async updateStoreItem(vesselId: string, itemCode: string, updates: any): Promise<any> {
     logDbOperation('updateStoreItem', { vesselId, itemCode, updates });
     try {
-      const [result] = await this.db
+      await this.db
         .update(storesLedger)
         .set(updates)
         .where(
           sql`${storesLedger.vesselId} = ${vesselId} AND ${storesLedger.itemCode} = ${itemCode}`
-        )
-        .returning();
-      return result;
+        );
+      
+      const [updatedItem] = await this.db
+        .select()
+        .from(storesLedger)
+        .where(
+          sql`${storesLedger.vesselId} = ${vesselId} AND ${storesLedger.itemCode} = ${itemCode}`
+        );
+      
+      return updatedItem;
     } catch (error) {
       console.error('Error updating store item:', error);
       throw error;
