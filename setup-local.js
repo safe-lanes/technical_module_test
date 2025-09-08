@@ -177,23 +177,47 @@ Check your .env.local file has correct MySQL credentials
   console.log('   ✅ Created LOCAL_DEVELOPMENT.md guide\n');
 };
 
-// Update package.json scripts
-const updatePackageScripts = () => {
-  console.log('4. Updating package.json scripts...');
-  const packagePath = './package.json';
-  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+// Create Windows-compatible scripts file
+const createWindowsScripts = () => {
+  console.log('4. Creating cross-platform npm scripts...');
   
-  // Add local development scripts
-  packageJson.scripts = {
-    ...packageJson.scripts,
+  const scriptsContent = `# Cross-Platform NPM Scripts Fix
+# The current package.json scripts use Unix syntax that won't work on Windows.
+# Here are the Windows-compatible versions:
+
+## Manual Fix for package.json:
+
+Replace these scripts in your package.json:
+
+\`\`\`json
+{
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "build": "npm run quality && vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "build:local": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "setup:local": "node setup-local.js",
+    "build:micro-frontend": "vite build --mode micro-frontend", 
+    "check": "tsc",
+    "quality": "node quality.js",
     "format": "npx prettier --write .",
-    "postinstall": "node setup-local.js"
-  };
+    "setup:local": "node setup-local.js",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "setup-microfrontend": "node scripts/setup-microfrontend.js"
+  }
+}
+\`\`\`
+
+## Windows Batch Files (Alternative):
+`;
+
+  fs.writeFileSync('WINDOWS_SCRIPTS.md', scriptsContent);
   
-  fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
-  console.log('   ✅ Updated package.json scripts\n');
+  // Create Windows batch files as backup
+  fs.writeFileSync('dev.bat', '@echo off\ncross-env NODE_ENV=development tsx server/index.ts');
+  fs.writeFileSync('start.bat', '@echo off\ncross-env NODE_ENV=production node dist/index.js');
+  
+  console.log('   ✅ Created Windows-compatible script guides\n');
 };
 
 // Main setup function
@@ -202,7 +226,7 @@ const setupLocal = () => {
     createMockReplitModules();
     createEnvFile();
     createDevGuide();
-    updatePackageScripts();
+    createWindowsScripts();
     
     console.log('🎉 Local development setup complete!\n');
     console.log('Next steps:');
