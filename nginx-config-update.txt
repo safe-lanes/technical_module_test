@@ -1,0 +1,101 @@
+# =============================================================================
+# NGINX CONFIGURATION UPDATE FOR TECHNICAL MODULE
+# =============================================================================
+
+Add these location blocks to your nginx.conf file BEFORE the existing location blocks:
+
+# ===============================================
+# TECHNICAL MODULE Frontend (Microfrontend)
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE APIs (Dedicated endpoint)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# =============================================================================
+# ENDPOINT MAPPING REFERENCE
+# =============================================================================
+
+After adding these blocks, your Technical Module will be accessible via:
+
+FRONTEND ACCESS:
+- Local development: http://localhost:5000/
+- Through nginx: https://dev.sl-sail.com/technical/
+
+API ACCESS:
+- Local development: http://localhost:5000/api/*
+- Through nginx: https://dev.sl-sail.com/technical-api/*
+
+TECHNICAL MODULE ENDPOINTS:
+✅ Stores: /technical-api/stores/V001
+✅ Spares: /technical-api/spares
+✅ Work Orders: /technical-api/work-orders/V001
+✅ Running Hours: /technical-api/running-hours/components/V001
+✅ Change Requests: /technical-api/modify-pms/requests
+✅ Components: /technical-api/components/V001
+✅ Bulk Operations: /technical-api/bulk/*
+✅ Alerts: /technical-api/alerts/*
+
+# =============================================================================
+# EXISTING ENDPOINTS (NO CHANGES NEEDED)
+# =============================================================================
+
+Your existing crew appraisal system continues to work unchanged:
+- Frontend: https://dev.sl-sail.com/crewappraisal/
+- APIs: https://dev.sl-sail.com/crew-api/*
+- Assets: https://dev.sl-sail.com/figmaAssets/
+
+# =============================================================================
+# DEPLOYMENT STEPS
+# =============================================================================
+
+1. Copy the nginx location blocks above to your nginx.conf
+2. Add them BEFORE your existing location blocks
+3. Reload nginx: nginx -s reload
+4. Test: Visit https://dev.sl-sail.com/technical/
+
+Your technical module will automatically switch to nginx endpoints when accessed through your domain!
