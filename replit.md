@@ -83,6 +83,129 @@ The application uses a modern full-stack architecture with a React frontend (Typ
 - **Permissions**: Role-based access control with JWT tokens
 - **Context**: React authentication context with login/logout functionality
 
+## Local Development Setup
+
+### Prerequisites
+
+1. **Node.js** (v18 or higher)
+2. **MySQL Database** (local or RDS instance)
+3. **Git** for version control
+
+### Environment Configuration
+
+1. **Create `.env.local`** with your MySQL credentials:
+```env
+MYSQL_HOST=your-mysql-host
+MYSQL_DATABASE=technical_module
+MYSQL_USER=your-username
+MYSQL_PASSWORD='your-password'
+```
+
+**Important**: Wrap passwords containing special characters in single quotes.
+
+### Installation & Setup
+
+1. **Clone and Install**:
+```bash
+git clone <repository-url>
+cd technical_module
+npm install
+```
+
+2. **Database Setup**:
+```bash
+# Push database schema to MySQL
+npm run db:push
+```
+
+3. **Start Development Server**:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5000`
+
+### Production Deployment with Nginx
+
+#### Nginx Configuration
+
+Add these location blocks to your nginx configuration **before existing location blocks**:
+
+```nginx
+# ===============================================
+# TECHNICAL MODULE Frontend (Microfrontend)
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE APIs (Dedicated endpoint)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+```
+
+#### API Endpoint Configuration
+
+The application uses **centralized API configuration** (`client/src/config/api.ts`):
+
+- **Local Development**: Endpoints use `/api/*`
+- **Production (Nginx)**: Automatically switches to `/technical-api/*`
+- **Environment Detection**: Automatic based on hostname
+
+#### Access URLs
+
+| Environment | Frontend | API Endpoints |
+|-------------|----------|---------------|
+| **Local** | `http://localhost:5000/` | `http://localhost:5000/api/*` |
+| **Production** | `https://domain.com/technical/` | `https://domain.com/technical-api/*` |
+
+### Database Connection
+
+- **Local Development**: Direct MySQL connection via environment variables
+- **Production**: MySQL RDS with connection pooling (max 20 connections)
+- **Health Checks**: Automatic connection monitoring and auto-reconnection
+
 ## External Dependencies
 
 - **Frontend**:
@@ -94,7 +217,7 @@ The application uses a modern full-stack architecture with a React frontend (Typ
 - **Backend**:
   - `express` - Web framework
   - `drizzle-orm` - Type-safe ORM
-  - `@neondatabase/serverless` - PostgreSQL database connection
+  - `mysql2` - MySQL database connection
   - `winston` - Enterprise logging
   - `jsonwebtoken` - JWT authentication
   - `connect-pg-simple` - Session storage
