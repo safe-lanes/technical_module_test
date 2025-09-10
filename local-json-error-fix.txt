@@ -1,0 +1,150 @@
+# =============================================================================
+# LOCAL WINDOWS JSON PARSING ERROR - TROUBLESHOOTING GUIDE
+# =============================================================================
+
+The error "Failed to parse JSON file" in server/vite.ts:62 during HTML transformation
+is typically caused by corrupted or malformed JSON files in your local environment.
+
+# =============================================================================
+# STEP 1: CLEAN UP CACHE AND TEMP FILES
+# =============================================================================
+
+1. Delete node_modules and reinstall:
+   ```cmd
+   rmdir /s node_modules
+   npm install
+   ```
+
+2. Clear npm cache:
+   ```cmd
+   npm cache clean --force
+   ```
+
+3. Delete TypeScript cache:
+   ```cmd
+   rmdir /s .cache
+   ```
+
+4. Clear Vite cache:
+   ```cmd
+   rmdir /s dist
+   ```
+
+# =============================================================================
+# STEP 2: CHECK COMMON PROBLEMATIC JSON FILES
+# =============================================================================
+
+Check these files for syntax errors (missing commas, brackets, etc.):
+
+1. .vscode/settings.json
+2. .vscode/launch.json  
+3. package.json (especially if you modified it)
+4. tsconfig.json
+5. Any .json files in your project root
+
+Use a JSON validator online to check each file.
+
+# =============================================================================
+# STEP 3: FILE ENCODING ISSUES (Windows Specific)
+# =============================================================================
+
+The issue might be Windows line endings or encoding:
+
+1. Convert line endings in Git:
+   ```cmd
+   git config core.autocrlf true
+   git rm --cached -r .
+   git reset --hard
+   ```
+
+2. Or check file encoding in your editor (should be UTF-8)
+
+# =============================================================================
+# STEP 4: VSCODE SETTINGS ISSUES
+# =============================================================================
+
+Check .vscode/settings.json for syntax errors:
+
+Common problematic content:
+```json
+{
+  "typescript.preferences.quoteStyle": "single",
+  "editor.formatOnSave": true,
+  // Remove any trailing commas or syntax errors
+}
+```
+
+If problematic, temporarily rename .vscode folder to test.
+
+# =============================================================================
+# STEP 5: WINDOWS-SPECIFIC FILE ACCESS ISSUES
+# =============================================================================
+
+1. Run as Administrator:
+   - Right-click Command Prompt/PowerShell → "Run as Administrator"
+   - Navigate to your project and run npm run dev
+
+2. Check Windows Defender:
+   - Add your project folder to Windows Defender exclusions
+   - Real-time protection might be interfering with file access
+
+3. Close other processes:
+   - Close VS Code completely
+   - Close any other editors/IDEs
+   - Make sure no Node.js processes are running
+
+# =============================================================================
+# STEP 6: ALTERNATIVE DEBUGGING APPROACH
+# =============================================================================
+
+1. Create a minimal test:
+   ```cmd
+   mkdir test-vite
+   cd test-vite
+   npm init -y
+   npm install vite
+   npx vite --version
+   ```
+
+2. If this works, the issue is in your project's JSON files.
+   If this fails, it's a system-wide Node.js/npm issue.
+
+# =============================================================================
+# STEP 7: NUCLEAR OPTION - FRESH CLONE
+# =============================================================================
+
+If all else fails:
+
+1. Backup your .env.local file
+2. Clone fresh copy from GitHub
+3. Copy back your .env.local
+4. Run npm install
+5. Test with npm run dev
+
+# =============================================================================
+# MOST LIKELY CULPRITS (Windows Specific)
+# =============================================================================
+
+✅ .vscode/settings.json with syntax errors
+✅ Windows Defender interfering with file access  
+✅ Corrupted npm cache
+✅ File encoding issues (CRLF vs LF)
+✅ Node.js permissions on Windows
+
+# =============================================================================
+# QUICK FIX COMMANDS (Try These First)
+# =============================================================================
+
+```cmd
+# Clean everything
+rmdir /s node_modules .cache dist
+npm cache clean --force
+
+# Fresh install
+npm install
+
+# Try running
+npm run dev
+```
+
+If the error persists, work through the steps above systematically.
