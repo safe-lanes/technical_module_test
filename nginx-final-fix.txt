@@ -1,0 +1,186 @@
+# =============================================================================
+# FINAL NGINX FIX FOR TECHNICAL MODULE - BYPASS SERVER CATCH-ALL
+# =============================================================================
+
+# The issue: Express catch-all route is interfering with Vite dev server
+# Solution: Use nginx to directly handle ALL Vite requests with proper headers
+
+# REPLACE your Technical Module blocks with these enhanced ones:
+
+# ===============================================
+# 1. TECHNICAL MODULE Vite Client Module (SPECIFIC!)
+# ===============================================
+location /technical/@vite/client {
+    proxy_pass http://localhost:5000/@vite/client;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Force correct MIME type for Vite client
+    proxy_hide_header Content-Type;
+    add_header Content-Type "application/javascript; charset=utf-8";
+}
+
+# ===============================================
+# 2. TECHNICAL MODULE React Refresh (SPECIFIC!)
+# ===============================================
+location /technical/@react-refresh {
+    proxy_pass http://localhost:5000/@react-refresh;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Force correct MIME type for React refresh
+    proxy_hide_header Content-Type;
+    add_header Content-Type "application/javascript; charset=utf-8";
+}
+
+# ===============================================
+# 3. TECHNICAL MODULE Vite Client Fallback
+# ===============================================
+location /technical/client {
+    proxy_pass http://localhost:5000/@vite/client;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Force correct MIME type
+    proxy_hide_header Content-Type;
+    add_header Content-Type "application/javascript; charset=utf-8";
+}
+
+# ===============================================
+# 4. TECHNICAL MODULE Other Vite Paths
+# ===============================================
+location ~ ^/technical/(@vite|@id|node_modules)/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Force correct MIME type for JS files
+    proxy_hide_header Content-Type;
+    add_header Content-Type "application/javascript; charset=utf-8";
+}
+
+# ===============================================
+# 5. TECHNICAL MODULE Source Files
+# ===============================================
+location ~ ^/technical/src/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+
+# ===============================================
+# 6. TECHNICAL MODULE Frontend (General catch-all - LAST!)
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# 7. TECHNICAL MODULE APIs (Keep existing)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# =============================================================================
+# KEY CHANGES
+# =============================================================================
+
+✅ Added specific blocks for problematic paths:
+   - /technical/@vite/client
+   - /technical/@react-refresh  
+   - /technical/client (fallback)
+
+✅ Used proxy_hide_header + add_header to override Content-Type
+✅ Direct proxy_pass to exact paths (bypasses Express catch-all)
+✅ Proper order: most specific first, general last
+
+# =============================================================================
+# DEPLOYMENT
+# =============================================================================
+
+1. REPLACE all /technical/ blocks with the 7 blocks above
+2. Reload nginx: nginx -s reload
+3. Test: https://dev.sl-sail.com/technical/
+
+This should completely fix the JavaScript module loading issues!
