@@ -1,0 +1,112 @@
+# =============================================================================
+# COMPLETE NGINX FIX FOR TECHNICAL MODULE
+# =============================================================================
+
+# 1. REPLACE your Content Security Policy line (around line 38) with this:
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' http://localhost:5000 'unsafe-inline' 'unsafe-eval' https://*.youtube.com https://maps.gstatic.com https://*.googleapis.com https://*.google-analytics.com https://cdnjs.cloudflare.com https://assets.zendesk.com https://cdn.jsdelivr.net https://connect.facebook.net https://www.googletagmanager.com https://code.jquery.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://assets.zendesk.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https://fonts.googleapis.com wss://dev.sl-sail.com ws://dev.sl-sail.com https://dev.sl-sail.com https://uat.sl-sail.com https://img.icons8.com/wired/64/000000/cargo-ship.png https://analytics.google.com https://www.googletagmanager.com https://www.google.co.in https://stats.g.doubleclick.net https://www.google-analytics.com https://fonts.gstatic.com; frame-src 'self' https://*.youtube.com https://www.google.com https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self';" always;
+
+# 2. REPLACE your current /technical/ blocks with these enhanced ones:
+
+# ===============================================
+# TECHNICAL MODULE Frontend with Vite Dev Assets
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE Vite Dev Assets (CRITICAL!)
+# ===============================================
+location ~ ^/technical/(@vite|src|node_modules)/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite HMR and module loading
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Ensure correct MIME types for JS modules
+    location ~ \\.m?js$ {
+        add_header Content-Type application/javascript;
+        proxy_pass http://localhost:5000;
+    }
+    
+    location ~ \\.tsx?$ {
+        add_header Content-Type application/typescript;
+        proxy_pass http://localhost:5000;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE APIs (Keep existing)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# =============================================================================
+# WHAT CHANGED
+# =============================================================================
+
+1. ✅ Added "https://fonts.googleapis.com" to connect-src in CSP
+2. ✅ Added essential Vite dev server headers (Upgrade, Connection)  
+3. ✅ Added NEW CRITICAL BLOCK: /technical/(@vite|src|node_modules)/
+4. ✅ Added proper MIME type handling for .js/.ts/.tsx files
+
+# =============================================================================
+# DEPLOYMENT STEPS
+# =============================================================================
+
+1. Replace CSP line (fixes font loading)
+2. Replace /technical/ blocks with the 3 blocks above
+3. Reload nginx: nginx -s reload  
+4. Test: https://dev.sl-sail.com/technical/
