@@ -1,0 +1,151 @@
+# =============================================================================
+# DEFINITIVE NGINX FIX FOR TECHNICAL MODULE VITE DEV SERVER
+# =============================================================================
+
+# The problem: Nginx location blocks are not properly handling Vite dev server paths
+# Solution: Specific handling for ALL Vite dev server paths
+
+# REPLACE your Technical Module blocks with these (in this exact order):
+
+# ===============================================
+# 1. TECHNICAL MODULE Vite Dev Server Special Paths (FIRST!)
+# ===============================================
+location ~ ^/technical/(@vite|@react-refresh|@id|node_modules)/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Force correct content types
+    add_header Content-Type application/javascript;
+}
+
+# ===============================================
+# 2. TECHNICAL MODULE Vite Source Files
+# ===============================================
+location ~ ^/technical/src/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+
+# ===============================================
+# 3. TECHNICAL MODULE Vite Special Modules (client, etc.)
+# ===============================================
+location ~ ^/technical/(client|__vite_ping)$ {
+    proxy_pass http://localhost:5000/$1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+
+# ===============================================
+# 4. TECHNICAL MODULE Frontend (General catch-all - LAST!)
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# 5. TECHNICAL MODULE APIs (Keep existing)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# =============================================================================
+# CRITICAL: ORDER MATTERS!
+# =============================================================================
+
+The order of these location blocks is CRITICAL:
+1. Specific Vite paths first (@vite, @react-refresh, etc.)
+2. Source file paths (/src/)
+3. Special modules (client, __vite_ping)
+4. General catch-all (/technical/) last
+5. API endpoints (/technical-api/)
+
+This ensures that Vite dev server paths are handled correctly before 
+the general catch-all location block.
+
+# =============================================================================
+# WHAT THIS FIXES
+# =============================================================================
+
+✅ @react-refresh module loading
+✅ client module loading  
+✅ main.tsx and all src/ files
+✅ Vite special paths (@vite/, @id/, etc.)
+✅ Proper MIME type handling
+✅ Hot Module Replacement (HMR)
+
+# =============================================================================
+# DEPLOYMENT
+# =============================================================================
+
+1. REPLACE all /technical/ blocks with the 5 blocks above (in this exact order)
+2. Reload nginx: nginx -s reload
+3. Test: https://dev.sl-sail.com/technical/
