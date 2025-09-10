@@ -1,0 +1,80 @@
+ngsw-worker.js:1892 Refused to connect to 'https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700' because it violates the following Content Security Policy directive: "connect-src 'self' wss://dev.sl-sail.com ws://dev.sl-sail.com https://dev.sl-sail.com https://uat.sl-sail.com https://img.icons8.com/wired/64/000000/cargo-ship.png https://analytics.google.com https://www.googletagmanager.com https://www.google.co.in https://stats.g.doubleclick.net https://www.google-analytics.com https://fonts.gstatic.com".
+ 
+safeFetch @ ngsw-worker.js:1892
+
+handleFetch @ ngsw-worker.js:1510
+
+await in handleFetch
+
+onFetch @ ngsw-worker.js:1336
+
+(anonymous) @ ngsw-worker.js:1303
+
+ngsw-worker.js:1892 Fetch API cannot load https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700. Refused to connect because it violates the document's Content Security Policy.
+
+safeFetch @ ngsw-worker.js:1892
+
+handleFetch @ ngsw-worker.js:1510
+
+await in handleFetch
+
+onFetch @ ngsw-worker.js:1336
+
+(anonymous) @ ngsw-worker.js:1303
+
+technical/:42  GET https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700 net::ERR_ABORTED 504 (Gateway Timeout)
+
+client:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+@react-refresh:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+main.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+ 
+ngsw-worker.js:1892 Refused to connect to 'https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700' because it violates the following Content Security Policy directive: "connect-src 'self' wss://dev.sl-sail.com ws://dev.sl-sail.com https://dev.sl-sail.com https://uat.sl-sail.com https://img.icons8.com/wired/64/000000/cargo-ship.png https://analytics.google.com https://www.googletagmanager.com https://www.google.co.in https://stats.g.doubleclick.net https://www.google-analytics.com https://fonts.gstatic.com".
+ 
+safeFetch @ ngsw-worker.js:1892
+
+
+handleFetch @ ngsw-worker.js:1510
+
+
+await in handleFetch
+
+
+onFetch @ ngsw-worker.js:1336
+
+
+(anonymous) @ ngsw-worker.js:1303
+
+
+ngsw-worker.js:1892 Fetch API cannot load https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700. Refused to connect because it violates the document's Content Security Policy.
+
+
+safeFetch @ ngsw-worker.js:1892
+
+
+handleFetch @ ngsw-worker.js:1510
+
+
+await in handleFetch
+
+
+onFetch @ ngsw-worker.js:1336
+
+
+(anonymous) @ ngsw-worker.js:1303
+
+
+technical/:42  GET https://fonts.googleapis.com/css?family=Mulish:700,400|Roboto:400,700 net::ERR_ABORTED 504 (Gateway Timeout)
+
+
+client:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+
+@react-refresh:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+
+main.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+
+ 

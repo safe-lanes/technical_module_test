@@ -1,0 +1,110 @@
+# =============================================================================
+# FIXED NGINX CONFIGURATION FOR TECHNICAL MODULE
+# =============================================================================
+
+# Replace your existing /technical/ block with this enhanced version:
+
+# ===============================================
+# TECHNICAL MODULE Frontend with Vite Dev Assets
+# ===============================================
+location /technical/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    
+    # Essential for Vite dev server
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # CORS Headers
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Preflight OPTIONS request handling
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE Vite Dev Assets (Critical!)
+# ===============================================
+location ~ ^/technical/(@vite|src|node_modules)/ {
+    proxy_pass http://localhost:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Essential for Vite HMR and module loading
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    
+    # Ensure correct MIME types for JS modules
+    location ~ \\.m?js$ {
+        add_header Content-Type application/javascript;
+        proxy_pass http://localhost:5000;
+    }
+    
+    location ~ \\.tsx?$ {
+        add_header Content-Type application/typescript;
+        proxy_pass http://localhost:5000;
+    }
+}
+
+# ===============================================
+# TECHNICAL MODULE APIs (Keep existing)
+# ===============================================
+location /technical-api/ {
+    proxy_pass http://localhost:5000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # CORS headers for API calls
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+
+    # Handle preflight OPTIONS requests
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
+        add_header Content-Length 0;
+        add_header Content-Type text/plain;
+        return 204;
+    }
+}
+
+# =============================================================================
+# DEPLOYMENT INSTRUCTIONS
+# =============================================================================
+
+1. REPLACE your existing /technical/ and /technical-api/ blocks with the above
+2. The new /technical/(@vite|src|node_modules)/ block is CRITICAL for Vite dev assets
+3. Reload nginx: nginx -s reload
+4. Test: Visit https://dev.sl-sail.com/technical/
+
+# =============================================================================
+# WHAT THIS FIXES
+# =============================================================================
+
+✅ JavaScript module loading (main.tsx, @react-refresh, client)
+✅ Vite dev server assets (@vite/, src/, node_modules/)
+✅ Proper MIME types for .js/.ts/.tsx files
+✅ Hot Module Replacement (HMR) support
+✅ WebSocket connections for Vite dev server
